@@ -1,0 +1,41 @@
+package com.ih.m2.core.di
+
+import androidx.lifecycle.ViewModel
+import com.google.gson.GsonBuilder
+import com.ih.m2.data.api.ApiService
+import com.ih.m2.ui.pages.login.LoginViewModel
+import dagger.MapKey
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
+import dagger.multibindings.IntoMap
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+import javax.inject.Singleton
+import kotlin.reflect.KClass
+
+@Module
+@InstallIn(SingletonComponent::class)
+object NetworkModule {
+
+    @Provides
+    fun provideBaseUrl(): String = "https://service-m2-development.up.railway.app/"
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(baseUrl: String): Retrofit = Retrofit.Builder()
+        .baseUrl(baseUrl)
+        .addConverterFactory(GsonConverterFactory.create(
+            GsonBuilder().create()
+        ))
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
+
+
+
+
+}
