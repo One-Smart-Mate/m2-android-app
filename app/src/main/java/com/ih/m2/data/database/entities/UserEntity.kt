@@ -3,6 +3,7 @@ package com.ih.m2.data.database.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ih.m2.domain.model.User
 
 @Entity(tableName = "user_table")
 data class UserEntity(
@@ -18,3 +19,16 @@ data class UserEntity(
     @ColumnInfo(name = "logo")
     val logo: String
 )
+
+fun UserEntity?.toDomain(): User? {
+    if (this != null) {
+        return User(
+            name = this.name,
+            email = this.email,
+            token = this.token,
+            roles = emptyList(),
+            logo = this.logo
+        )
+    }
+    return null
+}

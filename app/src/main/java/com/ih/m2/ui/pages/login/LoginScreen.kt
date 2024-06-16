@@ -42,6 +42,8 @@ import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.navigation.Screen
+import com.ih.m2.ui.navigation.navigateAndClean
+import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.theme.M2androidappTheme
 
 @Composable
@@ -110,7 +112,7 @@ fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifi
                     .flowWithLifecycle(lifecycle)
                     .collect {
                         if (it.isAuthenticated) {
-                            navController.navigate(Screen.Home.route)
+                            navController.navigateToHome()
                         }
                     }
             }

@@ -1,5 +1,7 @@
 package com.ih.m2.domain
 
+import com.ih.m2.domain.usecase.getuser.GetUserUseCase
+import com.ih.m2.domain.usecase.getuser.GetUserUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCaseImpl
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
@@ -18,4 +20,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindSaveUserUseCase(saveUserUseCaseImpl: SaveUserUseCaseImpl): SaveUserUseCase
+
+    @Binds
+    fun bindGetUserUseCase(getUserUseCaseImpl: GetUserUseCaseImpl): GetUserUseCase
 }

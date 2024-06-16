@@ -10,7 +10,7 @@ import com.ih.m2.data.database.entities.UserEntity
 interface UserDao {
 
     @Query("SELECT * FROM USER_TABLE LIMIT 1")
-    suspend fun getUser(): UserEntity
+    suspend fun getUser(): UserEntity?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUser(userEntity: UserEntity): Long
