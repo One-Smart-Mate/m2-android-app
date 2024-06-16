@@ -1,9 +1,10 @@
 package com.ih.m2.data
 
-import com.ih.m2.data.repository.AuthRepositoryImpl
-import com.ih.m2.domain.repository.AuthRepository
+import com.ih.m2.data.repository.auth.AuthRepositoryImpl
+import com.ih.m2.data.repository.local.LocalRepositoryImpl
+import com.ih.m2.domain.repository.auth.AuthRepository
+import com.ih.m2.domain.repository.local.LocalRepository
 import dagger.Binds
-import dagger.Component
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
@@ -13,4 +14,7 @@ import dagger.hilt.components.SingletonComponent
 internal interface DataBindingModule {
     @Binds
     fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
+
+    @Binds
+    fun bindLocalRepository(localRepositoryImpl: LocalRepositoryImpl): LocalRepository
 }

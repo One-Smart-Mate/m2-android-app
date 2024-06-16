@@ -7,7 +7,9 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.data.model.LoginRequest
-import com.ih.m2.domain.usecase.LoginUseCase
+import com.ih.m2.domain.model.User
+import com.ih.m2.domain.usecase.login.LoginUseCase
+import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -19,6 +21,7 @@ class LoginViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
     private val loginUseCase: LoginUseCase,
+    private val saveUserUseCase: SaveUserUseCase
 ) : MavericksViewModel<LoginViewModel.UiState>(initialState) {
 
 
@@ -26,10 +29,10 @@ class LoginViewModel @AssistedInject constructor(
         val isLoading: Boolean = false,
         val errorMessage: String = "",
         val isAuthenticated: Boolean = false
-    ): MavericksState
+    ) : MavericksState
 
     sealed class Action {
-        data class Login(val email: String, val password: String): Action()
+        data class Login(val email: String, val password: String) : Action()
     }
 
     fun process(action: Action) {
@@ -44,10 +47,21 @@ class LoginViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 loginUseCase(LoginRequest(email, password))
             }.onSuccess {
-                Log.e("Data","Data $it")
+                handleSaveUser(it)
+            }.onFailure {
+                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty()) }
+            }
+        }
+    }
+
+    private fun handleSaveUser(user: User) {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                saveUserUseCase(user)
+            }.onSuccess {
                 setState { copy(isLoading = false, isAuthenticated = true) }
             }.onFailure {
-                setState { copy(isLoading = false,errorMessage = it.localizedMessage.orEmpty() ) }
+                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty()) }
             }
         }
     }
@@ -57,7 +71,8 @@ class LoginViewModel @AssistedInject constructor(
         override fun create(state: UiState): LoginViewModel
     }
 
-    companion object : MavericksViewModelFactory<LoginViewModel, UiState> by hiltMavericksViewModelFactory()
+    companion object :
+        MavericksViewModelFactory<LoginViewModel, UiState> by hiltMavericksViewModelFactory()
 }
 
 

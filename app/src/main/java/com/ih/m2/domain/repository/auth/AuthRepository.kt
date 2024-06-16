@@ -1,4 +1,4 @@
-package com.ih.m2.domain.repository
+package com.ih.m2.domain.repository.auth
 
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.domain.model.User

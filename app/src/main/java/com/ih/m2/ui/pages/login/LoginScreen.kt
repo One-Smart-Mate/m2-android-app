@@ -63,6 +63,8 @@ fun LoginScreen(
 @Composable
 fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifier: Modifier) {
     val state by viewModel.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
         modifier = modifier
@@ -103,27 +105,16 @@ fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifi
                 Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG)
                     .show()
             }
-
-            NavigateToScreen(state, viewModel, navController)
-        }
-    }
-}
-
-@Composable
-fun NavigateToScreen(
-    state: LoginViewModel.UiState,
-    viewModel: LoginViewModel,
-    navController: NavController
-) {
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    LaunchedEffect(viewModel, lifecycle) {
-        snapshotFlow { state }
-            .flowWithLifecycle(lifecycle)
-            .collect {
-                if (it.isAuthenticated) {
-                    navController.navigate(Screen.Home.route)
-                }
+            LaunchedEffect(viewModel, lifecycle) {
+                snapshotFlow { state }
+                    .flowWithLifecycle(lifecycle)
+                    .collect {
+                        if (it.isAuthenticated) {
+                            navController.navigate(Screen.Home.route)
+                        }
+                    }
             }
+        }
     }
 }
 

@@ -1,0 +1,7 @@
+package com.ih.m2.domain.repository.local
+
+import com.ih.m2.domain.model.User
+
+interface LocalRepository {
+    suspend fun saveUser(user: User): Long
+}

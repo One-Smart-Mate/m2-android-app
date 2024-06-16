@@ -1,12 +1,9 @@
-package com.ih.m2.data.repository
+package com.ih.m2.data.repository.auth
 
-import android.util.Log
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.LoginRequest
-import com.ih.m2.data.model.toDomain
 import com.ih.m2.domain.model.User
-import com.ih.m2.domain.repository.AuthRepository
-import timber.log.Timber
+import com.ih.m2.domain.repository.auth.AuthRepository
 import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
