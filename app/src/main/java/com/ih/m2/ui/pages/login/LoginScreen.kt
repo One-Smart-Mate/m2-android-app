@@ -74,30 +74,30 @@ fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifi
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
-                value = "",
+                value = state.email,
                 modifier = Modifier.fillMaxWidth(),
                 label = "Email",
                 placeholder = "Enter your email",
                 icon = Icons.Default.Email
             ) {
-
+                viewModel.process(LoginViewModel.Action.SetEmail(it))
             }
             CustomSpacer()
             CustomTextField(
-                value = "",
+                value = state.password,
                 modifier = Modifier.fillMaxWidth(),
                 label = "Password",
                 placeholder = "Enter your password",
                 icon = Icons.Default.Person
             ) {
-
+                viewModel.process(LoginViewModel.Action.SetPassword(it))
             }
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomButton(text = "Login", isLoading = state.isLoading) {
                 viewModel.process(
                     LoginViewModel.Action.Login(
-                        "fausto52@hotmail.com",
-                        "12345678"
+                        state.email,
+                        state.password
                     )
                 )
             }

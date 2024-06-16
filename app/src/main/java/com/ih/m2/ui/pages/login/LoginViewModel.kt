@@ -28,16 +28,22 @@ class LoginViewModel @AssistedInject constructor(
     data class UiState(
         val isLoading: Boolean = false,
         val errorMessage: String = "",
-        val isAuthenticated: Boolean = false
+        val isAuthenticated: Boolean = false,
+        val email: String = "",
+        val password: String = ""
     ) : MavericksState
 
     sealed class Action {
         data class Login(val email: String, val password: String) : Action()
+        data class SetEmail(val email: String): Action()
+        data class SetPassword(val password: String): Action()
     }
 
     fun process(action: Action) {
         when (action) {
             is Action.Login -> handleLogin(action.email, action.password)
+            is Action.SetEmail -> handleSetEmail(action.email)
+            is Action.SetPassword -> handleSetPassword(action.password)
         }
     }
 
@@ -65,6 +71,15 @@ class LoginViewModel @AssistedInject constructor(
             }
         }
     }
+
+    private fun handleSetEmail(email: String) {
+        setState { copy(email = email) }
+    }
+
+    private fun handleSetPassword(password: String) {
+        setState { copy(password = password) }
+    }
+
 
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<LoginViewModel, UiState> {
