@@ -26,7 +26,7 @@ fun CustomButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(56.dp),
-        onClick = onClick
+        onClick = onClick,
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)

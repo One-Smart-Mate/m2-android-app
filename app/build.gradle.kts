@@ -97,7 +97,13 @@ dependencies {
     implementation("com.airbnb.android:mavericks-compose:3.0.9")
     implementation("com.airbnb.android:mavericks-hilt:3.0.8")
 
+    implementation("androidx.navigation:navigation-compose:2.7.6")
     implementation(libs.hilt.navigation.compose)
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
+    kapt ("androidx.lifecycle:lifecycle-compiler:2.8.2")
+
 
 
 }

@@ -1,7 +1,6 @@
 package com.ih.m2.ui.pages.login
 
 import android.util.Log
-import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -12,9 +11,7 @@ import com.ih.m2.domain.usecase.LoginUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import kotlin.coroutines.CoroutineContext
 
 
@@ -26,7 +23,9 @@ class LoginViewModel @AssistedInject constructor(
 
 
     data class UiState(
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val errorMessage: String = "",
+        val isAuthenticated: Boolean = false
     ): MavericksState
 
     sealed class Action {
@@ -40,13 +39,15 @@ class LoginViewModel @AssistedInject constructor(
     }
 
     private fun handleLogin(email: String, password: String) {
+        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 loginUseCase(LoginRequest(email, password))
             }.onSuccess {
-                Log.e("","Data $it")
+                Log.e("Data","Data $it")
+                setState { copy(isLoading = false, isAuthenticated = true) }
             }.onFailure {
-                Log.e("","Error ${it.localizedMessage}")
+                setState { copy(isLoading = false,errorMessage = it.localizedMessage.orEmpty() ) }
             }
         }
     }
