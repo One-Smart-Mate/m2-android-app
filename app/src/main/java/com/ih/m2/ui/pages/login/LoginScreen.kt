@@ -2,6 +2,7 @@ package com.ih.m2.ui.pages.login
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,14 +28,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.ui.components.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.theme.M2androidappTheme
+import timber.log.Timber
+
 @Composable
-fun LoginPage() {
-    val viewModel: LoginViewModel = hiltViewModel()
+fun LoginScreen(
+    viewModel: LoginViewModel = mavericksViewModel()
+) {
+    // val viewModel: LoginViewModel = hiltViewModel()
     LazyColumn(
         modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
     ) {
@@ -46,8 +53,10 @@ fun LoginPage() {
                 contentAlignment = Alignment.Center,
 
                 ) {
-                Text(text = "M2 App", style = MaterialTheme.typography.displayMedium
-                    .copy(color = Color.White))
+                Text(
+                    text = "M2 App", style = MaterialTheme.typography.displayMedium
+                        .copy(color = Color.White)
+                )
             }
             Spacer(modifier = Modifier.fillMaxHeight())
             Card(
@@ -79,7 +88,12 @@ fun LoginPage() {
                     }
                     CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                     CustomButton(text = "Login") {
-
+                        viewModel.process(
+                            LoginViewModel.Action.Login(
+                                "fausto52@hotmail.com",
+                                "12345678"
+                            )
+                        )
                     }
                 }
             }
@@ -94,7 +108,7 @@ fun LoginPage() {
 fun LoginPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            LoginPage()
+            LoginScreen()
         }
     }
 }

@@ -1,7 +1,8 @@
 package com.ih.m2.domain.repository
 
+import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.domain.model.User
 
 interface AuthRepository {
-    suspend fun login(email: String, password: String): User
+    suspend fun login(data: LoginRequest): User
 }

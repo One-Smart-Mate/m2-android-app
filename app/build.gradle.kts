@@ -92,7 +92,10 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.retrofit.adapter)
     implementation("com.jakewharton.timber:timber:5.0.1")
-
+    implementation ("com.airbnb.android:mavericks:3.0.9")
+    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation("com.airbnb.android:mavericks-compose:3.0.9")
+    implementation("com.airbnb.android:mavericks-hilt:3.0.8")
 
     implementation(libs.hilt.navigation.compose)
 
