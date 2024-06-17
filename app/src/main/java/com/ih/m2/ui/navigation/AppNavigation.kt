@@ -45,6 +45,10 @@ fun NavController.navigateToHome() {
     navigateAndClean(Screen.Home.route)
 }
 
+fun NavController.navigateToLogin() {
+    navigateAndClean(Screen.Login.route)
+}
+
 fun NavController.navigateToAccount() {
     navigate(Screen.Account.route)
 }

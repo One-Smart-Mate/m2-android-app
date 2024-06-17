@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
@@ -37,10 +38,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.m2.R
 import com.ih.m2.ui.components.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.SpacerSize
+import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.navigation.Screen
 import com.ih.m2.ui.navigation.navigateAndClean
 import com.ih.m2.ui.navigation.navigateToHome
@@ -51,22 +54,84 @@ fun LoginScreen(
     viewModel: LoginViewModel = mavericksViewModel(),
     navController: NavController
 ) {
+
+    val state by viewModel.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    LoginContent(
+        email = state.email,
+        password = state.password,
+        onEmailChange = {
+            viewModel.process(LoginViewModel.Action.SetEmail(it))
+        },
+        onPasswordChange = {
+            viewModel.process(LoginViewModel.Action.SetPassword(it))
+        },
+        isButtonLoading = state.isLoading,
+        onLogin = {
+            viewModel.process(
+                LoginViewModel.Action.Login(
+                    state.email,
+                    state.password
+                )
+            )
+        }
+    )
+
+    if (state.errorMessage.isNotEmpty()) {
+        Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG)
+            .show()
+    }
+    LaunchedEffect(viewModel, lifecycle) {
+        snapshotFlow { state }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (it.isAuthenticated) {
+                    navController.navigateToHome()
+                }
+            }
+    }
+}
+
+@Composable
+fun LoginContent(
+    modifier: Modifier = Modifier,
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    isButtonLoading: Boolean,
+    onLogin: () -> Unit
+) {
     LazyColumn(
-        modifier = Modifier.background(color = MaterialTheme.colorScheme.primary)
+        modifier = modifier.background(color = MaterialTheme.colorScheme.primary)
     ) {
         item {
             LoginTitle()
             Spacer(modifier = Modifier.fillMaxHeight())
-            LoginContent(viewModel, navController, modifier = Modifier.fillParentMaxSize())
+            LoginForm(
+                modifier = Modifier.fillParentMaxSize(),
+                email = email,
+                password = password,
+                onEmailChange = onEmailChange,
+                onPasswordChange = onPasswordChange,
+                isButtonLoading = isButtonLoading,
+                onLogin = onLogin
+            )
         }
     }
 }
 
 @Composable
-fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifier: Modifier) {
-    val state by viewModel.collectAsState()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-
+fun LoginForm(
+    modifier: Modifier,
+    email: String,
+    password: String,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    isButtonLoading: Boolean,
+    onLogin: () -> Unit
+) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
         modifier = modifier
@@ -76,45 +141,28 @@ fun LoginContent(viewModel: LoginViewModel, navController: NavController, modifi
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
-                value = state.email,
+                value = email,
                 modifier = Modifier.fillMaxWidth(),
-                label = "Email",
-                placeholder = "Enter your email",
+                label = stringResource(R.string.email),
+                placeholder = stringResource(R.string.enter_your_email),
                 icon = Icons.Default.Email
             ) {
-                viewModel.process(LoginViewModel.Action.SetEmail(it))
+                onEmailChange(it)
             }
             CustomSpacer()
             CustomTextField(
-                value = state.password,
+                value = password,
                 modifier = Modifier.fillMaxWidth(),
-                label = "Password",
-                placeholder = "Enter your password",
+                label = stringResource(R.string.password),
+                placeholder = stringResource(R.string.enter_your_password),
                 icon = Icons.Default.Person
             ) {
-                viewModel.process(LoginViewModel.Action.SetPassword(it))
+                onPasswordChange(it)
+
             }
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
-            CustomButton(text = "Login", isLoading = state.isLoading) {
-                viewModel.process(
-                    LoginViewModel.Action.Login(
-                        state.email,
-                        state.password
-                    )
-                )
-            }
-            if (state.errorMessage.isNotEmpty()) {
-                Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG)
-                    .show()
-            }
-            LaunchedEffect(viewModel, lifecycle) {
-                snapshotFlow { state }
-                    .flowWithLifecycle(lifecycle)
-                    .collect {
-                        if (it.isAuthenticated) {
-                            navController.navigateToHome()
-                        }
-                    }
+            CustomButton(text = stringResource(R.string.login), isLoading = isButtonLoading) {
+                onLogin()
             }
         }
     }
@@ -130,8 +178,8 @@ fun LoginTitle() {
 
         ) {
         Text(
-            text = "M2 App", style = MaterialTheme.typography.displayMedium
-                .copy(color = Color.White)
+            text = stringResource(R.string.m2_app), style = MaterialTheme.typography.displayMedium
+                .copy(color = getColor())
         )
     }
 }
@@ -144,7 +192,14 @@ fun LoginTitle() {
 fun LoginPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            LoginScreen(navController = rememberNavController())
+            LoginContent(
+                email = "test@gmial.com",
+                password = "Password",
+                onEmailChange = {},
+                onPasswordChange = {},
+                isButtonLoading = false,
+                onLogin = {}
+            )
         }
     }
 }

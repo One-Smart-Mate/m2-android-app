@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -27,23 +28,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.R
+import com.ih.m2.core.ui.functions.getContext
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getTextColor
+import com.ih.m2.ui.navigation.navigateToHome
+import com.ih.m2.ui.navigation.navigateToLogin
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingLarge
@@ -52,10 +60,45 @@ import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.theme.Size38
 
+@Composable
+fun AccountScreen(
+    navController: NavController,
+    viewModel: AccountViewModel = mavericksViewModel()
+) {
+
+    val state by viewModel.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    AccountContent(
+        navController = navController,
+        account = {},
+        logout = {
+            viewModel.process(AccountViewModel.Action.Logout)
+        },
+        getContext()
+    )
+    if (state.errorMessage.isNotEmpty()) {
+        Toast.makeText(getContext(), state.errorMessage, Toast.LENGTH_SHORT).show()
+    }
+    LaunchedEffect(viewModel, lifecycle) {
+        snapshotFlow { state }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (it.logout) {
+                    navController.navigateToLogin()
+                }
+            }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun AccountScreen(navController: NavController) {
-    val context = LocalContext.current
+fun AccountContent(
+    navController: NavController,
+    account: () -> Unit,
+    logout: () -> Unit,
+    context: Context
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -75,6 +118,10 @@ fun AccountScreen(navController: NavController) {
                     )
                 },
                 tonalElevation = PaddingNormal,
+                modifier = Modifier.clickable {
+                    account()
+                    Toast.makeText(context, "Open info", Toast.LENGTH_SHORT).show()
+                }
             )
 
             ListItem(
@@ -87,7 +134,7 @@ fun AccountScreen(navController: NavController) {
                 },
                 tonalElevation = PaddingNormal,
                 modifier = Modifier.clickable {
-                   openAppSettings(context)
+                    openAppSettings(context)
                 }
             )
 
@@ -100,6 +147,9 @@ fun AccountScreen(navController: NavController) {
                     )
                 },
                 tonalElevation = PaddingNormal,
+                modifier = Modifier.clickable {
+                    logout()
+                }
             )
         }
     }
@@ -113,7 +163,13 @@ fun AccountScreen(navController: NavController) {
 fun AccountPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            AccountScreen(rememberNavController())
+            val context = LocalContext.current
+            AccountContent(
+                navController = rememberNavController(),
+                account = {},
+                logout = {},
+                context = context
+            )
         }
     }
 }

@@ -4,6 +4,8 @@ import com.ih.m2.domain.usecase.getuser.GetUserUseCase
 import com.ih.m2.domain.usecase.getuser.GetUserUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCaseImpl
+import com.ih.m2.domain.usecase.logout.LogoutUseCase
+import com.ih.m2.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCaseImpl
 import dagger.Binds
@@ -23,4 +25,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetUserUseCase(getUserUseCaseImpl: GetUserUseCaseImpl): GetUserUseCase
+
+    @Binds
+    fun bindLogoutUseCase(logoutUseCaseImpl: LogoutUseCaseImpl): LogoutUseCase
 }

@@ -6,4 +6,10 @@
     <string name="logout">Logout</string>
     <string name="information">Information</string>
     <string name="empty" />
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="enter_your_email">Enter your email</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="login">Login</string>
+    <string name="m2_app">M2 App</string>
 </resources>
