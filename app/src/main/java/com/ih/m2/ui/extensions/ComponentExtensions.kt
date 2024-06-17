@@ -6,10 +6,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
 @Composable
-fun GetColor(): Color {
+fun getColor(): Color {
     return if (isSystemInDarkTheme()) {
         MaterialTheme.colorScheme.onSecondary
     } else {
         MaterialTheme.colorScheme.onPrimary
+    }
+}
+
+@Composable
+fun getTextColor(): Color {
+    return if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary
     }
 }

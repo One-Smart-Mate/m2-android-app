@@ -26,7 +26,7 @@ fun AppNavigation(
             HomeScreen(navController = navController)
         }
         composable(Screen.Account.route) {
-            AccountScreen()
+            AccountScreen(navController = navController)
         }
         composable(Screen.CardDetail.route) {
             CardDetailScreen()
