@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.createcard
 
+import CameraLauncher
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -39,9 +40,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
 import com.ih.m2.R
+import com.ih.m2.ui.components.AudioLauncher
 import com.ih.m2.ui.components.CustomAppBar
+import com.ih.m2.ui.components.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
+import com.ih.m2.ui.components.VideoLauncher
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
@@ -76,7 +80,7 @@ fun CreateCardScreen(
         }
         item {
             CustomTextField(
-                label = "Comments",
+                label = stringResource(R.string.comments),
                 value = "",
                 icon = Icons.Filled.Create,
                 modifier = Modifier.fillParentMaxWidth(),
@@ -87,10 +91,10 @@ fun CreateCardScreen(
             CustomSpacer()
         }
 
-        item {
-            SectionCardEvidence()
-            CustomSpacer()
-        }
+//        item {
+//            SectionCardEvidence()
+//            CustomSpacer()
+//        }
 
         item {
             Text(
@@ -98,9 +102,41 @@ fun CreateCardScreen(
                     .copy(fontWeight = FontWeight.Bold)
             )
             LazyRow {
-                items(4) {
+                items(3) {
                     PhotoCardItem("")
                 }
+            }
+            CustomSpacer()
+        }
+        item {
+            Text(
+                text = stringResource(R.string.videos), style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(3) {
+                    PhotoCardItem("")
+                }
+            }
+            CustomSpacer()
+        }
+
+        item {
+            Text(
+                text = stringResource(R.string.audios), style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(3) {
+                    PhotoCardItem("")
+                }
+            }
+            CustomSpacer()
+        }
+
+        item {
+            CustomButton(text = "Save") {
+                
             }
         }
     }
@@ -113,15 +149,12 @@ fun SectionCardEvidence() {
         horizontalArrangement = Arrangement.Center
     ) {
 
-        //  CameraLauncher()
-        EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_voice)) {
-
-        }
-        EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_videocam)) {
-
-        }
+        CameraLauncher()
+        AudioLauncher()
+        VideoLauncher()
     }
 }
+
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -141,7 +174,7 @@ fun PhotoCardItem(
         )
         if (showIcon) {
             Box {
-                EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_delete)) {
+                CardItemIcon(icon = painterResource(id = R.drawable.ic_delete)) {
                     if (onClick != null) {
                         onClick()
                     }
@@ -152,7 +185,7 @@ fun PhotoCardItem(
 }
 
 @Composable
-fun EvidenceCardIcon(
+fun CardItemIcon(
     icon: Painter,
     modifier: Modifier = Modifier,
     onClick: () -> Unit
