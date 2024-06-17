@@ -24,6 +24,15 @@ fun getTextColor(): Color {
 }
 
 @Composable
+fun getIconColor(): Color {
+    return if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.secondary
+    }
+}
+
+@Composable
 fun getPrimaryColor(): Color {
     return MaterialTheme.colorScheme.primary
 }

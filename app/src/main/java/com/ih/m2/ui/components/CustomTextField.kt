@@ -37,6 +37,7 @@ fun CustomTextField(
     placeholder: String = "",
     value: String,
     icon: ImageVector,
+    maxLines: Int = 1,
     onChange: (String) -> Unit,
 ) {
 
@@ -73,7 +74,8 @@ fun CustomTextField(
             focusedPlaceholderColor = getColor(),
             unfocusedPlaceholderColor = getColor(),
             disabledTextColor = getColor()
-        )
+        ),
+        maxLines = maxLines
     )
 }
 
