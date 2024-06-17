@@ -3,7 +3,6 @@ package com.ih.m2.ui.pages.createcard
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,17 +17,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -36,8 +33,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.bumptech.glide.integration.compose.placeholder
+
 import com.ih.m2.R
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
@@ -45,8 +45,6 @@ import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
-import com.ih.m2.ui.extensions.getTextColor
-import com.ih.m2.ui.pages.account.AccountContent
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
@@ -90,18 +88,63 @@ fun CreateCardScreen(
         }
 
         item {
-            Row(
-                modifier = Modifier.fillParentMaxWidth(),
-                horizontalArrangement = Arrangement.Center
-            ) {
-                EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_photo_camera)) {
+            SectionCardEvidence()
+            CustomSpacer()
+        }
 
+        item {
+            Text(
+                text = stringResource(R.string.images), style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(4) {
+                    PhotoCardItem("")
                 }
-                EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_voice)) {
+            }
+        }
+    }
+}
 
-                }
-                EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_videocam)) {
+@Composable
+fun SectionCardEvidence() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
+    ) {
 
+        //  CameraLauncher()
+        EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_voice)) {
+
+        }
+        EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_videocam)) {
+
+        }
+    }
+}
+
+@OptIn(ExperimentalGlideComposeApi::class)
+@Composable
+fun PhotoCardItem(
+    model: Any,
+    showIcon: Boolean = true,
+    onClick: (() -> Unit?)? = null
+) {
+    Box(
+        contentAlignment = Alignment.BottomCenter
+    ) {
+        GlideImage(
+            model = model, contentDescription = stringResource(id = R.string.empty),
+            failure = placeholder(R.drawable.ic_launcher_background),
+            loading = placeholder(R.drawable.ic_launcher_background),
+            modifier = Modifier.padding(PaddingTiny)
+        )
+        if (showIcon) {
+            Box {
+                EvidenceCardIcon(icon = painterResource(id = R.drawable.ic_delete)) {
+                    if (onClick != null) {
+                        onClick()
+                    }
                 }
             }
         }
