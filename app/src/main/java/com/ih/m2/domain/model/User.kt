@@ -16,6 +16,7 @@ fun User.toEntity(): UserEntity {
         name = this.name,
         email = this.email,
         token = this.token,
-        logo = this.logo
+        logo = this.logo,
+        roles = this.roles.joinToString(separator = ",")
     )
 }

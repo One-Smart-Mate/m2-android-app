@@ -1,6 +1,7 @@
 package com.ih.m2.ui.components
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -85,7 +86,8 @@ enum class ButtonType {
     DEFAULT, OUTLINE
 }
 
-@Preview
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+@Preview(showBackground = true, name = "light")
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun CustomButtonPreview() {

@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.ih.m2.ui.pages.account.AccountScreen
 import com.ih.m2.ui.pages.carddetail.CardDetailScreen
+import com.ih.m2.ui.pages.createcard.CreateCardScreen
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.login.LoginScreen
 
@@ -30,6 +31,9 @@ fun AppNavigation(
         }
         composable(Screen.CardDetail.route) {
             CardDetailScreen()
+        }
+        composable(Screen.CreateCard.route) {
+            CreateCardScreen(navController = navController)
         }
     }
 }
@@ -55,4 +59,8 @@ fun NavController.navigateToAccount() {
 
 fun NavController.navigateToCardDetail() {
     navigate(Screen.CardDetail.route)
+}
+
+fun NavController.navigateToCreateCard() {
+    navigate(Screen.CreateCard.route)
 }

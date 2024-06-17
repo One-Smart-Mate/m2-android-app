@@ -1,33 +1,115 @@
 package com.ih.m2.ui.components
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ih.m2.ui.extensions.getColor
+import com.ih.m2.ui.extensions.getTextColor
+import com.ih.m2.ui.theme.M2androidappTheme
 
 @Composable
 fun CustomTag(
-    title: String
+    title: String,
+    tagSize: TagSize = TagSize.DEFAULT,
+    tagType: TagType = TagType.DEFAULT,
+    invertedColors: Boolean = false
 ) {
+
+    val color = if (tagType == TagType.DEFAULT || invertedColors) {
+        getColor()
+    } else {
+        getTextColor()
+    }
+
+    val tagTextStyle = when (tagSize) {
+        TagSize.DEFAULT -> {
+            MaterialTheme.typography.bodyLarge
+                .copy(
+                    color = color
+                )
+        }
+
+        TagSize.SMALL -> {
+            MaterialTheme.typography.labelSmall
+                .copy(
+                    color = color
+                )
+        }
+    }
+
+    val tagTypeModifier = when (tagType) {
+        TagType.DEFAULT -> {
+            Modifier
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = CircleShape,
+                )
+                .padding(vertical = 2.dp, horizontal = 6.dp)
+        }
+
+        TagType.OUTLINE -> {
+            Modifier
+                .border(
+                    width = 1.dp,
+                    color = if (invertedColors) {
+                        getColor()
+                    } else {
+                        MaterialTheme.colorScheme.primary
+                    },
+                    shape = CircleShape
+                )
+                .padding(vertical = 2.dp, horizontal = 6.dp)
+        }
+    }
+
     Box(
-        modifier = Modifier
-            .background(
-                color = MaterialTheme.colorScheme.primary,
-                shape = CircleShape,
-            )
-            .padding(vertical = 2.dp, horizontal = 6.dp)
+        modifier = tagTypeModifier
     ) {
         Text(
-            text = title, style = MaterialTheme.typography.bodyLarge
-                .copy(
-                    color = getColor()
-                )
+            text = title, style = tagTextStyle
         )
+    }
+}
+
+enum class TagSize {
+    DEFAULT, SMALL
+}
+
+enum class TagType {
+    DEFAULT, OUTLINE
+}
+
+
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+@Preview(showBackground = true, name = "light")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Composable
+fun CustomTagPreview() {
+    M2androidappTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
+            Column {
+                CustomTag(title = "Custom Tag")
+                CustomSpacer()
+                CustomTag(title = "Custom Tag Small", tagSize = TagSize.SMALL)
+                CustomSpacer()
+                CustomTag(title = "Custom Tag outline", tagType = TagType.OUTLINE)
+                CustomSpacer()
+            }
+        }
     }
 }

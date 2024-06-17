@@ -48,6 +48,8 @@ import com.ih.m2.ui.navigation.Screen
 import com.ih.m2.ui.navigation.navigateAndClean
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.theme.PaddingNormal
+import com.ih.m2.ui.theme.Size150
 
 @Composable
 fun LoginScreen(
@@ -137,7 +139,7 @@ fun LoginForm(
         modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.padding(PaddingNormal)
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
@@ -173,7 +175,7 @@ fun LoginTitle() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp),
+            .height(Size150),
         contentAlignment = Alignment.Center,
 
         ) {

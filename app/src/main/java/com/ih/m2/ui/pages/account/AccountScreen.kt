@@ -105,7 +105,7 @@ fun AccountContent(
             .padding(vertical = PaddingToolbar, horizontal = PaddingTiny)
     ) {
         stickyHeader {
-            CustomAppBar(navController = navController)
+            CustomAppBar(navController = navController, title = stringResource(R.string.account))
         }
 
         item {

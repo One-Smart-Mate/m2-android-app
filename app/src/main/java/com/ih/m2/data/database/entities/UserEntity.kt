@@ -17,7 +17,9 @@ data class UserEntity(
     @ColumnInfo(name = "token")
     val token: String,
     @ColumnInfo(name = "logo")
-    val logo: String
+    val logo: String,
+    @ColumnInfo(name = "roles")
+    val roles: String
 )
 
 fun UserEntity?.toDomain(): User? {
@@ -26,8 +28,8 @@ fun UserEntity?.toDomain(): User? {
             name = this.name,
             email = this.email,
             token = this.token,
-            roles = emptyList(),
-            logo = this.logo
+            logo = this.logo,
+            roles = this.roles.split(",")
         )
     }
     return null

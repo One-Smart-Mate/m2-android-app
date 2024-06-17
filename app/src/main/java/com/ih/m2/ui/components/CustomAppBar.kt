@@ -19,7 +19,7 @@ import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.Size38
 
 @Composable
-fun CustomAppBar(navController: NavController) {
+fun CustomAppBar(navController: NavController, title: String) {
     Column {
         Icon(
             Icons.Filled.KeyboardArrowLeft,
@@ -31,7 +31,7 @@ fun CustomAppBar(navController: NavController) {
                 },
         )
         Text(
-            text = stringResource(R.string.account),
+            text = title,
             style = MaterialTheme.typography.displaySmall
                 .copy(color = getTextColor()),
             modifier = Modifier.padding(horizontal = PaddingLarge)

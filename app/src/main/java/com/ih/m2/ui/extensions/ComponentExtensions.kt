@@ -22,3 +22,8 @@ fun getTextColor(): Color {
         MaterialTheme.colorScheme.secondary
     }
 }
+
+@Composable
+fun getPrimaryColor(): Color {
+    return MaterialTheme.colorScheme.primary
+}

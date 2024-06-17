@@ -12,4 +12,14 @@
     <string name="enter_your_password">Enter your password</string>
     <string name="login">Login</string>
     <string name="m2_app">M2 App</string>
+
+
+    <string name="all_open_cards">Todas las tarjetas abiertas</string>
+    <string name="my_open_cards">Mis tarjetas abiertas</string>
+    <string name="assigned_cards">Mis tarjetas asignadas</string>
+    <string name="unassigned_cards">Tarjetas sin asignar</string>
+    <string name="expired_cards">Tarjetas vencidas</string>
+    <string name="closed_cards">Tarjetas cerradas</string>
+    <string name="filters">Filters</string>
+    <string name="apply">Apply</string>
 </resources>
