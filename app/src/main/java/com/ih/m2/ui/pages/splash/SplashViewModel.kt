@@ -55,8 +55,9 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private fun navigateToScreen(route: String) {
+    private suspend fun navigateToScreen(route: String) {
         _startRoute.value = route
+        delay(2000)
         _isAuthenticated.value = true
     }
 

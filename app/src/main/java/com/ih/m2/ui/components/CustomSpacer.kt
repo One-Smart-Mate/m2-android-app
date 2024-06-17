@@ -13,6 +13,7 @@ fun CustomSpacer(
     space: SpacerSize = SpacerSize.NORMAL
 ) {
     val size = when (space) {
+        SpacerSize.TINY -> 6.dp
         SpacerSize.SMALL -> 12.dp
         SpacerSize.NORMAL -> 16.dp
         SpacerSize.LARGE -> 24.dp
@@ -32,5 +33,5 @@ enum class SpacerDirection {
 }
 
 enum class SpacerSize {
-    SMALL, NORMAL, LARGE, EXTRA_LARGE
+    TINY,SMALL, NORMAL, LARGE, EXTRA_LARGE
 }
