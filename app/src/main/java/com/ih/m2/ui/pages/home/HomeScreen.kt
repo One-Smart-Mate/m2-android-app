@@ -3,20 +3,25 @@ package com.ih.m2.ui.pages.home
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -31,14 +36,20 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.R
+import com.ih.m2.domain.model.User
 import com.ih.m2.ui.components.ButtonType
 import com.ih.m2.ui.components.CircularImage
 import com.ih.m2.ui.components.CustomButton
@@ -48,6 +59,7 @@ import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.RadioGroup
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.SpacerDirection
+import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.extensions.getColor
@@ -60,7 +72,26 @@ import com.ih.m2.ui.theme.PaddingNormal
 
 @Composable
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(
+    navController: NavController,
+    viewModel: HomeViewModel = mavericksViewModel()
+) {
+    val state by viewModel.collectAsState()
+    if (state.isLoading) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
+    } else {
+        HomeContent(navController = navController, state.user)
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun HomeContent(navController: NavController, user: User) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -69,48 +100,38 @@ fun HomeScreen(navController: NavHostController) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.empty))
             }
         }
-    ) { _ ->
-        HomeScreenContent(navController = navController)
-    }
-}
+    ) { paddingValues ->
+        LazyColumn {
+            stickyHeader {
+                HomeAppBar(
+                    navController = navController,
+                    padding = paddingValues.calculateTopPadding(),
+                    user = user,
+                    onFilterClick = {
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun HomeScreenContent(
-    navController: NavHostController
-) {
-    var showBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    LazyColumn {
-        stickyHeader {
-            HomeScreenTitle(navController = navController, onFilterClick = {
-                showBottomSheet = true
-            })
-        }
+                    })
+            }
 
-        items(5){
-            CardItemList()
-        }
-
-
-        item {
-            //  if (true) {
-//                ModalBottomSheet(onDismissRequest = {
-//
-//                }) {
-//                    FiltersBottomSheetDialog
-//                }
-
-            //  }
+//            items(5) {
+//                CardItemList()
+//            }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreenTitle(navController: NavHostController, onFilterClick: () -> Unit) {
+fun FiltersBottomSheet() {
+    ModalBottomSheet(onDismissRequest = { /*TODO*/ }) {
+        FiltersBottomSheetDialog("", onFilterChange = {}, onApply = {})
+    }
+}
+
+
+@Composable
+fun HomeAppBar(navController: NavController, user: User, padding: Dp, onFilterClick: () -> Unit) {
     Column(
-        modifier = Modifier.headerContent(),
+        modifier = Modifier.headerContent(padding),
         horizontalAlignment = Alignment.End
     ) {
         Icon(
@@ -124,29 +145,33 @@ fun HomeScreenTitle(navController: NavHostController, onFilterClick: () -> Unit)
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircularImage(image = "https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250")
+            CircularImage(image = user.logo)
             CustomSpacer(direction = SpacerDirection.HORIZONTAL)
             Column {
                 Text(
-                    text = "Welcome back Fausto Camano",
+                    text = stringResource(R.string.welcome_back, user.name),
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold,
                         color = getColor()
                     )
                 )
                 Text(
-                    text = "Company  Universal S.A de CV",
+                    text = user.companyName,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         color = getColor()
                     )
                 )
-                Row {
-                    CustomTag(
-                        title = "Admin",
-                        tagSize = TagSize.SMALL,
-                        tagType = TagType.OUTLINE,
-                        invertedColors = true,
-                    )
+                LazyRow {
+                    items(user.roles) {
+                        Box(modifier = Modifier.padding(horizontal = 2.dp)) {
+                            CustomTag(
+                                title = it,
+                                tagSize = TagSize.SMALL,
+                                tagType = TagType.OUTLINE,
+                                invertedColors = true,
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -233,7 +258,7 @@ fun FiltersBottomSheetDialog(
 fun HomePreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            HomeScreen(rememberNavController())
+            HomeContent(rememberNavController(), User.mockUser())
         }
     }
 }

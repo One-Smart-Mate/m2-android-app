@@ -4,6 +4,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.ih.m2.ui.pages.account.AccountViewModel
+import com.ih.m2.ui.pages.home.HomeViewModel
 import com.ih.m2.ui.pages.login.LoginViewModel
 import com.ih.m2.ui.pages.splash.SplashViewModel
 import dagger.Binds
@@ -26,4 +27,10 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(AccountViewModel::class)
     fun bindAccountViewModel(factory: AccountViewModel.Factory): AssistedViewModelFactory<*, *>
+
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(HomeViewModel::class)
+    fun bindHomeViewModel(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
 }

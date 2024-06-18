@@ -44,7 +44,7 @@ fun CustomButton(
 
         else -> {
             ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer,
+                containerColor = Color.Transparent,
                 contentColor = MaterialTheme.colorScheme.primary,
             )
         }

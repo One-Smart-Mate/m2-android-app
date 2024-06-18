@@ -19,7 +19,15 @@ data class UserEntity(
     @ColumnInfo(name = "logo")
     val logo: String,
     @ColumnInfo(name = "roles")
-    val roles: String
+    val roles: String,
+    @ColumnInfo("company_id")
+    val companyId: String,
+    @ColumnInfo("site_id")
+    val siteId: String,
+    @ColumnInfo("company_name")
+    val companyName: String,
+    @ColumnInfo("site_name")
+    val siteName: String
 )
 
 fun UserEntity?.toDomain(): User? {
@@ -29,7 +37,11 @@ fun UserEntity?.toDomain(): User? {
             email = this.email,
             token = this.token,
             logo = this.logo,
-            roles = this.roles.split(",")
+            roles = this.roles.split(","),
+            companyId = this.companyId,
+            siteId = this.siteId,
+            companyName = this.companyName,
+            siteName = this.siteName
         )
     }
     return null

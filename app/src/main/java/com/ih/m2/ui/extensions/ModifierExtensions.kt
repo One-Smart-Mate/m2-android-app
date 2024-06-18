@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun Modifier.headerContent(): Modifier {
+fun Modifier.headerContent(paddingTop: Dp): Modifier {
     return this
         .fillMaxWidth()
         .background(
             color = MaterialTheme.colorScheme.primary
         )
-        .padding(start = 16.dp, end = 16.dp, top = 36.dp)
+        .padding(start = 16.dp, end = 16.dp, top = paddingTop)
 }
