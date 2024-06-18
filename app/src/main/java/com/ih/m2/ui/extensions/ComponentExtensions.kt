@@ -36,3 +36,14 @@ fun getIconColor(): Color {
 fun getPrimaryColor(): Color {
     return MaterialTheme.colorScheme.primary
 }
+
+
+@Composable
+fun getInvertedColor(): Color {
+    return if (isSystemInDarkTheme()) {
+        MaterialTheme.colorScheme.secondary
+    } else {
+        MaterialTheme.colorScheme.primary
+
+    }
+}

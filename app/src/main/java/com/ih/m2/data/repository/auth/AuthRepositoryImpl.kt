@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.LoginRequest
+import com.ih.m2.data.model.toDomain
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.repository.auth.AuthRepository
 import okhttp3.ResponseBody
@@ -19,7 +20,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(data: LoginRequest): User {
         val response = apiService.login(data).execute()
         return if (response.isSuccessful && response.body() != null) {
-            response.body()!!.data
+            response.body()!!.toDomain()
         } else {
             error(response.getErrorMessage())
         }

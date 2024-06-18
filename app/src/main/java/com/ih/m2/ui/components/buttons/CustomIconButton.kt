@@ -1,4 +1,4 @@
-package com.ih.m2.ui.components
+package com.ih.m2.ui.components.buttons
 
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Row

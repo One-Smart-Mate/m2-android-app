@@ -1,4 +1,4 @@
-package com.ih.m2.ui.components
+package com.ih.m2.ui.components.images
 
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape

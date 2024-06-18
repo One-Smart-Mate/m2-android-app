@@ -59,7 +59,7 @@ fun CustomTag(
                     color = MaterialTheme.colorScheme.primary,
                     shape = CircleShape,
                 )
-                .padding(vertical = 2.dp, horizontal = 6.dp)
+                .padding(vertical = 6.dp, horizontal = 10.dp)
         }
 
         TagType.OUTLINE -> {

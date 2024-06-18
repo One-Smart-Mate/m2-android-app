@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">m2-android-app</string>
+    <string name="app_name">M2 App</string>
     <string name="account">Account</string>
     <string name="settings">Settings</string>
     <string name="notifications">Notifications</string>
@@ -14,17 +14,29 @@
     <string name="m2_app">M2 App</string>
 
 
-    <string name="all_open_cards">Todas las tarjetas abiertas</string>
-    <string name="my_open_cards">Mis tarjetas abiertas</string>
-    <string name="assigned_cards">Mis tarjetas asignadas</string>
-    <string name="unassigned_cards">Tarjetas sin asignar</string>
-    <string name="expired_cards">Tarjetas vencidas</string>
-    <string name="closed_cards">Tarjetas cerradas</string>
+    <string name="all_open_cards">All open cards</string>
+    <string name="my_open_cards">My open cards</string>
+    <string name="assigned_cards">My assigned cards</string>
+    <string name="unassigned_cards">Unassigned cards</string>
+    <string name="expired_cards">Due cards</string>
+    <string name="closed_cards">Closed cards</string>
     <string name="filters">Filters</string>
     <string name="apply">Apply</string>
+    <string name="clean_filters">Clean filters</string>
     <string name="images">Images</string>
     <string name="videos">Videos</string>
     <string name="comments">Comments</string>
     <string name="audios">Audios</string>
     <string name="welcome_back">Welcome Back! %1$s</string>
+    <string name="open">Open</string>
+    <string name="closed">Closed</string>
+    <string name="status">Status</string>
+    <string name="type_card">Type of card</string>
+    <string name="preclassifier">Preclassifier</string>
+    <string name="area">Area</string>
+    <string name="level">Level</string>
+    <string name="created_by">Created by</string>
+    <string name="date">Date</string>
+    <string name="due_date">Due date</string>
+    <string name="actions">Actions</string>
 </resources>

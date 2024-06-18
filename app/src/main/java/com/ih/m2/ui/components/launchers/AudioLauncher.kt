@@ -1,11 +1,9 @@
-package com.ih.m2.ui.components
+package com.ih.m2.ui.components.launchers
 
 import android.content.res.Configuration
 import android.media.MediaRecorder
 import android.os.Build
 import android.os.CountDownTimer
-import android.widget.Chronometer
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,16 +16,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.viewinterop.AndroidView
 import com.ih.m2.R
-import com.ih.m2.core.ui.functions.FileType
 import com.ih.m2.core.ui.functions.createAudioFile
-import com.ih.m2.core.ui.functions.getUriForFile
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
 

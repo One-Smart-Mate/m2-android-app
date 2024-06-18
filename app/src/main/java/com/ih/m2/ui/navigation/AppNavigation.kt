@@ -30,7 +30,7 @@ fun AppNavigation(
             AccountScreen(navController = navController)
         }
         composable(Screen.CardDetail.route) {
-            CardDetailScreen()
+            CardDetailScreen(navController = navController)
         }
         composable(Screen.CreateCard.route) {
             CreateCardScreen(navController = navController)

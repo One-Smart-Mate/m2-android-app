@@ -10,6 +10,8 @@ data class UserEntity(
     @PrimaryKey
     @ColumnInfo(name = "id")
     val id: Int = 1,
+    @ColumnInfo(name = "user_id")
+    val userId: String,
     @ColumnInfo(name = "name")
     val name: String,
     @ColumnInfo(name = "email")
@@ -33,6 +35,7 @@ data class UserEntity(
 fun UserEntity?.toDomain(): User? {
     if (this != null) {
         return User(
+            userId = this.userId,
             name = this.name,
             email = this.email,
             token = this.token,

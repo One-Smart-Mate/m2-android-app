@@ -1,6 +1,6 @@
 package com.ih.m2.ui.pages.createcard
 
-import CameraLauncher
+import com.ih.m2.ui.components.launchers.CameraLauncher
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -26,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -40,12 +41,12 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
 import com.ih.m2.R
-import com.ih.m2.ui.components.AudioLauncher
+import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.CustomAppBar
-import com.ih.m2.ui.components.CustomButton
+import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
-import com.ih.m2.ui.components.VideoLauncher
+import com.ih.m2.ui.components.launchers.VideoLauncher
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
@@ -188,6 +189,7 @@ fun PhotoCardItem(
 fun CardItemIcon(
     icon: Painter,
     modifier: Modifier = Modifier,
+    color: Color = getIconColor(),
     onClick: () -> Unit
 ) {
     Card(
@@ -197,7 +199,7 @@ fun CardItemIcon(
         Icon(
             painter = icon,
             contentDescription = stringResource(id = R.string.empty),
-            tint = getIconColor(),
+            tint = color,
             modifier = Modifier.padding(8.dp)
         )
     }

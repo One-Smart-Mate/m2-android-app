@@ -1,17 +1,14 @@
-package com.ih.m2.ui.components
+package com.ih.m2.ui.components.buttons
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -19,12 +16,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ih.m2.ui.pages.login.LoginScreen
+import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.theme.M2androidappTheme
 
 @Composable
@@ -42,6 +37,13 @@ fun CustomButton(
             ButtonDefaults.buttonColors()
         }
 
+        ButtonType.ERROR -> {
+            ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+            )
+        }
+
         else -> {
             ButtonDefaults.buttonColors(
                 containerColor = Color.Transparent,
@@ -51,7 +53,7 @@ fun CustomButton(
     }
 
     val buttonModifier = when (buttonType) {
-        ButtonType.DEFAULT -> {
+        ButtonType.DEFAULT, ButtonType.ERROR -> {
             modifier
                 .fillMaxWidth()
                 .height(56.dp)
@@ -83,7 +85,7 @@ fun CustomButton(
 }
 
 enum class ButtonType {
-    DEFAULT, OUTLINE
+    DEFAULT, OUTLINE, ERROR
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -100,6 +102,10 @@ fun CustomButtonPreview() {
                 }
                 CustomSpacer()
                 CustomButton(text = "Outline", buttonType = ButtonType.OUTLINE) {
+
+                }
+                CustomSpacer()
+                CustomButton(text = "Error", buttonType = ButtonType.ERROR) {
 
                 }
             }

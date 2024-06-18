@@ -3,6 +3,7 @@ package com.ih.m2.domain.model
 import com.ih.m2.data.database.entities.UserEntity
 
 data class User(
+    val userId: String,
     val name: String,
     val email: String,
     val token: String,
@@ -15,6 +16,7 @@ data class User(
 ) {
     companion object {
         fun mockUser() = User(
+            userId = "",
             name = "testName",
             email = "test@gmail.com",
             token = "",
@@ -31,6 +33,7 @@ data class User(
 
 fun User.toEntity(): UserEntity {
     return UserEntity(
+        userId = this.userId,
         name = this.name,
         email = this.email,
         token = this.token,

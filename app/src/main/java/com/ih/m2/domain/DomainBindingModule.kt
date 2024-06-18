@@ -1,5 +1,7 @@
 package com.ih.m2.domain
 
+import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.card.GetCardsUseCaseImpl
 import com.ih.m2.domain.usecase.getuser.GetUserUseCase
 import com.ih.m2.domain.usecase.getuser.GetUserUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
@@ -28,4 +30,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindLogoutUseCase(logoutUseCaseImpl: LogoutUseCaseImpl): LogoutUseCase
+
+    @Binds
+    fun bindGetCardsUseCase(getCardsUseCaseImpl: GetCardsUseCaseImpl): GetCardsUseCase
 }

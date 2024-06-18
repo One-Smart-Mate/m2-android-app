@@ -1,9 +1,8 @@
-package com.ih.m2.ui.components
+package com.ih.m2.ui.components.launchers
 
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -21,40 +20,32 @@ import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 
 @Composable
-fun VideoLauncher(
-    videoLimitDuration: Int = 120
-) {
+fun CameraLauncher() {
     val context = LocalContext.current
-    val uri = context.getUriForFile(fileType = FileType.VIDEO)
-    var capturedVideoUri by remember {
+    val uri = context.getUriForFile(fileType = FileType.IMAGE)
+    var capturedImageUri by remember {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
 
-    val recordVideoLauncher =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.CaptureVideo().apply {
-            createIntent(context, uri).apply {
-                putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoLimitDuration)
-            }
-        },
-            onResult = {
-                capturedVideoUri = uri
-            })
+    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+        capturedImageUri = uri
+    }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) {
         if (it) {
-            recordVideoLauncher.launch(uri)
+            cameraLauncher.launch(uri)
         } else {
             openAppSettings(context)
         }
     }
 
-    CardItemIcon(icon = painterResource(id = R.drawable.ic_videocam)) {
+    CardItemIcon(icon = painterResource(id = R.drawable.ic_photo_camera)) {
         val permissionCheckResult =
             ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
         if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
-            recordVideoLauncher.launch(uri)
+            cameraLauncher.launch(uri)
         } else {
             permissionLauncher.launch(Manifest.permission.CAMERA)
         }
