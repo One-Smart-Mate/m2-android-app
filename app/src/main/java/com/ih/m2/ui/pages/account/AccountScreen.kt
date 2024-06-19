@@ -48,8 +48,10 @@ import com.ih.m2.core.ui.functions.getContext
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
+import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getTextColor
+import com.ih.m2.ui.extensions.scaffold
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.navigation.navigateToLogin
 import com.ih.m2.ui.pages.home.HomeScreen
@@ -99,58 +101,58 @@ fun AccountContent(
     logout: () -> Unit,
     context: Context
 ) {
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = PaddingToolbar, horizontal = PaddingTiny)
-    ) {
-        stickyHeader {
-            CustomAppBar(navController = navController, title = stringResource(R.string.account))
-        }
+    Scaffold { padding ->
+        LazyColumn(
+            modifier = Modifier.defaultScreen(padding)
+        ) {
+            stickyHeader {
+                CustomAppBar(navController = navController, title = stringResource(R.string.account))
+            }
 
-        item {
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.information)) },
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.AccountCircle,
-                        contentDescription = stringResource(R.string.empty),
-                    )
-                },
-                tonalElevation = PaddingNormal,
-                modifier = Modifier.clickable {
-                    account()
-                    Toast.makeText(context, "Open info", Toast.LENGTH_SHORT).show()
-                }
-            )
+            item {
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.information)) },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.AccountCircle,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        account()
+                        Toast.makeText(context, "Open info", Toast.LENGTH_SHORT).show()
+                    }
+                )
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.notifications)) },
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.Notifications,
-                        contentDescription = stringResource(R.string.empty),
-                    )
-                },
-                tonalElevation = PaddingNormal,
-                modifier = Modifier.clickable {
-                    openAppSettings(context)
-                }
-            )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.notifications)) },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Notifications,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        openAppSettings(context)
+                    }
+                )
 
-            ListItem(
-                headlineContent = { Text(stringResource(R.string.logout)) },
-                leadingContent = {
-                    Icon(
-                        Icons.Filled.ExitToApp,
-                        contentDescription = stringResource(R.string.empty),
-                    )
-                },
-                tonalElevation = PaddingNormal,
-                modifier = Modifier.clickable {
-                    logout()
-                }
-            )
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.logout)) },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.ExitToApp,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        logout()
+                    }
+                )
+            }
         }
     }
 }

@@ -38,10 +38,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             M2androidappTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
-                    val state = splashViewModel.startRoute.collectAsState()
-                    AppNavigation(startDestination = state.value)
-                }
+                val state = splashViewModel.startRoute.collectAsState()
+                AppNavigation(startDestination = state.value)
             }
         }
     }

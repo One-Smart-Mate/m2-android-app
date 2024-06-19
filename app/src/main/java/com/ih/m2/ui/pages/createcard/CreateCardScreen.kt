@@ -47,6 +47,7 @@ import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.launchers.VideoLauncher
+import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
@@ -61,84 +62,83 @@ import com.ih.m2.ui.theme.Size150
 fun CreateCardScreen(
     navController: NavController
 ) {
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = PaddingToolbar, horizontal = PaddingTiny)
-    ) {
-        stickyHeader {
-            CustomAppBar(navController = navController, title = "Create card")
-        }
-        item {
-            SectionCard(
-                "Priority",
-                listOf("1", "2"),
-            ) {
-
+    Scaffold { padding ->
+        LazyColumn(
+            modifier = Modifier.defaultScreen(padding)
+        ) {
+            stickyHeader {
+                CustomAppBar(navController = navController, title = "Create card")
             }
-            CustomSpacer()
-        }
-        item {
-            CustomTextField(
-                label = stringResource(R.string.comments),
-                value = "",
-                icon = Icons.Filled.Create,
-                modifier = Modifier.fillParentMaxWidth(),
-                maxLines = 5
-            ) {
+            item {
+                SectionCard(
+                    "Card Type",
+                    listOf("1", "2"),
+                ) {
 
+                }
+                CustomSpacer()
             }
-            CustomSpacer()
-        }
+            item {
+                CustomTextField(
+                    label = stringResource(R.string.comments),
+                    value = "",
+                    icon = Icons.Filled.Create,
+                    modifier = Modifier.fillParentMaxWidth(),
+                    maxLines = 5
+                ) {
+
+                }
+                CustomSpacer()
+            }
 
 //        item {
 //            SectionCardEvidence()
 //            CustomSpacer()
 //        }
 
-        item {
-            Text(
-                text = stringResource(R.string.images), style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(3) {
-                    PhotoCardItem("")
-                }
-            }
-            CustomSpacer()
-        }
-        item {
-            Text(
-                text = stringResource(R.string.videos), style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(3) {
-                    PhotoCardItem("")
-                }
-            }
-            CustomSpacer()
-        }
-
-        item {
-            Text(
-                text = stringResource(R.string.audios), style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(3) {
-                    PhotoCardItem("")
-                }
-            }
-            CustomSpacer()
-        }
-
-        item {
-            CustomButton(text = "Save") {
-                
-            }
+//            item {
+//                Text(
+//                    text = stringResource(R.string.images), style = MaterialTheme.typography.titleLarge
+//                        .copy(fontWeight = FontWeight.Bold)
+//                )
+//                LazyRow {
+//                    items(3) {
+//                        PhotoCardItem("")
+//                    }
+//                }
+//                CustomSpacer()
+//            }
+//            item {
+//                Text(
+//                    text = stringResource(R.string.videos), style = MaterialTheme.typography.titleLarge
+//                        .copy(fontWeight = FontWeight.Bold)
+//                )
+//                LazyRow {
+//                    items(3) {
+//                        PhotoCardItem("")
+//                    }
+//                }
+//                CustomSpacer()
+//            }
+//
+//            item {
+//                Text(
+//                    text = stringResource(R.string.audios), style = MaterialTheme.typography.titleLarge
+//                        .copy(fontWeight = FontWeight.Bold)
+//                )
+//                LazyRow {
+//                    items(3) {
+//                        PhotoCardItem("")
+//                    }
+//                }
+//                CustomSpacer()
+//            }
+//
+//            item {
+//                CustomButton(text = "Save") {
+//
+//                }
+//            }
         }
     }
 }
