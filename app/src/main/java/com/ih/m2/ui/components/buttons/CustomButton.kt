@@ -74,7 +74,8 @@ fun CustomButton(
     Button(
         modifier = buttonModifier,
         onClick = onClick,
-        colors = colors
+        colors = colors,
+        enabled = isLoading.not()
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
