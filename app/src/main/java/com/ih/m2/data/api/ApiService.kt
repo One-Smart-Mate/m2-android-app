@@ -1,6 +1,7 @@
 package com.ih.m2.data.api
 
 
+import com.ih.m2.data.model.GetCardDetailResponse
 import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
 import com.ih.m2.data.model.GetPreclassifiersResponse
@@ -41,6 +42,12 @@ interface ApiService  {
     fun getPriorities(
         @Path("siteId") siteId: String
     ): Call<GetPrioritiesResponse>
+
+
+    @GET("card/{cardId}")
+    fun getCardDetail(
+        @Path("cardId") cardId: String
+    ): Call<GetCardDetailResponse>
 
 }
 

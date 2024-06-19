@@ -42,4 +42,18 @@
     <string name="card_types">Card Types</string>
     <string name="priority">Priority</string>
     <string name="save">Save</string>
+    <string name="created_date">Created date</string>
+    <string name="mechanic">Mechanic</string>
+    <string name="creator">Creator</string>
+    <string name="no_apply">No apply</string>
+    <string name="provisional_solution">Provisional Solution</string>
+    <string name="provisional_user">Provisional user</string>
+    <string name="provisional_date">Provisional date</string>
+    <string name="provisional_comments">Provisional comments</string>
+    <string name="definitive_solution">Definitive solution</string>
+    <string name="definitive_date">Definitive date</string>
+    <string name="definitive_user">Definitive user</string>
+    <string name="definitive_comments">Definitive comments</string>
+    <string name="card">Card</string>
+    <string name="loading_card_details">Loading card details...</string>
 </resources>

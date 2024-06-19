@@ -1,5 +1,6 @@
 package com.ih.m2.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
@@ -30,7 +31,8 @@ fun AppNavigation(
             AccountScreen(navController = navController)
         }
         composable(Screen.CardDetail.route) {
-            CardDetailScreen(navController = navController)
+            val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
+            CardDetailScreen(navController = navController, cardId = cardId)
         }
         composable(Screen.CreateCard.route) {
             CreateCardScreen(navController = navController)
@@ -57,8 +59,14 @@ fun NavController.navigateToAccount() {
     navigate(Screen.Account.route)
 }
 
-fun NavController.navigateToCardDetail() {
-    navigate(Screen.CardDetail.route)
+fun NavController.navigateToCardDetail(id: String) {
+    navigate(
+        Screen.CardDetail.route
+            .replace(
+                oldValue = "{${ARG_CARD_ID}}",
+                newValue = id
+            )
+    )
 }
 
 fun NavController.navigateToCreateCard() {

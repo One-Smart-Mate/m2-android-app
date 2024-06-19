@@ -1,11 +1,14 @@
 package com.ih.m2.ui.extensions
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.res.stringResource
 import com.ih.m2.R
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
 import com.ih.m2.ui.utils.CLEAN_FILTERS
 import com.ih.m2.ui.utils.CLOSED_CARDS
+import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.EXPIRED_CARDS
 import com.ih.m2.ui.utils.MY_OPEN_CARDS
 import com.ih.m2.ui.utils.UNASSIGNED_CARDS
@@ -21,5 +24,14 @@ fun String.toFilterStatus(context: Context): String {
         context.getString(R.string.closed_cards) -> CLOSED_CARDS
         CLEAN_FILTERS -> CLEAN_FILTERS
         else -> ALL_OPEN_CARDS
+    }
+}
+
+@Composable
+fun String?.orDefault(): String {
+    return if(!this.isNullOrEmpty() && this.isNotBlank() && this != "null" && this != "NULL") {
+        this
+    } else {
+        stringResource(R.string.no_apply)
     }
 }

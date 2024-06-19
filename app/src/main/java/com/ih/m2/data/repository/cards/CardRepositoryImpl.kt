@@ -21,4 +21,14 @@ class CardRepositoryImpl @Inject constructor(
             error(response.getErrorMessage())
         }
     }
+
+    override suspend fun getCardDetail(cardId: String): Card {
+        val response = apiService.getCardDetail(cardId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
+            error(response.getErrorMessage())
+        }
+    }
 }

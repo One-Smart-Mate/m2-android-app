@@ -81,7 +81,8 @@ data class Card(
     val evidenceImageClose: Int,
     val createdAt: String,
     val updatedAt: String?,
-    val deletedAt: String?
+    val deletedAt: String?,
+    val evidences: List<Evidence>? = emptyList()
 ) {
     companion object {
         fun mock(): Card {
@@ -143,7 +144,8 @@ data class Card(
                 0,
                 "2021-10-29T03:31:35.000Z",
                 "2021-11-08T04:38:21.000Z",
-                ""
+                "",
+                emptyList()
             )
         }
     }

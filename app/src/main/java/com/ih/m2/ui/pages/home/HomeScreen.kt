@@ -66,7 +66,7 @@ fun HomeScreen(
     val state by viewModel.collectAsState()
     when (val screenState = state.user) {
         is LCE.Fail -> {
-            ErrorScreen(errorMessage = screenState.error)
+            ErrorScreen(navController = navController,errorMessage = screenState.error)
         }
 
         is LCE.Loading, LCE.Uninitialized -> {
@@ -135,8 +135,8 @@ fun HomeContent(
                     })
             }
             items(cards) {
-                HomeCardItemList(card = it) {
-                    navController.navigateToCardDetail()
+                HomeCardItemList(card = it) { card ->
+                    navController.navigateToCardDetail(card.id)
                 }
             }
 

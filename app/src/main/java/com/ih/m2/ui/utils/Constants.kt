@@ -14,3 +14,11 @@ const val STATUS_P = "P"
 const val STATUS_V = "V"
 const val STATUS_R = "R"
 const val STATUS_C = "C"
+
+
+const val IMG_CREATION = "IMCR"
+const val IMG_CLOSE = "IMCL"
+const val VIDEO_CREATION = "VICR"
+const val VIDEO_CLOSE = "VICL"
+const val AUDIO_CREATION = "AUCR"
+const val AUDIO_CLOSE = "AUCL"

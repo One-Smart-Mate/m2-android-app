@@ -1,10 +1,12 @@
 package com.ih.m2.ui.navigation
 
+const val ARG_CARD_ID = "arg_card_id"
+
 private object Route {
     const val LOGIN = "login"
     const val HOME = "home"
     const val ACCOUNT = "account"
-    const val CARD_DETAIL = "card-detail"
+    const val CARD_DETAIL = "card-detail/{${ARG_CARD_ID}}"
     const val CREATE_CARD = "create-card"
 }
 
