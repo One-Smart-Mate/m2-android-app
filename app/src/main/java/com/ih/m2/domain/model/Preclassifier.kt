@@ -9,3 +9,14 @@ data class Preclassifier (
     @SerializedName("preclassifierDescription")
     val description: String,
 )
+
+
+fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {
+    return this.map {
+        NodeCardItem(
+            id = it.id,
+            name = it.code,
+            description = it.description
+        )
+    }
+}

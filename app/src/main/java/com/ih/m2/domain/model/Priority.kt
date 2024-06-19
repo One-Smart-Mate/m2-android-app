@@ -12,3 +12,9 @@ data class Priority(
     val days: Int,
     val status: String
 )
+
+fun List<Priority>.toNodeItemCard(): List<NodeCardItem> {
+    return this.map {
+        NodeCardItem(id = it.id, name = it.code, description = it.description)
+    }
+}

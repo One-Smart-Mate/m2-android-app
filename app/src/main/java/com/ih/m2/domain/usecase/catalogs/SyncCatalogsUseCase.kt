@@ -4,6 +4,7 @@ import android.util.Log
 import com.ih.m2.domain.repository.cardtype.CardTypeRepository
 import com.ih.m2.domain.repository.local.LocalRepository
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
+import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
 import javax.inject.Inject
 
 interface SyncCatalogsUseCase {
@@ -11,11 +12,15 @@ interface SyncCatalogsUseCase {
 }
 
 class SyncCatalogsUseCaseImpl @Inject constructor(
-    private val getCardTypesUseCase: GetCardTypesUseCase
+    private val getCardTypesUseCase: GetCardTypesUseCase,
+    private val getPrioritiesUseCase: GetPrioritiesUseCase
 ) : SyncCatalogsUseCase {
 
     override suspend fun invoke() {
-        val list = getCardTypesUseCase()
-        Log.e("List","List $list")
+        val cardTypeList = getCardTypesUseCase()
+        Log.e("List", "List cardTypes $cardTypeList")
+
+        val priorityList = getPrioritiesUseCase()
+        Log.e("List","List priorities $priorityList")
     }
 }

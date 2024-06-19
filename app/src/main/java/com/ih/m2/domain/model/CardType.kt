@@ -12,3 +12,10 @@ data class CardType (
     val owner: String,
     val status: String
 )
+
+
+fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
+    return this.map {
+        NodeCardItem(id = it.id, name = it.methodology, description = it.name)
+    }
+}

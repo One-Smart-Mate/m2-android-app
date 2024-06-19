@@ -37,7 +37,7 @@ interface ApiService  {
         @Path("siteId") siteId: String
     ): Call<GetPreclassifiersResponse>
 
-    @GET("priority/all/{siteId]")
+    @GET("priority/all/{siteId}")
     fun getPriorities(
         @Path("siteId") siteId: String
     ): Call<GetPrioritiesResponse>
