@@ -39,4 +39,7 @@
     <string name="date">Date</string>
     <string name="due_date">Due date</string>
     <string name="actions">Actions</string>
+    <string name="card_types">Card Types</string>
+    <string name="priority">Priority</string>
+    <string name="save">Save</string>
 </resources>

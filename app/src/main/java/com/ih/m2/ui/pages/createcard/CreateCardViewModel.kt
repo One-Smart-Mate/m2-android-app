@@ -7,6 +7,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -31,7 +32,10 @@ class CreateCardViewModel @AssistedInject constructor(
         val priorityList: List<NodeCardItem> = emptyList(),
         val selectedPriority: String = "",
         val levelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
-        val selectedLevelList: Map<Int, String> = mutableMapOf()
+        val selectedLevelList: Map<Int, String> = mutableMapOf(),
+        val lastSelectedLevel: String = EMPTY,
+        val lastLevelCompleted: Boolean = false,
+        val comment: String = EMPTY
     ) : MavericksState
 
     sealed class Action {
@@ -42,6 +46,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data object GetPriorities : Action()
         data class SetPriority(val id: String) : Action()
         data class SetLevel(val id: String, val key: Int) : Action()
+        data class OnCommentChange(val comment: String): Action()
     }
 
     fun process(action: Action) {
@@ -53,7 +58,12 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.GetPriorities -> handleGetPriorities()
             is Action.SetPriority -> handleSetPriority(action.id)
             is Action.SetLevel -> handleSetLevel(action.id, action.key)
+            is Action.OnCommentChange -> handleOnCommentChange(action.comment)
         }
+    }
+
+    private fun handleOnCommentChange(comment: String) {
+        setState { copy(comment = comment) }
     }
 
     private fun handleSetCardType(id: String) {
@@ -62,15 +72,21 @@ class CreateCardViewModel @AssistedInject constructor(
                 copy(
                     selectedCardType = id,
                     preclassifierList = emptyList(),
-                    selectedPreclassifier = "",
-                    selectedPriority = "",
-                    priorityList = emptyList()
+                    selectedPreclassifier = EMPTY,
+                    selectedPriority = EMPTY,
+                    priorityList = emptyList(),
+                    levelList = emptyMap(),
+                    selectedLevelList = emptyMap(),
+                    lastSelectedLevel = EMPTY
                 )
             }
             handleGetPreclassifiers(id)
             val state = stateFlow.first()
             if (state.cardTypeList.find { it.id == id }?.name == "Mantenimiento") {
                 handleGetPriorities()
+            } else {
+                val levelList = getLevelById("0", 0)
+                setState { copy(levelList = levelList) }
             }
         }
     }
@@ -84,53 +100,37 @@ class CreateCardViewModel @AssistedInject constructor(
             val levelList = getLevelById("0", 0)
             setState { copy(selectedPriority = id, levelList = levelList) }
         }
-
     }
 
     private suspend fun getLevelById(id: String, selectedKey: Int): Map<Int, List<NodeCardItem>> {
         val firstList = mockLevels().filter { it.superiorId == id }
         val state = stateFlow.first()
         val map = state.levelList.toMutableMap()
-        //val selectedMap = state.selectedLevelList.toMutableMap()
-//        val key = if (map.keys.isEmpty()) {
-//            0
-//        } else {
-//            map.keys.last().plus(1)
-//        }
-
-        for (a in selectedKey until map.keys.size) {
-            map[a] = emptyList()
+        val selectedMap = state.selectedLevelList.toMutableMap()
+        for (index in selectedKey until map.keys.size) {
+            map[index] = emptyList()
+            selectedMap[index] = EMPTY
         }
         map[selectedKey] = firstList
-//        if (firstList.isNotEmpty()) {
-//            map[selectedKey] = firstList
-//        } else {
-//            for (a in selectedKey until map.keys.size) {
-//                map[a] = emptyList()
-//            }
-//        }
-        //setState { copy(selectedLevelList = selectedMap) }
-        Log.e("Map", "Map List ${map.keys}, ${selectedKey}")
+        selectedMap[selectedKey.minus(1)] = id
+        setState { copy(selectedLevelList = selectedMap, lastSelectedLevel = id) }
+        Log.e("Map", "Map List Key -> $selectedKey -- $id")
         return map
     }
 
+
     private fun handleSetLevel(id: String, key: Int) {
         viewModelScope.launch {
-            val state = stateFlow.first().levelList
-            val nk = key.plus(1)
-
-//            val nk = if (state.containsKey(nk1) && nk1!=0) {
-//                nk1.minus(1)
-//            } else if (state.containsKey(nk1)) {
-//                nk1.plus(1)
-//            } else {
-//                nk1
-//            }
-
-            val list = getLevelById(id, nk)
-            Log.e("Test", "New Listt $nk -- ${list}")
+            val newKey = key.plus(1)
+            val list = getLevelById(id, newKey)
+            checkLastLevelSection(id)
             setState { copy(levelList = list) }
         }
+    }
+
+    private fun checkLastLevelSection(id: String) {
+        val isEmpty = mockLevels().none { it.superiorId == id }
+        setState { copy(lastLevelCompleted = isEmpty) }
     }
 
     private fun handleGetPreclassifiers(id: String) {

@@ -48,9 +48,9 @@ import com.ih.m2.R
 import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.CustomAppBar
-import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
+import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.launchers.VideoLauncher
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
@@ -59,9 +59,8 @@ import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
-import com.ih.m2.ui.theme.PaddingToolbar
-import com.ih.m2.ui.theme.Size150
 import com.ih.m2.ui.theme.Size160
+import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun CreateCardScreen(
@@ -89,6 +88,12 @@ fun CreateCardScreen(
         levelList = state.levelList,
         onLevelClick = { item, key ->
             viewModel.process(CreateCardViewModel.Action.SetLevel(item.id, key))
+        },
+        selectedLevelList = state.selectedLevelList,
+        lastLevelCompleted = state.lastLevelCompleted,
+        comment = state.comment,
+        onCommentChange = {
+            viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
         }
     )
 }
@@ -107,7 +112,11 @@ fun CreateCardContent(
     onPriorityClick: (NodeCardItem) -> Unit,
     selectedPriority: String,
     levelList: Map<Int, List<NodeCardItem>>,
-    onLevelClick: (NodeCardItem, key: Int) -> Unit
+    onLevelClick: (NodeCardItem, key: Int) -> Unit,
+    selectedLevelList: Map<Int, String>,
+    lastLevelCompleted: Boolean,
+    comment: String,
+    onCommentChange: (String) -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -117,94 +126,32 @@ fun CreateCardContent(
                 CustomAppBar(navController = navController, title = "Create card")
             }
             item {
-                Text(
-                    text = "Card Types", style = MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold)
-                )
-                LazyRow {
-                    items(cardTypeList) {
-                        SectionItemCard(
-                            title = it.name,
-                            description = it.description,
-                            selected = it.id == selectedCardType
-                        ) {
-                            onCardTypeClick(it)
-                        }
-                    }
-                }
-
-                if (preclassifierList.isNotEmpty()) {
-                    Text(
-                        text = "Preclassifiers", style = MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold)
-                    )
-                    LazyRow {
-                        items(preclassifierList) {
-                            SectionItemCard(
-                                title = it.name,
-                                description = it.description,
-                                selected = it.id == selectedPreclassifier
-                            ) {
-                                onPreclassifierClick(it)
-                            }
-                        }
-                    }
-                }
-
-                if (priorityList.isNotEmpty()) {
-                    Text(
-                        text = "Priority", style = MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold)
-                    )
-                    LazyRow {
-                        items(priorityList) {
-                            SectionItemCard(
-                                title = it.name,
-                                description = it.description,
-                                selected = it.id == selectedPriority
-                            ) {
-                                onPriorityClick(it)
-                            }
-                        }
-                    }
-                }
-
-                if (levelList.isNotEmpty()) {
-                    levelList.map { level ->
-                        if (level.value.isNotEmpty()) {
-                            Text(
-                                text = "Level ${level.key}",
-                                style = MaterialTheme.typography.titleLarge
-                                    .copy(fontWeight = FontWeight.Bold)
-                            )
-                        }
-                        LazyRow {
-                            items(level.value) { item ->
-                                SectionItemCard(
-                                    title = item.name,
-                                    description = item.description,
-                                    selected = false
-                                ) {
-                                    onLevelClick(item, level.key)
-                                }
-                            }
-                        }
-                    }
-                }
-
+                CustomSpacer()
+                CardTypeContent(cardTypeList, onCardTypeClick, selectedCardType)
+                PreclassifierContent(preclassifierList, onPreclassifierClick, selectedPreclassifier)
+                PriorityContent(priorityList, onPriorityClick, selectedPriority)
+                LevelContent(levelList, onLevelClick, selectedLevelList)
+                CustomSpacer()
             }
-//            item {
-//                CustomTextField(
-//                    label = stringResource(R.string.comments),
-//                    value = "",
-//                    icon = Icons.Filled.Create,
-//                    modifier = Modifier.fillParentMaxWidth(),
-//                    maxLines = 5
-//                ) {
-//
-//                }
-//                CustomSpacer()
-//            }
+            item {
+                CustomSpacer()
+                if (lastLevelCompleted) {
+                    CustomTextField(
+                        label = stringResource(R.string.comments),
+                        value = comment,
+                        icon = Icons.Filled.Create,
+                        modifier = Modifier.fillParentMaxWidth(),
+                        maxLines = 5
+                    ) {
+                        onCommentChange(it)
+                    }
+                    CustomSpacer()
+                    CustomButton(text = stringResource(R.string.save)) {
+
+                    }
+                }
+                CustomSpacer()
+            }
 
 //        item {
 //            SectionCardEvidence()
@@ -257,6 +204,115 @@ fun CreateCardContent(
         }
     }
 }
+
+@Composable
+fun LevelContent(
+    levelList: Map<Int, List<NodeCardItem>>,
+    onLevelClick: (NodeCardItem, key: Int) -> Unit,
+    selectedLevelList: Map<Int, String>,
+) {
+    if (levelList.isNotEmpty()) {
+        levelList.map { level ->
+            if (level.value.isNotEmpty()) {
+                Text(
+                    text = "${stringResource(R.string.level)} ${level.key}",
+                    style = MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
+                )
+            }
+            LazyRow {
+                items(level.value) { item ->
+                    SectionItemCard(
+                        title = item.name,
+                        description = item.description,
+                        selected = item.id == selectedLevelList[level.key]
+                    ) {
+                        onLevelClick(item, level.key)
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun PriorityContent(
+    priorityList: List<NodeCardItem>,
+    onPriorityClick: (NodeCardItem) -> Unit,
+    selectedPriority: String,
+) {
+    if (priorityList.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.priority),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+        LazyRow {
+            items(priorityList) {
+                SectionItemCard(
+                    title = it.name,
+                    description = it.description,
+                    selected = it.id == selectedPriority
+                ) {
+                    onPriorityClick(it)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PreclassifierContent(
+    preclassifierList: List<NodeCardItem>,
+    onPreclassifierClick: (NodeCardItem) -> Unit,
+    selectedPreclassifier: String,
+) {
+    if (preclassifierList.isNotEmpty()) {
+        Text(
+            text = stringResource(R.string.preclassifier),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+        LazyRow {
+            items(preclassifierList) {
+                SectionItemCard(
+                    title = it.name,
+                    description = it.description,
+                    selected = it.id == selectedPreclassifier
+                ) {
+                    onPreclassifierClick(it)
+                }
+            }
+        }
+    }
+}
+
+
+@Composable
+fun CardTypeContent(
+    cardTypeList: List<NodeCardItem>,
+    onCardTypeClick: (NodeCardItem) -> Unit,
+    selectedCardType: String,
+) {
+    Text(
+        text = stringResource(R.string.card_types),
+        style = MaterialTheme.typography.titleLarge
+            .copy(fontWeight = FontWeight.Bold)
+    )
+    LazyRow {
+        items(cardTypeList) {
+            SectionItemCard(
+                title = it.name,
+                description = it.description,
+                selected = it.id == selectedCardType
+            ) {
+                onCardTypeClick(it)
+            }
+        }
+    }
+}
+
 
 @Composable
 fun SectionCardEvidence() {
@@ -397,12 +453,24 @@ fun SectionItemCard(
 fun CreateCardPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-//            CreateCardContent(
-//                navController = rememberNavController(),
-//                onCardTypeClick = {},
-//                cardTypeList = emptyList(),
-//                selectedCardType = ""
-//            )
+            CreateCardContent(
+                navController = rememberNavController(),
+                onCardTypeClick = {},
+                cardTypeList = emptyList(),
+                selectedCardType = "",
+                preclassifierList = emptyList(),
+                onPreclassifierClick = {},
+                selectedPreclassifier = "",
+                priorityList = emptyList(),
+                selectedPriority = "",
+                onPriorityClick = {},
+                levelList = emptyMap(),
+                onLevelClick = { _, _ -> },
+                selectedLevelList = emptyMap(),
+                lastLevelCompleted = true,
+                comment = EMPTY,
+                onCommentChange = {}
+            )
         }
     }
 }
