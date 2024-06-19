@@ -85,7 +85,11 @@ fun CreateCardScreen(
         onPriorityClick = {
             viewModel.process(CreateCardViewModel.Action.SetPriority(it.id))
         },
-        selectedPriority = state.selectedPriority
+        selectedPriority = state.selectedPriority,
+        levelList = state.levelList,
+        onLevelClick = { item, key ->
+            viewModel.process(CreateCardViewModel.Action.SetLevel(item.id, key))
+        }
     )
 }
 
@@ -101,7 +105,9 @@ fun CreateCardContent(
     selectedPreclassifier: String,
     priorityList: List<NodeCardItem>,
     onPriorityClick: (NodeCardItem) -> Unit,
-    selectedPriority: String
+    selectedPriority: String,
+    levelList: Map<Int, List<NodeCardItem>>,
+    onLevelClick: (NodeCardItem, key: Int) -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -127,7 +133,7 @@ fun CreateCardContent(
                     }
                 }
 
-                if (preclassifierList.isNotEmpty())  {
+                if (preclassifierList.isNotEmpty()) {
                     Text(
                         text = "Preclassifiers", style = MaterialTheme.typography.titleLarge
                             .copy(fontWeight = FontWeight.Bold)
@@ -145,7 +151,7 @@ fun CreateCardContent(
                     }
                 }
 
-                if (priorityList.isNotEmpty())  {
+                if (priorityList.isNotEmpty()) {
                     Text(
                         text = "Priority", style = MaterialTheme.typography.titleLarge
                             .copy(fontWeight = FontWeight.Bold)
@@ -158,6 +164,29 @@ fun CreateCardContent(
                                 selected = it.id == selectedPriority
                             ) {
                                 onPriorityClick(it)
+                            }
+                        }
+                    }
+                }
+
+                if (levelList.isNotEmpty()) {
+                    levelList.map { level ->
+                        if (level.value.isNotEmpty()) {
+                            Text(
+                                text = "Level ${level.key}",
+                                style = MaterialTheme.typography.titleLarge
+                                    .copy(fontWeight = FontWeight.Bold)
+                            )
+                        }
+                        LazyRow {
+                            items(level.value) { item ->
+                                SectionItemCard(
+                                    title = item.name,
+                                    description = item.description,
+                                    selected = false
+                                ) {
+                                    onLevelClick(item, level.key)
+                                }
                             }
                         }
                     }

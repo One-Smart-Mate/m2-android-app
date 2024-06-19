@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.createcard
 
+import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -29,6 +30,8 @@ class CreateCardViewModel @AssistedInject constructor(
         val selectedPreclassifier: String = "",
         val priorityList: List<NodeCardItem> = emptyList(),
         val selectedPriority: String = "",
+        val levelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
+        val selectedLevelList: Map<Int, String> = mutableMapOf()
     ) : MavericksState
 
     sealed class Action {
@@ -38,6 +41,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data class SetPreclassifier(val id: String) : Action()
         data object GetPriorities : Action()
         data class SetPriority(val id: String) : Action()
+        data class SetLevel(val id: String, val key: Int) : Action()
     }
 
     fun process(action: Action) {
@@ -48,6 +52,7 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.SetPreclassifier -> handleSetPreclassifier(action.id)
             is Action.GetPriorities -> handleGetPriorities()
             is Action.SetPriority -> handleSetPriority(action.id)
+            is Action.SetLevel -> handleSetLevel(action.id, action.key)
         }
     }
 
@@ -75,7 +80,57 @@ class CreateCardViewModel @AssistedInject constructor(
     }
 
     private fun handleSetPriority(id: String) {
-        setState { copy(selectedPriority = id) }
+        viewModelScope.launch {
+            val levelList = getLevelById("0", 0)
+            setState { copy(selectedPriority = id, levelList = levelList) }
+        }
+
+    }
+
+    private suspend fun getLevelById(id: String, selectedKey: Int): Map<Int, List<NodeCardItem>> {
+        val firstList = mockLevels().filter { it.superiorId == id }
+        val state = stateFlow.first()
+        val map = state.levelList.toMutableMap()
+        //val selectedMap = state.selectedLevelList.toMutableMap()
+//        val key = if (map.keys.isEmpty()) {
+//            0
+//        } else {
+//            map.keys.last().plus(1)
+//        }
+
+        for (a in selectedKey until map.keys.size) {
+            map[a] = emptyList()
+        }
+        map[selectedKey] = firstList
+//        if (firstList.isNotEmpty()) {
+//            map[selectedKey] = firstList
+//        } else {
+//            for (a in selectedKey until map.keys.size) {
+//                map[a] = emptyList()
+//            }
+//        }
+        //setState { copy(selectedLevelList = selectedMap) }
+        Log.e("Map", "Map List ${map.keys}, ${selectedKey}")
+        return map
+    }
+
+    private fun handleSetLevel(id: String, key: Int) {
+        viewModelScope.launch {
+            val state = stateFlow.first().levelList
+            val nk = key.plus(1)
+
+//            val nk = if (state.containsKey(nk1) && nk1!=0) {
+//                nk1.minus(1)
+//            } else if (state.containsKey(nk1)) {
+//                nk1.plus(1)
+//            } else {
+//                nk1
+//            }
+
+            val list = getLevelById(id, nk)
+            Log.e("Test", "New Listt $nk -- ${list}")
+            setState { copy(levelList = list) }
+        }
     }
 
     private fun handleGetPreclassifiers(id: String) {
@@ -127,8 +182,8 @@ class CreateCardViewModel @AssistedInject constructor(
         }
     }
 
-    private fun mockLevels() {
-        val levels = listOf(
+    private fun mockLevels(): List<NodeCardItem> {
+        return listOf(
             NodeCardItem(
                 id = "1",
                 name = "Procesos A",
@@ -170,6 +225,12 @@ class CreateCardViewModel @AssistedInject constructor(
                 name = "Motor 1",
                 description = "Area de motor 1",
                 superiorId = "4"
+            ),
+            NodeCardItem(
+                id = "8",
+                name = "Maq 1",
+                description = "Area de maq 8",
+                superiorId = "6"
             ),
         )
         // [0,1],[1,4],[2,7]
