@@ -2,10 +2,16 @@ package com.ih.m2.data
 
 import com.ih.m2.data.repository.auth.AuthRepositoryImpl
 import com.ih.m2.data.repository.cards.CardRepositoryImpl
+import com.ih.m2.data.repository.cardtype.CardTypeRepositoryImpl
 import com.ih.m2.data.repository.local.LocalRepositoryImpl
+import com.ih.m2.data.repository.preclassifier.PreclassifierRepositoryImpl
+import com.ih.m2.data.repository.priority.PriorityRepositoryImpl
 import com.ih.m2.domain.repository.auth.AuthRepository
 import com.ih.m2.domain.repository.cards.CardRepository
+import com.ih.m2.domain.repository.cardtype.CardTypeRepository
 import com.ih.m2.domain.repository.local.LocalRepository
+import com.ih.m2.domain.repository.preclassifier.PreclassifierRepository
+import com.ih.m2.domain.repository.priority.PriorityRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -22,4 +28,13 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindCardRepository(cardRepositoryImpl: CardRepositoryImpl): CardRepository
+
+    @Binds
+    fun bindCardTypeRepository(cardTypeRepositoryImpl: CardTypeRepositoryImpl): CardTypeRepository
+
+    @Binds
+    fun bindPreclassifierRepository(preclassifierRepositoryImpl: PreclassifierRepositoryImpl): PreclassifierRepository
+
+    @Binds
+    fun bindPriorityRepository(priorityRepositoryImpl: PriorityRepositoryImpl): PriorityRepository
 }

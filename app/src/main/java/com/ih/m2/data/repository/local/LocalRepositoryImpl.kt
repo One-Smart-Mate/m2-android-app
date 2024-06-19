@@ -6,6 +6,7 @@ import com.ih.m2.data.database.entities.toDomain
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toEntity
 import com.ih.m2.domain.repository.local.LocalRepository
+import com.ih.m2.ui.utils.EMPTY
 import javax.inject.Inject
 
 class LocalRepositoryImpl @Inject constructor(
@@ -25,5 +26,11 @@ class LocalRepositoryImpl @Inject constructor(
             return userDao.deleteUser(it)
         }
         return 0
+    }
+
+    override suspend fun getSiteId(): String {
+        return userDao.getUser()?.let {
+            it.siteId
+        } ?: EMPTY
     }
 }

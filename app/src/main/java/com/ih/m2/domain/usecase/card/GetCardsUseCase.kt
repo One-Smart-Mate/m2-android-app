@@ -15,9 +15,7 @@ class GetCardsUseCaseImpl @Inject constructor(
 ): GetCardsUseCase {
 
     override suspend fun invoke(): List<Card> {
-        val user = localRepository.getUser()
-        return user?.let {
-            cardRepository.getCardsByUser(it.siteId)
-        } ?: emptyList()
+        val siteId = localRepository.getSiteId()
+        return  cardRepository.getCardsByUser(siteId)
     }
 }

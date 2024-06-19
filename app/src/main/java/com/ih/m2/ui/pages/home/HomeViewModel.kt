@@ -12,6 +12,8 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
+import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.getuser.GetUserUseCase
 import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CLEAN_FILTERS
@@ -30,12 +32,14 @@ class HomeViewModel @AssistedInject constructor(
     private val coroutineContext: CoroutineContext,
     private val getUserUseCase: GetUserUseCase,
     private val getCardsUseCase: GetCardsUseCase,
+    private val syncCatalogsUseCase: SyncCatalogsUseCase,
     @ApplicationContext private val context: Context
 ) : MavericksViewModel<HomeViewModel.UiState>(initialState) {
 
 
     init {
         process(Action.GetUser)
+        handleSyncCatalogs()
     }
 
     data class UiState(
@@ -84,11 +88,21 @@ class HomeViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 getCardsUseCase()
             }.onSuccess {
-                Log.e("", "success cards ${it}")
                 setState { copy(user = LCE.Success(user), cardList = it, originalCardList = it) }
             }.onFailure {
-                Log.e("", "Error cards ${it.localizedMessage}")
                 setState { copy(user = LCE.Fail(it.localizedMessage.orEmpty())) }
+            }
+        }
+    }
+
+    private fun handleSyncCatalogs() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                syncCatalogsUseCase()
+            }.onSuccess {
+                Log.e("test","Sync successfully")
+            }.onFailure {
+                Log.e("test","Sync failure ${it.localizedMessage}")
             }
         }
     }

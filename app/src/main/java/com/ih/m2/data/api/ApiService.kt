@@ -1,7 +1,10 @@
 package com.ih.m2.data.api
 
 
+import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
+import com.ih.m2.data.model.GetPreclassifiersResponse
+import com.ih.m2.data.model.GetPrioritiesResponse
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.data.model.LoginResponse
 import retrofit2.Call
@@ -18,10 +21,26 @@ interface ApiService  {
         @Body body: LoginRequest
     ) : Call<LoginResponse>
 
-    @GET("card/all/{id}")
+    @GET("card/all/{siteId}")
     fun getCards(
-        @Path("id") sitId: String
+        @Path("siteId") sitId: String
     ): Call<GetCardsResponse>
+
+
+    @GET("card-types/all/{siteId}")
+    fun getCardTypes(
+        @Path("siteId") sitId: String
+    ): Call<GetCardTypesResponse>
+
+    @GET("preclassifier/all/{siteId}")
+    fun getPreclassifiers(
+        @Path("siteId") siteId: String
+    ): Call<GetPreclassifiersResponse>
+
+    @GET("priority/all/{siteId]")
+    fun getPriorities(
+        @Path("siteId") siteId: String
+    ): Call<GetPrioritiesResponse>
 
 }
 
