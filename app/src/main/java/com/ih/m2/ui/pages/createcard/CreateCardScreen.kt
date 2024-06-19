@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +38,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.airbnb.mvrx.compose.collectAsState
+import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 
 import com.ih.m2.R
+import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.buttons.CustomButton
@@ -56,11 +61,47 @@ import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.theme.Size150
+import com.ih.m2.ui.theme.Size160
+
+@Composable
+fun CreateCardScreen(
+    navController: NavController,
+    viewModel: CreateCardViewModel = mavericksViewModel()
+) {
+    val state by viewModel.collectAsState()
+    CreateCardContent(
+        navController = navController,
+        cardTypeList = state.cardTypeList,
+        onCardTypeClick = {
+            viewModel.process(CreateCardViewModel.Action.SetCardType(it.id))
+        },
+        selectedCardType = state.selectedCardType,
+        preclassifierList = state.preclassifierList,
+        onPreclassifierClick = {
+            viewModel.process(CreateCardViewModel.Action.SetPreclassifier(it.id))
+        },
+        selectedPreclassifier = state.selectedPreclassifier,
+        priorityList = state.priorityList,
+        onPriorityClick = {
+            viewModel.process(CreateCardViewModel.Action.SetPriority(it.id))
+        },
+        selectedPriority = state.selectedPriority
+    )
+}
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CreateCardScreen(
-    navController: NavController
+fun CreateCardContent(
+    navController: NavController,
+    cardTypeList: List<NodeCardItem>,
+    onCardTypeClick: (NodeCardItem) -> Unit,
+    selectedCardType: String,
+    preclassifierList: List<NodeCardItem>,
+    onPreclassifierClick: (NodeCardItem) -> Unit,
+    selectedPreclassifier: String,
+    priorityList: List<NodeCardItem>,
+    onPriorityClick: (NodeCardItem) -> Unit,
+    selectedPriority: String
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -70,26 +111,71 @@ fun CreateCardScreen(
                 CustomAppBar(navController = navController, title = "Create card")
             }
             item {
-                SectionCard(
-                    "Card Type",
-                    listOf("1", "2"),
-                ) {
-
+                Text(
+                    text = "Card Types", style = MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
+                )
+                LazyRow {
+                    items(cardTypeList) {
+                        SectionItemCard(
+                            title = it.name,
+                            description = it.description,
+                            selected = it.id == selectedCardType
+                        ) {
+                            onCardTypeClick(it)
+                        }
+                    }
                 }
-                CustomSpacer()
-            }
-            item {
-                CustomTextField(
-                    label = stringResource(R.string.comments),
-                    value = "",
-                    icon = Icons.Filled.Create,
-                    modifier = Modifier.fillParentMaxWidth(),
-                    maxLines = 5
-                ) {
 
+                if (preclassifierList.isNotEmpty())  {
+                    Text(
+                        text = "Preclassifiers", style = MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold)
+                    )
+                    LazyRow {
+                        items(preclassifierList) {
+                            SectionItemCard(
+                                title = it.name,
+                                description = it.description,
+                                selected = it.id == selectedPreclassifier
+                            ) {
+                                onPreclassifierClick(it)
+                            }
+                        }
+                    }
                 }
-                CustomSpacer()
+
+                if (priorityList.isNotEmpty())  {
+                    Text(
+                        text = "Priority", style = MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold)
+                    )
+                    LazyRow {
+                        items(priorityList) {
+                            SectionItemCard(
+                                title = it.name,
+                                description = it.description,
+                                selected = it.id == selectedPriority
+                            ) {
+                                onPriorityClick(it)
+                            }
+                        }
+                    }
+                }
+
             }
+//            item {
+//                CustomTextField(
+//                    label = stringResource(R.string.comments),
+//                    value = "",
+//                    icon = Icons.Filled.Create,
+//                    modifier = Modifier.fillParentMaxWidth(),
+//                    maxLines = 5
+//                ) {
+//
+//                }
+//                CustomSpacer()
+//            }
 
 //        item {
 //            SectionCardEvidence()
@@ -207,19 +293,21 @@ fun CardItemIcon(
 
 @Composable
 fun SectionCard(
-    section: String,
-    list: List<String>,
-    onItemClick: (String) -> Unit
+    section: String?,
+    list: List<NodeCardItem>,
+    onItemClick: (NodeCardItem) -> Unit
 ) {
-    Text(
-        text = section, style = MaterialTheme.typography.titleLarge
-            .copy(fontWeight = FontWeight.Bold)
-    )
+    section?.let {
+        Text(
+            text = section, style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+    }
 
     LazyRow {
         items(list) {
-            SectionItemCard(title = "", description = "") {
-                onItemClick("")
+            SectionItemCard(title = it.name, description = it.description) {
+                onItemClick(it)
             }
         }
     }
@@ -243,7 +331,8 @@ fun SectionItemCard(
     Card(
         modifier = Modifier
             .padding(PaddingTiny)
-            .width(Size150),
+            .width(Size160)
+            .height(100.dp),
         colors = color,
         onClick = {
             onItemClick()
@@ -279,9 +368,12 @@ fun SectionItemCard(
 fun CreateCardPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            CreateCardScreen(
-                navController = rememberNavController(),
-            )
+//            CreateCardContent(
+//                navController = rememberNavController(),
+//                onCardTypeClick = {},
+//                cardTypeList = emptyList(),
+//                selectedCardType = ""
+//            )
         }
     }
 }
