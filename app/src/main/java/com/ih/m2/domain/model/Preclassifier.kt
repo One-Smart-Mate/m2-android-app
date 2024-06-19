@@ -1,6 +1,7 @@
 package com.ih.m2.domain.model
 
 import com.google.gson.annotations.SerializedName
+import com.ih.m2.data.database.entities.preclassifier.PreclassifierEntity
 
 data class Preclassifier (
     val id: String,
@@ -9,6 +10,13 @@ data class Preclassifier (
     @SerializedName("preclassifierDescription")
     val description: String,
 )
+
+fun Preclassifier.toEntity(): PreclassifierEntity {
+    return PreclassifierEntity(
+        id = this.id, code = this.code, description = this.description
+    )
+}
+
 
 
 fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {

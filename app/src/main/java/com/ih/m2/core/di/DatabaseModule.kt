@@ -24,4 +24,20 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun providesUserDao(database: AppDatabase) = database.getUserDao()
+
+    @Singleton
+    @Provides
+    fun providesCardDao(database: AppDatabase) = database.getCardDao()
+
+    @Singleton
+    @Provides
+    fun providesCardTypeDao(database: AppDatabase) = database.getCardTypeDao()
+
+    @Singleton
+    @Provides
+    fun providesPreclassifiereDao(database: AppDatabase) = database.getPreclassifierDao()
+
+    @Singleton
+    @Provides
+    fun providesPriorityDao(database: AppDatabase) = database.getPriorityDao()
 }

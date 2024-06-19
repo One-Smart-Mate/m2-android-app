@@ -12,9 +12,8 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
-import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
-import com.ih.m2.domain.usecase.getuser.GetUserUseCase
+import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CLEAN_FILTERS
 import com.ih.m2.ui.utils.EMPTY
@@ -23,7 +22,6 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -39,7 +37,7 @@ class HomeViewModel @AssistedInject constructor(
 
     init {
         process(Action.GetUser)
-        handleSyncCatalogs()
+       // handleSyncCatalogs()
     }
 
     data class UiState(

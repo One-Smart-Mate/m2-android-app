@@ -1,4 +1,4 @@
-package com.ih.m2.domain.usecase.getuser
+package com.ih.m2.domain.usecase.user
 
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.repository.local.LocalRepository

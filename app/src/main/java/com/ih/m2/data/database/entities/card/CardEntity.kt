@@ -1,204 +1,144 @@
-package com.ih.m2.domain.model
+package com.ih.m2.data.database.entities.card
 
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.res.stringResource
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
-import com.ih.m2.R
-import com.ih.m2.data.database.entities.card.CardEntity
-import com.ih.m2.data.database.entities.card.toDomain
-import com.ih.m2.ui.utils.ALL_OPEN_CARDS
-import com.ih.m2.ui.utils.ASSIGNED_CARDS
-import com.ih.m2.ui.utils.CLOSED_CARDS
-import com.ih.m2.ui.utils.EMPTY
-import com.ih.m2.ui.utils.EXPIRED_CARDS
-import com.ih.m2.ui.utils.MY_OPEN_CARDS
-import com.ih.m2.ui.utils.STATUS_A
-import com.ih.m2.ui.utils.STATUS_C
-import com.ih.m2.ui.utils.STATUS_P
-import com.ih.m2.ui.utils.STATUS_R
-import com.ih.m2.ui.utils.STATUS_V
-import com.ih.m2.ui.utils.STORED_REMOTE
-import com.ih.m2.ui.utils.UNASSIGNED_CARDS
+import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.User
 
-data class Card(
+
+@Entity(tableName = "card_table")
+data class CardEntity(
+    @PrimaryKey(autoGenerate = false)
+    @ColumnInfo(name = "id")
     val id: String,
+    @ColumnInfo(name = "site_card_id")
     val siteCardID: Long,
+    @ColumnInfo(name = "site_id")
     val siteID: String?,
+    @ColumnInfo(name = "site_code")
     val siteCode: String?,
+    @ColumnInfo(name = "card_uuid")
     val cardUUID: String,
+    @ColumnInfo(name = "card_type_color")
     val cardTypeColor: String,
+    @ColumnInfo(name = "feasibility")
     val feasibility: String?,
+    @ColumnInfo(name = "effect")
     val effect: String?,
+    @ColumnInfo(name = "status")
     val status: String,
+    @ColumnInfo(name = "card_creation_date")
     val cardCreationDate: String,
+    @ColumnInfo(name = "card_due_date")
     val cardDueDate: String,
+    @ColumnInfo(name = "area_id")
     val areaID: Long,
+    @ColumnInfo(name = "area_name")
     val areaName: String,
+    @ColumnInfo(name = "level")
     val level: Long,
+    @ColumnInfo(name = "superior_id")
     val superiorID: String?,
+    @ColumnInfo(name = "priority_id")
     val priorityID: String?,
+    @ColumnInfo(name = "priority_code")
     val priorityCode: String?,
+    @ColumnInfo(name = "priority_description")
     val priorityDescription: String,
+    @ColumnInfo(name = "card_methodology")
     val cardTypeMethodology: String,
+    @ColumnInfo(name = "card_methodology_name")
     val cardTypeMethodologyName: String,
+    @ColumnInfo(name = "card_type_value")
     val cardTypeValue: String,
+    @ColumnInfo(name = "card_type_id")
     val cardTypeID: String?,
+    @ColumnInfo(name = "card_type_name")
     val cardTypeName: String,
+    @ColumnInfo(name = "preclassifier_id")
     val preclassifierId: String,
+    @ColumnInfo(name = "preclassifier_code")
     val preclassifierCode: String,
+    @ColumnInfo(name = "preclassifier_description")
     val preclassifierDescription: String,
+    @ColumnInfo(name = "creator_id")
     val creatorID: String?,
+    @ColumnInfo(name = "creator_name")
     val creatorName: String,
+    @ColumnInfo(name = "responsable_id")
     val responsableID: String?,
+    @ColumnInfo(name = "responsable_name")
     val responsableName: String,
+    @ColumnInfo(name = "mechanic_id")
     val mechanicID: String?,
+    @ColumnInfo(name = "mechanic_name")
     val mechanicName: String?,
+    @ColumnInfo(name = "user_provisional_solution_id")
     val userProvisionalSolutionID: String?,
+    @ColumnInfo(name = "user_provisional_solution_name")
     val userProvisionalSolutionName: String?,
+    @ColumnInfo(name = "user_app_provisional_solution_id")
     val userAppProvisionalSolutionID: String?,
+    @ColumnInfo(name = "user_app_provisional_solution_name")
     val userAppProvisionalSolutionName: String?,
+    @ColumnInfo(name = "user_definitive_solution_id")
     val userDefinitiveSolutionID: String?,
+    @ColumnInfo(name = "user_definitive_solution_name")
     val userDefinitiveSolutionName: String?,
+    @ColumnInfo(name = "user_app_definitive_solution_id")
     val userAppDefinitiveSolutionID: String?,
+    @ColumnInfo(name = "user_app_definitive_solution_name")
     val userAppDefinitiveSolutionName: String?,
+    @ColumnInfo(name = "manager_id")
     val managerID: String?,
+    @ColumnInfo(name = "manager_name")
     val managerName: String,
+    @ColumnInfo(name = "card_manager_close_date")
     val cardManagerCloseDate: String?,
+    @ColumnInfo(name = "comments_manager_at_card_close")
     val commentsManagerAtCardClose: String?,
+    @ColumnInfo(name = "comments_at_card_creation")
     val commentsAtCardCreation: String?,
+    @ColumnInfo(name = "card_provisional_solution_date")
     val cardProvisionalSolutionDate: String?,
+    @ColumnInfo(name = "comments_at_card_provisional_solution")
     val commentsAtCardProvisionalSolution: String?,
+    @ColumnInfo(name = "card_definitive_solution_date")
     val cardDefinitiveSolutionDate: String?,
+    @ColumnInfo(name = "comments_at_card_definitive_solution")
     val commentsAtCardDefinitiveSolution: String?,
+    @ColumnInfo(name = "evidence_audio_creation")
     @SerializedName("evidenceAucr")
     val evidenceAudioCreation: Int,
+    @ColumnInfo(name = "evidence_video_creation")
     @SerializedName("evidenceVicr")
     val evidenceVideoCreation: Int,
+    @ColumnInfo(name = "evidence_image_creation")
     @SerializedName("evidenceImcr")
     val evidenceImageCreation: Int,
+    @ColumnInfo(name = "evidence_audio_close")
     @SerializedName("evidenceAucl")
     val evidenceAudioClose: Int,
+    @ColumnInfo(name = "evidence_video_close")
     @SerializedName("evidenceVicl")
     val evidenceVideoClose: Int,
+    @ColumnInfo(name = "evidence_image_close")
     @SerializedName("evidenceImcl")
     val evidenceImageClose: Int,
+    @ColumnInfo(name = "created_at")
     val createdAt: String,
+    @ColumnInfo(name = "updated_at")
     val updatedAt: String?,
+    @ColumnInfo(name = "deleted_at")
     val deletedAt: String?,
-    val evidences: List<Evidence>? = emptyList(),
-    val stored: String? = STORED_REMOTE
-) {
-    companion object {
-        fun mock(): Card {
-            return Card(
-                "179",
-                1,
-                "1",
-                "AAAAAA",
-                "f6504367-46bd-4dc2-b5c6-7bd6e6b12f8c",
-                "0000FF",
-                "Alto",
-                "Bajo",
-                "A",
-                "2021-10-28T20:31:35.000Z",
-                "2021-11-04",
-                14,
-                "Envasado",
-                2,
-                "22",
-                "2",
-                "7d",
-                "7 dias",
-                "M",
-                "Mantenimiento",
-                "safe",
-                "1",
-                "Anomalias",
-                "7",
-                "G",
-                "Dificultad de inspeccion",
-                "1",
-                "fausto",
-                "1",
-                "fausto",
-                "2",
-                "Juan Mecanico",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "",
-                "1",
-                "fausto",
-                "2021-11-07T21:38:21.000Z",
-                "Se cierra por descartarse la necesidad (prueba)",
-                "",
-                "",
-                "",
-                "",
-                "",
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                "2021-10-29T03:31:35.000Z",
-                "2021-11-08T04:38:21.000Z",
-                "",
-                emptyList(),
-                ""
-            )
-        }
-    }
-}
+    @ColumnInfo(name = "stored")
+    val stored: String?
+)
 
-@Composable
-fun Card.getStatus(): String {
-    return when (status) {
-        STATUS_P, STATUS_A, STATUS_V -> stringResource(id = R.string.open)
-        STATUS_R, STATUS_C -> stringResource(id = R.string.open)
-        else -> stringResource(id = R.string.open)
-    }
-}
-
-
-fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
-    return when (filter) {
-        ALL_OPEN_CARDS -> {
-            this.filter { it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V }
-        }
-
-        MY_OPEN_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.creatorID == userId }
-        }
-
-        ASSIGNED_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.mechanicID == userId }
-        }
-
-        UNASSIGNED_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && (it.mechanicID == null || it.mechanicID == EMPTY) }
-        }
-
-        EXPIRED_CARDS -> {
-            this.filter { it.status == STATUS_V }
-        }
-
-        CLOSED_CARDS -> {
-            this.filter { it.status == STATUS_R || it.status == STATUS_C }
-        }
-
-        else -> this
-    }
-}
-
-
-fun Card.toEntity(): CardEntity {
-    return CardEntity(
+fun CardEntity.toDomain(): Card {
+    return Card(
         id = this.id,
         siteCardID = this.siteCardID,
         siteID = this.siteID,
@@ -256,7 +196,6 @@ fun Card.toEntity(): CardEntity {
         evidenceImageClose = this.evidenceImageClose,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
-        deletedAt = this.deletedAt,
-        stored = this.stored
+        deletedAt = this.deletedAt
     )
 }

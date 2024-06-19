@@ -22,3 +22,5 @@ const val VIDEO_CREATION = "VICR"
 const val VIDEO_CLOSE = "VICL"
 const val AUDIO_CREATION = "AUCR"
 const val AUDIO_CLOSE = "AUCL"
+
+const val STORED_REMOTE = "stored_network"

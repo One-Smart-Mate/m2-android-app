@@ -8,8 +8,8 @@ import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCaseImpl
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
-import com.ih.m2.domain.usecase.getuser.GetUserUseCase
-import com.ih.m2.domain.usecase.getuser.GetUserUseCaseImpl
+import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.domain.usecase.user.GetUserUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCaseImpl
 import com.ih.m2.domain.usecase.logout.LogoutUseCase

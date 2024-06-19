@@ -1,6 +1,7 @@
 package com.ih.m2.domain.model
 
 import com.google.gson.annotations.SerializedName
+import com.ih.m2.data.database.entities.priority.PriorityEntity
 
 data class Priority(
     val id: String,
@@ -12,6 +13,17 @@ data class Priority(
     val days: Int,
     val status: String
 )
+
+
+fun Priority.toEntity(): PriorityEntity {
+    return PriorityEntity(
+        id = this.id,
+        code = this.code,
+        description = this.description,
+        days = this.days,
+        status = this.status
+    )
+}
 
 fun List<Priority>.toNodeItemCard(): List<NodeCardItem> {
     return this.map {
