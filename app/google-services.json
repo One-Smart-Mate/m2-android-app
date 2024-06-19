@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "854906353691",
+    "project_id": "android-m2-app",
+    "storage_bucket": "android-m2-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:854906353691:android:621e7465f62fa8b9f560be",
+        "android_client_info": {
+          "package_name": "com.ih.m2"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8h1kPSdyd8OPMkZJBRzMWzxjMYSCxq5w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

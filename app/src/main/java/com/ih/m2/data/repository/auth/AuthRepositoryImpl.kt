@@ -1,6 +1,7 @@
 package com.ih.m2.data.repository.auth
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.LoginRequest
@@ -22,6 +23,7 @@ class AuthRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
+            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }

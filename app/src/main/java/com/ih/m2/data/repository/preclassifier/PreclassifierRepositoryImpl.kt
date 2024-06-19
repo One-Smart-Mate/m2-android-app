@@ -1,5 +1,6 @@
 package com.ih.m2.data.repository.preclassifier
 
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.toDomain
 import com.ih.m2.data.repository.auth.getErrorMessage
@@ -16,6 +17,7 @@ class PreclassifierRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
+            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }

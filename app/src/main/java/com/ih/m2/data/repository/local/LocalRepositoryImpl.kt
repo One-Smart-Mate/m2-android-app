@@ -29,8 +29,6 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getSiteId(): String {
-        return userDao.getUser()?.let {
-            it.siteId
-        } ?: EMPTY
+        return userDao.getUser()?.siteId.orEmpty()
     }
 }
