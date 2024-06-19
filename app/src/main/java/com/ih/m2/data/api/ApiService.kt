@@ -33,7 +33,7 @@ interface ApiService  {
         @Path("siteId") sitId: String
     ): Call<GetCardTypesResponse>
 
-    @GET("preclassifier/all/{siteId}")
+    @GET("preclassifier/site/{siteId}")
     fun getPreclassifiers(
         @Path("siteId") siteId: String
     ): Call<GetPreclassifiersResponse>
