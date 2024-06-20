@@ -18,7 +18,6 @@ import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.theme.PaddingNormal
-import com.ih.m2.ui.utils.CLEAN_FILTERS
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

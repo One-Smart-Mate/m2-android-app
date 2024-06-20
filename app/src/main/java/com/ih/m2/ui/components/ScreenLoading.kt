@@ -21,14 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextMotion
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.ih.m2.ui.extensions.getColor
-import com.ih.m2.ui.extensions.getTextColor
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.utils.EMPTY
 

@@ -2,7 +2,6 @@ package com.ih.m2.ui.pages.home
 
 import android.content.Context
 import android.util.Log
-import androidx.lifecycle.SavedStateHandle
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory

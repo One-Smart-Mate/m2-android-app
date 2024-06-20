@@ -17,7 +17,6 @@ import com.ih.m2.domain.model.Priority
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toEntity
 import com.ih.m2.domain.repository.local.LocalRepository
-import timber.log.Timber
 import javax.inject.Inject
 
 class LocalRepositoryImpl @Inject constructor(

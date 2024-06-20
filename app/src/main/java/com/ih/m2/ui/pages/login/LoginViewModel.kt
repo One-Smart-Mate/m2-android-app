@@ -1,6 +1,5 @@
 package com.ih.m2.ui.pages.login
 
-import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory

@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.domain.model.Card
-import com.ih.m2.domain.model.User
 import com.ih.m2.ui.utils.STORED_REMOTE
 
 

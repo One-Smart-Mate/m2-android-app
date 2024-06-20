@@ -8,7 +8,6 @@ import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
 import com.ih.m2.ui.utils.CLEAN_FILTERS
 import com.ih.m2.ui.utils.CLOSED_CARDS
-import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.EXPIRED_CARDS
 import com.ih.m2.ui.utils.MY_OPEN_CARDS
 import com.ih.m2.ui.utils.UNASSIGNED_CARDS

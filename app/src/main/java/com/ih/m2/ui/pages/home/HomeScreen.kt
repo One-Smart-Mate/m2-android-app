@@ -2,7 +2,6 @@ package com.ih.m2.ui.pages.home
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -44,21 +43,20 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
-import com.ih.m2.ui.components.images.CircularImage
-import com.ih.m2.ui.components.buttons.CustomIconButton
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerDirection
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
+import com.ih.m2.ui.components.buttons.CustomIconButton
+import com.ih.m2.ui.components.images.CircularImage
 import com.ih.m2.ui.components.sheets.FiltersBottomSheet
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCreateCard
-import com.ih.m2.ui.pages.carddetail.CardDetailViewModel
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.pages.home.components.HomeCardItemList
 import com.ih.m2.ui.theme.M2androidappTheme

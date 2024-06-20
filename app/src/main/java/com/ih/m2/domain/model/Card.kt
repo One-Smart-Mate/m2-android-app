@@ -5,7 +5,6 @@ import androidx.compose.ui.res.stringResource
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
-import com.ih.m2.data.database.entities.card.toDomain
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
 import com.ih.m2.ui.utils.CLOSED_CARDS

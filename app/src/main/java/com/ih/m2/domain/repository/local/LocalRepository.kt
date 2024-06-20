@@ -1,6 +1,5 @@
 package com.ih.m2.domain.repository.local
 
-import com.ih.m2.data.database.entities.UserEntity
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Preclassifier

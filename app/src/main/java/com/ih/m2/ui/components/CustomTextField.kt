@@ -26,8 +26,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import com.ih.m2.R
 import com.ih.m2.ui.extensions.getColor
-import com.ih.m2.ui.extensions.getTextColor
-import com.ih.m2.ui.pages.login.LoginContent
 import com.ih.m2.ui.theme.M2androidappTheme
 
 @Composable

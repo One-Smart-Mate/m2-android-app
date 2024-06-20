@@ -8,7 +8,6 @@ import com.ih.m2.ui.pages.carddetail.CardDetailViewModel
 import com.ih.m2.ui.pages.createcard.CreateCardViewModel
 import com.ih.m2.ui.pages.home.HomeViewModel
 import com.ih.m2.ui.pages.login.LoginViewModel
-import com.ih.m2.ui.pages.splash.SplashViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
