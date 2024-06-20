@@ -5,6 +5,10 @@ import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -18,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -27,16 +32,23 @@ import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.getStatus
+import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
+import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SectionTag
+import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.orDefault
 import com.ih.m2.ui.pages.createcard.PhotoCardItem
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.theme.PaddingTiny
+import com.ih.m2.ui.theme.Size120
+import com.ih.m2.ui.theme.Size200
+import com.ih.m2.ui.theme.Size250
 
 
 @Composable
@@ -102,7 +114,6 @@ fun CardInformationContent(
     card: Card
 ) {
     ExpandableCard(title = stringResource(R.string.information)) {
-
         SectionTag(
             title = stringResource(R.string.created_date),
             value = card.cardCreationDate,
@@ -139,13 +150,11 @@ fun CardInformationContent(
             title = stringResource(R.string.comments),
             value = card.commentsAtCardCreation.orDefault(),
         )
-
     }
 
     CardInformationEvidence(card = card)
 
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
-
         SectionTag(
             title = stringResource(R.string.provisional_user),
             value = card.userProvisionalSolutionName.orDefault(),
@@ -158,11 +167,9 @@ fun CardInformationContent(
             title = stringResource(R.string.provisional_comments),
             value = card.commentsAtCardProvisionalSolution.orDefault(),
         )
-
     }
 
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
-
         SectionTag(
             title = stringResource(R.string.definitive_date),
             value = card.cardDefinitiveSolutionDate.orDefault(),
@@ -175,7 +182,6 @@ fun CardInformationContent(
             title = stringResource(R.string.definitive_comments),
             value = card.commentsAtCardDefinitiveSolution.orDefault(),
         )
-
     }
 }
 
@@ -190,6 +196,20 @@ fun CardInformationEvidence(
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images),
                     evidences = imagesList
+                )
+            }
+            val videoList = evidences.toVideos()
+            if (videoList.isNotEmpty()) {
+                EvidenceVideoCardSection(
+                    title = stringResource(R.string.videos),
+                    evidences = videoList
+                )
+            }
+            val audioList = evidences.toAudios()
+            if (audioList.isNotEmpty()) {
+                EvidenceAudioCardSection(
+                    title = stringResource(R.string.audios),
+                    evidences = audioList
                 )
             }
         }
@@ -210,6 +230,55 @@ fun EvidenceImagesCardSection(
         LazyRow {
             items(evidences) {
                 PhotoCardItem(model = it.url, showIcon = false)
+            }
+        }
+    }
+}
+
+@Composable
+fun EvidenceVideoCardSection(
+    title: String,
+    evidences: List<Evidence>
+) {
+    Column {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+        LazyRow {
+            items(evidences) {
+                VideoPlayer(
+                    modifier = Modifier
+                        .width(Size200)
+                        .height(Size250)
+                        .padding(PaddingTiny),
+                    url = it.url
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun EvidenceAudioCardSection(
+    title: String,
+    evidences: List<Evidence>
+) {
+    Column {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+        LazyRow {
+            items(evidences) {
+                VideoPlayer(
+                    modifier = Modifier
+                        .size(Size120)
+                        .padding(PaddingTiny),
+                    url = it.url
+                )
             }
         }
     }

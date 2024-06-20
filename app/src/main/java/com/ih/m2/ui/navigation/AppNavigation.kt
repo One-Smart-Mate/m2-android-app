@@ -10,6 +10,7 @@ import androidx.navigation.navArgument
 import com.ih.m2.ui.pages.account.AccountScreen
 import com.ih.m2.ui.pages.carddetail.CardDetailScreen
 import com.ih.m2.ui.pages.createcard.CreateCardScreen
+import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.login.LoginScreen
 import com.ih.m2.ui.utils.LOAD_CATALOGS
@@ -42,6 +43,9 @@ fun AppNavigation(
         }
         composable(Screen.CreateCard.route) {
             CreateCardScreen(navController = navController)
+        }
+        composable(Screen.Dev.route) {
+            DevScreen()
         }
     }
 }

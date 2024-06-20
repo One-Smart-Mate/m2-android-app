@@ -82,41 +82,34 @@ dependencies {
     implementation(libs.hilt)
     kapt (libs.hilt.compiler)
 
-    //Dagger Hilt Library
-//    implementation(libs.hilt)
-//    kapt(libs.hilt.compiler)
-//    implementation(libs.android.hilt)
-//    kapt(libs.android.hilt.compiler)
-//    implementation(libs.retrofit.adapter)
-//    implementation(libs.hilt.navigation.compose)
-
-    //Retrofti
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.retrofit.adapter)
-    implementation("com.jakewharton.timber:timber:5.0.1")
-    implementation ("com.airbnb.android:mavericks:3.0.9")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
-    implementation("com.airbnb.android:mavericks-compose:3.0.9")
-    implementation("com.airbnb.android:mavericks-hilt:3.0.8")
-
-    implementation("androidx.navigation:navigation-compose:2.7.6")
+    implementation(libs.timber)
+    implementation (libs.mavericks)
     implementation(libs.hilt.navigation.compose)
-    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.8.2")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.2")
-    kapt ("androidx.lifecycle:lifecycle-compiler:2.8.2")
+    implementation(libs.mavericks.compose)
+    implementation(libs.mavericks.hilt)
+
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.lifecycle.livedata.ktx)
+    kapt (libs.androidx.lifecycle.compiler)
 
 
+    implementation(libs.androidx.room.runtime)
+    kapt(libs.androidx.room.compiler)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.compose)
 
-    implementation("androidx.room:room-runtime:2.6.1")
-    kapt("androidx.room:room-compiler:2.6.1")
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.core:core-splashscreen:1.0.1")
-    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 
-    implementation(platform("com.google.firebase:firebase-bom:33.1.0"))
-    implementation("com.google.firebase:firebase-analytics")
-    implementation("com.google.firebase:firebase-crashlytics")
 
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
 }

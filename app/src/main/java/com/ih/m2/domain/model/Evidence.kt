@@ -28,40 +28,15 @@ fun List<Evidence>.toImages(): List<Evidence> {
     }
 }
 
-fun List<Evidence>.toImagesCreation(): List<Evidence> {
+fun List<Evidence>.toVideos(): List<Evidence> {
     return this.filter {
-        it.type == IMG_CREATION
+        it.type == VIDEO_CLOSE || it.type == VIDEO_CREATION
     }
 }
 
-fun List<Evidence>.toImagesClosed(): List<Evidence> {
+fun List<Evidence>.toAudios(): List<Evidence> {
     return this.filter {
-        it.type == IMG_CLOSE
-    }
-}
-
-fun List<Evidence>.toVideosClosed(): List<Evidence> {
-    return this.filter {
-        it.type == VIDEO_CLOSE
-    }
-}
-
-fun List<Evidence>.toVideoCreation(): List<Evidence> {
-    return this.filter {
-        it.type == VIDEO_CREATION
-    }
-}
-
-
-fun List<Evidence>.toAudioCreation(): List<Evidence> {
-    return this.filter {
-        it.type == AUDIO_CREATION
-    }
-}
-
-fun List<Evidence>.toAudioClosed(): List<Evidence> {
-    return this.filter {
-        it.type == AUDIO_CLOSE
+        it.type == AUDIO_CREATION || it.type == AUDIO_CLOSE
     }
 }
 

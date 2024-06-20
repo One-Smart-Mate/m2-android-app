@@ -37,6 +37,7 @@ import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.extensions.defaultScreen
+import com.ih.m2.ui.navigation.Screen
 import com.ih.m2.ui.navigation.navigateToLogin
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
@@ -63,6 +64,9 @@ fun AccountScreen(
                 viewModel.process(AccountViewModel.Action.SyncCatalogs)
             },
             context = getContext(),
+            onDevClick = {
+                navController.navigate(Screen.Dev.route)
+            }
         )
     }
     if (state.message.isNotEmpty()) {
@@ -86,7 +90,8 @@ fun AccountContent(
     onAccount: () -> Unit,
     onLogout: () -> Unit,
     onSyncCatalogs:() -> Unit,
-    context: Context
+    context: Context,
+    onDevClick: () -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -141,6 +146,20 @@ fun AccountContent(
                 )
 
                 ListItem(
+                    headlineContent = { Text(text = "Dev") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Build,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        onDevClick()
+                    }
+                )
+
+                ListItem(
                     headlineContent = { Text(stringResource(R.string.logout)) },
                     leadingContent = {
                         Icon(
@@ -172,7 +191,8 @@ fun AccountPreview() {
                 onAccount = {},
                 onLogout = {},
                 onSyncCatalogs = {},
-                context
+                context,
+                onDevClick = {}
             )
         }
     }

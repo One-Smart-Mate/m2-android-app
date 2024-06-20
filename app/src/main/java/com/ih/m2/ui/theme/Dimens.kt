@@ -11,3 +11,5 @@ val Size38 = 38.dp
 val Size150 = 150.dp
 val Size160 = 160.dp
 val Size120 = 120.dp
+val Size200 = 200.dp
+val Size250 = 250.dp
