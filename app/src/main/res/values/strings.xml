@@ -58,4 +58,6 @@
     <string name="loading_card_details">Loading card details…</string>
     <string name="sync_remote_catalogs">Sync remote catalogs</string>
     <string name="sync_catalogs">Sync catalogs…</string>
+    <string name="safe">Safe</string>
+    <string name="unsafe">UnSafe</string>
 </resources>

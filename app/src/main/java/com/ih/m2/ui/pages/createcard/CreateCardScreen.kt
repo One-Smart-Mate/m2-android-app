@@ -2,6 +2,7 @@ package com.ih.m2.ui.pages.createcard
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +20,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -29,6 +31,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -47,6 +50,8 @@ import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
+import com.ih.m2.ui.components.RadioGroup
+import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
@@ -93,8 +98,16 @@ fun CreateCardScreen(
         comment = state.comment,
         onCommentChange = {
             viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
+        },
+        isSecureCard = state.isSecureCard,
+        selectedSecureOption = state.selectedSecureOption,
+        onSecureOptionChange = {
+            viewModel.process(CreateCardViewModel.Action.OnSecureOptionChange(it))
         }
     )
+    if (state.message.isNotEmpty()) {
+        Toast.makeText(LocalContext.current, state.message, Toast.LENGTH_LONG).show()
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -115,7 +128,10 @@ fun CreateCardContent(
     selectedLevelList: Map<Int, String>,
     lastLevelCompleted: Boolean,
     comment: String,
-    onCommentChange: (String) -> Unit
+    onCommentChange: (String) -> Unit,
+    isSecureCard: Boolean = false,
+    selectedSecureOption: String = EMPTY,
+    onSecureOptionChange: ((String) -> Unit)? = null
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -130,10 +146,11 @@ fun CreateCardContent(
                 PreclassifierContent(preclassifierList, onPreclassifierClick, selectedPreclassifier)
                 PriorityContent(priorityList, onPriorityClick, selectedPriority)
                 LevelContent(levelList, onLevelClick, selectedLevelList)
-                CustomSpacer()
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
             item {
-                CustomSpacer()
+                HorizontalDivider()
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 if (lastLevelCompleted) {
                     CustomTextField(
                         label = stringResource(R.string.comments),
@@ -145,11 +162,24 @@ fun CreateCardContent(
                         onCommentChange(it)
                     }
                     CustomSpacer()
+                    if (isSecureCard) {
+                        RadioGroup(
+                            modifier = Modifier.fillParentMaxWidth(),
+                            items = listOf(stringResource(R.string.safe),
+                                stringResource(R.string.unsafe)),
+                            selection = selectedSecureOption
+                        ) {
+                            if (onSecureOptionChange != null) {
+                                onSecureOptionChange(it)
+                            }
+                        }
+                        CustomSpacer()
+                    }
                     CustomButton(text = stringResource(R.string.save)) {
 
                     }
                 }
-                CustomSpacer()
+
             }
 
 //        item {

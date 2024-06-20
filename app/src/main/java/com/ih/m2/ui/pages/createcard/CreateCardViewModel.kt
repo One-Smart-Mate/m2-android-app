@@ -7,6 +7,13 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.domain.model.isMaintenanceCardType
+import com.ih.m2.domain.model.toNodeItemCard
+import com.ih.m2.domain.model.toNodeItemList
+import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
+import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
+import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
@@ -18,6 +25,9 @@ import kotlin.coroutines.CoroutineContext
 class CreateCardViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
+    private val getCardTypesUseCase: GetCardTypesUseCase,
+    private val getPrioritiesUseCase: GetPrioritiesUseCase,
+    private val getPreclassifiersUseCase: GetPreclassifiersUseCase
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
     init {
@@ -26,16 +36,19 @@ class CreateCardViewModel @AssistedInject constructor(
 
     data class UiState(
         val cardTypeList: List<NodeCardItem> = emptyList(),
-        val selectedCardType: String = "",
+        val selectedCardType: String = EMPTY,
         val preclassifierList: List<NodeCardItem> = emptyList(),
-        val selectedPreclassifier: String = "",
+        val selectedPreclassifier: String = EMPTY,
         val priorityList: List<NodeCardItem> = emptyList(),
         val selectedPriority: String = "",
         val levelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
         val selectedLevelList: Map<Int, String> = mutableMapOf(),
         val lastSelectedLevel: String = EMPTY,
         val lastLevelCompleted: Boolean = false,
-        val comment: String = EMPTY
+        val comment: String = EMPTY,
+        val isSecureCard: Boolean = false,
+        val selectedSecureOption: String = EMPTY,
+        val message: String = EMPTY
     ) : MavericksState
 
     sealed class Action {
@@ -46,7 +59,9 @@ class CreateCardViewModel @AssistedInject constructor(
         data object GetPriorities : Action()
         data class SetPriority(val id: String) : Action()
         data class SetLevel(val id: String, val key: Int) : Action()
-        data class OnCommentChange(val comment: String): Action()
+        data class OnCommentChange(val comment: String) : Action()
+        data class OnSecureOptionChange(val option: String) : Action()
+        data object SaveCard: Action()
     }
 
     fun process(action: Action) {
@@ -59,11 +74,17 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.SetPriority -> handleSetPriority(action.id)
             is Action.SetLevel -> handleSetLevel(action.id, action.key)
             is Action.OnCommentChange -> handleOnCommentChange(action.comment)
+            is Action.OnSecureOptionChange -> handleOnSecureOptionChange(action.option)
+            is Action.SaveCard -> handleSaveCard()
         }
     }
 
     private fun handleOnCommentChange(comment: String) {
         setState { copy(comment = comment) }
+    }
+
+    private fun handleOnSecureOptionChange(option: String) {
+        setState { copy(selectedSecureOption = option) }
     }
 
     private fun handleSetCardType(id: String) {
@@ -77,16 +98,19 @@ class CreateCardViewModel @AssistedInject constructor(
                     priorityList = emptyList(),
                     levelList = emptyMap(),
                     selectedLevelList = emptyMap(),
-                    lastSelectedLevel = EMPTY
+                    lastSelectedLevel = EMPTY,
+                    isSecureCard = false,
+                    selectedSecureOption = EMPTY
                 )
             }
-            handleGetPreclassifiers(id)
+            process(Action.GetPreclassifiers(id))
             val state = stateFlow.first()
-            if (state.cardTypeList.find { it.id == id }?.name == "Mantenimiento") {
+            val cardType = state.cardTypeList.find { it.id == id }?.isMaintenanceCardType()
+            if (cardType.defaultIfNull(false)) {
                 handleGetPriorities()
             } else {
                 val levelList = getLevelById("0", 0)
-                setState { copy(levelList = levelList) }
+                setState { copy(levelList = levelList, isSecureCard = true) }
             }
         }
     }
@@ -134,51 +158,40 @@ class CreateCardViewModel @AssistedInject constructor(
     }
 
     private fun handleGetPreclassifiers(id: String) {
-        setState {
-            copy(preclassifierList = listOf(
-                NodeCardItem(
-                    id = "1",
-                    name = "A",
-                    description = "Perdida aceite, agua, aire",
-                    superiorId = "1"
-                ),
-                NodeCardItem(
-                    id = "2",
-                    name = "B",
-                    description = "Falta zona de trabajo",
-                    superiorId = "1"
-                ),
-                NodeCardItem(
-                    id = "3",
-                    name = "C",
-                    description = "Lubricacion insuficiente",
-                    superiorId = "2"
-                )
-            ).filter { it.superiorId == id })
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getPreclassifiersUseCase()
+            }.onSuccess {
+                setState {
+                    copy(preclassifierList = it.filter { it.cardTypeId == id }.toNodeItemCard())
+                }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
         }
     }
 
     private fun handleGetCardTypes() {
-        setState {
-            copy(
-                cardTypeList = listOf(
-                    NodeCardItem(id = "1", name = "Mantenimiento", description = "Anomalias"),
-                    NodeCardItem(id = "2", name = "Comportamiento", description = "Seguridad"),
-                    NodeCardItem(id = "3", name = "Agil", description = "Anomalias")
-                )
-            )
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getCardTypesUseCase()
+            }.onSuccess {
+                setState { copy(cardTypeList = it.toNodeItemList()) }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
         }
     }
 
     private fun handleGetPriorities() {
-        setState {
-            copy(
-                priorityList = listOf(
-                    NodeCardItem(id = "1", name = "0d", description = "cero dias"),
-                    NodeCardItem(id = "2", name = "7d", description = "7 dias"),
-                    NodeCardItem(id = "3", name = "15d", description = "15 dias")
-                )
-            )
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getPrioritiesUseCase()
+            }.onSuccess {
+                setState { copy(priorityList = it.toNodeItemCard()) }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
         }
     }
 
@@ -233,10 +246,14 @@ class CreateCardViewModel @AssistedInject constructor(
                 superiorId = "6"
             ),
         )
-        // [0,1],[1,4],[2,7]
-        //last selected = 7
     }
 
+
+    private fun handleSaveCard() {
+        viewModelScope.launch(coroutineContext) {
+
+        }
+    }
 
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<CreateCardViewModel, UiState> {

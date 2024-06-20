@@ -26,6 +26,7 @@ fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {
             id = it.id,
             name = it.code,
             description = it.description,
+            superiorId = it.cardTypeId
         )
     }
 }

@@ -7,6 +7,7 @@ import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
+import com.ih.m2.ui.utils.CARD_MAINTENANCE
 import com.ih.m2.ui.utils.CLOSED_CARDS
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.EXPIRED_CARDS
@@ -262,3 +263,5 @@ fun Card.toEntity(): CardEntity {
         stored = STORED_REMOTE
     )
 }
+
+fun Card.isMaintenance() = this.cardTypeName == CARD_MAINTENANCE

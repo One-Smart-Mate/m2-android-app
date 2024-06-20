@@ -2,6 +2,7 @@ package com.ih.m2.domain.model
 
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.data.database.entities.cardtype.CardTypeEntity
+import com.ih.m2.ui.utils.CARD_MAINTENANCE
 
 data class CardType (
     val id: String,
@@ -33,3 +34,6 @@ fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
         NodeCardItem(id = it.id, name = it.methodology, description = it.name)
     }
 }
+
+fun CardType.isMaintenance() = this.name == CARD_MAINTENANCE
+fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name == CARD_MAINTENANCE

@@ -25,3 +25,5 @@ const val AUDIO_CREATION = "AUCR"
 const val AUDIO_CLOSE = "AUCL"
 
 const val STORED_REMOTE = "stored_network"
+
+const val CARD_MAINTENANCE = "Mantenimiento"

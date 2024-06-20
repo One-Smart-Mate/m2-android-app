@@ -19,6 +19,7 @@ class GetPreclassifiersUseCaseImpl @Inject constructor(
             val preclassifierList = preclassifierRepository.getPreclassifiers(siteId)
             localRepository.savePreclassifiers(preclassifierList)
         }
+
         return localRepository.getPreclassifiers()
     }
 }
