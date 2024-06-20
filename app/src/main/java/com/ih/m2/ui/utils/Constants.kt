@@ -14,6 +14,7 @@ const val STATUS_P = "P"
 const val STATUS_V = "V"
 const val STATUS_R = "R"
 const val STATUS_C = "C"
+const val LOAD_CATALOGS = "load_catalogs"
 
 
 const val IMG_CREATION = "IMCR"

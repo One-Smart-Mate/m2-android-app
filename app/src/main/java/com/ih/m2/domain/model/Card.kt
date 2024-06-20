@@ -257,6 +257,6 @@ fun Card.toEntity(): CardEntity {
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
-        stored = this.stored
+        stored = STORED_REMOTE
     )
 }

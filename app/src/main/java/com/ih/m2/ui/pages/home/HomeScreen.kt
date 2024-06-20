@@ -24,14 +24,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -54,23 +58,28 @@ import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCreateCard
+import com.ih.m2.ui.pages.carddetail.CardDetailViewModel
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.pages.home.components.HomeCardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun HomeScreen(
     navController: NavController,
-    viewModel: HomeViewModel = mavericksViewModel()
+    viewModel: HomeViewModel = mavericksViewModel(),
+    syncCatalogs: String = EMPTY
 ) {
     val state by viewModel.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
     when (val screenState = state.user) {
         is LCE.Fail -> {
-            ErrorScreen(navController = navController,errorMessage = screenState.error)
+            ErrorScreen(navController = navController, errorMessage = screenState.error)
         }
 
         is LCE.Loading, LCE.Uninitialized -> {
-            ScreenLoading()
+            ScreenLoading(text = state.loadingMessage)
         }
 
         is LCE.Success -> {
@@ -97,6 +106,15 @@ fun HomeScreen(
                 }
             )
         }
+    }
+    LaunchedEffect(viewModel, lifecycle) {
+        snapshotFlow { state }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (state.syncCatalogs) {
+                    viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
+                }
+            }
     }
 }
 
@@ -221,7 +239,7 @@ fun HomePreview() {
                 listOf(Card.mock()),
                 false,
                 "",
-                {}, {}, {},{}, {}
+                {}, {}, {}, {}, {}
             )
         }
     }

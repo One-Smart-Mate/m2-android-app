@@ -13,7 +13,7 @@ interface PriorityDao {
     suspend fun getPriorities(): List<PriorityEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPriorities(priorityEntity: PriorityEntity): Long
+    suspend fun insertPriority(priorityEntity: PriorityEntity): Long
 
     @Query("DELETE FROM priority_table")
     suspend fun deletePriorities()

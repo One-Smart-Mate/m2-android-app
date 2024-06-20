@@ -18,9 +18,9 @@ class GetCardsUseCaseImpl @Inject constructor(
 ) : GetCardsUseCase {
 
     override suspend fun invoke(syncRemote: Boolean): List<Card> {
-        val siteId = localRepository.getSiteId()
         if (syncRemote) {
             Log.e("test","Getting and Sync Remote Cards..")
+            val siteId = localRepository.getSiteId()
             val remoteCards = cardRepository.getCardsByUser(siteId)
             localRepository.saveCards(remoteCards)
         }

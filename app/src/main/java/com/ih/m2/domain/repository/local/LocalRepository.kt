@@ -20,4 +20,9 @@ interface LocalRepository {
     suspend fun savePreclassifiers(list: List<Preclassifier>)
     suspend fun getPriorities(): List<Priority>
     suspend fun savePriorities(list: List<Priority>)
+
+    suspend fun removeCards()
+    suspend fun removeCardTypes()
+    suspend fun removePreclassifiers()
+    suspend fun removePriorities()
 }

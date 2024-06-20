@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
+import com.ih.m2.ui.utils.STORED_REMOTE
 
 
 @Entity(tableName = "card_table")
@@ -196,6 +197,7 @@ fun CardEntity.toDomain(): Card {
         evidenceImageClose = this.evidenceImageClose,
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
-        deletedAt = this.deletedAt
+        deletedAt = this.deletedAt,
+        stored = this.stored ?: STORED_REMOTE
     )
 }

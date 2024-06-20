@@ -10,6 +10,7 @@ import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
+import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -27,10 +28,10 @@ class LoginViewModel @AssistedInject constructor(
 
     data class UiState(
         val isLoading: Boolean = false,
-        val errorMessage: String = "",
+        val errorMessage: String = EMPTY,
         val isAuthenticated: Boolean = false,
-        val email: String = "",
-        val password: String = ""
+        val email: String = EMPTY,
+        val password: String = EMPTY
     ) : MavericksState
 
     sealed class Action {
@@ -55,7 +56,7 @@ class LoginViewModel @AssistedInject constructor(
             }.onSuccess {
                 handleSaveUser(it)
             }.onFailure {
-                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty()) }
+                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty(), email = EMPTY, password = EMPTY) }
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.ih.m2.core.di
 
+import androidx.lifecycle.SavedStateHandle
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -15,4 +16,8 @@ object CoroutineContextModule {
     @Provides
     @Singleton
     fun providesCoroutineContext(): CoroutineContext = Dispatchers.IO
+
+    @Provides
+    @Singleton
+    fun providesSaveStateHandle(): SavedStateHandle = SavedStateHandle()
 }

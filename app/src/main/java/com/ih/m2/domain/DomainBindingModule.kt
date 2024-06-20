@@ -6,6 +6,8 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.GetCardsUseCaseImpl
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCaseImpl
+import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCase
+import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.m2.domain.usecase.user.GetUserUseCase
@@ -58,4 +60,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetCardDetailUseCase(getCardDetailUseCaseImpl: GetCardDetailUseCaseImpl): GetCardDetailUseCase
+
+    @Binds
+    fun bindCleanCatalogsUseCase(cleanCatalogsUseCaseImpl: CleanCatalogsUseCaseImpl): CleanCatalogsUseCase
 }
