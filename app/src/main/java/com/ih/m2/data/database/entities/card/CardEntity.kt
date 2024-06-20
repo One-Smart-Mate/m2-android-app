@@ -39,6 +39,8 @@ data class CardEntity(
     val areaName: String,
     @ColumnInfo(name = "level")
     val level: Long,
+    @ColumnInfo(name = "level_name")
+    val levelName: String,
     @ColumnInfo(name = "superior_id")
     val superiorID: String?,
     @ColumnInfo(name = "priority_id")
@@ -153,6 +155,7 @@ fun CardEntity.toDomain(): Card {
         areaID = this.areaID,
         areaName = this.areaName,
         level = this.level,
+        levelName = this.levelName,
         superiorID = this.superiorID,
         priorityID = this.priorityID,
         priorityCode = this.priorityCode,

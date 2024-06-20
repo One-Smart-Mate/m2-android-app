@@ -79,7 +79,7 @@ fun HomeCardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.level),
-                value = card.level.toString(),
+                value = card.levelName,
             )
             SectionTag(
                 title = stringResource(id = R.string.created_by),
