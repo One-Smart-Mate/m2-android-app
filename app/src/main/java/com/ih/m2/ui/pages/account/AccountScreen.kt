@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.Icon
@@ -34,6 +35,7 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.functions.getContext
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
+import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.navigateToLogin
 import com.ih.m2.ui.theme.M2androidappTheme
@@ -48,16 +50,23 @@ fun AccountScreen(
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    AccountContent(
-        navController = navController,
-        account = {},
-        logout = {
-            viewModel.process(AccountViewModel.Action.Logout)
-        },
-        getContext()
-    )
-    if (state.errorMessage.isNotEmpty()) {
-        Toast.makeText(getContext(), state.errorMessage, Toast.LENGTH_SHORT).show()
+    if (state.isLoading) {
+        ScreenLoading(stringResource(R.string.sync_catalogs))
+    } else {
+        AccountContent(
+            navController = navController,
+            onAccount = {},
+            onLogout = {
+                viewModel.process(AccountViewModel.Action.Logout)
+            },
+            onSyncCatalogs = {
+                viewModel.process(AccountViewModel.Action.SyncCatalogs)
+            },
+            context = getContext(),
+        )
+    }
+    if (state.message.isNotEmpty()) {
+        Toast.makeText(getContext(), state.message, Toast.LENGTH_SHORT).show()
     }
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }
@@ -74,8 +83,9 @@ fun AccountScreen(
 @Composable
 fun AccountContent(
     navController: NavController,
-    account: () -> Unit,
-    logout: () -> Unit,
+    onAccount: () -> Unit,
+    onLogout: () -> Unit,
+    onSyncCatalogs:() -> Unit,
     context: Context
 ) {
     Scaffold { padding ->
@@ -97,7 +107,7 @@ fun AccountContent(
                     },
                     tonalElevation = PaddingNormal,
                     modifier = Modifier.clickable {
-                        account()
+                        onAccount()
                         Toast.makeText(context, "Open info", Toast.LENGTH_SHORT).show()
                     }
                 )
@@ -117,6 +127,20 @@ fun AccountContent(
                 )
 
                 ListItem(
+                    headlineContent = { Text(text = stringResource(R.string.sync_remote_catalogs)) },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Build,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        onSyncCatalogs()
+                    }
+                )
+
+                ListItem(
                     headlineContent = { Text(stringResource(R.string.logout)) },
                     leadingContent = {
                         Icon(
@@ -126,7 +150,7 @@ fun AccountContent(
                     },
                     tonalElevation = PaddingNormal,
                     modifier = Modifier.clickable {
-                        logout()
+                        onLogout()
                     }
                 )
             }
@@ -145,9 +169,10 @@ fun AccountPreview() {
             val context = LocalContext.current
             AccountContent(
                 navController = rememberNavController(),
-                account = {},
-                logout = {},
-                context = context
+                onAccount = {},
+                onLogout = {},
+                onSyncCatalogs = {},
+                context
             )
         }
     }

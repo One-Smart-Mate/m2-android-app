@@ -55,5 +55,7 @@
     <string name="definitive_user">Definitive user</string>
     <string name="definitive_comments">Definitive comments</string>
     <string name="card">Card</string>
-    <string name="loading_card_details">Loading card details...</string>
+    <string name="loading_card_details">Loading card details…</string>
+    <string name="sync_remote_catalogs">Sync remote catalogs</string>
+    <string name="sync_catalogs">Sync catalogs…</string>
 </resources>
