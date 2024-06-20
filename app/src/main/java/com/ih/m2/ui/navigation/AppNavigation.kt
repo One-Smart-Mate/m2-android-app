@@ -1,5 +1,6 @@
 package com.ih.m2.ui.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -13,6 +14,7 @@ import com.ih.m2.ui.pages.createcard.CreateCardScreen
 import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.login.LoginScreen
+import com.ih.m2.ui.pages.solution.SolutionScreen
 import com.ih.m2.ui.utils.LOAD_CATALOGS
 
 @Composable
@@ -29,7 +31,7 @@ fun AppNavigation(
         }
         composable(
             Screen.Home.route,
-            arguments = listOf(navArgument(ARG_SYNC_CATALOG) {type = NavType.StringType })
+            arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType })
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
             HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
@@ -37,7 +39,10 @@ fun AppNavigation(
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)
         }
-        composable(Screen.CardDetail.route) {
+        composable(
+            Screen.CardDetail.route,
+            arguments = listOf(navArgument(ARG_CARD_ID) { type = NavType.StringType })
+        ) {
             val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
             CardDetailScreen(navController = navController, cardId = cardId)
         }
@@ -46,6 +51,16 @@ fun AppNavigation(
         }
         composable(Screen.Dev.route) {
             DevScreen()
+        }
+        composable(
+            Screen.Solution.route,
+            arguments = listOf(
+                navArgument(ARG_SOLUTION) { type = NavType.StringType },
+                navArgument(ARG_CARD_ID) { type = NavType.StringType })
+        ) {
+            val solutionType = it.arguments?.getString(ARG_SOLUTION).orEmpty()
+            val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
+            SolutionScreen(navController = navController, solutionType = solutionType, cardId = cardId)
         }
     }
 }
@@ -72,6 +87,12 @@ fun NavController.navigateToAccount() {
 fun NavController.navigateToCardDetail(id: String) {
     navigate(
         "${Screen.CardDetail.path}/$id"
+    )
+}
+
+fun NavController.navigateToCardSolution(solutionType: String, cardId: String) {
+    navigate(
+        "${Screen.Solution.path}/$solutionType/$cardId"
     )
 }
 

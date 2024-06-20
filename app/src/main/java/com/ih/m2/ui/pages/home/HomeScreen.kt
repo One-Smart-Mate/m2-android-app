@@ -52,10 +52,12 @@ import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.components.buttons.CustomIconButton
 import com.ih.m2.ui.components.images.CircularImage
 import com.ih.m2.ui.components.sheets.FiltersBottomSheet
+import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardDetail
+import com.ih.m2.ui.navigation.navigateToCardSolution
 import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.pages.home.components.HomeCardItemList
@@ -86,6 +88,7 @@ fun HomeScreen(
                 user = screenState.value,
                 cards = state.cardList,
                 showBottomSheet = state.showBottomSheet,
+                showBottomSheetActions = state.showBottomSheetActions,
                 selection = state.filterSelection,
                 onFilterChange = {
                     viewModel.process(HomeViewModel.Action.OnFilterChange(it))
@@ -101,6 +104,18 @@ fun HomeScreen(
                 },
                 onCleanFilers = {
                     viewModel.process(HomeViewModel.Action.OnCleanFilters)
+                },
+                onOpenBottomSheetActions = {
+                    viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(true, it))
+                },
+                onSolutionClick = { solutionType ->
+                    state.selectedCard?.let { card ->
+                        viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(false, card))
+                        navController.navigateToCardSolution(solutionType, card.id)
+                    }
+                },
+                onDismissRequestActions = {
+                    viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(false))
                 }
             )
         }
@@ -123,13 +138,16 @@ fun HomeContent(
     user: User,
     cards: List<Card>,
     showBottomSheet: Boolean = false,
+    showBottomSheetActions: Boolean = false,
     selection: String,
     onFilterChange: (String) -> Unit,
     onApplyFilter: () -> Unit,
     onOpenBottomSheet: () -> Unit,
     onDismissRequest: () -> Unit,
-    onCleanFilers: () -> Unit
-
+    onCleanFilers: () -> Unit,
+    onOpenBottomSheetActions: (card: Card) -> Unit,
+    onDismissRequestActions: () -> Unit,
+    onSolutionClick: (String) -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -150,10 +168,16 @@ fun HomeContent(
                         onOpenBottomSheet()
                     })
             }
-            items(cards) {
-                HomeCardItemList(card = it) { card ->
-                    navController.navigateToCardDetail(card.id)
-                }
+            items(cards) { card ->
+                HomeCardItemList(
+                    card = card,
+                    onClick = {
+                        navController.navigateToCardDetail(card.id)
+                    },
+                    onActionClick = {
+                        onOpenBottomSheetActions(card)
+                    },
+                )
             }
 
         }
@@ -164,6 +188,12 @@ fun HomeContent(
                 onApply = onApplyFilter,
                 onDismissRequest = onDismissRequest,
                 onCleanFilers = onCleanFilers
+            )
+        }
+        if (showBottomSheetActions) {
+            SolutionBottomSheet(
+                onSolutionClick = onSolutionClick,
+                onDismissRequest = onDismissRequestActions
             )
         }
     }
@@ -236,8 +266,8 @@ fun HomePreview() {
                 User.mockUser(),
                 listOf(Card.mock()),
                 false,
-                "",
-                {}, {}, {}, {}, {}
+                false,
+                "", {}, {}, {}, {}, {}, {}, {}, {}
             )
         }
     }

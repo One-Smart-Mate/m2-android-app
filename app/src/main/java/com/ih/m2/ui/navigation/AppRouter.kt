@@ -4,6 +4,7 @@ import com.ih.m2.ui.utils.EMPTY
 
 const val ARG_CARD_ID = "arg_card_id"
 const val ARG_SYNC_CATALOG = "arg_sync_catalogs"
+const val ARG_SOLUTION = "arg_solution"
 
 private object Route {
     const val LOGIN = "login"
@@ -14,6 +15,8 @@ private object Route {
     const val CARD_DETAIL = "$CARD_DETAIL_PATH/{${ARG_CARD_ID}}"
     const val CREATE_CARD = "create-card"
     const val DEV = "dev"
+    const val SOLUTION_PATH = "solution-card"
+    const val SOLUTION  = "$SOLUTION_PATH/{$ARG_SOLUTION}/{$ARG_CARD_ID}"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -23,4 +26,5 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object CardDetail: Screen(Route.CARD_DETAIL, Route.CARD_DETAIL_PATH)
     data object CreateCard: Screen(Route.CREATE_CARD)
     data object Dev: Screen(Route.DEV)
+    data object Solution: Screen(Route.SOLUTION, Route.SOLUTION_PATH)
 }

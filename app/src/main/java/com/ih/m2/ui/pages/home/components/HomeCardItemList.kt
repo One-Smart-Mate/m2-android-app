@@ -34,14 +34,15 @@ import com.ih.m2.ui.theme.PaddingNormal
 @Composable
 fun HomeCardItemList(
     card: Card,
-    onClick: (card: Card) -> Unit
+    onClick: () -> Unit,
+    onActionClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(PaddingNormal),
         onClick = {
-            onClick(card)
+            onClick()
         }
     ) {
         Column(
@@ -99,7 +100,7 @@ fun HomeCardItemList(
                 text = stringResource(R.string.actions),
                 buttonType = ButtonType.OUTLINE,
             ) {
-
+                onActionClick()
             }
         }
     }
@@ -141,7 +142,7 @@ fun HomeCardItemEvidence(
 fun HomeCardItemListPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            HomeCardItemList(Card.mock()) {}
+            HomeCardItemList(Card.mock(),{}) {}
         }
     }
 }

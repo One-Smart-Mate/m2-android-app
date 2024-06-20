@@ -41,12 +41,15 @@ class HomeViewModel @AssistedInject constructor(
         val showBottomSheet: Boolean = false,
         val filterSelection: String = EMPTY,
         val syncCatalogs: Boolean = true,
-        val loadingMessage: String = EMPTY
+        val loadingMessage: String = EMPTY,
+        val showBottomSheetActions: Boolean = false,
+        val selectedCard: Card? = null
     ) : MavericksState
 
     sealed class Action {
         data object GetUser : Action()
         data class HandleBottomSheet(val open: Boolean) : Action()
+        data class HandleBottomSheetActions(val open: Boolean, val card: Card? = null) : Action()
         data class OnFilterChange(val filter: String) : Action()
         data object OnApplyFilter : Action()
         data object OnCleanFilters : Action()
@@ -61,6 +64,7 @@ class HomeViewModel @AssistedInject constructor(
             is Action.OnApplyFilter -> handleOnApplyFilter()
             is Action.OnCleanFilters -> handleOnCleanFilters()
             is Action.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
+            is Action.HandleBottomSheetActions -> handleBottomSheetActions(action.open, action.card)
         }
     }
 
@@ -113,6 +117,10 @@ class HomeViewModel @AssistedInject constructor(
 
     private fun handleBottomSheet(open: Boolean) {
         setState { copy(showBottomSheet = open) }
+    }
+
+    private fun handleBottomSheetActions(open: Boolean, card: Card?) {
+        setState { copy(showBottomSheetActions = open, selectedCard = card) }
     }
 
     private fun handleOnFilterChange(filter: String) {
