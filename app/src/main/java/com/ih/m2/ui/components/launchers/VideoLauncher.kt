@@ -22,22 +22,24 @@ import com.ih.m2.ui.pages.createcard.CardItemIcon
 
 @Composable
 fun VideoLauncher(
-    videoLimitDuration: Int = 120
+    videoLimitDuration: Int = 120,
+    onComplete: (uri: Uri) -> Unit
 ) {
     val context = LocalContext.current
-    val uri = context.getUriForFile(fileType = FileType.VIDEO)
+    val uri = context.getUriForFile(fileType = FileType.VIDEO).first
     var capturedVideoUri by remember {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
 
     val recordVideoLauncher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.CaptureVideo().apply {
-            createIntent(context, uri).apply {
-                putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoLimitDuration)
+            createIntent(context, uri).also {
+                it.putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoLimitDuration)
             }
         },
             onResult = {
                 capturedVideoUri = uri
+                onComplete(capturedVideoUri)
             })
 
     val permissionLauncher = rememberLauncherForActivityResult(

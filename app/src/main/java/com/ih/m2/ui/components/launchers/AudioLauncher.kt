@@ -1,9 +1,15 @@
 package com.ih.m2.ui.components.launchers
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.media.MediaRecorder
+import android.net.Uri
 import android.os.Build
 import android.os.CountDownTimer
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -11,7 +17,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -20,74 +28,94 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.ih.m2.R
+import com.ih.m2.core.ui.functions.FileType
 import com.ih.m2.core.ui.functions.createAudioFile
+import com.ih.m2.core.ui.functions.getUriForFile
+import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.utils.AndroidAudioRecorder
+import kotlinx.coroutines.delay
 
 @Composable
-fun AudioLauncher() {
+fun AudioLauncher(
+    maxRecordTime: Int,
+    onComplete: (uri: Uri) -> Unit,
+) {
     val context = LocalContext.current
-    val mediaRecorder = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-        MediaRecorder(context)
-    } else {
-        MediaRecorder()
-    }.apply {
-        setAudioSource(MediaRecorder.AudioSource.MIC)
-        setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            setOutputFile(context.createAudioFile())
-        }
-        setMaxDuration(60)
-    }
+    val file = context.getUriForFile(FileType.AUDIO)
+    val androidAudioPlayer = AndroidAudioRecorder(context)
 
+    val permissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) {
+        if (it) {
+            androidAudioPlayer.start(file.second)
+        } else {
+            openAppSettings(context)
+        }
+    }
 
     AudioContent(
         onStart = {
-            mediaRecorder.prepare()
-            mediaRecorder.start()
+            val permissionCheckResult =
+                ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO)
+            if (permissionCheckResult == PackageManager.PERMISSION_GRANTED) {
+                androidAudioPlayer.start(file.second)
+            } else {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
         },
         onStop = {
-            mediaRecorder.stop()
-            mediaRecorder.release()
-        }
+            androidAudioPlayer.stop()
+            onComplete(file.first)
+        },
+        maxRecordTime = maxRecordTime
     )
-
 }
 
 @Composable
 fun AudioContent(
+    maxRecordTime: Int,
     onStart: () -> Unit,
     onStop: () -> Unit
 ) {
+    var timeLeft by remember { mutableIntStateOf(maxRecordTime) }
+    var start by remember { mutableStateOf(false) }
 
-    var time by remember {
-        mutableStateOf("")
+    LaunchedEffect(start) {
+        if (start) {
+            while (timeLeft > 0) {
+                delay(1000L)
+                timeLeft--
+            }
+            if (timeLeft == 0) {
+                onStop()
+            }
+        }
     }
-
-    val timer = timerCounter(
-        time = 60,
-        onTimeChange = {
-            time = it
-        })
 
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = time, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+
+        Text(text = "Recording time: ${timeLeft}", textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
 
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.Center
         ) {
             CardItemIcon(icon = painterResource(id = R.drawable.ic_smart_display)) {
-                timer.start()
+                start = true
                 onStart()
             }
 
             CardItemIcon(icon = painterResource(id = R.drawable.ic_stop)) {
-                timer.cancel()
+                start = false
+                timeLeft = maxRecordTime
                 onStop()
             }
         }
@@ -95,23 +123,8 @@ fun AudioContent(
 }
 
 
-private fun timerCounter(
-    time: Long,
-    onTimeChange: (value: String) -> Unit
-): CountDownTimer {
-    return object : CountDownTimer((time * 1000), 1000) {
-        override fun onTick(millisUntilFinished: Long) {
-            val timeValue = if ((millisUntilFinished / 1000) < 10) {
-                "0${(millisUntilFinished / 1000)}"
-            } else {
-                (millisUntilFinished / 1000)
-            }
-            onTimeChange(timeValue.toString())
-        }
 
-        override fun onFinish() {}
-    }
-}
+
 
 
 @Composable
@@ -120,7 +133,7 @@ private fun timerCounter(
 fun AudioContentPreview() {
     M2androidappTheme {
         Surface {
-            AudioContent(onStart = {}, onStop = {})
+            AudioContent(maxRecordTime = 10,onStart = {}, onStop = {})
         }
     }
 }

@@ -20,15 +20,18 @@ import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 
 @Composable
-fun CameraLauncher() {
+fun CameraLauncher(
+    onComplete: (uri: Uri) -> Unit
+) {
     val context = LocalContext.current
-    val uri = context.getUriForFile(fileType = FileType.IMAGE)
+    val uri = context.getUriForFile(fileType = FileType.IMAGE).first
     var capturedImageUri by remember {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
 
     val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
         capturedImageUri = uri
+        onComplete(capturedImageUri)
     }
 
     val permissionLauncher = rememberLauncherForActivityResult(

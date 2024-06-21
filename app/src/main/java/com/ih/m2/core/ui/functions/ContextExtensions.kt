@@ -59,7 +59,7 @@ fun Context.createAudioFile(): File {
 }
 
 
-fun Context.getUriForFile(fileType: FileType): Uri {
+fun Context.getUriForFile(fileType: FileType): Pair<Uri, File> {
     val file = when(fileType) {
         FileType.IMAGE -> this.createImageFile()
         FileType.VIDEO -> this.createVideoFile()
@@ -69,7 +69,7 @@ fun Context.getUriForFile(fileType: FileType): Uri {
         Objects.requireNonNull(this),
         BuildConfig.APPLICATION_ID + ".provider", file
     )
-    return uri
+    return Pair(uri, file)
 }
 
 enum class FileType {

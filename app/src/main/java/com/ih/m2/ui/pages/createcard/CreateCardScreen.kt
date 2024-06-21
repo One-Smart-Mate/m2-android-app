@@ -355,9 +355,9 @@ fun SectionCardEvidence() {
         horizontalArrangement = Arrangement.Center
     ) {
 
-        CameraLauncher()
-        AudioLauncher()
-        VideoLauncher()
+        CameraLauncher {}
+        AudioLauncher(10) {}
+        VideoLauncher {}
     }
 }
 
