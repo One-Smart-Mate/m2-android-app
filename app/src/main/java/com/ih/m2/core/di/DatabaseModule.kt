@@ -40,4 +40,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun providesPriorityDao(database: AppDatabase) = database.getPriorityDao()
+
+    @Singleton
+    @Provides
+    fun providesLevelDao(database: AppDatabase) = database.getLevelDao()
 }

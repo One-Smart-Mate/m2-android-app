@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -152,7 +153,8 @@ fun LoginForm(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.enter_your_password),
-                icon = Icons.Default.Person
+                icon = Icons.Default.Lock,
+                isPassword = true
             ) {
                 onPasswordChange(it)
 

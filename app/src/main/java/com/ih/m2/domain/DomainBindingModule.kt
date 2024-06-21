@@ -12,6 +12,8 @@ import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
+import com.ih.m2.domain.usecase.level.GetLevelsUseCase
+import com.ih.m2.domain.usecase.level.GetLevelsUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCaseImpl
 import com.ih.m2.domain.usecase.logout.LogoutUseCase
@@ -68,4 +70,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindCreateCardUseCase(createCardUseCaseImpl: CreateCardUseCaseImpl): CreateCardUseCase
+
+    @Binds
+    fun bindGetLevelsUseCase(getLevelsUseCaseImpl: GetLevelsUseCaseImpl): GetLevelsUseCase
 }

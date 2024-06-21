@@ -18,6 +18,7 @@ class CleanCatalogsUseCaseImpl @Inject constructor(
             localRepository.removePreclassifiers()
             localRepository.removePriorities()
             localRepository.removeCardTypes()
+            localRepository.removeLevels()
             true
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())

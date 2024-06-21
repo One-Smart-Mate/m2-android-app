@@ -6,6 +6,7 @@ import com.ih.m2.data.model.CreateCardResponse
 import com.ih.m2.data.model.GetCardDetailResponse
 import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
+import com.ih.m2.data.model.GetLevelsResponse
 import com.ih.m2.data.model.GetPreclassifiersResponse
 import com.ih.m2.data.model.GetPrioritiesResponse
 import com.ih.m2.data.model.LoginRequest
@@ -55,6 +56,12 @@ interface ApiService  {
     fun createCard(
         @Body body: CreateCardRequest
     ) : Call<CreateCardResponse>
+
+
+    @GET("level/all/{siteId}")
+    fun getLevels(
+        @Path("siteId") siteId: String
+    ) : Call<GetLevelsResponse>
 
 }
 
