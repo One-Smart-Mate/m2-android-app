@@ -10,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
+import com.ih.m2.ui.utils.EMPTY
 
 
 @Composable
@@ -32,7 +33,7 @@ fun CustomIconButton(
         Row(
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(icon, contentDescription = "")
+            Icon(icon, contentDescription = EMPTY)
             Text(text = text)
         }
     }

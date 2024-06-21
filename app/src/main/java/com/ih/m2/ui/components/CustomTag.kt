@@ -48,7 +48,7 @@ fun CustomTag(
         }
 
         TagSize.SMALL -> {
-            MaterialTheme.typography.labelSmall
+            MaterialTheme.typography.bodySmall
                 .copy(
                     color = color
                 )
@@ -76,7 +76,7 @@ fun CustomTag(
                     },
                     shape = CircleShape
                 )
-                .padding(vertical = 2.dp, horizontal = 6.dp)
+                .padding(vertical = 2.dp, horizontal = 12.dp)
         }
     }
 

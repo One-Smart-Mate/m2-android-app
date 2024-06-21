@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.getStatus
@@ -30,6 +31,7 @@ import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
+import com.ih.m2.ui.theme.PaddingSmall
 
 @Composable
 fun HomeCardItemList(
@@ -46,7 +48,7 @@ fun HomeCardItemList(
         }
     ) {
         Column(
-            modifier = Modifier.padding(PaddingNormal)
+            modifier = Modifier.padding(PaddingSmall)
         ) {
             Text(
                 text = "${card.cardTypeName} ${card.siteCardId}",

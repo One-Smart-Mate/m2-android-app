@@ -27,23 +27,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ih.m2.R
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun CustomTextField(
     modifier: Modifier = Modifier,
     label: String,
-    placeholder: String = "",
+    placeholder: String = EMPTY,
     value: String,
     icon: ImageVector,
     maxLines: Int = 1,
     onChange: (String) -> Unit,
 ) {
 
-    val focusManager = LocalFocusManager.current
     val leadingIcon = @Composable {
         Icon(
             icon,
-            contentDescription = "",
+            contentDescription = EMPTY,
             tint = getColor()
         )
     }
@@ -53,9 +53,8 @@ fun CustomTextField(
         onValueChange = onChange,
         modifier = modifier,
         leadingIcon = leadingIcon,
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
-        keyboardActions = KeyboardActions(
-            onNext = { focusManager.moveFocus(FocusDirection.Down) }
+        keyboardOptions = KeyboardOptions(
+            autoCorrect = false
         ),
         placeholder = { Text(placeholder) },
         label = { Text(label) },

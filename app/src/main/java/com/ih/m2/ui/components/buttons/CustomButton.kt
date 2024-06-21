@@ -56,13 +56,13 @@ fun CustomButton(
         ButtonType.DEFAULT, ButtonType.ERROR -> {
             modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(54.dp)
         }
 
         else -> {
             modifier
                 .fillMaxWidth()
-                .height(56.dp)
+                .height(54.dp)
                 .border(
                     width = 2.dp,
                     color = MaterialTheme.colorScheme.primary,

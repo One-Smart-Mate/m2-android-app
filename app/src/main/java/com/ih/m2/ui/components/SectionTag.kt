@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.theme.Size100
 import com.ih.m2.ui.theme.Size90
 
 @Composable
@@ -35,13 +36,13 @@ fun SectionTag(
             text = title, style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Bold
             ),
-            modifier = Modifier.width(Size90)
+            modifier = Modifier.width(Size100)
         )
         CustomSpacer(
             direction = SpacerDirection.HORIZONTAL,
             space = SpacerSize.TINY
         )
-        CustomTag(title = value)
+        CustomTag(title = value, tagSize = TagSize.SMALL)
     }
 }
 

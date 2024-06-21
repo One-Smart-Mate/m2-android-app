@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -67,6 +68,7 @@ import com.ih.m2.ui.theme.Size100
 import com.ih.m2.ui.theme.Size110
 import com.ih.m2.ui.theme.Size160
 import com.ih.m2.ui.theme.Size170
+import com.ih.m2.ui.theme.Size180
 import com.ih.m2.ui.utils.EMPTY
 
 @Composable
@@ -448,8 +450,8 @@ fun SectionItemCard(
     Card(
         modifier = Modifier
             .padding(PaddingTiny)
-            .width(Size170)
-            .height(Size110),
+            .width(Size180)
+            .height(Size100),
         colors = color,
         onClick = {
             onItemClick()
@@ -464,15 +466,15 @@ fun SectionItemCard(
                 text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyLarge
+                style = MaterialTheme.typography.bodyMedium
                     .copy(fontWeight = FontWeight.W700)
             )
-            CustomSpacer()
+            CustomSpacer(space = SpacerSize.TINY)
             Text(
                 text = description,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }

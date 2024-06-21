@@ -1,6 +1,7 @@
 package com.ih.m2.ui.components
 
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,7 +28,7 @@ import com.ih.m2.ui.theme.PaddingNormal
 @Composable
 fun ExpandableCard(
     title: String,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
 
     val isExpanded = remember {
@@ -58,10 +59,12 @@ fun ExpandableCard(
             Text(text = title)
             Icon(arrowIcon, contentDescription = title)
         }
-        Column(
-            modifier = Modifier.padding(PaddingNormal)
-        ) {
-            content()
+        AnimatedVisibility(visible = isExpanded.value) {
+            Column(
+                modifier = Modifier.padding(PaddingNormal)
+            ) {
+                content()
+            }
         }
     }
 }

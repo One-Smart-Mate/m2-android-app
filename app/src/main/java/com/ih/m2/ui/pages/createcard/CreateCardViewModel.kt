@@ -115,9 +115,10 @@ class CreateCardViewModel @AssistedInject constructor(
             val cardType = state.cardTypeList.find { it.id == id }?.isMaintenanceCardType()
             if (cardType.defaultIfNull(false)) {
                 handleGetPriorities()
+                setState { copy(isSecureCard = true) }
             } else {
                 val levelList = getLevelById("0", 0)
-                setState { copy(levelList = levelList, isSecureCard = true) }
+                setState { copy(levelList = levelList) }
             }
         }
     }
