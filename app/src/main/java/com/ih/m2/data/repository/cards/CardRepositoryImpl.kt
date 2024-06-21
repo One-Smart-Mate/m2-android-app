@@ -2,6 +2,7 @@ package com.ih.m2.data.repository.cards
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.data.api.ApiService
+import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.toDomain
 import com.ih.m2.data.repository.auth.getErrorMessage
 import com.ih.m2.domain.model.Card
@@ -24,6 +25,16 @@ class CardRepositoryImpl @Inject constructor(
 
     override suspend fun getCardDetail(cardId: String): Card {
         val response = apiService.getCardDetail(cardId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun createCard(card: CreateCardRequest): Card {
+        val response = apiService.createCard(card).execute()
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {

@@ -6,13 +6,18 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.data.model.CreateCardRequest
+import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.domain.model.Preclassifier
+import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.isMaintenanceCardType
 import com.ih.m2.domain.model.toNodeItemCard
 import com.ih.m2.domain.model.toNodeItemList
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
+import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
@@ -20,6 +25,8 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import java.util.Date
+import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
 class CreateCardViewModel @AssistedInject constructor(
@@ -61,7 +68,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data class SetLevel(val id: String, val key: Int) : Action()
         data class OnCommentChange(val comment: String) : Action()
         data class OnSecureOptionChange(val option: String) : Action()
-        data object SaveCard: Action()
+        data object SaveCard : Action()
     }
 
     fun process(action: Action) {
@@ -248,10 +255,80 @@ class CreateCardViewModel @AssistedInject constructor(
         )
     }
 
-
     private fun handleSaveCard() {
         viewModelScope.launch(coroutineContext) {
 
+            //Valores que si se llenan de la create card/
+            //alinear valores
+            /*
+            //Mantenimiento
+                siteCardId = " es el ID de las tarjetas de ese sitio ->
+                siteId = site id del usuario
+                carUUUID = autogenerado
+                feasibility = Valores Alto y Bajo es un checkbox que diga alto y bajo pero cuando se crea se manda null
+                effect = Valores Alto y Bajo es un checkbox pero cuando se crea se manda en null
+                cardCreationDate = fecha en la que se crea la tarjeta
+                areaId = el id del ultimo nodo
+                priorityId = el id priority
+                cardTypeValue = safe o unsafe
+                cardTypeId = id del card type
+                preclassifierId = preclassfier id
+                creatorId = usuario que la creo
+                responsableId =  este se llena hasta el mantenimiento entonces se manda en 0
+                mechanicId = este se llena hasta el mantenimiento se madna en 0
+                userProvisionalSolutionId = este valor se llena cuando se hace el user provisional solution  quien hizo la reparacion-> no se llena
+                userAppProvisionalSolutionId =  este es el mismo de arriba pero es de la app -> no se llena
+                userDefinitiveSolutionId = mismo que el de arriba pero el en definitive
+                userAppDefinitiveSolutionId =
+                managerId  = es el id del responsable del ultimo nivel del level =,
+                solucion provisional no lleva evidencia ->
+                agregar campos a la solucion provisional de evidencia
+                evidenceAucr son 1 o 0 para saber si tiene o no para decirle a caleb que tiene que hacer y consultar con estos
+
+
+
+
+                existing card zone -> al crear en la app se visualiza con status A, P y V solo se visualiza si la puede crear aun asi
+            */
+
+
+            //Provisional solution
+            /*
+            *
+            *user provisional solution id se llena en el combo
+            * y el app es el que se llena en la app el usuario logeado
+            *
+            * el edit de la card es we solo crud web
+            * */
+
+//            val createCardUseCase = CreateCardRequest(
+            //siteCardId = ""
+//                siteId = user.siteId,
+//                cardUUID = UUID.randomUUID().toString(),
+//                feasibility = "", //Este valor se llena en el mantenimiento de la card
+//                effect = "", //revisar este valor
+//                cardCreationDate = Date().YYYY_MM_DD_HH_MM_SS,
+//                areaId = 0,
+//                priorityId = 0,
+//                cardTypeValue = "Sage",
+//                cardTypeId = cardType.id,
+//                preclassifierId = preclassifier.id,
+//                creatorId = user.userId,
+//                responsableId = 0, //revisar este valor
+//                mechanicId = 0, //revsiar este valor
+//                userProvisionalSolutionId = 0, //revisar este valor
+//                userAppProvisionalSolutionId = 0, //revisar estae valor
+//                userDefinitiveSolutionId = 0, //revisar esste valr
+//                userAppDefinitiveSolutionId = 0, //revisar este valor
+//                managerId = 0, //revisar este valor
+//                commentsAtCardCreation = "",
+//                evidenceAucl = 0, //revisar estos es el valor maximo que puedes subir
+//                evidenceAucr = 0,
+//                evidenceImcl = 0,
+//                evidenceImcr = 0,
+//                evidenceVicl = 0,
+//                evidenceVicr = 0
+//            )
         }
     }
 

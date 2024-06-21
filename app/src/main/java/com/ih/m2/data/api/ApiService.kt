@@ -1,6 +1,8 @@
 package com.ih.m2.data.api
 
 
+import com.ih.m2.data.model.CreateCardRequest
+import com.ih.m2.data.model.CreateCardResponse
 import com.ih.m2.data.model.GetCardDetailResponse
 import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
@@ -47,6 +49,12 @@ interface ApiService  {
     fun getCardDetail(
         @Path("cardId") cardId: String
     ): Call<GetCardDetailResponse>
+
+
+    @POST("card/create")
+    fun createCard(
+        @Body body: CreateCardRequest
+    ) : Call<CreateCardResponse>
 
 }
 

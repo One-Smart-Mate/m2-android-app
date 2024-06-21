@@ -14,7 +14,7 @@ data class CardEntity(
     @ColumnInfo(name = "id")
     val id: String,
     @ColumnInfo(name = "site_card_id")
-    val siteCardID: Long,
+    val siteCardId: Long,
     @ColumnInfo(name = "site_id")
     val siteID: String?,
     @ColumnInfo(name = "site_code")
@@ -142,7 +142,7 @@ data class CardEntity(
 fun CardEntity.toDomain(): Card {
     return Card(
         id = this.id,
-        siteCardID = this.siteCardID,
+        siteCardId = this.siteCardId,
         siteID = this.siteID,
         siteCode = this.siteCode,
         cardUUID = this.cardUUID,

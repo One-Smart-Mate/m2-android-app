@@ -2,6 +2,8 @@ package com.ih.m2.domain.model
 
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.data.database.entities.cardtype.CardTypeEntity
+import com.ih.m2.data.database.entities.cardtype.toDomain
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.CARD_MAINTENANCE
 
 data class CardType (
@@ -12,7 +14,27 @@ data class CardType (
     val color: String,
     @SerializedName("responsableName")
     val owner: String,
-    val status: String
+    val status: String,
+    @SerializedName("quantityPicturesCreate")
+    val quantityImagesCreate: Int?,
+    @SerializedName("quantityAudiosCreate")
+    val quantityAudiosCreate: Int?,
+    @SerializedName("quantityVideosCreate")
+    val quantityVideosCreate: Int?,
+    @SerializedName("audiosDurationCreate")
+    val audiosDurationCreate: Int?,
+    @SerializedName("videosDurationCreate")
+    val videosDurationCreate: Int?,
+    @SerializedName("quantityPicturesClose")
+    val quantityImagesClose: Int?,
+    @SerializedName("quantityAudiosClose")
+    val quantityAudiosClose: Int?,
+    @SerializedName("quantityVideosClose")
+    val quantityVideosClose:Int?,
+    @SerializedName("audiosDurationClose")
+    val audiosDurationClose: Int?,
+    @SerializedName("videosDurationClose")
+    val videosDurationClose:Int?
 )
 
 
@@ -24,7 +46,17 @@ fun CardType.toEntity(): CardTypeEntity {
         description = this.description,
         color = this.color,
         owner = this.owner,
-        status = this.status
+        status = this.status,
+        quantityImagesCreate = this.quantityImagesCreate.defaultIfNull(0),
+        quantityAudiosCreate = this.quantityAudiosCreate.defaultIfNull(0),
+        quantityVideosCreate = this.quantityVideosCreate.defaultIfNull(0),
+        audiosDurationCreate = this.audiosDurationCreate.defaultIfNull(0),
+        videosDurationCreate = this.videosDurationCreate.defaultIfNull(0),
+        quantityImagesClose = this.quantityImagesClose.defaultIfNull(0),
+        quantityAudiosClose = this.quantityAudiosClose.defaultIfNull(0),
+        quantityVideosClose = this.quantityVideosClose.defaultIfNull(0),
+        audiosDurationClose = this.audiosDurationClose.defaultIfNull(0),
+        videosDurationClose = this.videosDurationClose.defaultIfNull(0)
     )
 }
 

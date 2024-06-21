@@ -22,7 +22,7 @@ import com.ih.m2.ui.utils.UNASSIGNED_CARDS
 
 data class Card(
     val id: String,
-    val siteCardID: Long,
+    val siteCardId: Long,
     val siteID: String?,
     val siteCode: String?,
     val cardUUID: String,
@@ -202,7 +202,7 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
 fun Card.toEntity(): CardEntity {
     return CardEntity(
         id = this.id,
-        siteCardID = this.siteCardID,
+        siteCardId = this.siteCardId,
         siteID = this.siteID,
         siteCode = this.siteCode,
         cardUUID = this.cardUUID,
