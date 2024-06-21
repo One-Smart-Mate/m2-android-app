@@ -63,7 +63,10 @@ import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
+import com.ih.m2.ui.theme.Size100
+import com.ih.m2.ui.theme.Size110
 import com.ih.m2.ui.theme.Size160
+import com.ih.m2.ui.theme.Size170
 import com.ih.m2.ui.utils.EMPTY
 
 @Composable
@@ -445,8 +448,8 @@ fun SectionItemCard(
     Card(
         modifier = Modifier
             .padding(PaddingTiny)
-            .width(Size160)
-            .height(100.dp),
+            .width(Size170)
+            .height(Size110),
         colors = color,
         onClick = {
             onItemClick()
@@ -461,9 +464,10 @@ fun SectionItemCard(
                 text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.titleMedium
+                style = MaterialTheme.typography.bodyLarge
                     .copy(fontWeight = FontWeight.W700)
             )
+            CustomSpacer()
             Text(
                 text = description,
                 textAlign = TextAlign.Center,

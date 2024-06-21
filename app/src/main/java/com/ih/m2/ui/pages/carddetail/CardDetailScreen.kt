@@ -42,6 +42,7 @@ import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.orDefault
+import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.PhotoCardItem
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.theme.M2androidappTheme
@@ -116,7 +117,7 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.information)) {
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.cardCreationDate,
+            value = card.cardCreationDate.toFormatDate(),
         )
         SectionTag(
             title = stringResource(R.string.due_date),
@@ -161,7 +162,7 @@ fun CardInformationContent(
         )
         SectionTag(
             title = stringResource(R.string.provisional_date),
-            value = card.cardProvisionalSolutionDate.orDefault(),
+            value = card.cardProvisionalSolutionDate?.toFormatDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.provisional_comments),
@@ -172,7 +173,7 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
         SectionTag(
             title = stringResource(R.string.definitive_date),
-            value = card.cardDefinitiveSolutionDate.orDefault(),
+            value = card.cardDefinitiveSolutionDate?.toFormatDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.definitive_user),

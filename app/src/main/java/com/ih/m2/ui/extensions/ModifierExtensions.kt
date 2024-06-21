@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
 
 @Composable
@@ -19,7 +20,7 @@ fun Modifier.headerContent(paddingTop: Dp): Modifier {
         .background(
             color = MaterialTheme.colorScheme.primary
         )
-        .padding(start = 16.dp, end = 16.dp, top = paddingTop)
+        .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
 }
 
 

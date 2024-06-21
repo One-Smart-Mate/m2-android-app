@@ -14,6 +14,8 @@ import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.ui.extensions.DayAndDateWithYear
+import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CLEAN_FILTERS
 import com.ih.m2.ui.utils.EMPTY

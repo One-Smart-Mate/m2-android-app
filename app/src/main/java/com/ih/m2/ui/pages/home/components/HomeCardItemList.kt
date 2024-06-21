@@ -22,11 +22,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.getStatus
-
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
+import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
@@ -49,7 +49,7 @@ fun HomeCardItemList(
             modifier = Modifier.padding(PaddingNormal)
         ) {
             Text(
-                text = "${card.cardTypeName} ${card.siteCardID}",
+                text = "${card.cardTypeName} ${card.siteCardId}",
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
@@ -88,7 +88,7 @@ fun HomeCardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.cardCreationDate,
+                value = card.cardCreationDate.toFormatDate(),
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
