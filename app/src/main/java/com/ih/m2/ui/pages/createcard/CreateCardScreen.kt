@@ -2,6 +2,7 @@ package com.ih.m2.ui.pages.createcard
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -47,12 +48,17 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.ih.m2.R
+import com.ih.m2.domain.model.Evidence
+import com.ih.m2.domain.model.EvidenceType
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.domain.model.toImages
+import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.RadioGroup
 import com.ih.m2.ui.components.SpacerSize
+import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
@@ -61,6 +67,7 @@ import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
+import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
@@ -69,6 +76,8 @@ import com.ih.m2.ui.theme.Size110
 import com.ih.m2.ui.theme.Size160
 import com.ih.m2.ui.theme.Size170
 import com.ih.m2.ui.theme.Size180
+import com.ih.m2.ui.theme.Size200
+import com.ih.m2.ui.theme.Size250
 import com.ih.m2.ui.utils.EMPTY
 
 @Composable
@@ -108,6 +117,13 @@ fun CreateCardScreen(
         selectedSecureOption = state.selectedSecureOption,
         onSecureOptionChange = {
             viewModel.process(CreateCardViewModel.Action.OnSecureOptionChange(it))
+        },
+        evidences = state.evidences,
+        onAddEvidence = { uri, type ->
+            viewModel.process(CreateCardViewModel.Action.OnAddEvidence(uri, type))
+        },
+        onDeleteEvidence = {
+            viewModel.process(CreateCardViewModel.Action.OnDeleteEvidence(it))
         }
     )
     if (state.message.isNotEmpty()) {
@@ -136,7 +152,10 @@ fun CreateCardContent(
     onCommentChange: (String) -> Unit,
     isSecureCard: Boolean = false,
     selectedSecureOption: String = EMPTY,
-    onSecureOptionChange: ((String) -> Unit)? = null
+    onSecureOptionChange: ((String) -> Unit)? = null,
+    evidences: List<Evidence>,
+    onAddEvidence: (Uri, EvidenceType) -> Unit,
+    onDeleteEvidence: (Evidence) -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -153,10 +172,34 @@ fun CreateCardContent(
                 LevelContent(levelList, onLevelClick, selectedLevelList)
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
+
+            item {
+                if (lastLevelCompleted) {
+                    CustomSpacer()
+                    HorizontalDivider()
+                    SectionCardEvidence(
+                        onAddEvidence = onAddEvidence
+                    )
+                    SectionImagesEvidence(imageEvidences = evidences.toImages()) {
+                        onDeleteEvidence(it)
+                    }
+                    SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
+                        onDeleteEvidence(it)
+                    }
+                    CustomSpacer()
+                }
+            }
+
             item {
                 HorizontalDivider()
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 if (lastLevelCompleted) {
+                    Text(
+                        text = stringResource(R.string.comments),
+                        style = MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold)
+                    )
+                    CustomSpacer()
                     CustomTextField(
                         label = stringResource(R.string.comments),
                         value = comment,
@@ -170,8 +213,10 @@ fun CreateCardContent(
                     if (isSecureCard) {
                         RadioGroup(
                             modifier = Modifier.fillParentMaxWidth(),
-                            items = listOf(stringResource(R.string.safe),
-                                stringResource(R.string.unsafe)),
+                            items = listOf(
+                                stringResource(R.string.safe),
+                                stringResource(R.string.unsafe)
+                            ),
                             selection = selectedSecureOption
                         ) {
                             if (onSecureOptionChange != null) {
@@ -187,54 +232,62 @@ fun CreateCardContent(
 
             }
 
-//        item {
-//            SectionCardEvidence()
-//            CustomSpacer()
-//        }
+        }
+    }
+}
 
-//            item {
-//                Text(
-//                    text = stringResource(R.string.images), style = MaterialTheme.typography.titleLarge
-//                        .copy(fontWeight = FontWeight.Bold)
-//                )
-//                LazyRow {
-//                    items(3) {
-//                        PhotoCardItem("")
-//                    }
-//                }
-//                CustomSpacer()
-//            }
-//            item {
-//                Text(
-//                    text = stringResource(R.string.videos), style = MaterialTheme.typography.titleLarge
-//                        .copy(fontWeight = FontWeight.Bold)
-//                )
-//                LazyRow {
-//                    items(3) {
-//                        PhotoCardItem("")
-//                    }
-//                }
-//                CustomSpacer()
-//            }
-//
-//            item {
-//                Text(
-//                    text = stringResource(R.string.audios), style = MaterialTheme.typography.titleLarge
-//                        .copy(fontWeight = FontWeight.Bold)
-//                )
-//                LazyRow {
-//                    items(3) {
-//                        PhotoCardItem("")
-//                    }
-//                }
-//                CustomSpacer()
-//            }
-//
-//            item {
-//                CustomButton(text = "Save") {
-//
-//                }
-//            }
+@Composable
+fun SectionImagesEvidence(
+    imageEvidences: List<Evidence>,
+    onDeleteEvidence: (Evidence) -> Unit
+) {
+    if (imageEvidences.isNotEmpty()) {
+        Column {
+            Text(
+                text = stringResource(R.string.images),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(imageEvidences) {
+                    PhotoCardItem(
+                        model = it.url,
+                        showIcon = true,
+                        modifier = Modifier
+                            .width(Size200)
+                            .height(Size250)
+                    ) {
+                        onDeleteEvidence(it)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SectionVideosEvidence(
+    videoEvidences: List<Evidence>,
+    onDeleteEvidence: (Evidence) -> Unit
+) {
+    if (videoEvidences.isNotEmpty()) {
+        Column {
+            Text(
+                text = stringResource(R.string.videos),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(videoEvidences) {
+                    VideoPlayer(
+                        modifier = Modifier.width(Size200).height(Size250),
+                        url = it.url,
+                        showIcon = true
+                    ) {
+                        onDeleteEvidence(it)
+                    }
+                }
+            }
         }
     }
 }
@@ -349,15 +402,21 @@ fun CardTypeContent(
 
 
 @Composable
-fun SectionCardEvidence() {
+fun SectionCardEvidence(
+    onAddEvidence: (Uri, EvidenceType) -> Unit
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
 
-        CameraLauncher {}
-        AudioLauncher(10) {}
-        VideoLauncher {}
+        CameraLauncher {
+            onAddEvidence(it, EvidenceType.IMCR)
+        }
+//        AudioLauncher(10) {}
+        VideoLauncher {
+            onAddEvidence(it, EvidenceType.VICR)
+        }
     }
 }
 
@@ -365,6 +424,7 @@ fun SectionCardEvidence() {
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PhotoCardItem(
+    modifier: Modifier = Modifier,
     model: Any,
     showIcon: Boolean = true,
     onClick: (() -> Unit?)? = null
@@ -376,7 +436,7 @@ fun PhotoCardItem(
             model = model, contentDescription = stringResource(id = R.string.empty),
             failure = placeholder(R.drawable.ic_launcher_background),
             loading = placeholder(R.drawable.ic_launcher_background),
-            modifier = Modifier.padding(PaddingTiny)
+            modifier = modifier.padding(PaddingTiny)
         )
         if (showIcon) {
             Box {
@@ -410,27 +470,7 @@ fun CardItemIcon(
     }
 }
 
-@Composable
-fun SectionCard(
-    section: String?,
-    list: List<NodeCardItem>,
-    onItemClick: (NodeCardItem) -> Unit
-) {
-    section?.let {
-        Text(
-            text = section, style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
-        )
-    }
 
-    LazyRow {
-        items(list) {
-            SectionItemCard(title = it.name, description = it.description) {
-                onItemClick(it)
-            }
-        }
-    }
-}
 
 @Composable
 fun SectionItemCard(
@@ -504,7 +544,10 @@ fun CreateCardPreview() {
                 selectedLevelList = emptyMap(),
                 lastLevelCompleted = true,
                 comment = EMPTY,
-                onCommentChange = {}
+                onCommentChange = {},
+                evidences = emptyList(),
+                onAddEvidence = {_,_ -> },
+                onDeleteEvidence = {}
             )
         }
     }

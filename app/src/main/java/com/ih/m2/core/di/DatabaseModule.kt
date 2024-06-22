@@ -44,4 +44,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun providesLevelDao(database: AppDatabase) = database.getLevelDao()
+
+    @Singleton
+    @Provides
+    fun providesEvidenceDao(database: AppDatabase) = database.getEvidenceDao()
 }

@@ -5,12 +5,14 @@ import androidx.room.RoomDatabase
 import com.ih.m2.data.database.dao.UserDao
 import com.ih.m2.data.database.dao.card.CardDao
 import com.ih.m2.data.database.dao.cardtype.CardTypeDao
+import com.ih.m2.data.database.dao.evidence.EvidenceDao
 import com.ih.m2.data.database.dao.level.LevelDao
 import com.ih.m2.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.m2.data.database.dao.priority.PriorityDao
 import com.ih.m2.data.database.entities.UserEntity
 import com.ih.m2.data.database.entities.card.CardEntity
 import com.ih.m2.data.database.entities.cardtype.CardTypeEntity
+import com.ih.m2.data.database.entities.evidence.EvidenceEntity
 import com.ih.m2.data.database.entities.level.LevelEntity
 import com.ih.m2.data.database.entities.preclassifier.PreclassifierEntity
 import com.ih.m2.data.database.entities.priority.PriorityEntity
@@ -23,7 +25,8 @@ import com.ih.m2.data.database.entities.priority.PriorityEntity
         CardTypeEntity::class,
         PreclassifierEntity::class,
         PriorityEntity::class,
-        LevelEntity::class
+        LevelEntity::class,
+        EvidenceEntity::class
     ],
     version = 1
 )
@@ -40,5 +43,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getPriorityDao(): PriorityDao
 
     abstract fun getLevelDao(): LevelDao
+
+    abstract fun getEvidenceDao(): EvidenceDao
 
 }

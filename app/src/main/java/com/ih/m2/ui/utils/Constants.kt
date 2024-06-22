@@ -15,18 +15,13 @@ const val STATUS_V = "V"
 const val STATUS_R = "R"
 const val STATUS_C = "C"
 const val LOAD_CATALOGS = "load_catalogs"
-
-
 const val IMG_CREATION = "IMCR"
 const val IMG_CLOSE = "IMCL"
-const val VIDEO_CREATION = "VICR"
-const val VIDEO_CLOSE = "VICL"
 const val AUDIO_CREATION = "AUCR"
 const val AUDIO_CLOSE = "AUCL"
-
 const val STORED_REMOTE = "stored_network"
-
 const val CARD_MAINTENANCE = "Mantenimiento"
-
 const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"
+const val VIDEO_CREATION = "VICR"
+const val VIDEO_CLOSE = "VICL"

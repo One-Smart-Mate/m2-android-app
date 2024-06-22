@@ -13,14 +13,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
 import com.google.firebase.storage.FirebaseStorage
+import com.ih.m2.R
 import com.ih.m2.core.ui.functions.createAudioFile
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.VideoPlayer
@@ -28,7 +33,9 @@ import com.ih.m2.ui.components.launchers.AudioContent
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
 import com.ih.m2.ui.components.launchers.VideoLauncher
+import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
+import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.utils.AndroidAudioPlayer
 import com.ih.m2.ui.utils.AndroidAudioRecorder
 import kotlinx.coroutines.GlobalScope
@@ -43,6 +50,10 @@ import kotlin.coroutines.coroutineContext
 @Composable
 fun DevScreen() {
 
+    var showButton by remember {
+        
+        mutableStateOf(false)
+    }
 
     Scaffold { padding ->
         LazyRow(
@@ -50,27 +61,31 @@ fun DevScreen() {
         ) {
             item {
                 CameraLauncher {
-                    Log.e("Test","Result uri image $it")
+                    Log.e("Test", "Result uri image $it")
                     GlobalScope.launch {
                         uploadEvidence(it)
                     }
                 }
 
                 VideoLauncher(videoLimitDuration = 10) {
-                    Log.e("Test","Result uri video $it")
+                    Log.e("Test", "Result uri video $it")
                     GlobalScope.launch {
                         uploadEvidenceVideo(it)
                     }
                 }
 
+                CardItemIcon(icon = painterResource(id = R.drawable.ic_voice)) {
+                    showButton = true
+                }
 
-                AudioLauncher(
-                    10
-                ) {
-                    Log.e("Test","Result uri audio $it")
-                    GlobalScope.launch {
-                        uploadEvidenceAudio(it)
-                    }
+                if (showButton) {
+                    RecordAudioBottomSheet(
+                        onComplete = {
+                            showButton = false
+                        },
+                        onDismissRequest = {
+                            showButton = false
+                        })
                 }
             }
         }
@@ -83,7 +98,7 @@ suspend fun uploadEvidence(uri: Uri) {
     val ref = store.reference.child("evidence/created/images/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test","Result image ${url}")
+    Log.e("test", "Result image ${url}")
 }
 
 
@@ -93,7 +108,7 @@ suspend fun uploadEvidenceVideo(uri: Uri) {
     val ref = store.reference.child("evidence/created/videos/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test","Result video ${url}")
+    Log.e("test", "Result video ${url}")
 }
 
 suspend fun uploadEvidenceAudio(uri: Uri) {
@@ -102,7 +117,7 @@ suspend fun uploadEvidenceAudio(uri: Uri) {
     val ref = store.reference.child("evidence/created/audios/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test","Result audio ${url}")
+    Log.e("test", "Result audio ${url}")
 }
 
 fun getImageFile(): String {

@@ -1,31 +1,29 @@
 package com.ih.m2.ui.pages.createcard
 
+import android.net.Uri
 import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.ih.m2.data.model.CreateCardRequest
-import com.ih.m2.domain.model.CardType
+import com.ih.m2.domain.model.Evidence
+import com.ih.m2.domain.model.EvidenceType
 import com.ih.m2.domain.model.NodeCardItem
-import com.ih.m2.domain.model.Preclassifier
-import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.isMaintenanceCardType
 import com.ih.m2.domain.model.toNodeItemCard
 import com.ih.m2.domain.model.toNodeItemList
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
-import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.STATUS_A
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import java.util.Date
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -55,7 +53,9 @@ class CreateCardViewModel @AssistedInject constructor(
         val comment: String = EMPTY,
         val isSecureCard: Boolean = false,
         val selectedSecureOption: String = EMPTY,
-        val message: String = EMPTY
+        val message: String = EMPTY,
+        val evidences: List<Evidence> = emptyList(),
+        val cardId: String = UUID.randomUUID().toString()
     ) : MavericksState
 
     sealed class Action {
@@ -69,6 +69,8 @@ class CreateCardViewModel @AssistedInject constructor(
         data class OnCommentChange(val comment: String) : Action()
         data class OnSecureOptionChange(val option: String) : Action()
         data object SaveCard : Action()
+        data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
+        data class OnDeleteEvidence(val evidence: Evidence): Action()
     }
 
     fun process(action: Action) {
@@ -83,6 +85,37 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.OnCommentChange -> handleOnCommentChange(action.comment)
             is Action.OnSecureOptionChange -> handleOnSecureOptionChange(action.option)
             is Action.SaveCard -> handleSaveCard()
+            is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
+            is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
+        }
+    }
+
+    private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            val list = state.evidences.toMutableList()
+            list.add(
+                Evidence(
+                    id = UUID.randomUUID().toString(),
+                    cardId = state.cardId,
+                    siteId = EMPTY,
+                    url = uri.toString(),
+                    type = type.name,
+                    status = STATUS_A,
+                    createdAt = null,
+                    updatedAt = null,
+                    deletedAt = null
+                )
+            )
+            setState { copy(evidences = list) }
+        }
+    }
+
+    private fun handleOnDeleteEvidence(evidence: Evidence) {
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            val list = state.evidences.filter { it.id != evidence.id }
+            setState { copy(evidences = list) }
         }
     }
 
