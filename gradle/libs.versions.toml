@@ -22,6 +22,7 @@ hilt-plugin = "2.51.1"
 converterGson = "2.9.0"
 roomRuntime = "2.6.1"
 timber = "5.0.1"
+hiltCommon = "1.2.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -62,6 +63,7 @@ hilt = { module = "com.google.dagger:hilt-android", version.ref = "hilt-plugin" 
 hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hilt-plugin" }
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "android-hilt-navigation-compose" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
+androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
 
 
 
