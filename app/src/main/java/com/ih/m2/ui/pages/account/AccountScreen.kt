@@ -65,7 +65,8 @@ fun AccountScreen(
             },
             context = getContext(),
             onDevClick = {
-                navController.navigate(Screen.Dev.route)
+                //navController.navigate(Screen.Dev.route)
+                viewModel.process(AccountViewModel.Action.ShowNotification)
             }
         )
     }

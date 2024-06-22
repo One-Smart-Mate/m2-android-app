@@ -28,14 +28,14 @@ import java.time.Duration
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     private val splashViewModel: SplashViewModel by viewModels()
-
-
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         Mavericks.initialize(this)
         Timber.plant(Timber.DebugTree())
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            checkNotificationPermissions()
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             workRequest(applicationContext)
         }
@@ -61,5 +61,10 @@ class MainActivity : ComponentActivity() {
                 duration = Duration.ofSeconds(15)
             ).build()
         WorkManager.getInstance(context).enqueue(workRequest)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private fun checkNotificationPermissions() {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
     }
 }

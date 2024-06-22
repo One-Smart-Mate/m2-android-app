@@ -5,12 +5,14 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.logout.LogoutUseCase
 import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -18,7 +20,8 @@ class AccountViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
     private val logoutUseCase: LogoutUseCase,
-    private val syncCatalogsUseCase: SyncCatalogsUseCase
+    private val syncCatalogsUseCase: SyncCatalogsUseCase,
+    private val notificationManager: NotificationManager
 ) : MavericksViewModel<AccountViewModel.UiState>(initialState) {
 
 
@@ -31,12 +34,14 @@ class AccountViewModel @AssistedInject constructor(
     sealed class Action {
         data object Logout: Action()
         data object SyncCatalogs: Action()
+        data object ShowNotification: Action()
     }
 
     fun process(action: Action) {
         when(action) {
             is Action.Logout -> handleLogout()
             is Action.SyncCatalogs -> handleSyncCatalogs()
+            is Action.ShowNotification -> handleShowNotification()
         }
     }
     private fun handleLogout() {
@@ -48,6 +53,22 @@ class AccountViewModel @AssistedInject constructor(
             }.onFailure {
                 setState { copy(message = it.localizedMessage.orEmpty()) }
             }
+        }
+    }
+
+    private fun handleShowNotification() {
+        viewModelScope.launch {
+            var progres = 0
+            val id = notificationManager.buildProgressNotification()
+            while (progres != 100) {
+                delay(3000)
+                notificationManager.updateNotificationProgress(
+                    notificationId = id,
+                    currentProgress = progres
+                )
+                progres+=10
+            }
+
         }
     }
 
