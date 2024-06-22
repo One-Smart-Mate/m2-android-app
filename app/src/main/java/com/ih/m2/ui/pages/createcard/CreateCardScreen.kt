@@ -26,12 +26,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -81,8 +85,10 @@ import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
+import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.theme.Size100
 import com.ih.m2.ui.theme.Size110
 import com.ih.m2.ui.theme.Size120
@@ -92,7 +98,9 @@ import com.ih.m2.ui.theme.Size180
 import com.ih.m2.ui.theme.Size200
 import com.ih.m2.ui.theme.Size250
 import com.ih.m2.ui.utils.EMPTY
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun CreateCardScreen(
     navController: NavController,
@@ -100,6 +108,7 @@ fun CreateCardScreen(
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val snackBarHostState = remember { SnackbarHostState() }
 
     if (state.isLoading) {
         ScreenLoading(state.message)
@@ -146,12 +155,28 @@ fun CreateCardScreen(
             onSaveCard = {
                 viewModel.process(CreateCardViewModel.Action.OnSaveCard)
             },
-            audioDuration = state.audioDuration
+            audioDuration = state.audioDuration,
+            snackBarHostState = snackBarHostState
         )
     }
     if (state.message.isNotEmpty() && state.isLoading.not()) {
-        Toast.makeText(LocalContext.current, state.message, Toast.LENGTH_LONG).show()
+        val scope = rememberCoroutineScope()
+        scope.launch {
+            snackBarHostState.showSnackbar(
+                message = state.message,
+            )
+        }
+
     }
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = if (state.isCardSuccess) Color.Green else Color.Red,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar)
+        )
+    }
+
 
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state.isCardSuccess }
@@ -191,7 +216,9 @@ fun CreateCardContent(
     onDeleteEvidence: (Evidence) -> Unit,
     onSaveCard: () -> Unit,
     audioDuration: Int,
+    snackBarHostState: SnackbarHostState
 ) {
+
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding)
@@ -643,7 +670,8 @@ fun CreateCardPreview() {
                 onAddEvidence = { _, _ -> },
                 onDeleteEvidence = {},
                 onSaveCard = {},
-                audioDuration = 60
+                audioDuration = 60,
+                snackBarHostState = SnackbarHostState()
             )
         }
     }

@@ -9,7 +9,7 @@ import com.ih.m2.data.database.entities.card.CardEntity
 @Dao
 interface CardDao {
 
-    @Query("SELECT * FROM CARD_TABLE")
+    @Query("SELECT * FROM card_table")
     suspend fun getCards(): List<CardEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -24,4 +24,8 @@ interface CardDao {
 
     @Query("SELECT id FROM card_table ORDER BY id DESC LIMIT 1")
     suspend fun getLastCardId(): String
+
+    @Query("SELECT * FROM card_table WHERE stored=:stored")
+    suspend fun getLocalCards(stored: String): List<CardEntity>
+
 }

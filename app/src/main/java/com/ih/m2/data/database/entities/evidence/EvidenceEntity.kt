@@ -3,6 +3,9 @@ package com.ih.m2.data.database.entities.evidence
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.ih.m2.domain.model.Evidence
+import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.STATUS_A
 
 
 @Entity(tableName = "evidence_table")
@@ -17,3 +20,17 @@ data class EvidenceEntity(
     @ColumnInfo(name = "type")
     val type: String
 )
+
+fun EvidenceEntity.toDomain(): Evidence {
+    return Evidence(
+        id = this.id.toString(),
+        cardId = this.cardId,
+        url = this.url,
+        type = this.type,
+        createdAt = EMPTY,
+        updatedAt = EMPTY,
+        deletedAt = EMPTY,
+        status = STATUS_A,
+        siteId = EMPTY
+    )
+}

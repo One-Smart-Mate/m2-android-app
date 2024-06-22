@@ -85,7 +85,7 @@ class CreateCardViewModel @AssistedInject constructor(
         val levelList: List<NodeCardItem> = emptyList(),
         val audioDuration: Int = 0,
         val isLoading: Boolean = false,
-        val isCardSuccess: Boolean = false
+        val isCardSuccess: Boolean = false,
     ) : MavericksState
 
     sealed class Action {

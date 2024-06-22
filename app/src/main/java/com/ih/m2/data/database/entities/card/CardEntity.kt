@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.Evidence
 import com.ih.m2.ui.utils.STORED_REMOTE
 
 
@@ -139,7 +140,7 @@ data class CardEntity(
     val stored: String?
 )
 
-fun CardEntity.toDomain(): Card {
+fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
     return Card(
         id = this.id,
         siteCardId = this.siteCardId,
@@ -200,6 +201,7 @@ fun CardEntity.toDomain(): Card {
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
-        stored = this.stored ?: STORED_REMOTE
+        stored = this.stored ?: STORED_REMOTE,
+        evidences = evidences
     )
 }

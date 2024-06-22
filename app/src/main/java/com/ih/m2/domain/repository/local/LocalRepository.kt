@@ -19,6 +19,7 @@ interface LocalRepository {
     suspend fun getLastCardId(): String
     suspend fun getLastSiteCardId(): Long
     suspend fun saveCard(card: Card): Long
+    suspend fun getLocalCards(): List<Card>
 
 
     suspend fun getCardTypes(): List<CardType>

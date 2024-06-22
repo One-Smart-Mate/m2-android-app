@@ -9,6 +9,7 @@ import com.ih.m2.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.m2.data.database.dao.priority.PriorityDao
 import com.ih.m2.data.database.entities.card.toDomain
 import com.ih.m2.data.database.entities.cardtype.toDomain
+import com.ih.m2.data.database.entities.evidence.toDomain
 import com.ih.m2.data.database.entities.level.toDomain
 import com.ih.m2.data.database.entities.preclassifier.toDomain
 import com.ih.m2.data.database.entities.priority.toDomain
@@ -22,6 +23,7 @@ import com.ih.m2.domain.model.Priority
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toEntity
 import com.ih.m2.domain.repository.local.LocalRepository
+import com.ih.m2.ui.utils.STORED_LOCAL
 import javax.inject.Inject
 
 class LocalRepositoryImpl @Inject constructor(
@@ -161,4 +163,11 @@ class LocalRepositoryImpl @Inject constructor(
         return evidenceDao.insertEvidence(evidence.toEntity())
     }
 
+    override suspend fun getLocalCards(): List<Card> {
+        return cardDao.getLocalCards(stored = STORED_LOCAL).map { cardEntity ->
+            val evidences =
+                evidenceDao.getEvidencesByCard(cardEntity.cardUUID).map { it.toDomain() }
+            cardEntity.toDomain(evidences = evidences)
+        }
+    }
 }

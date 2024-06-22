@@ -8,7 +8,8 @@ import javax.inject.Inject
 
 interface GetCardsUseCase {
     suspend operator fun invoke(
-        syncRemote: Boolean = false
+        syncRemote: Boolean = false,
+        localCards: Boolean = false
     ): List<Card>
 }
 
@@ -17,13 +18,17 @@ class GetCardsUseCaseImpl @Inject constructor(
     private val localRepository: LocalRepository
 ) : GetCardsUseCase {
 
-    override suspend fun invoke(syncRemote: Boolean): List<Card> {
+    override suspend fun invoke(syncRemote: Boolean, localCards: Boolean): List<Card> {
         if (syncRemote) {
             Log.e("test","Getting and Sync Remote Cards..")
             val siteId = localRepository.getSiteId()
             val remoteCards = cardRepository.getCardsByUser(siteId)
             localRepository.saveCards(remoteCards)
         }
-        return localRepository.getCards()
+        return if (localCards) {
+            localRepository.getLocalCards()
+        } else {
+            localRepository.getCards()
+        }
     }
 }
