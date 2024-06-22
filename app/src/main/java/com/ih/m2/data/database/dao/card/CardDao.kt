@@ -17,4 +17,11 @@ interface CardDao {
 
     @Query("DELETE FROM card_table")
     suspend fun deleteCards()
+
+    @Query("SELECT site_card_id FROM card_table ORDER BY id DESC LIMIT 1")
+    suspend fun getLastSiteCardId(): Long
+
+
+    @Query("SELECT id FROM card_table ORDER BY id DESC LIMIT 1")
+    suspend fun getLastCardId(): String
 }

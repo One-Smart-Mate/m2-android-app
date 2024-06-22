@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -27,12 +28,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -40,6 +47,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -51,28 +59,33 @@ import com.ih.m2.R
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.RadioGroup
+import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
 import com.ih.m2.ui.components.launchers.VideoLauncher
+import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
+import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.Size100
 import com.ih.m2.ui.theme.Size110
+import com.ih.m2.ui.theme.Size120
 import com.ih.m2.ui.theme.Size160
 import com.ih.m2.ui.theme.Size170
 import com.ih.m2.ui.theme.Size180
@@ -86,48 +99,68 @@ fun CreateCardScreen(
     viewModel: CreateCardViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
-    CreateCardContent(
-        navController = navController,
-        cardTypeList = state.cardTypeList,
-        onCardTypeClick = {
-            viewModel.process(CreateCardViewModel.Action.SetCardType(it.id))
-        },
-        selectedCardType = state.selectedCardType,
-        preclassifierList = state.preclassifierList,
-        onPreclassifierClick = {
-            viewModel.process(CreateCardViewModel.Action.SetPreclassifier(it.id))
-        },
-        selectedPreclassifier = state.selectedPreclassifier,
-        priorityList = state.priorityList,
-        onPriorityClick = {
-            viewModel.process(CreateCardViewModel.Action.SetPriority(it.id))
-        },
-        selectedPriority = state.selectedPriority,
-        levelList = state.levelList,
-        onLevelClick = { item, key ->
-            viewModel.process(CreateCardViewModel.Action.SetLevel(item.id, key))
-        },
-        selectedLevelList = state.selectedLevelList,
-        lastLevelCompleted = state.lastLevelCompleted,
-        comment = state.comment,
-        onCommentChange = {
-            viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
-        },
-        isSecureCard = state.isSecureCard,
-        selectedSecureOption = state.selectedSecureOption,
-        onSecureOptionChange = {
-            viewModel.process(CreateCardViewModel.Action.OnSecureOptionChange(it))
-        },
-        evidences = state.evidences,
-        onAddEvidence = { uri, type ->
-            viewModel.process(CreateCardViewModel.Action.OnAddEvidence(uri, type))
-        },
-        onDeleteEvidence = {
-            viewModel.process(CreateCardViewModel.Action.OnDeleteEvidence(it))
-        }
-    )
-    if (state.message.isNotEmpty()) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+    if (state.isLoading) {
+        ScreenLoading(state.message)
+    } else {
+        CreateCardContent(
+            navController = navController,
+            cardTypeList = state.cardTypeList,
+            onCardTypeClick = {
+                viewModel.process(CreateCardViewModel.Action.SetCardType(it.id))
+            },
+            selectedCardType = state.selectedCardType,
+            preclassifierList = state.preclassifierList,
+            onPreclassifierClick = {
+                viewModel.process(CreateCardViewModel.Action.SetPreclassifier(it.id))
+            },
+            selectedPreclassifier = state.selectedPreclassifier,
+            priorityList = state.priorityList,
+            onPriorityClick = {
+                viewModel.process(CreateCardViewModel.Action.SetPriority(it.id))
+            },
+            selectedPriority = state.selectedPriority,
+            levelList = state.nodeLevelList,
+            onLevelClick = { item, key ->
+                viewModel.process(CreateCardViewModel.Action.SetLevel(item.id, key))
+            },
+            selectedLevelList = state.selectedLevelList,
+            lastLevelCompleted = state.lastLevelCompleted,
+            comment = state.comment,
+            onCommentChange = {
+                viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
+            },
+            isSecureCard = state.isSecureCard,
+            selectedSecureOption = state.selectedSecureOption,
+            onSecureOptionChange = {
+                viewModel.process(CreateCardViewModel.Action.OnSecureOptionChange(it))
+            },
+            evidences = state.evidences,
+            onAddEvidence = { uri, type ->
+                viewModel.process(CreateCardViewModel.Action.OnAddEvidence(uri, type))
+            },
+            onDeleteEvidence = {
+                viewModel.process(CreateCardViewModel.Action.OnDeleteEvidence(it))
+            },
+            onSaveCard = {
+                viewModel.process(CreateCardViewModel.Action.OnSaveCard)
+            },
+            audioDuration = state.audioDuration
+        )
+    }
+    if (state.message.isNotEmpty() && state.isLoading.not()) {
         Toast.makeText(LocalContext.current, state.message, Toast.LENGTH_LONG).show()
+    }
+
+    LaunchedEffect(viewModel, lifecycle) {
+        snapshotFlow { state.isCardSuccess }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (it) {
+                    navController.popBackStack()
+                }
+            }
     }
 }
 
@@ -155,7 +188,9 @@ fun CreateCardContent(
     onSecureOptionChange: ((String) -> Unit)? = null,
     evidences: List<Evidence>,
     onAddEvidence: (Uri, EvidenceType) -> Unit,
-    onDeleteEvidence: (Evidence) -> Unit
+    onDeleteEvidence: (Evidence) -> Unit,
+    onSaveCard: () -> Unit,
+    audioDuration: Int,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -178,12 +213,16 @@ fun CreateCardContent(
                     CustomSpacer()
                     HorizontalDivider()
                     SectionCardEvidence(
+                        audioDuration = audioDuration,
                         onAddEvidence = onAddEvidence
                     )
                     SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                         onDeleteEvidence(it)
                     }
                     SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
+                        onDeleteEvidence(it)
+                    }
+                    SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
                         onDeleteEvidence(it)
                     }
                     CustomSpacer()
@@ -211,6 +250,12 @@ fun CreateCardContent(
                     }
                     CustomSpacer()
                     if (isSecureCard) {
+                        CustomSpacer()
+                        Text(
+                            text = stringResource(R.string.card_type),
+                            style = MaterialTheme.typography.titleLarge
+                                .copy(fontWeight = FontWeight.Bold)
+                        )
                         RadioGroup(
                             modifier = Modifier.fillParentMaxWidth(),
                             items = listOf(
@@ -223,10 +268,10 @@ fun CreateCardContent(
                                 onSecureOptionChange(it)
                             }
                         }
-                        CustomSpacer()
+                        CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                     }
                     CustomButton(text = stringResource(R.string.save)) {
-
+                        onSaveCard()
                     }
                 }
 
@@ -280,7 +325,38 @@ fun SectionVideosEvidence(
             LazyRow {
                 items(videoEvidences) {
                     VideoPlayer(
-                        modifier = Modifier.width(Size200).height(Size250),
+                        modifier = Modifier
+                            .width(Size200)
+                            .height(Size250),
+                        url = it.url,
+                        showIcon = true
+                    ) {
+                        onDeleteEvidence(it)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun SectionAudiosEvidence(
+    audioEvidences: List<Evidence>,
+    onDeleteEvidence: (Evidence) -> Unit
+) {
+    if (audioEvidences.isNotEmpty()) {
+        Column {
+            Text(
+                text = stringResource(R.string.audios),
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+            LazyRow {
+                items(audioEvidences) {
+                    VideoPlayer(
+                        modifier = Modifier
+                            .width(Size120)
+                            .height(Size160),
                         url = it.url,
                         showIcon = true
                     ) {
@@ -403,8 +479,12 @@ fun CardTypeContent(
 
 @Composable
 fun SectionCardEvidence(
+    audioDuration: Int,
     onAddEvidence: (Uri, EvidenceType) -> Unit
 ) {
+
+    var audioBottomSheet by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
@@ -413,9 +493,24 @@ fun SectionCardEvidence(
         CameraLauncher {
             onAddEvidence(it, EvidenceType.IMCR)
         }
-//        AudioLauncher(10) {}
         VideoLauncher {
             onAddEvidence(it, EvidenceType.VICR)
+        }
+        CardItemIcon(icon = painterResource(id = R.drawable.ic_voice)) {
+            audioBottomSheet = true
+        }
+
+        if (audioBottomSheet) {
+            RecordAudioBottomSheet(
+                onComplete = {
+                    audioBottomSheet = false
+                    onAddEvidence(it, EvidenceType.AUCR)
+                },
+                onDismissRequest = {
+                    audioBottomSheet = false
+                },
+                maxRecord = audioDuration
+            )
         }
     }
 }
@@ -469,7 +564,6 @@ fun CardItemIcon(
         )
     }
 }
-
 
 
 @Composable
@@ -546,8 +640,10 @@ fun CreateCardPreview() {
                 comment = EMPTY,
                 onCommentChange = {},
                 evidences = emptyList(),
-                onAddEvidence = {_,_ -> },
-                onDeleteEvidence = {}
+                onAddEvidence = { _, _ -> },
+                onDeleteEvidence = {},
+                onSaveCard = {},
+                audioDuration = 60
             )
         }
     }

@@ -27,3 +27,16 @@ fun Level.toEntity(): LevelEntity {
         status = this.status
     )
 }
+
+fun List<Level>.toNodeItemList(): List<NodeCardItem> {
+
+    return this.map {
+        NodeCardItem(
+            id = it.id,
+            name = it.name,
+            description = it.description,
+            superiorId = it.superiorId
+        )
+    }
+
+}

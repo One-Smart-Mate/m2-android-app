@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName
 import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
 import com.ih.m2.ui.extensions.DayAndDateWithYear
+import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
@@ -19,8 +20,10 @@ import com.ih.m2.ui.utils.STATUS_C
 import com.ih.m2.ui.utils.STATUS_P
 import com.ih.m2.ui.utils.STATUS_R
 import com.ih.m2.ui.utils.STATUS_V
+import com.ih.m2.ui.utils.STORED_LOCAL
 import com.ih.m2.ui.utils.STORED_REMOTE
 import com.ih.m2.ui.utils.UNASSIGNED_CARDS
+import java.util.Date
 
 data class Card(
     val id: String,
@@ -157,6 +160,85 @@ data class Card(
                 ""
             )
         }
+
+        fun fromCreateCard(
+            cardId: String,
+            areaId: Long,
+            level: Long,
+            priorityId: String,
+            cardTypeValue: String,
+            cardTypeId: String,
+            preclassifierId: String,
+            comment: String,
+            hasImages: Int,
+            hasVideos: Int,
+            hasAudios: Int,
+            evidences: List<Evidence>
+        ): Card {
+            return Card(
+                id = EMPTY,
+                siteCardId = 0,
+                siteID = EMPTY,
+                siteCode = EMPTY,
+                cardUUID = cardId,
+                cardTypeColor = EMPTY,
+                feasibility = EMPTY,
+                effect = EMPTY,
+                status = STATUS_A,
+                cardCreationDate = Date().YYYY_MM_DD_HH_MM_SS,
+                cardDueDate = EMPTY,
+                areaID = areaId,
+                areaName = EMPTY,
+                level = level,
+                levelName = EMPTY,
+                superiorID = EMPTY,
+                priorityID = priorityId,
+                priorityCode = EMPTY,
+                priorityDescription = EMPTY,
+                cardTypeMethodology = EMPTY,
+                cardTypeMethodologyName = EMPTY,
+                cardTypeValue = cardTypeValue,
+                cardTypeID = cardTypeId,
+                cardTypeName = EMPTY,
+                preclassifierId = preclassifierId,
+                preclassifierCode = EMPTY,
+                preclassifierDescription = EMPTY,
+                creatorID = EMPTY,
+                creatorName = EMPTY,
+                responsableID = EMPTY,
+                responsableName = EMPTY,
+                mechanicID = EMPTY,
+                mechanicName = EMPTY,
+                userProvisionalSolutionID = EMPTY,
+                userProvisionalSolutionName = EMPTY,
+                userAppProvisionalSolutionID = EMPTY,
+                userAppProvisionalSolutionName = EMPTY,
+                userDefinitiveSolutionID = EMPTY,
+                userDefinitiveSolutionName = EMPTY,
+                userAppDefinitiveSolutionID = EMPTY,
+                userAppDefinitiveSolutionName = EMPTY,
+                managerID = EMPTY,
+                managerName = EMPTY,
+                cardManagerCloseDate = EMPTY,
+                commentsManagerAtCardClose = EMPTY,
+                commentsAtCardCreation = comment,
+                cardProvisionalSolutionDate = EMPTY,
+                commentsAtCardProvisionalSolution = EMPTY,
+                cardDefinitiveSolutionDate = EMPTY,
+                commentsAtCardDefinitiveSolution = EMPTY,
+                evidenceAudioCreation = hasAudios,
+                evidenceVideoCreation = hasVideos,
+                evidenceImageCreation = hasImages,
+                evidenceAudioClose = 0,
+                evidenceVideoClose = 0,
+                evidenceImageClose = 0,
+                createdAt = EMPTY,
+                updatedAt = EMPTY,
+                deletedAt = EMPTY,
+                evidences = evidences,
+                stored = STORED_LOCAL
+            )
+        }
     }
 }
 
@@ -262,7 +344,7 @@ fun Card.toEntity(): CardEntity {
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
-        stored = STORED_REMOTE
+        stored = this.stored ?: STORED_REMOTE
     )
 }
 

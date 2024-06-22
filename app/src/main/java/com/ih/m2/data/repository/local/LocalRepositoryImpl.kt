@@ -3,6 +3,7 @@ package com.ih.m2.data.repository.local
 import com.ih.m2.data.database.dao.UserDao
 import com.ih.m2.data.database.dao.card.CardDao
 import com.ih.m2.data.database.dao.cardtype.CardTypeDao
+import com.ih.m2.data.database.dao.evidence.EvidenceDao
 import com.ih.m2.data.database.dao.level.LevelDao
 import com.ih.m2.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.m2.data.database.dao.priority.PriorityDao
@@ -14,6 +15,7 @@ import com.ih.m2.data.database.entities.priority.toDomain
 import com.ih.m2.data.database.entities.toDomain
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
+import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.Preclassifier
 import com.ih.m2.domain.model.Priority
@@ -28,7 +30,8 @@ class LocalRepositoryImpl @Inject constructor(
     private val cardTypeDao: CardTypeDao,
     private val preclassifierDao: PreclassifierDao,
     private val priorityDao: PriorityDao,
-    private val levelDao: LevelDao
+    private val levelDao: LevelDao,
+    private val evidenceDao: EvidenceDao
 ) : LocalRepository {
 
     override suspend fun saveUser(user: User): Long {
@@ -68,7 +71,7 @@ class LocalRepositoryImpl @Inject constructor(
     override suspend fun saveCardTypes(list: List<CardType>) {
         cardTypeDao.deleteCardTypes()
         list.forEach {
-           cardTypeDao.insertCardType(it.toEntity())
+            cardTypeDao.insertCardType(it.toEntity())
         }
     }
 
@@ -124,6 +127,38 @@ class LocalRepositoryImpl @Inject constructor(
 
     override suspend fun removeLevels() {
         levelDao.deleteLevels()
+    }
+
+    override suspend fun getLastCardId(): String {
+        return cardDao.getLastCardId()
+    }
+
+    override suspend fun getLastSiteCardId(): Long {
+        return cardDao.getLastSiteCardId()
+    }
+
+    override suspend fun getCardType(id: String): CardType {
+        return cardTypeDao.getCardType(id).toDomain()
+    }
+
+    override suspend fun getPreclassifier(id: String): Preclassifier {
+        return preclassifierDao.getPreclassifier(id).toDomain()
+    }
+
+    override suspend fun getPriority(id: String): Priority {
+        return priorityDao.getPriority(id).toDomain()
+    }
+
+    override suspend fun getLevel(id: String): Level {
+        return levelDao.getLevel(id).toDomain()
+    }
+
+    override suspend fun saveCard(card: Card): Long {
+        return cardDao.insertCard(card.toEntity())
+    }
+
+    override suspend fun saveEvidence(evidence: Evidence): Long {
+        return evidenceDao.insertEvidence(evidence.toEntity())
     }
 
 }

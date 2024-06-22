@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ih.m2.data.database.entities.cardtype.CardTypeEntity
+import com.ih.m2.domain.model.CardType
 
 @Dao
 interface CardTypeDao {
@@ -17,4 +18,7 @@ interface CardTypeDao {
 
     @Query("DELETE FROM card_type_table")
     suspend fun deleteCardTypes()
+
+    @Query("SELECT * FROM card_type_table WHERE id=:id")
+    suspend fun getCardType(id: String): CardTypeEntity
 }

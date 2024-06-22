@@ -65,8 +65,8 @@ fun AccountScreen(
             },
             context = getContext(),
             onDevClick = {
-                //navController.navigate(Screen.Dev.route)
-                viewModel.process(AccountViewModel.Action.ShowNotification)
+                navController.navigate(Screen.Dev.route)
+                //  viewModel.process(AccountViewModel.Action.ShowNotification)
             }
         )
     }
@@ -90,7 +90,7 @@ fun AccountContent(
     navController: NavController,
     onAccount: () -> Unit,
     onLogout: () -> Unit,
-    onSyncCatalogs:() -> Unit,
+    onSyncCatalogs: () -> Unit,
     context: Context,
     onDevClick: () -> Unit
 ) {
@@ -99,7 +99,10 @@ fun AccountContent(
             modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
-                CustomAppBar(navController = navController, title = stringResource(R.string.account))
+                CustomAppBar(
+                    navController = navController,
+                    title = stringResource(R.string.account)
+                )
             }
 
             item {

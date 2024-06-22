@@ -40,6 +40,7 @@
     <string name="due_date">Due date</string>
     <string name="actions">Actions</string>
     <string name="card_types">Card Types</string>
+    <string name="card_type">Card Type</string>
     <string name="priority">Priority</string>
     <string name="save">Save</string>
     <string name="created_date">Created date</string>
@@ -60,4 +61,9 @@
     <string name="sync_catalogs">Sync catalogs…</string>
     <string name="safe">Safe</string>
     <string name="unsafe">UnSafe</string>
+
+    <string name="limit_images">Limit of images allowed for this card type</string>
+    <string name="limit_videos">Limit of videos allowed for this card type</string>
+    <string name="limit_audios">Limit of audios allowed for this card type></string>
+    <string name="saving_card">Saving card...</string>
 </resources>

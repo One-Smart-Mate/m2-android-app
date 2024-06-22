@@ -20,6 +20,8 @@ const val IMG_CLOSE = "IMCL"
 const val AUDIO_CREATION = "AUCR"
 const val AUDIO_CLOSE = "AUCL"
 const val STORED_REMOTE = "stored_network"
+const val STORED_LOCAL = "stored_local;"
+
 const val CARD_MAINTENANCE = "Mantenimiento"
 const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"

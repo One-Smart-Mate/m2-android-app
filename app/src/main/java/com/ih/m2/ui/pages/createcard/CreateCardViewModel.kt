@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.createcard
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.airbnb.mvrx.MavericksState
@@ -7,23 +8,43 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.R
+import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
+import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.NodeCardItem
+import com.ih.m2.domain.model.hasAudios
+import com.ih.m2.domain.model.hasImages
+import com.ih.m2.domain.model.hasVideos
 import com.ih.m2.domain.model.isMaintenanceCardType
+import com.ih.m2.domain.model.toAudios
+import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toNodeItemCard
 import com.ih.m2.domain.model.toNodeItemList
+import com.ih.m2.domain.model.toVideos
+import com.ih.m2.domain.usecase.card.SaveCardUseCase
+import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
+import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
+import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.STATUS_A
+import com.ih.m2.ui.utils.STORED_LOCAL
+import com.ih.m2.ui.utils.STORED_REMOTE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import timber.log.Timber
+import java.util.Date
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -32,7 +53,11 @@ class CreateCardViewModel @AssistedInject constructor(
     private val coroutineContext: CoroutineContext,
     private val getCardTypesUseCase: GetCardTypesUseCase,
     private val getPrioritiesUseCase: GetPrioritiesUseCase,
-    private val getPreclassifiersUseCase: GetPreclassifiersUseCase
+    private val getPreclassifiersUseCase: GetPreclassifiersUseCase,
+    private val saveCardUseCase: SaveCardUseCase,
+    private val getLevelsUseCase: GetLevelsUseCase,
+    private val getCardTypeUseCase: GetCardTypeUseCase,
+    @ApplicationContext private val context: Context
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
     init {
@@ -42,11 +67,12 @@ class CreateCardViewModel @AssistedInject constructor(
     data class UiState(
         val cardTypeList: List<NodeCardItem> = emptyList(),
         val selectedCardType: String = EMPTY,
+        val cardType: CardType? = null,
         val preclassifierList: List<NodeCardItem> = emptyList(),
         val selectedPreclassifier: String = EMPTY,
         val priorityList: List<NodeCardItem> = emptyList(),
         val selectedPriority: String = "",
-        val levelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
+        val nodeLevelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
         val selectedLevelList: Map<Int, String> = mutableMapOf(),
         val lastSelectedLevel: String = EMPTY,
         val lastLevelCompleted: Boolean = false,
@@ -55,7 +81,11 @@ class CreateCardViewModel @AssistedInject constructor(
         val selectedSecureOption: String = EMPTY,
         val message: String = EMPTY,
         val evidences: List<Evidence> = emptyList(),
-        val cardId: String = UUID.randomUUID().toString()
+        val cardId: String = UUID.randomUUID().toString(),
+        val levelList: List<NodeCardItem> = emptyList(),
+        val audioDuration: Int = 0,
+        val isLoading: Boolean = false,
+        val isCardSuccess: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -68,9 +98,10 @@ class CreateCardViewModel @AssistedInject constructor(
         data class SetLevel(val id: String, val key: Int) : Action()
         data class OnCommentChange(val comment: String) : Action()
         data class OnSecureOptionChange(val option: String) : Action()
-        data object SaveCard : Action()
+        data object OnSaveCard : Action()
         data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
-        data class OnDeleteEvidence(val evidence: Evidence): Action()
+        data class OnDeleteEvidence(val evidence: Evidence) : Action()
+        data object GetLevels : Action()
     }
 
     fun process(action: Action) {
@@ -84,27 +115,38 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.SetLevel -> handleSetLevel(action.id, action.key)
             is Action.OnCommentChange -> handleOnCommentChange(action.comment)
             is Action.OnSecureOptionChange -> handleOnSecureOptionChange(action.option)
-            is Action.SaveCard -> handleSaveCard()
+            is Action.OnSaveCard -> handleOnSaveCard()
             is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
             is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
+            is Action.GetLevels -> handleGetLevels()
         }
     }
 
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
             val state = stateFlow.first()
+            val cardType = state.cardType
+            val maxImages = cardType?.quantityImagesCreate.defaultIfNull(0)
+            if (state.evidences.toImages().size == maxImages) {
+                setState { copy(message = context.getString(R.string.limit_images)) }
+                return@launch
+            }
+            val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
+            if (state.evidences.toVideos().size == maxVideos) {
+                setState { copy(message = context.getString(R.string.limit_videos)) }
+                return@launch
+            }
+            val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
+            if (state.evidences.toAudios().size == maxAudios) {
+                setState { copy(message = context.getString(R.string.limit_audios)) }
+                return@launch
+            }
             val list = state.evidences.toMutableList()
             list.add(
-                Evidence(
-                    id = UUID.randomUUID().toString(),
+                Evidence.fromCreateEvidence(
                     cardId = state.cardId,
-                    siteId = EMPTY,
                     url = uri.toString(),
-                    type = type.name,
-                    status = STATUS_A,
-                    createdAt = null,
-                    updatedAt = null,
-                    deletedAt = null
+                    type = type.name
                 )
             )
             setState { copy(evidences = list) }
@@ -136,14 +178,18 @@ class CreateCardViewModel @AssistedInject constructor(
                     selectedPreclassifier = EMPTY,
                     selectedPriority = EMPTY,
                     priorityList = emptyList(),
-                    levelList = emptyMap(),
+                    nodeLevelList = emptyMap(),
                     selectedLevelList = emptyMap(),
                     lastSelectedLevel = EMPTY,
                     isSecureCard = false,
-                    selectedSecureOption = EMPTY
+                    selectedSecureOption = EMPTY,
+                    evidences = emptyList(),
+                    lastLevelCompleted = false,
+                    comment = EMPTY
                 )
             }
             process(Action.GetPreclassifiers(id))
+            handleGetCardType(id)
             val state = stateFlow.first()
             val cardType = state.cardTypeList.find { it.id == id }?.isMaintenanceCardType()
             if (cardType.defaultIfNull(false)) {
@@ -151,7 +197,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 setState { copy(isSecureCard = true) }
             } else {
                 val levelList = getLevelById("0", 0)
-                setState { copy(levelList = levelList) }
+                setState { copy(nodeLevelList = levelList) }
             }
         }
     }
@@ -163,14 +209,14 @@ class CreateCardViewModel @AssistedInject constructor(
     private fun handleSetPriority(id: String) {
         viewModelScope.launch {
             val levelList = getLevelById("0", 0)
-            setState { copy(selectedPriority = id, levelList = levelList) }
+            setState { copy(selectedPriority = id, nodeLevelList = levelList) }
         }
     }
 
     private suspend fun getLevelById(id: String, selectedKey: Int): Map<Int, List<NodeCardItem>> {
-        val firstList = mockLevels().filter { it.superiorId == id }
+        val firstList = stateFlow.first().levelList.filter { it.superiorId == id }
         val state = stateFlow.first()
-        val map = state.levelList.toMutableMap()
+        val map = state.nodeLevelList.toMutableMap()
         val selectedMap = state.selectedLevelList.toMutableMap()
         for (index in selectedKey until map.keys.size) {
             map[index] = emptyList()
@@ -189,12 +235,15 @@ class CreateCardViewModel @AssistedInject constructor(
             val newKey = key.plus(1)
             val list = getLevelById(id, newKey)
             checkLastLevelSection(id)
-            setState { copy(levelList = list) }
+            setState { copy(nodeLevelList = list) }
         }
     }
 
-    private fun checkLastLevelSection(id: String) {
-        val isEmpty = mockLevels().none { it.superiorId == id }
+    private suspend fun checkLastLevelSection(id: String) {
+        val isEmpty = stateFlow.first().levelList.none { it.superiorId == id }
+        if (isEmpty.not()) {
+            setState { copy(evidences = emptyList()) }
+        }
         setState { copy(lastLevelCompleted = isEmpty) }
     }
 
@@ -218,6 +267,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 getCardTypesUseCase()
             }.onSuccess {
                 setState { copy(cardTypeList = it.toNodeItemList()) }
+                process(Action.GetLevels)
             }.onFailure {
                 setState { copy(message = it.localizedMessage.orEmpty()) }
             }
@@ -236,133 +286,57 @@ class CreateCardViewModel @AssistedInject constructor(
         }
     }
 
-    private fun mockLevels(): List<NodeCardItem> {
-        return listOf(
-            NodeCardItem(
-                id = "1",
-                name = "Procesos A",
-                description = "Area de procesos A",
-                superiorId = "0"
-            ),
-            NodeCardItem(
-                id = "2",
-                name = "Procesos B",
-                description = "Area de procesos B",
-                superiorId = "0"
-            ),
-            NodeCardItem(
-                id = "3",
-                name = "Mixer 1",
-                description = "Area de mixer 1",
-                superiorId = "1"
-            ),
-            NodeCardItem(
-                id = "4",
-                name = "Mixer 2",
-                description = "Area de mixer 2",
-                superiorId = "1"
-            ),
-            NodeCardItem(
-                id = "5",
-                name = "Bomba 1",
-                description = "Area de bomba 1",
-                superiorId = "2"
-            ),
-            NodeCardItem(
-                id = "6",
-                name = "Agitador 1",
-                description = "Area de agitador 1",
-                superiorId = "4"
-            ),
-            NodeCardItem(
-                id = "7",
-                name = "Motor 1",
-                description = "Area de motor 1",
-                superiorId = "4"
-            ),
-            NodeCardItem(
-                id = "8",
-                name = "Maq 1",
-                description = "Area de maq 8",
-                superiorId = "6"
-            ),
-        )
+    private fun handleGetLevels() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getLevelsUseCase()
+            }.onSuccess {
+                setState { copy(levelList = it.toNodeItemList()) }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
+        }
     }
 
-    private fun handleSaveCard() {
+    private fun handleOnSaveCard() {
+        setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
         viewModelScope.launch(coroutineContext) {
+            val state = stateFlow.first()
+            val card = Card.fromCreateCard(
+                cardId = state.cardId,
+                areaId = state.lastSelectedLevel.toLong(),
+                level = state.selectedLevelList.keys.last().toLong(),
+                priorityId = state.selectedPriority,
+                cardTypeValue = state.selectedSecureOption,
+                cardTypeId = state.selectedCardType,
+                preclassifierId = state.selectedPreclassifier,
+                comment = state.comment,
+                hasImages = state.evidences.hasImages(),
+                hasVideos = state.evidences.hasVideos(),
+                hasAudios = state.evidences.hasAudios(),
+                evidences = state.evidences
+            )
+            kotlin.runCatching {
+                saveCardUseCase(card)
+            }.onSuccess {
+                Log.e("Test", "Success ${it}")
+                setState { copy(isLoading = false, isCardSuccess = true) }
+            }.onFailure {
+                Log.e("test","Failure $it")
+                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+            }
+        }
+    }
 
-            //Valores que si se llenan de la create card/
-            //alinear valores
-            /*
-            //Mantenimiento
-                siteCardId = " es el ID de las tarjetas de ese sitio ->
-                siteId = site id del usuario
-                carUUUID = autogenerado
-                feasibility = Valores Alto y Bajo es un checkbox que diga alto y bajo pero cuando se crea se manda null
-                effect = Valores Alto y Bajo es un checkbox pero cuando se crea se manda en null
-                cardCreationDate = fecha en la que se crea la tarjeta
-                areaId = el id del ultimo nodo
-                priorityId = el id priority
-                cardTypeValue = safe o unsafe
-                cardTypeId = id del card type
-                preclassifierId = preclassfier id
-                creatorId = usuario que la creo
-                responsableId =  este se llena hasta el mantenimiento entonces se manda en 0
-                mechanicId = este se llena hasta el mantenimiento se madna en 0
-                userProvisionalSolutionId = este valor se llena cuando se hace el user provisional solution  quien hizo la reparacion-> no se llena
-                userAppProvisionalSolutionId =  este es el mismo de arriba pero es de la app -> no se llena
-                userDefinitiveSolutionId = mismo que el de arriba pero el en definitive
-                userAppDefinitiveSolutionId =
-                managerId  = es el id del responsable del ultimo nivel del level =,
-                solucion provisional no lleva evidencia ->
-                agregar campos a la solucion provisional de evidencia
-                evidenceAucr son 1 o 0 para saber si tiene o no para decirle a caleb que tiene que hacer y consultar con estos
-
-
-
-
-                existing card zone -> al crear en la app se visualiza con status A, P y V solo se visualiza si la puede crear aun asi
-            */
-
-
-            //Provisional solution
-            /*
-            *
-            *user provisional solution id se llena en el combo
-            * y el app es el que se llena en la app el usuario logeado
-            *
-            * el edit de la card es we solo crud web
-            * */
-
-//            val createCardUseCase = CreateCardRequest(
-            //siteCardId = ""
-//                siteId = user.siteId,
-//                cardUUID = UUID.randomUUID().toString(),
-//                feasibility = "", //Este valor se llena en el mantenimiento de la card
-//                effect = "", //revisar este valor
-//                cardCreationDate = Date().YYYY_MM_DD_HH_MM_SS,
-//                areaId = 0,
-//                priorityId = 0,
-//                cardTypeValue = "Sage",
-//                cardTypeId = cardType.id,
-//                preclassifierId = preclassifier.id,
-//                creatorId = user.userId,
-//                responsableId = 0, //revisar este valor
-//                mechanicId = 0, //revsiar este valor
-//                userProvisionalSolutionId = 0, //revisar este valor
-//                userAppProvisionalSolutionId = 0, //revisar estae valor
-//                userDefinitiveSolutionId = 0, //revisar esste valr
-//                userAppDefinitiveSolutionId = 0, //revisar este valor
-//                managerId = 0, //revisar este valor
-//                commentsAtCardCreation = "",
-//                evidenceAucl = 0, //revisar estos es el valor maximo que puedes subir
-//                evidenceAucr = 0,
-//                evidenceImcl = 0,
-//                evidenceImcr = 0,
-//                evidenceVicl = 0,
-//                evidenceVicr = 0
-//            )
+    private fun handleGetCardType(id: String) {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getCardTypeUseCase(id)
+            }.onSuccess {
+                setState { copy(cardType = it, audioDuration = it.audiosDurationCreate.defaultIfNull(60)) }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
         }
     }
 

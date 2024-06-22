@@ -6,6 +6,10 @@ import com.ih.m2.domain.usecase.card.GetCardDetailUseCase
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCaseImpl
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.GetCardsUseCaseImpl
+import com.ih.m2.domain.usecase.card.SaveCardUseCase
+import com.ih.m2.domain.usecase.card.SaveCardUseCaseImpl
+import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
+import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCaseImpl
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCaseImpl
 import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCase
@@ -51,7 +55,7 @@ interface DomainBindingModule {
     fun bindGetCardsUseCase(getCardsUseCaseImpl: GetCardsUseCaseImpl): GetCardsUseCase
 
     @Binds
-    fun bindGetCardTypeUseCase(getCardTypesUseCaseImpl: GetCardTypesUseCaseImpl): GetCardTypesUseCase
+    fun bindGetCardTypesUseCase(getCardTypesUseCaseImpl: GetCardTypesUseCaseImpl): GetCardTypesUseCase
 
     @Binds
     fun bindGetPreclassifiersUseCase(getPreclassifiersUseCaseImpl: GetPreclassifiersUseCaseImpl): GetPreclassifiersUseCase
@@ -73,4 +77,10 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetLevelsUseCase(getLevelsUseCaseImpl: GetLevelsUseCaseImpl): GetLevelsUseCase
+
+    @Binds
+    fun bindSaveCardUseCase(saveCardUseCaseImpl: SaveCardUseCaseImpl): SaveCardUseCase
+
+    @Binds
+    fun bindGetCardTypeUseCase(getCardTypeUseCaseImpl: GetCardTypeUseCaseImpl): GetCardTypeUseCase
 }
