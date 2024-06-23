@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings.Global
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -11,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,16 +27,19 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
 
 import com.google.firebase.storage.FirebaseStorage
+import com.ih.m2.MainActivity
 import com.ih.m2.R
 import com.ih.m2.core.ui.functions.createAudioFile
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.VideoPlayer
+import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.launchers.AudioContent
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
 import com.ih.m2.ui.components.launchers.VideoLauncher
 import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
+import com.ih.m2.ui.extensions.getActivity
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.utils.AndroidAudioPlayer
 import com.ih.m2.ui.utils.AndroidAudioRecorder
@@ -55,38 +60,48 @@ fun DevScreen() {
         mutableStateOf(false)
     }
 
+
+    val context = LocalContext.current
     Scaffold { padding ->
         LazyRow(
             modifier = Modifier.defaultScreen(padding)
         ) {
             item {
-                CameraLauncher {
-                    Log.e("Test", "Result uri image $it")
-                    GlobalScope.launch {
-                        uploadEvidence(it)
+
+                CustomButton(text = "Execute") {
+                    context.getActivity<MainActivity>()?.let {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                            it.workRequest(context)
+                        }
                     }
                 }
-
-                VideoLauncher(videoLimitDuration = 10) {
-                    Log.e("Test", "Result uri video $it")
-                    GlobalScope.launch {
-                        uploadEvidenceVideo(it)
-                    }
-                }
-
-                CardItemIcon(icon = painterResource(id = R.drawable.ic_voice)) {
-                    showButton = true
-                }
-
-                if (showButton) {
-                    RecordAudioBottomSheet(
-                        onComplete = {
-                            showButton = false
-                        },
-                        onDismissRequest = {
-                            showButton = false
-                        })
-                }
+//                CameraLauncher {
+//                    Log.e("Test", "Result uri image $it")
+//                    GlobalScope.launch {
+//                        uploadEvidence(it)
+//                    }
+//                }
+//
+//                VideoLauncher(videoLimitDuration = 10) {
+//                    Log.e("Test", "Result uri video $it")
+//                    GlobalScope.launch {
+//                        uploadEvidenceVideo(it)
+//                    }
+//                }
+//
+//                CardItemIcon(icon = painterResource(id = R.drawable.ic_voice)) {
+//                    showButton = true
+//                }
+//
+//                if (showButton) {
+//                    RecordAudioBottomSheet(
+//                        onComplete = {
+//                            showButton = false
+//                        },
+//                        onDismissRequest = {
+//                            showButton = false
+//                        })
+//                }
             }
         }
     }

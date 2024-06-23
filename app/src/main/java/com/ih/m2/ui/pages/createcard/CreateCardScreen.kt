@@ -59,6 +59,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import com.ih.m2.MainActivity
 import com.ih.m2.R
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
@@ -79,9 +80,11 @@ import com.ih.m2.ui.components.launchers.CameraLauncher
 import com.ih.m2.ui.components.launchers.VideoLauncher
 import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
+import com.ih.m2.ui.extensions.getActivity
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
+import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
 import com.ih.m2.ui.theme.M2androidappTheme
@@ -109,7 +112,7 @@ fun CreateCardScreen(
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
-
+    val context = LocalContext.current
     if (state.isLoading) {
         ScreenLoading(state.message)
     } else {
@@ -184,6 +187,7 @@ fun CreateCardScreen(
             .collect {
                 if (it) {
                     navController.popBackStack()
+                    context.runWorkRequest()
                 }
             }
     }

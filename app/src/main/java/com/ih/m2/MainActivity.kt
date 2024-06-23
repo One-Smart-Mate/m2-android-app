@@ -53,12 +53,12 @@ class MainActivity : ComponentActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun workRequest(context: Context) {
+     fun workRequest(context: Context) {
         val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
             .setInitialDelay(Duration.ofSeconds(5))
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(15)
+                duration = Duration.ofSeconds(60)
             ).build()
         WorkManager.getInstance(context).enqueue(workRequest)
     }

@@ -6,6 +6,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import dagger.assisted.Assisted
@@ -20,11 +21,17 @@ class CardWorker @AssistedInject constructor(
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
         return try {
-            Log.e("test","Wroking!!!")
-            val localCardList = getCardsUseCase(localCards = true)
-            syncCardsUseCase(localCardList)
-            Log.e("test","Cards saved")
-            Result.success()
+            val isConnected = NetworkConnection.isConnected()
+            Log.e("test", "Working!!!  $isConnected")
+            return if (isConnected) {
+                val localCardList = getCardsUseCase(localCards = true)
+                syncCardsUseCase(localCardList)
+                getCardsUseCase(syncRemote = true)
+                Log.e("test", "Cards saved")
+                Result.success()
+            } else {
+                Result.failure()
+            }
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
             Result.failure()

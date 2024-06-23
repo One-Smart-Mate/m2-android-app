@@ -14,11 +14,10 @@ interface SyncCardsUseCase {
 class SyncCardsUseCaseImpl @Inject constructor(
     private val cardRepository: CardRepository,
     private val localRepository: LocalRepository,
-    private val firebaseStorageRepository: FirebaseStorageRepository
+    private val firebaseStorageRepository: FirebaseStorageRepository,
 ) : SyncCardsUseCase {
 
     override suspend fun invoke(cardList: List<Card>) {
-
         cardList.forEach { card ->
             val evidences = mutableListOf<Pair<String,String>>()
             card.evidences?.forEach { evidence ->
