@@ -170,4 +170,12 @@ class LocalRepositoryImpl @Inject constructor(
             cardEntity.toDomain(evidences = evidences)
         }
     }
+
+    override suspend fun deleteEvidence(id: String) {
+        evidenceDao.deleteEvidence(id)
+    }
+
+    override suspend fun deleteCard(id: String) {
+        cardDao.deleteCard(id)
+    }
 }

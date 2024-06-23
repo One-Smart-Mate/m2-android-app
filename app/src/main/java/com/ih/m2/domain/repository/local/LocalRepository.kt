@@ -20,6 +20,7 @@ interface LocalRepository {
     suspend fun getLastSiteCardId(): Long
     suspend fun saveCard(card: Card): Long
     suspend fun getLocalCards(): List<Card>
+    suspend fun deleteCard(id: String)
 
 
     suspend fun getCardTypes(): List<CardType>
@@ -45,4 +46,5 @@ interface LocalRepository {
     suspend fun removePriorities()
 
     suspend fun saveEvidence(evidence: Evidence): Long
+    suspend fun deleteEvidence(id: String)
 }

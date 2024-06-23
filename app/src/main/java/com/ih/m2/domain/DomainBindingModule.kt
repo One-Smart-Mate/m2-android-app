@@ -8,6 +8,8 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.GetCardsUseCaseImpl
 import com.ih.m2.domain.usecase.card.SaveCardUseCase
 import com.ih.m2.domain.usecase.card.SaveCardUseCaseImpl
+import com.ih.m2.domain.usecase.card.SyncCardsUseCase
+import com.ih.m2.domain.usecase.card.SyncCardsUseCaseImpl
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCaseImpl
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
@@ -83,4 +85,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetCardTypeUseCase(getCardTypeUseCaseImpl: GetCardTypeUseCaseImpl): GetCardTypeUseCase
+
+    @Binds
+    fun bindSyncCardsUseCase(syncCardsUseCaseImpl: SyncCardsUseCaseImpl): SyncCardsUseCase
 }

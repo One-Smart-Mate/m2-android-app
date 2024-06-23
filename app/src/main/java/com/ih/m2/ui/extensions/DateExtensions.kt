@@ -38,3 +38,5 @@ val Date.nameOfMonth: String get() = SimpleDateFormat(MMM, Locale.getDefault()).
 fun String?.toFormatDate(): String {
     return this?.toDate()?.DayAndDateWithYear ?: EMPTY
 }
+
+fun Date.timeStamp() = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(this)

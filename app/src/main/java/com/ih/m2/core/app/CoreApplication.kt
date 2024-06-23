@@ -8,6 +8,8 @@ import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.ih.m2.core.workmanager.CardWorker
+import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -24,12 +26,15 @@ class CoreApplication:  Application(), Configuration.Provider {
             .build()
 }
 
-class CustomWorkerFactory @Inject constructor(): WorkerFactory() {
+class CustomWorkerFactory @Inject constructor(
+    private val getCardsUseCase: GetCardsUseCase,
+    private val syncCardsUseCase: SyncCardsUseCase
+): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker {
-        return CardWorker(appContext, workerParameters)
+        return CardWorker(appContext, workerParameters, getCardsUseCase, syncCardsUseCase)
     }
 }
