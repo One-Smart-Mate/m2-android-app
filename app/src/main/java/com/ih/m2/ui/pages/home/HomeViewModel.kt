@@ -45,7 +45,8 @@ class HomeViewModel @AssistedInject constructor(
         val syncCatalogs: Boolean = true,
         val loadingMessage: String = EMPTY,
         val showBottomSheetActions: Boolean = false,
-        val selectedCard: Card? = null
+        val selectedCard: Card? = null,
+        val isRefreshing: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -56,6 +57,7 @@ class HomeViewModel @AssistedInject constructor(
         data object OnApplyFilter : Action()
         data object OnCleanFilters : Action()
         data class SyncCatalogs(val syncCatalogs: String = EMPTY): Action()
+        data object OnRefresh: Action()
     }
 
     fun process(action: Action) {
@@ -67,6 +69,7 @@ class HomeViewModel @AssistedInject constructor(
             is Action.OnCleanFilters -> handleOnCleanFilters()
             is Action.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
             is Action.HandleBottomSheetActions -> handleBottomSheetActions(action.open, action.card)
+            is Action.OnRefresh -> handleOnRefresh()
         }
     }
 
@@ -149,6 +152,19 @@ class HomeViewModel @AssistedInject constructor(
                     showBottomSheet = false,
                     filterSelection = CLEAN_FILTERS
                 )
+            }
+        }
+    }
+
+    private fun handleOnRefresh() {
+        setState { copy(isRefreshing = true) }
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getCardsUseCase(syncRemote = true)
+            }.onSuccess {
+                setState { copy( cardList = it, isRefreshing = false) }
+            }.onFailure {
+                setState { copy(isRefreshing = false) }
             }
         }
     }

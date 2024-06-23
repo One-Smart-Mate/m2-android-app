@@ -45,6 +45,7 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
+import com.ih.m2.ui.components.PullToRefreshLazyColumn
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerDirection
 import com.ih.m2.ui.components.TagSize
@@ -110,12 +111,21 @@ fun HomeScreen(
                 },
                 onSolutionClick = { solutionType ->
                     state.selectedCard?.let { card ->
-                        viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(false, card))
+                        viewModel.process(
+                            HomeViewModel.Action.HandleBottomSheetActions(
+                                false,
+                                card
+                            )
+                        )
                         navController.navigateToCardSolution(solutionType, card.id)
                     }
                 },
                 onDismissRequestActions = {
                     viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(false))
+                },
+                isRefreshing = state.isRefreshing,
+                onRefresh = {
+                    viewModel.process(HomeViewModel.Action.OnRefresh)
                 }
             )
         }
@@ -131,7 +141,6 @@ fun HomeScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun HomeContent(
     navController: NavController,
@@ -147,7 +156,9 @@ fun HomeContent(
     onCleanFilers: () -> Unit,
     onOpenBottomSheetActions: (card: Card) -> Unit,
     onDismissRequestActions: () -> Unit,
-    onSolutionClick: (String) -> Unit
+    onSolutionClick: (String) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -158,17 +169,10 @@ fun HomeContent(
             }
         }
     ) { paddingValues ->
-        LazyColumn {
-            stickyHeader {
-                HomeAppBar(
-                    navController = navController,
-                    padding = paddingValues.calculateTopPadding(),
-                    user = user,
-                    onFilterClick = {
-                        onOpenBottomSheet()
-                    })
-            }
-            items(cards) { card ->
+
+        PullToRefreshLazyColumn(
+            items = cards,
+            content = { card ->
                 HomeCardItemList(
                     card = card,
                     onClick = {
@@ -178,9 +182,42 @@ fun HomeContent(
                         onOpenBottomSheetActions(card)
                     },
                 )
-            }
-
-        }
+            },
+            header = {
+                HomeAppBar(
+                    navController = navController,
+                    padding = paddingValues.calculateTopPadding(),
+                    user = user,
+                    onFilterClick = {
+                        onOpenBottomSheet()
+                    })
+            },
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+        )
+//        LazyColumn {
+//            stickyHeader {
+//                HomeAppBar(
+//                    navController = navController,
+//                    padding = paddingValues.calculateTopPadding(),
+//                    user = user,
+//                    onFilterClick = {
+//                        onOpenBottomSheet()
+//                    })
+//            }
+//            items(cards) { card ->
+//                HomeCardItemList(
+//                    card = card,
+//                    onClick = {
+//                        navController.navigateToCardDetail(card.id)
+//                    },
+//                    onActionClick = {
+//                        onOpenBottomSheetActions(card)
+//                    },
+//                )
+//            }
+//
+//        }
         if (showBottomSheet) {
             FiltersBottomSheet(
                 selection = selection,
@@ -267,7 +304,7 @@ fun HomePreview() {
                 listOf(Card.mock()),
                 false,
                 false,
-                "", {}, {}, {}, {}, {}, {}, {}, {}
+                "", {}, {}, {}, {}, {}, {}, {}, {},false,{}
             )
         }
     }
