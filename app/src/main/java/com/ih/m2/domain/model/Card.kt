@@ -5,8 +5,11 @@ import androidx.compose.ui.res.stringResource
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
+import com.ih.m2.data.model.CreateCardRequest
+import com.ih.m2.data.model.CreateEvidenceRequest
 import com.ih.m2.ui.extensions.DayAndDateWithYear
 import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
@@ -28,46 +31,62 @@ import java.util.Date
 data class Card(
     val id: String,
     val siteCardId: Long,
-    val siteID: String?,
+    @SerializedName("siteID")
+    val siteId: String?,
     val siteCode: String?,
-    val cardUUID: String,
+    @SerializedName("cardUUID")
+    val uuid: String,
     val cardTypeColor: String,
     val feasibility: String?,
     val effect: String?,
     val status: String,
-    val cardCreationDate: String,
-    val cardDueDate: String,
-    val areaID: Long,
+    @SerializedName("cardCreationDate")
+    val creationDate: String,
+    @SerializedName("cardDueDate")
+    val dueDate: String,
+    @SerializedName("areaID")
+    val areaId: Long,
     val areaName: String,
     val level: Long,
     val levelName: String,
-    val superiorID: String?,
-    val priorityID: String?,
+    @SerializedName("superiorID")
+    val superiorId: String?,
+    @SerializedName("priorityID")
+    val priorityId: String?,
     val priorityCode: String?,
     val priorityDescription: String,
     val cardTypeMethodology: String,
     val cardTypeMethodologyName: String,
     val cardTypeValue: String,
-    val cardTypeID: String?,
+    @SerializedName("cardTypeID")
+    val cardTypeId: String?,
     val cardTypeName: String,
     val preclassifierId: String,
     val preclassifierCode: String,
     val preclassifierDescription: String,
-    val creatorID: String?,
+    @SerializedName("creatorID")
+    val creatorId: String?,
     val creatorName: String,
-    val responsableID: String?,
+    @SerializedName("responsableID")
+    val responsableId: String?,
     val responsableName: String,
-    val mechanicID: String?,
+    @SerializedName("mechanicID")
+    val mechanicId: String?,
     val mechanicName: String?,
-    val userProvisionalSolutionID: String?,
+    @SerializedName("userProvisionalSolutionID")
+    val userProvisionalSolutionId: String?,
     val userProvisionalSolutionName: String?,
-    val userAppProvisionalSolutionID: String?,
+    @SerializedName("userAppProvisionalSolutionID")
+    val userAppProvisionalSolutionId: String?,
     val userAppProvisionalSolutionName: String?,
-    val userDefinitiveSolutionID: String?,
+    @SerializedName("userDefinitiveSolutionID")
+    val userDefinitiveSolutionId: String?,
     val userDefinitiveSolutionName: String?,
-    val userAppDefinitiveSolutionID: String?,
+    @SerializedName("userAppDefinitiveSolutionID")
+    val userAppDefinitiveSolutionId: String?,
     val userAppDefinitiveSolutionName: String?,
-    val managerID: String?,
+    @SerializedName("managerID")
+    val managerId: String?,
     val managerName: String,
     val cardManagerCloseDate: String?,
     val commentsManagerAtCardClose: String?,
@@ -178,46 +197,46 @@ data class Card(
             return Card(
                 id = EMPTY,
                 siteCardId = 0,
-                siteID = EMPTY,
+                siteId = EMPTY,
                 siteCode = EMPTY,
-                cardUUID = cardId,
+                uuid = cardId,
                 cardTypeColor = EMPTY,
                 feasibility = EMPTY,
                 effect = EMPTY,
                 status = STATUS_A,
-                cardCreationDate = Date().YYYY_MM_DD_HH_MM_SS,
-                cardDueDate = EMPTY,
-                areaID = areaId,
+                creationDate = Date().YYYY_MM_DD_HH_MM_SS,
+                dueDate = EMPTY,
+                areaId = areaId,
                 areaName = EMPTY,
                 level = level,
                 levelName = EMPTY,
-                superiorID = EMPTY,
-                priorityID = priorityId,
+                superiorId = EMPTY,
+                priorityId = priorityId,
                 priorityCode = EMPTY,
                 priorityDescription = EMPTY,
                 cardTypeMethodology = EMPTY,
                 cardTypeMethodologyName = EMPTY,
                 cardTypeValue = cardTypeValue,
-                cardTypeID = cardTypeId,
+                cardTypeId = cardTypeId,
                 cardTypeName = EMPTY,
                 preclassifierId = preclassifierId,
                 preclassifierCode = EMPTY,
                 preclassifierDescription = EMPTY,
-                creatorID = EMPTY,
+                creatorId = EMPTY,
                 creatorName = EMPTY,
-                responsableID = EMPTY,
+                responsableId = EMPTY,
                 responsableName = EMPTY,
-                mechanicID = EMPTY,
+                mechanicId = EMPTY,
                 mechanicName = EMPTY,
-                userProvisionalSolutionID = EMPTY,
+                userProvisionalSolutionId = EMPTY,
                 userProvisionalSolutionName = EMPTY,
-                userAppProvisionalSolutionID = EMPTY,
+                userAppProvisionalSolutionId = EMPTY,
                 userAppProvisionalSolutionName = EMPTY,
-                userDefinitiveSolutionID = EMPTY,
+                userDefinitiveSolutionId = EMPTY,
                 userDefinitiveSolutionName = EMPTY,
-                userAppDefinitiveSolutionID = EMPTY,
+                userAppDefinitiveSolutionId = EMPTY,
                 userAppDefinitiveSolutionName = EMPTY,
-                managerID = EMPTY,
+                managerId = EMPTY,
                 managerName = EMPTY,
                 cardManagerCloseDate = EMPTY,
                 commentsManagerAtCardClose = EMPTY,
@@ -259,15 +278,15 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
         }
 
         MY_OPEN_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.creatorID == userId }
+            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.creatorId == userId }
         }
 
         ASSIGNED_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.mechanicID == userId }
+            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.mechanicId == userId }
         }
 
         UNASSIGNED_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && (it.mechanicID == null || it.mechanicID == EMPTY) }
+            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && (it.mechanicId == null || it.mechanicId == EMPTY) }
         }
 
         EXPIRED_CARDS -> {
@@ -287,46 +306,46 @@ fun Card.toEntity(): CardEntity {
     return CardEntity(
         id = this.id,
         siteCardId = this.siteCardId,
-        siteID = this.siteID,
+        siteId = this.siteId,
         siteCode = this.siteCode,
-        cardUUID = this.cardUUID,
+        uuid = this.uuid,
         cardTypeColor = this.cardTypeColor,
         feasibility = this.feasibility,
         effect = this.effect,
         status = this.status,
-        cardCreationDate = this.cardCreationDate,
-        cardDueDate = this.cardDueDate,
-        areaID = this.areaID,
+        creationDate = this.creationDate,
+        dueDate = this.dueDate,
+        areaId = this.areaId,
         areaName = this.areaName,
         level = this.level,
         levelName = this.levelName,
-        superiorID = this.superiorID,
-        priorityID = this.priorityID,
+        superiorId = this.superiorId,
+        priorityId = this.priorityId,
         priorityCode = this.priorityCode,
         priorityDescription = this.priorityDescription,
         cardTypeMethodology = this.cardTypeMethodology,
         cardTypeMethodologyName = this.cardTypeMethodologyName,
         cardTypeValue = this.cardTypeValue,
-        cardTypeID = this.cardTypeID,
+        cardTypeId = this.cardTypeId,
         cardTypeName = this.cardTypeName,
         preclassifierId = this.preclassifierId,
         preclassifierCode = this.preclassifierCode,
         preclassifierDescription = this.preclassifierDescription,
-        creatorID = this.creatorID,
+        creatorId = this.creatorId,
         creatorName = this.creatorName,
-        responsableID = this.responsableID,
+        responsableId = this.responsableId,
         responsableName = this.responsableName,
-        mechanicID = this.mechanicID,
+        mechanicId = this.mechanicId,
         mechanicName = this.mechanicName,
-        userProvisionalSolutionID = this.userProvisionalSolutionID,
+        userProvisionalSolutionId = this.userProvisionalSolutionId,
         userProvisionalSolutionName = this.userProvisionalSolutionName,
-        userAppProvisionalSolutionID = this.userAppProvisionalSolutionID,
+        userAppProvisionalSolutionId = this.userAppProvisionalSolutionId,
         userAppProvisionalSolutionName = this.userAppProvisionalSolutionName,
-        userDefinitiveSolutionID = this.userDefinitiveSolutionID,
+        userDefinitiveSolutionId = this.userDefinitiveSolutionId,
         userDefinitiveSolutionName = this.userDefinitiveSolutionName,
-        userAppDefinitiveSolutionID = this.userAppDefinitiveSolutionID,
+        userAppDefinitiveSolutionId = this.userAppDefinitiveSolutionId,
         userAppDefinitiveSolutionName = this.userAppDefinitiveSolutionName,
-        managerID = this.managerID,
+        managerId = this.managerId,
         managerName = this.managerName,
         cardManagerCloseDate = this.cardManagerCloseDate,
         commentsManagerAtCardClose = this.commentsManagerAtCardClose,
@@ -349,4 +368,20 @@ fun Card.toEntity(): CardEntity {
 }
 
 fun Card.isMaintenance() = this.cardTypeName == CARD_MAINTENANCE
+
+fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
+    return CreateCardRequest(
+        siteId = this.siteId?.toInt().defaultIfNull(0),
+        cardUUID = this.uuid,
+        cardCreationDate = this.creationDate,
+        areaId = this.areaId.toInt(),
+        priorityId = this.priorityId?.toInt().defaultIfNull(0),
+        cardTypeValue = this.cardTypeValue,
+        cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
+        preclassifierId = this.preclassifierId.toInt(),
+        creatorId = this.creatorId?.toInt().defaultIfNull(0),
+        comments = this.commentsAtCardCreation.orEmpty(),
+        evidences = evidences
+    )
+}
 

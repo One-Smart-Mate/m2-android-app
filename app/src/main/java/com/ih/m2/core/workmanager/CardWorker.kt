@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.network.NetworkConnection
+import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import dagger.assisted.Assisted
@@ -17,7 +18,7 @@ class CardWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
     private val getCardsUseCase: GetCardsUseCase,
-    private val syncCardsUseCase: SyncCardsUseCase
+    private val syncCardsUseCase: SyncCardsUseCase,
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result {
         return try {
@@ -25,9 +26,8 @@ class CardWorker @AssistedInject constructor(
             Log.e("test", "Working!!!  $isConnected")
             return if (isConnected) {
                 val localCardList = getCardsUseCase(localCards = true)
+                Log.e("List","Local Cards List ${localCardList.size}")
                 syncCardsUseCase(localCardList)
-                getCardsUseCase(syncRemote = true)
-                Log.e("test", "Cards saved")
                 Result.success()
             } else {
                 Result.failure()

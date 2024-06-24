@@ -117,11 +117,11 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.information)) {
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.cardCreationDate.toFormatDate(),
+            value = card.creationDate.toFormatDate(),
         )
         SectionTag(
             title = stringResource(R.string.due_date),
-            value = card.cardDueDate,
+            value = card.dueDate,
         )
         SectionTag(
             title = stringResource(R.string.status),

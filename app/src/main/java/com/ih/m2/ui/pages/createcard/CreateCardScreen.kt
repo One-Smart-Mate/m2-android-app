@@ -101,6 +101,7 @@ import com.ih.m2.ui.theme.Size180
 import com.ih.m2.ui.theme.Size200
 import com.ih.m2.ui.theme.Size250
 import com.ih.m2.ui.utils.EMPTY
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -186,6 +187,7 @@ fun CreateCardScreen(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it) {
+                    delay(2000)
                     navController.popBackStack()
                     context.runWorkRequest()
                 }

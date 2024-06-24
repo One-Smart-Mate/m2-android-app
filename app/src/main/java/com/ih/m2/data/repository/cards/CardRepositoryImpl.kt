@@ -1,5 +1,6 @@
 package com.ih.m2.data.repository.cards
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.CreateCardRequest
@@ -33,11 +34,12 @@ class CardRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun createCard(card: CreateCardRequest): Card {
+    override suspend fun saveCard(card: CreateCardRequest): Card {
         val response = apiService.createCard(card).execute()
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
+            Log.e("Test","Current error ${response.getErrorMessage()}")
             FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }

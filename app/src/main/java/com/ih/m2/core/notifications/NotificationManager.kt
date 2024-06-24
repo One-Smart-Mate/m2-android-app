@@ -70,22 +70,36 @@ class NotificationManager @Inject constructor(private val context: Context) {
         currentProgress: Int
     ) {
         val PROGRESS_MAX = 100
+
+        val description = if (currentProgress == 100) {
+            "Cards uploaded successfully"
+        } else {
+            "We're uploading the local cards..."
+        }
+
+        val title = if (currentProgress == 100) {
+            "Success!"
+        } else {
+            "Uploading cards"
+        }
+
         val builder =
-            getBuilderNotification("Uploading cards", "We're uploading the local cards...")
+            getBuilderNotification(title, description)
         NotificationManagerCompat.from(context).apply {
-            builder.setProgress(PROGRESS_MAX, currentProgress, false)
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 builder.setSilent(true)
-                builder.setProgress(PROGRESS_MAX, currentProgress, false);
+                if (currentProgress ==  100) {
+                    builder.setProgress(0, 0, false)
+                } else {
+                    builder.setProgress(PROGRESS_MAX, currentProgress, false)
+                }
                 notify(notificationId, builder.build())
             }
-
         }
-
     }
 
     private fun getBuilderNotification(

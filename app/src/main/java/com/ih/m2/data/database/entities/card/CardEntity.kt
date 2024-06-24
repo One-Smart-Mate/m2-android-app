@@ -17,11 +17,11 @@ data class CardEntity(
     @ColumnInfo(name = "site_card_id")
     val siteCardId: Long,
     @ColumnInfo(name = "site_id")
-    val siteID: String?,
+    val siteId: String?,
     @ColumnInfo(name = "site_code")
     val siteCode: String?,
     @ColumnInfo(name = "card_uuid")
-    val cardUUID: String,
+    val uuid: String,
     @ColumnInfo(name = "card_type_color")
     val cardTypeColor: String,
     @ColumnInfo(name = "feasibility")
@@ -31,11 +31,11 @@ data class CardEntity(
     @ColumnInfo(name = "status")
     val status: String,
     @ColumnInfo(name = "card_creation_date")
-    val cardCreationDate: String,
+    val creationDate: String,
     @ColumnInfo(name = "card_due_date")
-    val cardDueDate: String,
+    val dueDate: String,
     @ColumnInfo(name = "area_id")
-    val areaID: Long,
+    val areaId: Long,
     @ColumnInfo(name = "area_name")
     val areaName: String,
     @ColumnInfo(name = "level")
@@ -43,9 +43,9 @@ data class CardEntity(
     @ColumnInfo(name = "level_name")
     val levelName: String,
     @ColumnInfo(name = "superior_id")
-    val superiorID: String?,
+    val superiorId: String?,
     @ColumnInfo(name = "priority_id")
-    val priorityID: String?,
+    val priorityId: String?,
     @ColumnInfo(name = "priority_code")
     val priorityCode: String?,
     @ColumnInfo(name = "priority_description")
@@ -57,7 +57,7 @@ data class CardEntity(
     @ColumnInfo(name = "card_type_value")
     val cardTypeValue: String,
     @ColumnInfo(name = "card_type_id")
-    val cardTypeID: String?,
+    val cardTypeId: String?,
     @ColumnInfo(name = "card_type_name")
     val cardTypeName: String,
     @ColumnInfo(name = "preclassifier_id")
@@ -67,35 +67,35 @@ data class CardEntity(
     @ColumnInfo(name = "preclassifier_description")
     val preclassifierDescription: String,
     @ColumnInfo(name = "creator_id")
-    val creatorID: String?,
+    val creatorId: String?,
     @ColumnInfo(name = "creator_name")
     val creatorName: String,
     @ColumnInfo(name = "responsable_id")
-    val responsableID: String?,
+    val responsableId: String?,
     @ColumnInfo(name = "responsable_name")
     val responsableName: String,
     @ColumnInfo(name = "mechanic_id")
-    val mechanicID: String?,
+    val mechanicId: String?,
     @ColumnInfo(name = "mechanic_name")
     val mechanicName: String?,
     @ColumnInfo(name = "user_provisional_solution_id")
-    val userProvisionalSolutionID: String?,
+    val userProvisionalSolutionId: String?,
     @ColumnInfo(name = "user_provisional_solution_name")
     val userProvisionalSolutionName: String?,
     @ColumnInfo(name = "user_app_provisional_solution_id")
-    val userAppProvisionalSolutionID: String?,
+    val userAppProvisionalSolutionId: String?,
     @ColumnInfo(name = "user_app_provisional_solution_name")
     val userAppProvisionalSolutionName: String?,
     @ColumnInfo(name = "user_definitive_solution_id")
-    val userDefinitiveSolutionID: String?,
+    val userDefinitiveSolutionId: String?,
     @ColumnInfo(name = "user_definitive_solution_name")
     val userDefinitiveSolutionName: String?,
     @ColumnInfo(name = "user_app_definitive_solution_id")
-    val userAppDefinitiveSolutionID: String?,
+    val userAppDefinitiveSolutionId: String?,
     @ColumnInfo(name = "user_app_definitive_solution_name")
     val userAppDefinitiveSolutionName: String?,
     @ColumnInfo(name = "manager_id")
-    val managerID: String?,
+    val managerId: String?,
     @ColumnInfo(name = "manager_name")
     val managerName: String,
     @ColumnInfo(name = "card_manager_close_date")
@@ -144,46 +144,46 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
     return Card(
         id = this.id,
         siteCardId = this.siteCardId,
-        siteID = this.siteID,
+        siteId = this.siteId,
         siteCode = this.siteCode,
-        cardUUID = this.cardUUID,
+        uuid = this.uuid,
         cardTypeColor = this.cardTypeColor,
         feasibility = this.feasibility,
         effect = this.effect,
         status = this.status,
-        cardCreationDate = this.cardCreationDate,
-        cardDueDate = this.cardDueDate,
-        areaID = this.areaID,
+        creationDate = this.creationDate,
+        dueDate = this.dueDate,
+        areaId = this.areaId,
         areaName = this.areaName,
         level = this.level,
         levelName = this.levelName,
-        superiorID = this.superiorID,
-        priorityID = this.priorityID,
+        superiorId = this.superiorId,
+        priorityId = this.priorityId,
         priorityCode = this.priorityCode,
         priorityDescription = this.priorityDescription,
         cardTypeMethodology = this.cardTypeMethodology,
         cardTypeMethodologyName = this.cardTypeMethodologyName,
         cardTypeValue = this.cardTypeValue,
-        cardTypeID = this.cardTypeID,
+        cardTypeId = this.cardTypeId,
         cardTypeName = this.cardTypeName,
         preclassifierId = this.preclassifierId,
         preclassifierCode = this.preclassifierCode,
         preclassifierDescription = this.preclassifierDescription,
-        creatorID = this.creatorID,
+        creatorId = this.creatorId,
         creatorName = this.creatorName,
-        responsableID = this.responsableID,
+        responsableId = this.responsableId,
         responsableName = this.responsableName,
-        mechanicID = this.mechanicID,
+        mechanicId = this.mechanicId,
         mechanicName = this.mechanicName,
-        userProvisionalSolutionID = this.userProvisionalSolutionID,
+        userProvisionalSolutionId = this.userProvisionalSolutionId,
         userProvisionalSolutionName = this.userProvisionalSolutionName,
-        userAppProvisionalSolutionID = this.userAppProvisionalSolutionID,
+        userAppProvisionalSolutionId = this.userAppProvisionalSolutionId,
         userAppProvisionalSolutionName = this.userAppProvisionalSolutionName,
-        userDefinitiveSolutionID = this.userDefinitiveSolutionID,
+        userDefinitiveSolutionId = this.userDefinitiveSolutionId,
         userDefinitiveSolutionName = this.userDefinitiveSolutionName,
-        userAppDefinitiveSolutionID = this.userAppDefinitiveSolutionID,
+        userAppDefinitiveSolutionId = this.userAppDefinitiveSolutionId,
         userAppDefinitiveSolutionName = this.userAppDefinitiveSolutionName,
-        managerID = this.managerID,
+        managerId = this.managerId,
         managerName = this.managerName,
         cardManagerCloseDate = this.cardManagerCloseDate,
         commentsManagerAtCardClose = this.commentsManagerAtCardClose,

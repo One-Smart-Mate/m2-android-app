@@ -86,11 +86,11 @@ fun HomeCardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.cardCreationDate.toFormatDate(),
+                value = card.creationDate.toFormatDate(),
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
-                value = card.cardDueDate,
+                value = card.dueDate,
             )
 
             CustomSpacer()

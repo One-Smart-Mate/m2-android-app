@@ -166,7 +166,7 @@ class LocalRepositoryImpl @Inject constructor(
     override suspend fun getLocalCards(): List<Card> {
         return cardDao.getLocalCards(stored = STORED_LOCAL).map { cardEntity ->
             val evidences =
-                evidenceDao.getEvidencesByCard(cardEntity.cardUUID).map { it.toDomain() }
+                evidenceDao.getEvidencesByCard(cardEntity.uuid).map { it.toDomain() }
             cardEntity.toDomain(evidences = evidences)
         }
     }

@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
             .setInitialDelay(Duration.ofSeconds(5))
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(60)
+                duration = Duration.ofSeconds(60*5)
             ).build()
         WorkManager.getInstance(context).enqueue(workRequest)
     }

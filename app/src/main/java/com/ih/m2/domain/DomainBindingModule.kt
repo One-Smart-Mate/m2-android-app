@@ -1,7 +1,5 @@
 package com.ih.m2.domain
 
-import com.ih.m2.domain.usecase.card.CreateCardUseCase
-import com.ih.m2.domain.usecase.card.CreateCardUseCaseImpl
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCase
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCaseImpl
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
@@ -74,8 +72,7 @@ interface DomainBindingModule {
     @Binds
     fun bindCleanCatalogsUseCase(cleanCatalogsUseCaseImpl: CleanCatalogsUseCaseImpl): CleanCatalogsUseCase
 
-    @Binds
-    fun bindCreateCardUseCase(createCardUseCaseImpl: CreateCardUseCaseImpl): CreateCardUseCase
+
 
     @Binds
     fun bindGetLevelsUseCase(getLevelsUseCaseImpl: GetLevelsUseCaseImpl): GetLevelsUseCase

@@ -64,7 +64,8 @@ class AccountViewModel @AssistedInject constructor(
                 delay(3000)
                 notificationManager.updateNotificationProgress(
                     notificationId = id,
-                    currentProgress = progres
+                    currentProgress = progres,
+
                 )
                 progres+=10
             }

@@ -9,5 +9,5 @@ interface CardRepository {
 
     suspend fun getCardDetail(cardId: String): Card
 
-    suspend fun createCard(card: CreateCardRequest): Card
+    suspend fun saveCard(card: CreateCardRequest): Card
 }
