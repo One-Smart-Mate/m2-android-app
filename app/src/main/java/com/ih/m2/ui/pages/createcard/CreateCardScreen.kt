@@ -76,6 +76,10 @@ import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.components.buttons.CustomButton
+import com.ih.m2.ui.components.card.SectionCardEvidence
+import com.ih.m2.ui.components.evidence.SectionAudiosEvidence
+import com.ih.m2.ui.components.evidence.SectionImagesEvidence
+import com.ih.m2.ui.components.evidence.SectionVideosEvidence
 import com.ih.m2.ui.components.launchers.AudioLauncher
 import com.ih.m2.ui.components.launchers.CameraLauncher
 import com.ih.m2.ui.components.launchers.VideoLauncher
@@ -318,92 +322,6 @@ fun CreateCardContent(
     }
 }
 
-@Composable
-fun SectionImagesEvidence(
-    imageEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit
-) {
-    if (imageEvidences.isNotEmpty()) {
-        Column {
-            Text(
-                text = stringResource(R.string.images),
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(imageEvidences) {
-                    PhotoCardItem(
-                        model = it.url,
-                        showIcon = true,
-                        modifier = Modifier
-                            .width(Size200)
-                            .height(Size250)
-                    ) {
-                        onDeleteEvidence(it)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SectionVideosEvidence(
-    videoEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit
-) {
-    if (videoEvidences.isNotEmpty()) {
-        Column {
-            Text(
-                text = stringResource(R.string.videos),
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(videoEvidences) {
-                    VideoPlayer(
-                        modifier = Modifier
-                            .width(Size200)
-                            .height(Size250),
-                        url = it.url,
-                        showIcon = true
-                    ) {
-                        onDeleteEvidence(it)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun SectionAudiosEvidence(
-    audioEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit
-) {
-    if (audioEvidences.isNotEmpty()) {
-        Column {
-            Text(
-                text = stringResource(R.string.audios),
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
-            )
-            LazyRow {
-                items(audioEvidences) {
-                    VideoPlayer(
-                        modifier = Modifier
-                            .width(Size120)
-                            .height(Size160),
-                        url = it.url,
-                        showIcon = true
-                    ) {
-                        onDeleteEvidence(it)
-                    }
-                }
-            }
-        }
-    }
-}
 
 @Composable
 fun LevelContent(
@@ -514,43 +432,7 @@ fun CardTypeContent(
 }
 
 
-@Composable
-fun SectionCardEvidence(
-    audioDuration: Int,
-    onAddEvidence: (Uri, EvidenceType) -> Unit
-) {
 
-    var audioBottomSheet by remember { mutableStateOf(false) }
-
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
-    ) {
-
-        CameraLauncher {
-            onAddEvidence(it, EvidenceType.IMCR)
-        }
-        VideoLauncher {
-            onAddEvidence(it, EvidenceType.VICR)
-        }
-        CardItemIcon(icon = painterResource(id = R.drawable.ic_voice)) {
-            audioBottomSheet = true
-        }
-
-        if (audioBottomSheet) {
-            RecordAudioBottomSheet(
-                onComplete = {
-                    audioBottomSheet = false
-                    onAddEvidence(it, EvidenceType.AUCR)
-                },
-                onDismissRequest = {
-                    audioBottomSheet = false
-                },
-                maxRecord = audioDuration
-            )
-        }
-    }
-}
 
 
 @OptIn(ExperimentalGlideComposeApi::class)

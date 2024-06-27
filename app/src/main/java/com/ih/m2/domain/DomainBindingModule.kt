@@ -16,6 +16,8 @@ import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
+import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
+import com.ih.m2.domain.usecase.employee.GetEmployeesUseCaseImpl
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
@@ -85,4 +87,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindSyncCardsUseCase(syncCardsUseCaseImpl: SyncCardsUseCaseImpl): SyncCardsUseCase
+
+    @Binds
+    fun bindGetEmployeesUseCase(getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl): GetEmployeesUseCase
 }

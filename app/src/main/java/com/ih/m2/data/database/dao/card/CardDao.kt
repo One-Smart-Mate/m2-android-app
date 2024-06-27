@@ -32,4 +32,7 @@ interface CardDao {
     @Query("DELETE FROM card_table WHERE id=:id")
     suspend fun deleteCard(id: String)
 
+    @Query("SELECT * FROM card_table WHERE id=:cardId")
+    suspend fun getCard(cardId: String): CardEntity
+
 }

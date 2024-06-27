@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.domain.model.CardType
+import com.ih.m2.domain.model.toEntity
 import com.ih.m2.ui.extensions.defaultIfNull
 
 @Entity(tableName = "card_type_table")
@@ -39,11 +40,22 @@ data class CardTypeEntity(
     @ColumnInfo(name = "quantity_audios_close")
     val quantityAudiosClose: Int?,
     @ColumnInfo(name = "quantity_videos_close")
-    val quantityVideosClose:Int?,
+    val quantityVideosClose: Int?,
     @ColumnInfo(name = "audios_duration_close")
     val audiosDurationClose: Int?,
     @ColumnInfo(name = "videos_duration_close")
-    val videosDurationClose:Int?
+    val videosDurationClose: Int?,
+
+    @ColumnInfo(name = "quantity_pictures_ps")
+    val quantityPicturesPs: Int?,
+    @ColumnInfo(name = "quantity_audios_ps")
+    val quantityAudiosPs: Int?,
+    @ColumnInfo(name = "quantity_videos_ps")
+    val quantityVideosPs: Int?,
+    @ColumnInfo(name = "audios_duration_ps")
+    val audiosDurationPs: Int?,
+    @ColumnInfo(name = "videos_duration_ps")
+    val videosDurationPs: Int?
 )
 
 fun CardTypeEntity.toDomain(): CardType {
@@ -64,6 +76,11 @@ fun CardTypeEntity.toDomain(): CardType {
         quantityAudiosClose = this.quantityAudiosClose.defaultIfNull(0),
         quantityVideosClose = this.quantityVideosClose.defaultIfNull(0),
         audiosDurationClose = this.audiosDurationClose.defaultIfNull(0),
-        videosDurationClose = this.videosDurationClose.defaultIfNull(0)
+        videosDurationClose = this.videosDurationClose.defaultIfNull(0),
+        quantityPicturesPs = this.quantityPicturesPs.defaultIfNull(0),
+        quantityAudiosPs = this.quantityAudiosPs.defaultIfNull(0),
+        quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
+        audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
+        videosDurationPs = this.videosDurationPs.defaultIfNull(0)
     )
 }

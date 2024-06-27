@@ -6,7 +6,7 @@ import com.ih.m2.data.database.entities.cardtype.toDomain
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.CARD_MAINTENANCE
 
-data class CardType (
+data class CardType(
     val id: String,
     val methodology: String,
     val name: String,
@@ -30,11 +30,21 @@ data class CardType (
     @SerializedName("quantityAudiosClose")
     val quantityAudiosClose: Int?,
     @SerializedName("quantityVideosClose")
-    val quantityVideosClose:Int?,
+    val quantityVideosClose: Int?,
     @SerializedName("audiosDurationClose")
     val audiosDurationClose: Int?,
     @SerializedName("videosDurationClose")
-    val videosDurationClose:Int?
+    val videosDurationClose: Int?,
+    @SerializedName("quantityPicturesPs")
+    val quantityPicturesPs: Int?,
+    @SerializedName("quantityAudiosPs")
+    val quantityAudiosPs: Int?,
+    @SerializedName("quantityVideosPs")
+    val quantityVideosPs: Int?,
+    @SerializedName("audiosDurationPs")
+    val audiosDurationPs: Int?,
+    @SerializedName("videosDurationPs")
+    val videosDurationPs: Int?
 )
 
 
@@ -56,7 +66,12 @@ fun CardType.toEntity(): CardTypeEntity {
         quantityAudiosClose = this.quantityAudiosClose.defaultIfNull(0),
         quantityVideosClose = this.quantityVideosClose.defaultIfNull(0),
         audiosDurationClose = this.audiosDurationClose.defaultIfNull(0),
-        videosDurationClose = this.videosDurationClose.defaultIfNull(0)
+        videosDurationClose = this.videosDurationClose.defaultIfNull(0),
+        quantityPicturesPs = this.quantityPicturesPs.defaultIfNull(0),
+        quantityAudiosPs = this.quantityAudiosPs.defaultIfNull(0),
+        quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
+        audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
+        videosDurationPs = this.videosDurationPs.defaultIfNull(0)
     )
 }
 

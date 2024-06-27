@@ -44,48 +44,48 @@ data class Card(
     val creationDate: String,
     @SerializedName("cardDueDate")
     val dueDate: String,
-    @SerializedName("areaID")
+    @SerializedName("areaId")
     val areaId: Long,
     val areaName: String,
     val level: Long,
     val levelName: String,
-    @SerializedName("superiorID")
+    @SerializedName("superiorId")
     val superiorId: String?,
-    @SerializedName("priorityID")
+    @SerializedName("priorityId")
     val priorityId: String?,
     val priorityCode: String?,
     val priorityDescription: String,
     val cardTypeMethodology: String?,
     val cardTypeMethodologyName: String?,
     val cardTypeValue: String?,
-    @SerializedName("cardTypeID")
+    @SerializedName("cardTypeId")
     val cardTypeId: String?,
     val cardTypeName: String?,
     val preclassifierId: String,
     val preclassifierCode: String,
     val preclassifierDescription: String,
-    @SerializedName("creatorID")
+    @SerializedName("creatorId")
     val creatorId: String?,
     val creatorName: String,
-    @SerializedName("responsableID")
+    @SerializedName("responsableId")
     val responsableId: String?,
     val responsableName: String?,
-    @SerializedName("mechanicID")
+    @SerializedName("mechanicId")
     val mechanicId: String?,
     val mechanicName: String?,
-    @SerializedName("userProvisionalSolutionID")
+    @SerializedName("userProvisionalSolutionId")
     val userProvisionalSolutionId: String?,
     val userProvisionalSolutionName: String?,
-    @SerializedName("userAppProvisionalSolutionID")
+    @SerializedName("userAppProvisionalSolutionId")
     val userAppProvisionalSolutionId: String?,
     val userAppProvisionalSolutionName: String?,
-    @SerializedName("userDefinitiveSolutionID")
+    @SerializedName("userDefinitiveSolutionId")
     val userDefinitiveSolutionId: String?,
     val userDefinitiveSolutionName: String?,
-    @SerializedName("userAppDefinitiveSolutionID")
+    @SerializedName("userAppDefinitiveSolutionId")
     val userAppDefinitiveSolutionId: String?,
     val userAppDefinitiveSolutionName: String?,
-    @SerializedName("managerID")
+    @SerializedName("managerId")
     val managerId: String?,
     val managerName: String?,
     val cardManagerCloseDate: String?,
@@ -300,6 +300,8 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
         else -> this
     }
 }
+
+fun Card.isClosed() = this.status == STATUS_R || this.cardManagerCloseDate.isNullOrEmpty().not()
 
 
 fun Card.toEntity(): CardEntity {

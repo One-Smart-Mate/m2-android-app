@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
+import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
@@ -18,7 +19,8 @@ class SyncCatalogsUseCaseImpl @Inject constructor(
     private val getPrioritiesUseCase: GetPrioritiesUseCase,
     private val getPreclassifiersUseCase: GetPreclassifiersUseCase,
     private val getCardsUseCase: GetCardsUseCase,
-    private val getLevelsUseCase: GetLevelsUseCase
+    private val getLevelsUseCase: GetLevelsUseCase,
+    private val getEmployeesUseCase: GetEmployeesUseCase
 ) : SyncCatalogsUseCase {
 
     override suspend fun invoke(syncCards: Boolean): Boolean {
@@ -27,6 +29,7 @@ class SyncCatalogsUseCaseImpl @Inject constructor(
             getPreclassifiersUseCase(true)
             getPrioritiesUseCase(true)
             getLevelsUseCase(true)
+            getEmployeesUseCase(true)
             getCardsUseCase(syncCards)
             true
         } catch (e: Exception) {

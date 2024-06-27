@@ -2,6 +2,7 @@ package com.ih.m2.domain.repository.local
 
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
+import com.ih.m2.domain.model.Employee
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.Preclassifier
@@ -21,6 +22,7 @@ interface LocalRepository {
     suspend fun saveCard(card: Card): Long
     suspend fun getLocalCards(): List<Card>
     suspend fun deleteCard(id: String)
+    suspend fun getCard(cardId: String): Card
 
 
     suspend fun getCardTypes(): List<CardType>
@@ -47,4 +49,9 @@ interface LocalRepository {
 
     suspend fun saveEvidence(evidence: Evidence): Long
     suspend fun deleteEvidence(id: String)
+    suspend fun deleteEvidences()
+
+    suspend fun saveEmployees(list: List<Employee>)
+    suspend fun deleteEmployees()
+    suspend fun getEmployees(): List<Employee>
 }

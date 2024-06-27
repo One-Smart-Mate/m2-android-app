@@ -3,12 +3,14 @@ package com.ih.m2.data.repository.local
 import com.ih.m2.data.database.dao.UserDao
 import com.ih.m2.data.database.dao.card.CardDao
 import com.ih.m2.data.database.dao.cardtype.CardTypeDao
+import com.ih.m2.data.database.dao.employee.EmployeeDao
 import com.ih.m2.data.database.dao.evidence.EvidenceDao
 import com.ih.m2.data.database.dao.level.LevelDao
 import com.ih.m2.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.m2.data.database.dao.priority.PriorityDao
 import com.ih.m2.data.database.entities.card.toDomain
 import com.ih.m2.data.database.entities.cardtype.toDomain
+import com.ih.m2.data.database.entities.employee.toDomain
 import com.ih.m2.data.database.entities.evidence.toDomain
 import com.ih.m2.data.database.entities.level.toDomain
 import com.ih.m2.data.database.entities.preclassifier.toDomain
@@ -16,6 +18,7 @@ import com.ih.m2.data.database.entities.priority.toDomain
 import com.ih.m2.data.database.entities.toDomain
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
+import com.ih.m2.domain.model.Employee
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.Preclassifier
@@ -33,7 +36,8 @@ class LocalRepositoryImpl @Inject constructor(
     private val preclassifierDao: PreclassifierDao,
     private val priorityDao: PriorityDao,
     private val levelDao: LevelDao,
-    private val evidenceDao: EvidenceDao
+    private val evidenceDao: EvidenceDao,
+    private val employeeDao: EmployeeDao
 ) : LocalRepository {
 
     override suspend fun saveUser(user: User): Long {
@@ -175,7 +179,29 @@ class LocalRepositoryImpl @Inject constructor(
         evidenceDao.deleteEvidence(id)
     }
 
+    override suspend fun deleteEvidences() {
+        evidenceDao.deleteEvidences()
+    }
+
     override suspend fun deleteCard(id: String) {
         cardDao.deleteCard(id)
+    }
+
+    override suspend fun getCard(cardId: String): Card {
+        return cardDao.getCard(cardId).toDomain()
+    }
+
+    override suspend fun saveEmployees(list: List<Employee>) {
+       list.forEach {
+           employeeDao.insertEmployee(it.toEntity())
+       }
+    }
+
+    override suspend fun deleteEmployees() {
+        employeeDao.deleteEmployees()
+    }
+
+    override suspend fun getEmployees(): List<Employee> {
+        return employeeDao.getEmployees().map { it.toDomain() }
     }
 }

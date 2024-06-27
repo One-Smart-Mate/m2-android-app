@@ -2,17 +2,23 @@ package com.ih.m2.ui.pages.solution
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.net.Uri
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -29,11 +35,23 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.R
+import com.ih.m2.domain.model.Employee
+import com.ih.m2.domain.model.Evidence
+import com.ih.m2.domain.model.EvidenceType
+import com.ih.m2.domain.model.toAudios
+import com.ih.m2.domain.model.toImages
+import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
+import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.CustomButton
+import com.ih.m2.ui.components.card.SectionCardEvidence
+import com.ih.m2.ui.components.evidence.SectionAudiosEvidence
+import com.ih.m2.ui.components.evidence.SectionImagesEvidence
+import com.ih.m2.ui.components.evidence.SectionVideosEvidence
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getInvertedColor
@@ -55,10 +73,38 @@ fun SolutionScreen(
     viewModel: SolutionViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
-    SolutionScreenContent(
-        navController = navController,
-        title = getSolutionScreenTitle(state.solutionType)
-    )
+    if (state.isLoading) {
+        ScreenLoading(text = state.message)
+    } else {
+        SolutionScreenContent(
+            navController = navController,
+            title = getSolutionScreenTitle(state.solutionType),
+            query = state.query,
+            onSearch = {
+                viewModel.process(SolutionViewModel.Action.OnSearchEmployee(it))
+            },
+            employeeList = state.resultList,
+            onSelectEmployee = {
+                viewModel.process(SolutionViewModel.Action.OnSelectEmployee(it))
+            },
+            selectedEmployee = state.selectedEmployee,
+            comments = state.comments,
+            onCommentChange = {
+                viewModel.process(SolutionViewModel.Action.OnCommentChange(it))
+            },
+            onSave = {
+                viewModel.process(SolutionViewModel.Action.OnSave)
+            },
+            onAddEvidence = { uri, type ->
+                viewModel.process(SolutionViewModel.Action.OnAddEvidence(uri, type))
+            },
+            onDeleteEvidence =  {
+                viewModel.process(SolutionViewModel.Action.OnDeleteEvidence(it))
+            },
+            evidences = state.evidences,
+            audioDuration = state.audioDuration
+        )
+    }
 
     LaunchedEffect(viewModel) {
         viewModel.process(SolutionViewModel.Action.SetSolutionInfo(solutionType, cardId))
@@ -84,8 +130,20 @@ fun getSolutionScreenTitle(solutionType: String): String {
 @Composable
 fun SolutionScreenContent(
     title: String,
-    navController: NavController
-) {
+    navController: NavController,
+    query: String,
+    onSearch: (String) -> Unit,
+    employeeList: List<Employee>,
+    onSelectEmployee: (Employee) -> Unit,
+    selectedEmployee: Employee? = null,
+    comments: String,
+    onCommentChange: (String) -> Unit,
+    onSave: () -> Unit,
+    evidences: List<Evidence>,
+    onAddEvidence: (Uri, EvidenceType) -> Unit,
+    onDeleteEvidence: (Evidence) -> Unit,
+    audioDuration: Int,
+    ) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding)
@@ -101,32 +159,64 @@ fun SolutionScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(PaddingNormal),
-                    label = "Operator",
-                    value = "",
-                    icon = Icons.Filled.Person
+                    label = stringResource(R.string.search_for_a_user),
+                    value = query,
+                    icon = Icons.Filled.Search
                 ) {
-
+                    onSearch(it)
                 }
             }
-            items(4) {
-                UserCardItem()
+            items(employeeList) {
+                UserCardItem(
+                    title = it.name
+                ) {
+                    onSelectEmployee(it)
+                }
             }
 
             item {
-                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                CustomSpacer()
+                AnimatedVisibility(visible = selectedEmployee != null) {
+                    SectionTag(title = "Selected user", value = selectedEmployee?.name.orEmpty(), modifier = Modifier.fillMaxWidth())
+                }
+                CustomSpacer()
+            }
+
+            item {
+                CustomSpacer()
+                HorizontalDivider()
+                SectionCardEvidence(
+                    audioDuration = audioDuration,
+                    onAddEvidence = onAddEvidence
+                )
+                SectionImagesEvidence(imageEvidences = evidences.toImages()) {
+                    onDeleteEvidence(it)
+                }
+                SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
+                    onDeleteEvidence(it)
+                }
+                SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
+                    onDeleteEvidence(it)
+                }
+                CustomSpacer()
+            }
+
+            item {
+                HorizontalDivider()
+                CustomSpacer()
                 CustomTextField(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(PaddingNormal),
-                    label = "Solution",
-                    value = "",
+                    label = stringResource(R.string.comments_at_solution),
+                    value = comments,
                     icon = Icons.Filled.Create
                 ) {
-
+                    onCommentChange(it)
                 }
                 CustomSpacer()
-                CustomButton(text = "Save") {
-                    
+                CustomButton(text = stringResource(R.string.save)) {
+                    onSave()
                 }
             }
         }
@@ -134,20 +224,26 @@ fun SolutionScreenContent(
 }
 
 @Composable
-fun UserCardItem() {
+fun UserCardItem(
+    title: String,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = PaddingLarge, vertical = 1.dp)
             .background(
-                color = MaterialTheme.colorScheme.primary,
+                color = MaterialTheme.colorScheme.primaryContainer,
                 shape = RoundedCornerShape(12.dp)
             )
+            .clickable {
+                onClick()
+            }
     ) {
         Text(
-            text = "User nameee",
+            text = title,
             style = MaterialTheme.typography.bodyLarge
-                .copy(color = getColor()),
+                .copy(color = getTextColor()),
             modifier = Modifier.padding(PaddingNormal)
         )
     }
@@ -160,7 +256,17 @@ fun UserCardItem() {
 fun SolutionScreenPreview() {
     M2androidappTheme {
         Surface {
-            SolutionScreenContent("Provisional solution", rememberNavController())
+            SolutionScreenContent(
+                "Provisional solution",
+                rememberNavController(),
+                "",
+                {},
+                emptyList(),
+                {},
+                selectedEmployee = Employee("","Fausto ",""),
+                "",
+                {},{}, emptyList(),{ _,_ -> },{},0
+            )
         }
     }
 }

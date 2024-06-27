@@ -66,4 +66,7 @@
     <string name="limit_videos">Limit of videos allowed for this card type</string>
     <string name="limit_audios">Limit of audios allowed for this card type></string>
     <string name="saving_card">Saving card...</string>
+    <string name="user">User</string>
+    <string name="search_for_a_user">Search for a user...</string>
+    <string name="comments_at_solution">Comments at solution</string>
 </resources>

@@ -2,6 +2,7 @@ package com.ih.m2.ui.pages.home.components
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.getStatus
+import com.ih.m2.domain.model.isClosed
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.buttons.ButtonType
@@ -94,11 +96,13 @@ fun HomeCardItemList(
             )
 
             CustomSpacer()
-            CustomButton(
-                text = stringResource(R.string.actions),
-                buttonType = ButtonType.OUTLINE,
-            ) {
-                onActionClick()
+            AnimatedVisibility(visible = card.isClosed().not()) {
+                CustomButton(
+                    text = stringResource(R.string.actions),
+                    buttonType = ButtonType.OUTLINE,
+                ) {
+                    onActionClick()
+                }
             }
         }
     }
