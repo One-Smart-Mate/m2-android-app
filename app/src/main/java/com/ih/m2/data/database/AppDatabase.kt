@@ -1,5 +1,6 @@
 package com.ih.m2.data.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.ih.m2.data.database.dao.UserDao

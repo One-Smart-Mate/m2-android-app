@@ -2,6 +2,7 @@ package com.ih.m2.data.repository.cards
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.m2.core.ui.functions.customError
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.toDomain
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 class CardRepositoryImpl @Inject constructor(
     private val apiService: ApiService
-): CardRepository {
+) : CardRepository {
 
     override suspend fun getCardsByUser(siteId: String): List<Card> {
         val response = apiService.getCards(siteId).execute()
@@ -39,9 +40,10 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            Log.e("Test","Current error ${response.getErrorMessage()}")
+            Log.e("Test", "Current error ${response.getErrorMessage()}")
             FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
 }
+

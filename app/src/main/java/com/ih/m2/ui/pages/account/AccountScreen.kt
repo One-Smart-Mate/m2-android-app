@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -12,9 +13,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,11 +35,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.m2.BuildConfig
 import com.ih.m2.R
 import com.ih.m2.core.ui.functions.getContext
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
+import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.Screen
 import com.ih.m2.ui.navigation.navigateToLogin
@@ -139,7 +146,7 @@ fun AccountContent(
                     headlineContent = { Text(text = stringResource(R.string.sync_remote_catalogs)) },
                     leadingContent = {
                         Icon(
-                            Icons.Filled.Build,
+                            Icons.Filled.Refresh,
                             contentDescription = stringResource(R.string.empty),
                         )
                     },
@@ -175,6 +182,18 @@ fun AccountContent(
                     modifier = Modifier.clickable {
                         onLogout()
                     }
+                )
+
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                ListItem(
+                    headlineContent = { Text("App Version ${BuildConfig.VERSION_NAME}") },
+                    leadingContent = {
+                        Icon(
+                            Icons.Filled.Info,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal
                 )
             }
         }

@@ -92,7 +92,7 @@ class NotificationManager @Inject constructor(private val context: Context) {
                 ) == PackageManager.PERMISSION_GRANTED
             ) {
                 builder.setSilent(true)
-                if (currentProgress ==  100) {
+                if (currentProgress == 100) {
                     builder.setProgress(0, 0, false)
                 } else {
                     builder.setProgress(PROGRESS_MAX, currentProgress, false)
@@ -134,6 +134,24 @@ class NotificationManager @Inject constructor(private val context: Context) {
             val notificationManager: NotificationManager =
                 context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
             notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun buildErrorNotification(
+        notificationId: Int,
+    ) {
+        val builder =
+            getBuilderNotification("Ups!", "We get some issues with the upload cards!")
+        NotificationManagerCompat.from(context).apply {
+            if (ActivityCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                builder.setSilent(true)
+                builder.setProgress(0, 0, false)
+                notify(notificationId, builder.build())
+            }
         }
     }
 

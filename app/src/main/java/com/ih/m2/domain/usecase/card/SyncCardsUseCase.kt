@@ -2,6 +2,7 @@ package com.ih.m2.domain.usecase.card
 
 import android.util.Log
 import com.ih.m2.core.notifications.NotificationManager
+import com.ih.m2.core.ui.functions.CustomException
 import com.ih.m2.data.model.CreateEvidenceRequest
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.toCardRequest
@@ -22,7 +23,6 @@ class SyncCardsUseCaseImpl @Inject constructor(
 ) : SyncCardsUseCase {
 
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
-
         var currentProgress = 0f
         val id = if (handleNotification && cardList.isNotEmpty()) {
             notificationManager.buildProgressNotification()
@@ -32,30 +32,34 @@ class SyncCardsUseCaseImpl @Inject constructor(
         val progressByCard: Float = 100f / cardList.size
 
 
-        cardList.forEach { card ->
-            val evidences = mutableListOf<CreateEvidenceRequest>()
-            Log.e("test", "Current card.. $card")
-            card.evidences?.forEach { evidence ->
-                val url = firebaseStorageRepository.uploadEvidence(evidence)
-                Log.e("test", "saving evidence.. $evidence")
-                if (url.isNotEmpty()) {
-                    evidences.add(CreateEvidenceRequest(evidence.type, url))
-                    localRepository.deleteEvidence(evidence.id)
+        try {
+            cardList.forEach { card ->
+                val evidences = mutableListOf<CreateEvidenceRequest>()
+                Log.e("test", "Current card.. $card")
+                card.evidences?.forEach { evidence ->
+                    val url = firebaseStorageRepository.uploadEvidence(evidence)
+                    Log.e("test", "saving evidence.. $evidence")
+                    if (url.isNotEmpty()) {
+                        evidences.add(CreateEvidenceRequest(evidence.type, url))
+                        localRepository.deleteEvidence(evidence.id)
+                    }
                 }
+                Log.e("test", "Current card request.. ${card.toCardRequest(evidences)}")
+                val remoteCard = cardRepository.saveCard(card.toCardRequest(evidences))
+                Log.e("test", "Current card remote.. $remoteCard")
+                localRepository.deleteCard(card.id)
+                localRepository.saveCard(remoteCard)
+                if (handleNotification) {
+                    currentProgress += progressByCard
+                    notificationManager.updateNotificationProgress(
+                        notificationId = id,
+                        currentProgress = currentProgress.toInt(),
+                    )
+                }
+                Log.e("test", "saving card.. $remoteCard")
             }
-
-            val remoteCard = cardRepository.saveCard(card.toCardRequest(evidences))
-            Log.e("test", "Current card remote.. $remoteCard")
-            localRepository.deleteCard(card.id)
-            localRepository.saveCard(remoteCard)
-            if (handleNotification) {
-                currentProgress += progressByCard
-                notificationManager.updateNotificationProgress(
-                    notificationId = id,
-                    currentProgress = currentProgress.toInt(),
-                )
-            }
-            Log.e("test", "saving card.. $remoteCard")
+        } catch (e: Exception) {
+            notificationManager.buildErrorNotification(id)
         }
     }
 }

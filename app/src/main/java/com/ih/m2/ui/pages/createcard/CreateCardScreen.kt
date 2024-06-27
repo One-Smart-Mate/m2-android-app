@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
@@ -160,7 +161,6 @@ fun CreateCardScreen(
                 viewModel.process(CreateCardViewModel.Action.OnSaveCard)
             },
             audioDuration = state.audioDuration,
-            snackBarHostState = snackBarHostState
         )
     }
     if (state.message.isNotEmpty() && state.isLoading.not()) {
@@ -187,7 +187,6 @@ fun CreateCardScreen(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it) {
-                    delay(2000)
                     navController.popBackStack()
                     context.runWorkRequest()
                 }
@@ -222,12 +221,14 @@ fun CreateCardContent(
     onDeleteEvidence: (Evidence) -> Unit,
     onSaveCard: () -> Unit,
     audioDuration: Int,
-    snackBarHostState: SnackbarHostState
 ) {
 
+    val lazyState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
+            state = lazyState
         ) {
             stickyHeader {
                 CustomAppBar(navController = navController, title = "Create card")
@@ -237,7 +238,12 @@ fun CreateCardContent(
                 CardTypeContent(cardTypeList, onCardTypeClick, selectedCardType)
                 PreclassifierContent(preclassifierList, onPreclassifierClick, selectedPreclassifier)
                 PriorityContent(priorityList, onPriorityClick, selectedPriority)
-                LevelContent(levelList, onLevelClick, selectedLevelList)
+                LevelContent(levelList, onLevelClick = { item, key ->
+                    onLevelClick(item, key)
+                    scope.launch {
+                        lazyState.animateScrollToItem(lazyState.layoutInfo.totalItemsCount)
+                    }
+                }, selectedLevelList)
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
@@ -307,9 +313,7 @@ fun CreateCardContent(
                         onSaveCard()
                     }
                 }
-
             }
-
         }
     }
 }
@@ -677,7 +681,6 @@ fun CreateCardPreview() {
                 onDeleteEvidence = {},
                 onSaveCard = {},
                 audioDuration = 60,
-                snackBarHostState = SnackbarHostState()
             )
         }
     }

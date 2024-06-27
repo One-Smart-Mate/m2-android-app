@@ -51,15 +51,15 @@ data class CardEntity(
     @ColumnInfo(name = "priority_description")
     val priorityDescription: String,
     @ColumnInfo(name = "card_methodology")
-    val cardTypeMethodology: String,
+    val cardTypeMethodology: String?,
     @ColumnInfo(name = "card_methodology_name")
-    val cardTypeMethodologyName: String,
+    val cardTypeMethodologyName: String?,
     @ColumnInfo(name = "card_type_value")
-    val cardTypeValue: String,
+    val cardTypeValue: String?,
     @ColumnInfo(name = "card_type_id")
     val cardTypeId: String?,
     @ColumnInfo(name = "card_type_name")
-    val cardTypeName: String,
+    val cardTypeName: String?,
     @ColumnInfo(name = "preclassifier_id")
     val preclassifierId: String,
     @ColumnInfo(name = "preclassifier_code")
@@ -73,7 +73,7 @@ data class CardEntity(
     @ColumnInfo(name = "responsable_id")
     val responsableId: String?,
     @ColumnInfo(name = "responsable_name")
-    val responsableName: String,
+    val responsableName: String?,
     @ColumnInfo(name = "mechanic_id")
     val mechanicId: String?,
     @ColumnInfo(name = "mechanic_name")
@@ -97,7 +97,7 @@ data class CardEntity(
     @ColumnInfo(name = "manager_id")
     val managerId: String?,
     @ColumnInfo(name = "manager_name")
-    val managerName: String,
+    val managerName: String?,
     @ColumnInfo(name = "card_manager_close_date")
     val cardManagerCloseDate: String?,
     @ColumnInfo(name = "comments_manager_at_card_close")

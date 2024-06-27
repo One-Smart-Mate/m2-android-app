@@ -31,7 +31,7 @@ import java.util.Date
 data class Card(
     val id: String,
     val siteCardId: Long,
-    @SerializedName("siteID")
+    @SerializedName("siteId")
     val siteId: String?,
     val siteCode: String?,
     @SerializedName("cardUUID")
@@ -55,12 +55,12 @@ data class Card(
     val priorityId: String?,
     val priorityCode: String?,
     val priorityDescription: String,
-    val cardTypeMethodology: String,
-    val cardTypeMethodologyName: String,
-    val cardTypeValue: String,
+    val cardTypeMethodology: String?,
+    val cardTypeMethodologyName: String?,
+    val cardTypeValue: String?,
     @SerializedName("cardTypeID")
     val cardTypeId: String?,
-    val cardTypeName: String,
+    val cardTypeName: String?,
     val preclassifierId: String,
     val preclassifierCode: String,
     val preclassifierDescription: String,
@@ -69,7 +69,7 @@ data class Card(
     val creatorName: String,
     @SerializedName("responsableID")
     val responsableId: String?,
-    val responsableName: String,
+    val responsableName: String?,
     @SerializedName("mechanicID")
     val mechanicId: String?,
     val mechanicName: String?,
@@ -87,7 +87,7 @@ data class Card(
     val userAppDefinitiveSolutionName: String?,
     @SerializedName("managerID")
     val managerId: String?,
-    val managerName: String,
+    val managerName: String?,
     val cardManagerCloseDate: String?,
     val commentsManagerAtCardClose: String?,
     val commentsAtCardCreation: String?,
@@ -376,7 +376,7 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardCreationDate = this.creationDate,
         areaId = this.areaId.toInt(),
         priorityId = this.priorityId?.toInt().defaultIfNull(0),
-        cardTypeValue = this.cardTypeValue,
+        cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
         creatorId = this.creatorId?.toInt().defaultIfNull(0),

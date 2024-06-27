@@ -129,7 +129,7 @@ fun CardInformationContent(
         )
         SectionTag(
             title = stringResource(R.string.card_types),
-            value = card.cardTypeName,
+            value = card.cardTypeName.orEmpty(),
         )
         SectionTag(
             title = stringResource(R.string.preclassifier),

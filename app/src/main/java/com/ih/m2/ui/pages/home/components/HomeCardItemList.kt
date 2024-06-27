@@ -70,7 +70,7 @@ fun HomeCardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.type_card),
-                value = card.cardTypeName,
+                value = card.cardTypeName.orEmpty(),
             )
             SectionTag(
                 title = stringResource(id = R.string.preclassifier),
