@@ -45,5 +45,15 @@ class CardRepositoryImpl @Inject constructor(
             error(response.getErrorMessage())
         }
     }
+
+    override suspend fun getCardsZone(siteId: String): List<Card> {
+        val response = apiService.getCardsZone(siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
+            error(response.getErrorMessage())
+        }
+    }
 }
 

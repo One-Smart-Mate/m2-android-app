@@ -35,4 +35,7 @@ interface CardDao {
     @Query("SELECT * FROM card_table WHERE id=:cardId")
     suspend fun getCard(cardId: String): CardEntity
 
+    @Query("SELECT * FROM card_table  WHERE superior_id=:id")
+    suspend fun getCardsZone(id: String): List<CardEntity>
 }
+

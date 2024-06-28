@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,6 +63,7 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
 import com.ih.m2.MainActivity
 import com.ih.m2.R
+import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
 import com.ih.m2.domain.model.NodeCardItem
@@ -71,6 +73,7 @@ import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
+import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.RadioGroup
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerSize
@@ -92,6 +95,8 @@ import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
+import com.ih.m2.ui.pages.home.components.CardItemList
+import com.ih.m2.ui.pages.home.components.CardSectionItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
@@ -165,6 +170,7 @@ fun CreateCardScreen(
                 viewModel.process(CreateCardViewModel.Action.OnSaveCard)
             },
             audioDuration = state.audioDuration,
+            cardsZone = state.cardsZone
         )
     }
     if (state.message.isNotEmpty() && state.isLoading.not()) {
@@ -225,6 +231,7 @@ fun CreateCardContent(
     onDeleteEvidence: (Evidence) -> Unit,
     onSaveCard: () -> Unit,
     audioDuration: Int,
+    cardsZone: List<Card>
 ) {
 
     val lazyState = rememberLazyListState()
@@ -245,7 +252,7 @@ fun CreateCardContent(
                 LevelContent(levelList, onLevelClick = { item, key ->
                     onLevelClick(item, key)
                     scope.launch {
-                        lazyState.animateScrollToItem(lazyState.layoutInfo.totalItemsCount)
+                        lazyState.scrollToItem(lazyState.layoutInfo.totalItemsCount)
                     }
                 }, selectedLevelList)
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
@@ -311,8 +318,17 @@ fun CreateCardContent(
                                 onSecureOptionChange(it)
                             }
                         }
-                        CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                        CustomSpacer()
                     }
+
+                    AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
+                        ExpandableCard(title = "Existing Cards Zone") {
+                            cardsZone.map {
+                                CardSectionItemList(card = it)
+                            }
+                        }
+                    }
+                    CustomSpacer()
                     CustomButton(text = stringResource(R.string.save)) {
                         onSaveCard()
                     }
@@ -563,6 +579,7 @@ fun CreateCardPreview() {
                 onDeleteEvidence = {},
                 onSaveCard = {},
                 audioDuration = 60,
+                cardsZone = emptyList()
             )
         }
     }

@@ -13,7 +13,6 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
-import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.domain.model.hasAudios
 import com.ih.m2.domain.model.hasImages
@@ -24,27 +23,24 @@ import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toNodeItemCard
 import com.ih.m2.domain.model.toNodeItemList
 import com.ih.m2.domain.model.toVideos
+import com.ih.m2.domain.usecase.card.GetCardsZoneUseCase
 import com.ih.m2.domain.usecase.card.SaveCardUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
-import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
-import com.ih.m2.ui.utils.STATUS_A
-import com.ih.m2.ui.utils.STORED_LOCAL
-import com.ih.m2.ui.utils.STORED_REMOTE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import timber.log.Timber
-import java.util.Date
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -57,6 +53,7 @@ class CreateCardViewModel @AssistedInject constructor(
     private val saveCardUseCase: SaveCardUseCase,
     private val getLevelsUseCase: GetLevelsUseCase,
     private val getCardTypeUseCase: GetCardTypeUseCase,
+    private val getCardsZoneUseCase: GetCardsZoneUseCase,
     @ApplicationContext private val context: Context
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
@@ -86,6 +83,7 @@ class CreateCardViewModel @AssistedInject constructor(
         val audioDuration: Int = 0,
         val isLoading: Boolean = false,
         val isCardSuccess: Boolean = false,
+        val cardsZone: List<Card> = emptyList()
     ) : MavericksState
 
     sealed class Action {
@@ -102,6 +100,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data object GetLevels : Action()
+        data class GetCardsZone(val superiorId: String) : Action()
     }
 
     fun process(action: Action) {
@@ -119,6 +118,7 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
             is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
             is Action.GetLevels -> handleGetLevels()
+            is Action.GetCardsZone -> handleGetCardsZone(action.superiorId)
         }
     }
 
@@ -243,6 +243,8 @@ class CreateCardViewModel @AssistedInject constructor(
         val isEmpty = stateFlow.first().levelList.none { it.superiorId == id }
         if (isEmpty.not()) {
             setState { copy(evidences = emptyList()) }
+        } else {
+            process(Action.GetCardsZone(id))
         }
         setState { copy(lastLevelCompleted = isEmpty) }
     }
@@ -323,7 +325,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 delay(2000)
                 setState { copy(isLoading = false, message = EMPTY) }
             }.onFailure {
-                Log.e("test","Failure $it")
+                Log.e("test", "Failure $it")
                 setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
             }
         }
@@ -334,7 +336,24 @@ class CreateCardViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 getCardTypeUseCase(id)
             }.onSuccess {
-                setState { copy(cardType = it, audioDuration = it.audiosDurationCreate.defaultIfNull(60)) }
+                setState {
+                    copy(
+                        cardType = it,
+                        audioDuration = it.audiosDurationCreate.defaultIfNull(60)
+                    )
+                }
+            }.onFailure {
+                setState { copy(message = it.localizedMessage.orEmpty()) }
+            }
+        }
+    }
+
+    private fun handleGetCardsZone(superiorId: String) {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getCardsZoneUseCase(superiorId)
+            }.onSuccess {
+                setState { copy(cardsZone = it) }
             }.onFailure {
                 setState { copy(message = it.localizedMessage.orEmpty()) }
             }

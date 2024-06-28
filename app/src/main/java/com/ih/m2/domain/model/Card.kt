@@ -48,7 +48,7 @@ data class Card(
     val areaId: Long,
     val areaName: String,
     val level: Long,
-    val levelName: String,
+    val levelName: String?,
     @SerializedName("superiorId")
     val superiorId: String?,
     @SerializedName("priorityId")

@@ -3,6 +3,7 @@ package com.ih.m2.ui.pages.home.components
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,14 +31,19 @@ import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
+import com.ih.m2.ui.extensions.getColor
+import com.ih.m2.ui.extensions.getInvertedColor
 import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingSmall
+import com.ih.m2.ui.theme.PaddingTiny
+import com.ih.m2.ui.theme.PaddingTinySmall
+import com.ih.m2.ui.theme.Size1
 
 @Composable
-fun HomeCardItemList(
+fun CardItemList(
     card: Card,
     onClick: () -> Unit,
     onActionClick: () -> Unit
@@ -60,11 +67,11 @@ fun HomeCardItemList(
                 modifier = Modifier.fillMaxWidth()
             )
 
-           HomeCardItemEvidence(
-               showCamera = card.evidenceImageCreation > 0,
-               showVideo = card.evidenceVideoCreation > 0,
-               showVoice = card.evidenceAudioCreation > 0
-           )
+            CardItemEvidence(
+                showCamera = card.evidenceImageCreation > 0,
+                showVideo = card.evidenceVideoCreation > 0,
+                showVoice = card.evidenceAudioCreation > 0
+            )
 
             SectionTag(
                 title = stringResource(id = R.string.status),
@@ -109,7 +116,7 @@ fun HomeCardItemList(
 }
 
 @Composable
-fun HomeCardItemEvidence(
+fun CardItemEvidence(
     showCamera: Boolean,
     showVideo: Boolean,
     showVoice: Boolean
@@ -119,11 +126,11 @@ fun HomeCardItemEvidence(
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
-       if (showCamera) {
-           CardItemIcon(
-               icon = painterResource(id = R.drawable.ic_photo_camera),
-           ) {}
-       }
+        if (showCamera) {
+            CardItemIcon(
+                icon = painterResource(id = R.drawable.ic_photo_camera),
+            ) {}
+        }
         if (showVoice) {
             CardItemIcon(
                 icon = painterResource(id = R.drawable.ic_voice),
@@ -137,6 +144,32 @@ fun HomeCardItemEvidence(
     }
 }
 
+@Composable
+fun CardSectionItemList(
+    card: Card
+) {
+    Card(
+        modifier = Modifier.padding(PaddingTinySmall),
+        border = BorderStroke(Size1, getInvertedColor())
+    ) {
+        Column(
+            modifier = Modifier.padding(PaddingSmall)
+        ) {
+            Text(
+                text = "${card.cardTypeName} ${card.siteCardId}",
+                style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+            SectionTag(
+                title = stringResource(id = R.string.area),
+                value = card.areaName,
+            )
+        }
+    }
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
@@ -144,7 +177,13 @@ fun HomeCardItemEvidence(
 fun HomeCardItemListPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            HomeCardItemList(Card.mock(),{}) {}
+            Column {
+                CardItemList(Card.mock(), {}) {}
+                CustomSpacer()
+                (1..<3).map {
+                    CardSectionItemList(Card.mock())
+                }
+            }
         }
     }
 }

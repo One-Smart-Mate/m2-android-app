@@ -23,7 +23,7 @@ interface LocalRepository {
     suspend fun getLocalCards(): List<Card>
     suspend fun deleteCard(id: String)
     suspend fun getCard(cardId: String): Card
-
+    suspend fun getCardsZone(superiorId: String): List<Card>
 
     suspend fun getCardTypes(): List<CardType>
     suspend fun saveCardTypes(list: List<CardType>)
@@ -37,9 +37,9 @@ interface LocalRepository {
     suspend fun savePriorities(list: List<Priority>)
     suspend fun getPriority(id: String): Priority
 
-    suspend fun saveLevels(list:List<Level>)
+    suspend fun saveLevels(list: List<Level>)
     suspend fun getLevels(): List<Level>
-    suspend fun getLevel(id: String):Level
+    suspend fun getLevel(id: String): Level
 
     suspend fun removeLevels()
     suspend fun removeCards()

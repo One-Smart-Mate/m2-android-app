@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2763e338882ce7ea6f99dc2392fc50ae",
+    "identityHash": "9de9644dc6d6839543912fa851680bee",
     "entities": [
       {
         "tableName": "user_table",
@@ -86,7 +86,7 @@
       },
       {
         "tableName": "card_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `site_card_id` INTEGER NOT NULL, `site_id` TEXT, `site_code` TEXT, `card_uuid` TEXT NOT NULL, `card_type_color` TEXT NOT NULL, `feasibility` TEXT, `effect` TEXT, `status` TEXT NOT NULL, `card_creation_date` TEXT NOT NULL, `card_due_date` TEXT NOT NULL, `area_id` INTEGER NOT NULL, `area_name` TEXT NOT NULL, `level` INTEGER NOT NULL, `level_name` TEXT NOT NULL, `superior_id` TEXT, `priority_id` TEXT, `priority_code` TEXT, `priority_description` TEXT NOT NULL, `card_methodology` TEXT, `card_methodology_name` TEXT, `card_type_value` TEXT, `card_type_id` TEXT, `card_type_name` TEXT, `preclassifier_id` TEXT NOT NULL, `preclassifier_code` TEXT NOT NULL, `preclassifier_description` TEXT NOT NULL, `creator_id` TEXT, `creator_name` TEXT NOT NULL, `responsable_id` TEXT, `responsable_name` TEXT, `mechanic_id` TEXT, `mechanic_name` TEXT, `user_provisional_solution_id` TEXT, `user_provisional_solution_name` TEXT, `user_app_provisional_solution_id` TEXT, `user_app_provisional_solution_name` TEXT, `user_definitive_solution_id` TEXT, `user_definitive_solution_name` TEXT, `user_app_definitive_solution_id` TEXT, `user_app_definitive_solution_name` TEXT, `manager_id` TEXT, `manager_name` TEXT, `card_manager_close_date` TEXT, `comments_manager_at_card_close` TEXT, `comments_at_card_creation` TEXT, `card_provisional_solution_date` TEXT, `comments_at_card_provisional_solution` TEXT, `card_definitive_solution_date` TEXT, `comments_at_card_definitive_solution` TEXT, `evidence_audio_creation` INTEGER NOT NULL, `evidence_video_creation` INTEGER NOT NULL, `evidence_image_creation` INTEGER NOT NULL, `evidence_audio_close` INTEGER NOT NULL, `evidence_video_close` INTEGER NOT NULL, `evidence_image_close` INTEGER NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT, `deleted_at` TEXT, `stored` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `site_card_id` INTEGER NOT NULL, `site_id` TEXT, `site_code` TEXT, `card_uuid` TEXT NOT NULL, `card_type_color` TEXT NOT NULL, `feasibility` TEXT, `effect` TEXT, `status` TEXT NOT NULL, `card_creation_date` TEXT NOT NULL, `card_due_date` TEXT NOT NULL, `area_id` INTEGER NOT NULL, `area_name` TEXT NOT NULL, `level` INTEGER NOT NULL, `level_name` TEXT, `superior_id` TEXT, `priority_id` TEXT, `priority_code` TEXT, `priority_description` TEXT NOT NULL, `card_methodology` TEXT, `card_methodology_name` TEXT, `card_type_value` TEXT, `card_type_id` TEXT, `card_type_name` TEXT, `preclassifier_id` TEXT NOT NULL, `preclassifier_code` TEXT NOT NULL, `preclassifier_description` TEXT NOT NULL, `creator_id` TEXT, `creator_name` TEXT NOT NULL, `responsable_id` TEXT, `responsable_name` TEXT, `mechanic_id` TEXT, `mechanic_name` TEXT, `user_provisional_solution_id` TEXT, `user_provisional_solution_name` TEXT, `user_app_provisional_solution_id` TEXT, `user_app_provisional_solution_name` TEXT, `user_definitive_solution_id` TEXT, `user_definitive_solution_name` TEXT, `user_app_definitive_solution_id` TEXT, `user_app_definitive_solution_name` TEXT, `manager_id` TEXT, `manager_name` TEXT, `card_manager_close_date` TEXT, `comments_manager_at_card_close` TEXT, `comments_at_card_creation` TEXT, `card_provisional_solution_date` TEXT, `comments_at_card_provisional_solution` TEXT, `card_definitive_solution_date` TEXT, `comments_at_card_definitive_solution` TEXT, `evidence_audio_creation` INTEGER NOT NULL, `evidence_video_creation` INTEGER NOT NULL, `evidence_image_creation` INTEGER NOT NULL, `evidence_audio_close` INTEGER NOT NULL, `evidence_video_close` INTEGER NOT NULL, `evidence_image_close` INTEGER NOT NULL, `created_at` TEXT NOT NULL, `updated_at` TEXT, `deleted_at` TEXT, `stored` TEXT, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -176,7 +176,7 @@
             "fieldPath": "levelName",
             "columnName": "level_name",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "superiorId",
@@ -460,7 +460,7 @@
       },
       {
         "tableName": "card_type_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `methodology` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `color` TEXT NOT NULL, `owner` TEXT NOT NULL, `status` TEXT NOT NULL, `quantity_images_create` INTEGER, `quantity_audios_create` INTEGER, `quantity_videos_create` INTEGER, `audios_duration_create` INTEGER, `videos_duration_create` INTEGER, `quantity_images_close` INTEGER, `quantity_audios_close` INTEGER, `quantity_videos_close` INTEGER, `audios_duration_close` INTEGER, `videos_duration_close` INTEGER, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `methodology` TEXT NOT NULL, `name` TEXT NOT NULL, `description` TEXT NOT NULL, `color` TEXT NOT NULL, `owner` TEXT NOT NULL, `status` TEXT NOT NULL, `quantity_images_create` INTEGER, `quantity_audios_create` INTEGER, `quantity_videos_create` INTEGER, `audios_duration_create` INTEGER, `videos_duration_create` INTEGER, `quantity_images_close` INTEGER, `quantity_audios_close` INTEGER, `quantity_videos_close` INTEGER, `audios_duration_close` INTEGER, `videos_duration_close` INTEGER, `quantity_pictures_ps` INTEGER, `quantity_audios_ps` INTEGER, `quantity_videos_ps` INTEGER, `audios_duration_ps` INTEGER, `videos_duration_ps` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -561,6 +561,36 @@
           {
             "fieldPath": "videosDurationClose",
             "columnName": "videos_duration_close",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quantityPicturesPs",
+            "columnName": "quantity_pictures_ps",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quantityAudiosPs",
+            "columnName": "quantity_audios_ps",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "quantityVideosPs",
+            "columnName": "quantity_videos_ps",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "audiosDurationPs",
+            "columnName": "audios_duration_ps",
+            "affinity": "INTEGER",
+            "notNull": false
+          },
+          {
+            "fieldPath": "videosDurationPs",
+            "columnName": "videos_duration_ps",
             "affinity": "INTEGER",
             "notNull": false
           }
@@ -786,7 +816,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2763e338882ce7ea6f99dc2392fc50ae')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '9de9644dc6d6839543912fa851680bee')"
     ]
   }
 }

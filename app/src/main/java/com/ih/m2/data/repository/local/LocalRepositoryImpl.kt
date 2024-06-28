@@ -191,6 +191,10 @@ class LocalRepositoryImpl @Inject constructor(
         return cardDao.getCard(cardId).toDomain()
     }
 
+    override suspend fun getCardsZone(superiorId: String): List<Card> {
+        return cardDao.getCardsZone(superiorId).map { it.toDomain() }
+    }
+
     override suspend fun saveEmployees(list: List<Employee>) {
        list.forEach {
            employeeDao.insertEmployee(it.toEntity())

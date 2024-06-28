@@ -61,7 +61,7 @@ import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
 import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.pages.error.ErrorScreen
-import com.ih.m2.ui.pages.home.components.HomeCardItemList
+import com.ih.m2.ui.pages.home.components.CardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.utils.EMPTY
 
@@ -173,7 +173,7 @@ fun HomeContent(
         PullToRefreshLazyColumn(
             items = cards,
             content = { card ->
-                HomeCardItemList(
+                CardItemList(
                     card = card,
                     onClick = {
                         navController.navigateToCardDetail(card.id)

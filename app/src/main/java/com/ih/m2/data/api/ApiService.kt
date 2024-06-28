@@ -69,5 +69,10 @@ interface ApiService  {
         @Path("siteId") siteId: String
     ) : Call<GetEmployeesResponse>
 
+    @GET("card/all/zone/{siteId}")
+    fun getCardsZone(
+        @Path("siteId") sitId: String
+    ): Call<GetCardsResponse>
+
 }
 

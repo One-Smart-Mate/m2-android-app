@@ -10,4 +10,8 @@ interface CardRepository {
     suspend fun getCardDetail(cardId: String): Card
 
     suspend fun saveCard(card: CreateCardRequest): Card
+
+
+    suspend fun getCardsZone(siteId: String): List<Card>
+
 }

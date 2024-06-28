@@ -41,7 +41,7 @@ data class CardEntity(
     @ColumnInfo(name = "level")
     val level: Long,
     @ColumnInfo(name = "level_name")
-    val levelName: String,
+    val levelName: String?,
     @ColumnInfo(name = "superior_id")
     val superiorId: String?,
     @ColumnInfo(name = "priority_id")
