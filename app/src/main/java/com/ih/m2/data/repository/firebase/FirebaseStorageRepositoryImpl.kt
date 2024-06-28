@@ -41,9 +41,15 @@ class FirebaseStorageRepositoryImpl @Inject constructor(
     ): String {
         val timeStamp: String = Date().timeStamp()
         return when (type) {
-            EvidenceType.IMCR -> "IMAGE_${timeStamp}.jpg"
-            EvidenceType.VICR -> "VIDEO_${timeStamp}.mp4"
-            EvidenceType.AUCR -> "AUDIO_${timeStamp}.mp3"
+            EvidenceType.IMCR -> "IMAGE_CR_${timeStamp}.jpg"
+            EvidenceType.VICR -> "VIDEO_CR_${timeStamp}.mp4"
+            EvidenceType.AUCR -> "AUDIO_CR_${timeStamp}.mp3"
+            EvidenceType.IMCL -> "IMAGE_CL_${timeStamp}.jpg"
+            EvidenceType.VICL -> "VIDEO_CL_${timeStamp}.mp4"
+            EvidenceType.AUCL -> "AUDIO_CL_${timeStamp}.mp3"
+            EvidenceType.IMPS -> "IMAGE_PS_${timeStamp}.jpg"
+            EvidenceType.AUPS -> "AUDIO_PS_${timeStamp}.mp4"
+            EvidenceType.VIPS -> "VIDEO_PS_${timeStamp}.mp4"
         }
     }
 
@@ -56,6 +62,12 @@ class FirebaseStorageRepositoryImpl @Inject constructor(
             EvidenceType.IMCR -> firebaseStorage.reference.child("evidence/created/images/$cardId/$evidenceName")
             EvidenceType.VICR -> firebaseStorage.reference.child("evidence/created/videos/$cardId/$evidenceName")
             EvidenceType.AUCR -> firebaseStorage.reference.child("evidence/created/audios/$cardId/$evidenceName")
+            EvidenceType.IMCL -> firebaseStorage.reference.child("evidence/closed/images/$cardId/$evidenceName")
+            EvidenceType.VICL -> firebaseStorage.reference.child("evidence/closed/videos/$cardId/$evidenceName")
+            EvidenceType.AUCL -> firebaseStorage.reference.child("evidence/closed/audios/$cardId/$evidenceName")
+            EvidenceType.IMPS -> firebaseStorage.reference.child("evidence/provisional_solution/images/$cardId/$evidenceName")
+            EvidenceType.AUPS -> firebaseStorage.reference.child("evidence/provisional_solution/audios/$cardId/$evidenceName")
+            EvidenceType.VIPS ->  firebaseStorage.reference.child("evidence/provisional_solution/videos/$cardId/$evidenceName")
         }
     }
 }

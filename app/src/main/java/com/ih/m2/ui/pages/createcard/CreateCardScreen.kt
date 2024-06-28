@@ -3,20 +3,17 @@ package com.ih.m2.ui.pages.createcard
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -35,10 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,7 +45,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.flowWithLifecycle
@@ -61,7 +55,6 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import com.ih.m2.MainActivity
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
@@ -77,41 +70,25 @@ import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.RadioGroup
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SpacerSize
-import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.card.SectionCardEvidence
 import com.ih.m2.ui.components.evidence.SectionAudiosEvidence
 import com.ih.m2.ui.components.evidence.SectionImagesEvidence
 import com.ih.m2.ui.components.evidence.SectionVideosEvidence
-import com.ih.m2.ui.components.launchers.AudioLauncher
-import com.ih.m2.ui.components.launchers.CameraLauncher
-import com.ih.m2.ui.components.launchers.VideoLauncher
-import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
-import com.ih.m2.ui.extensions.getActivity
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.runWorkRequest
-import com.ih.m2.ui.navigation.navigateToHome
-import com.ih.m2.ui.pages.carddetail.EvidenceImagesCardSection
-import com.ih.m2.ui.pages.home.components.CardItemList
 import com.ih.m2.ui.pages.home.components.CardSectionItemList
 import com.ih.m2.ui.theme.M2androidappTheme
-import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.theme.Size100
-import com.ih.m2.ui.theme.Size110
-import com.ih.m2.ui.theme.Size120
-import com.ih.m2.ui.theme.Size160
-import com.ih.m2.ui.theme.Size170
 import com.ih.m2.ui.theme.Size180
-import com.ih.m2.ui.theme.Size200
-import com.ih.m2.ui.theme.Size250
 import com.ih.m2.ui.utils.EMPTY
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -124,6 +101,10 @@ fun CreateCardScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val lazyState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+
+
     if (state.isLoading) {
         ScreenLoading(state.message)
     } else {
@@ -170,11 +151,12 @@ fun CreateCardScreen(
                 viewModel.process(CreateCardViewModel.Action.OnSaveCard)
             },
             audioDuration = state.audioDuration,
-            cardsZone = state.cardsZone
+            cardsZone = state.cardsZone,
+            coroutineScope = scope,
+            lazyColumState = lazyState
         )
     }
     if (state.message.isNotEmpty() && state.isLoading.not()) {
-        val scope = rememberCoroutineScope()
         scope.launch {
             snackBarHostState.showSnackbar(
                 message = state.message,
@@ -185,7 +167,7 @@ fun CreateCardScreen(
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
             snackbarData = it,
-            containerColor = if (state.isCardSuccess) Color.Green else Color.Red,
+            containerColor = Color.Red,
             contentColor = Color.White,
             modifier = Modifier.padding(top = PaddingToolbar)
         )
@@ -231,15 +213,16 @@ fun CreateCardContent(
     onDeleteEvidence: (Evidence) -> Unit,
     onSaveCard: () -> Unit,
     audioDuration: Int,
-    cardsZone: List<Card>
+    cardsZone: List<Card>,
+    coroutineScope: CoroutineScope,
+    lazyColumState: LazyListState
 ) {
 
-    val lazyState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
+
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
-            state = lazyState
+            state = lazyColumState
         ) {
             stickyHeader {
                 CustomAppBar(navController = navController, title = "Create card")
@@ -251,8 +234,8 @@ fun CreateCardContent(
                 PriorityContent(priorityList, onPriorityClick, selectedPriority)
                 LevelContent(levelList, onLevelClick = { item, key ->
                     onLevelClick(item, key)
-                    scope.launch {
-                        lazyState.scrollToItem(lazyState.layoutInfo.totalItemsCount)
+                    coroutineScope.launch {
+                        lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
                     }
                 }, selectedLevelList)
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
@@ -264,7 +247,10 @@ fun CreateCardContent(
                     HorizontalDivider()
                     SectionCardEvidence(
                         audioDuration = audioDuration,
-                        onAddEvidence = onAddEvidence
+                        onAddEvidence = onAddEvidence,
+                        imageType = EvidenceType.IMCR,
+                        audioType = EvidenceType.AUCR,
+                        videoType = EvidenceType.VICR
                     )
                     SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                         onDeleteEvidence(it)
@@ -559,15 +545,15 @@ fun CreateCardPreview() {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             CreateCardContent(
                 navController = rememberNavController(),
-                onCardTypeClick = {},
                 cardTypeList = emptyList(),
+                onCardTypeClick = {},
                 selectedCardType = "",
                 preclassifierList = emptyList(),
                 onPreclassifierClick = {},
                 selectedPreclassifier = "",
                 priorityList = emptyList(),
-                selectedPriority = "",
                 onPriorityClick = {},
+                selectedPriority = "",
                 levelList = emptyMap(),
                 onLevelClick = { _, _ -> },
                 selectedLevelList = emptyMap(),
@@ -579,7 +565,9 @@ fun CreateCardPreview() {
                 onDeleteEvidence = {},
                 onSaveCard = {},
                 audioDuration = 60,
-                cardsZone = emptyList()
+                cardsZone = emptyList(),
+                coroutineScope = rememberCoroutineScope(),
+                lazyColumState = rememberLazyListState()
             )
         }
     }

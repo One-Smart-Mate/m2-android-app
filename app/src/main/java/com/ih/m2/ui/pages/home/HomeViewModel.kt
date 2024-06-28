@@ -14,8 +14,6 @@ import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
-import com.ih.m2.ui.extensions.DayAndDateWithYear
-import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CLEAN_FILTERS
 import com.ih.m2.ui.utils.EMPTY
@@ -46,7 +44,8 @@ class HomeViewModel @AssistedInject constructor(
         val loadingMessage: String = EMPTY,
         val showBottomSheetActions: Boolean = false,
         val selectedCard: Card? = null,
-        val isRefreshing: Boolean = false
+        val isRefreshing: Boolean = false,
+        val shouldRefreshList: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -57,7 +56,8 @@ class HomeViewModel @AssistedInject constructor(
         data object OnApplyFilter : Action()
         data object OnCleanFilters : Action()
         data class SyncCatalogs(val syncCatalogs: String = EMPTY): Action()
-        data object OnRefresh: Action()
+        data class OnRefresh(val remotes: Boolean = true): Action()
+        data class ShouldRefreshList(val refresh: Boolean): Action()
     }
 
     fun process(action: Action) {
@@ -69,8 +69,13 @@ class HomeViewModel @AssistedInject constructor(
             is Action.OnCleanFilters -> handleOnCleanFilters()
             is Action.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
             is Action.HandleBottomSheetActions -> handleBottomSheetActions(action.open, action.card)
-            is Action.OnRefresh -> handleOnRefresh()
+            is Action.OnRefresh -> handleOnRefresh(action.remotes)
+            is Action.ShouldRefreshList -> handleShouldRefreshList(action.refresh)
         }
+    }
+
+    private fun handleShouldRefreshList(refresh: Boolean) {
+        setState { copy(shouldRefreshList = refresh) }
     }
 
     private fun handleGetUser() {
@@ -156,13 +161,13 @@ class HomeViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleOnRefresh() {
-        setState { copy(isRefreshing = true) }
+    private fun handleOnRefresh(remotes: Boolean) {
+        setState { copy(isRefreshing = remotes) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardsUseCase(syncRemote = true)
+                getCardsUseCase(syncRemote = remotes)
             }.onSuccess {
-                setState { copy( cardList = it, isRefreshing = false) }
+                setState { copy( cardList = it, isRefreshing = false, shouldRefreshList = false) }
             }.onFailure {
                 setState { copy(isRefreshing = false) }
             }

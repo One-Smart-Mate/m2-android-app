@@ -36,7 +36,7 @@ data class CardType(
     @SerializedName("videosDurationClose")
     val videosDurationClose: Int?,
     @SerializedName("quantityPicturesPs")
-    val quantityPicturesPs: Int?,
+    val quantityImagesPs: Int?,
     @SerializedName("quantityAudiosPs")
     val quantityAudiosPs: Int?,
     @SerializedName("quantityVideosPs")
@@ -67,7 +67,7 @@ fun CardType.toEntity(): CardTypeEntity {
         quantityVideosClose = this.quantityVideosClose.defaultIfNull(0),
         audiosDurationClose = this.audiosDurationClose.defaultIfNull(0),
         videosDurationClose = this.videosDurationClose.defaultIfNull(0),
-        quantityPicturesPs = this.quantityPicturesPs.defaultIfNull(0),
+        quantityImagesPs = this.quantityImagesPs.defaultIfNull(0),
         quantityAudiosPs = this.quantityAudiosPs.defaultIfNull(0),
         quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
         audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),

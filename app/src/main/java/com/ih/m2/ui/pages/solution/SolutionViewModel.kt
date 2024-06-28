@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.solution
 
+import android.content.Context
 import android.net.Uri
 import android.util.Log
 import com.airbnb.mvrx.MavericksState
@@ -9,6 +10,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Employee
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
@@ -16,14 +18,16 @@ import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toVideos
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCase
+import com.ih.m2.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
-import com.ih.m2.ui.pages.createcard.CreateCardViewModel
+import com.ih.m2.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -33,7 +37,9 @@ class SolutionViewModel @AssistedInject constructor(
     private val getEmployeesUseCase: GetEmployeesUseCase,
     private val coroutineContext: CoroutineContext,
     private val getCardDetailUseCase: GetCardDetailUseCase,
-    private val getCardTypeUseCase: GetCardTypeUseCase
+    private val getCardTypeUseCase: GetCardTypeUseCase,
+    private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
+    @ApplicationContext private val context: Context
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
 
 
@@ -49,20 +55,22 @@ class SolutionViewModel @AssistedInject constructor(
         val comments: String = EMPTY,
         val audioDuration: Int = 0,
         val evidences: List<Evidence> = emptyList(),
-        val card: Card? = null
+        val card: Card? = null,
+        val cardType: CardType? = null,
+        val isSolutionSuccess: Boolean = false
     ) : MavericksState
 
     sealed class Action {
         data class SetSolutionInfo(val solutionType: String, val cardId: String) : Action()
         data object GetEmployees : Action()
         data class OnSearchEmployee(val query: String) : Action()
-        data class OnSelectEmployee(val employee: Employee): Action()
-        data class OnCommentChange(val comment: String): Action()
-        data object OnSave: Action()
+        data class OnSelectEmployee(val employee: Employee) : Action()
+        data class OnCommentChange(val comment: String) : Action()
+        data object OnSave : Action()
         data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
-        data class GetCardDetail(val cardId: String): Action()
-        data class GetCardType(val id: String): Action()
+        data class GetCardDetail(val cardId: String) : Action()
+        data class GetCardType(val id: String) : Action()
     }
 
     fun process(action: Action) {
@@ -83,22 +91,21 @@ class SolutionViewModel @AssistedInject constructor(
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
             val state = stateFlow.first()
-//            val cardType = state.cardType
-//            val maxImages = cardType?.quantityImagesCreate.defaultIfNull(0)
-//            if (state.evidences.toImages().size == maxImages) {
-//                setState { copy(message = context.getString(R.string.limit_images)) }
-//                return@launch
-//            }
-//            val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
-//            if (state.evidences.toVideos().size == maxVideos) {
-//                setState { copy(message = context.getString(R.string.limit_videos)) }
-//                return@launch
-//            }
-//            val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
-//            if (state.evidences.toAudios().size == maxAudios) {
-//                setState { copy(message = context.getString(R.string.limit_audios)) }
-//                return@launch
-//            }
+            val maxImages = imagesQuantity(state.solutionType, state.cardType)
+            if (state.evidences.toImages().size == maxImages) {
+                setState { copy(message = context.getString(R.string.limit_images)) }
+                return@launch
+            }
+            val maxVideos = videoQuantity(state.solutionType, state.cardType)
+            if (state.evidences.toVideos().size == maxVideos) {
+                setState { copy(message = context.getString(R.string.limit_videos)) }
+                return@launch
+            }
+            val maxAudios = audiosQuantity(state.solutionType, state.cardType)
+            if (state.evidences.toAudios().size == maxAudios) {
+                setState { copy(message = context.getString(R.string.limit_audios)) }
+                return@launch
+            }
             val list = state.evidences.toMutableList()
             list.add(
                 Evidence.fromCreateEvidence(
@@ -111,6 +118,30 @@ class SolutionViewModel @AssistedInject constructor(
         }
     }
 
+    private fun imagesQuantity(solutionType: String, cardType: CardType?): Int {
+        return if (solutionType == DEFINITIVE_SOLUTION) {
+            cardType?.quantityImagesClose
+        } else {
+            cardType?.quantityImagesPs
+        }.defaultIfNull(0)
+    }
+
+    private fun videoQuantity(solutionType: String, cardType: CardType?): Int {
+        return if (solutionType == DEFINITIVE_SOLUTION) {
+            cardType?.quantityVideosClose
+        } else {
+            cardType?.quantityVideosPs
+        }.defaultIfNull(0)
+    }
+
+    private fun audiosQuantity(solutionType: String, cardType: CardType?): Int {
+        return if (solutionType == DEFINITIVE_SOLUTION) {
+            cardType?.quantityAudiosClose
+        } else {
+            cardType?.quantityAudiosPs
+        }.defaultIfNull(0)
+    }
+
     private fun handleOnDeleteEvidence(evidence: Evidence) {
         viewModelScope.launch {
             val state = stateFlow.first()
@@ -120,9 +151,29 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleOnSave() {
+        setState { copy(isLoading = true, message = "Saving solution...") }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
-            Log.e("test","Card ${state.card}")
+
+            if (state.selectedEmployee == null) {
+                setState { copy(isLoading = false, message = "Please select a user!") }
+                return@launch
+            }
+            kotlin.runCatching {
+                saveCardSolutionUseCase(
+                    solutionType = state.solutionType,
+                    cardId = state.card?.id?.toInt().defaultIfNull(0),
+                    comments = state.comments,
+                    userSolutionId = state.selectedEmployee.id,
+                    evidences = state.evidences
+                )
+            }.onSuccess {
+                Log.e("Test", "Solution Success ${it}")
+                setState { copy(isLoading = false, isSolutionSuccess = true, message = EMPTY) }
+            }.onFailure {
+                Log.e("Test", "Solution Failure ${it.localizedMessage}")
+                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+            }
         }
     }
 
@@ -131,13 +182,20 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleOnSelectEmployee(employee: Employee) {
-        setState { copy(selectedEmployee = employee, query = employee.name, resultList = emptyList()) }
+        setState {
+            copy(
+                selectedEmployee = employee,
+                query = employee.name,
+                resultList = emptyList()
+            )
+        }
     }
 
     private fun handleOnSearchEmployee(query: String) {
         viewModelScope.launch {
             val state = stateFlow.first()
-            val resultList = state.employeeList.filter { it.name.lowercase().contains(query.lowercase()) }
+            val resultList =
+                state.employeeList.filter { it.name.lowercase().contains(query.lowercase()) }
             setState { copy(query = query, resultList = resultList) }
         }
     }
@@ -152,12 +210,11 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardDetail(cardId: String) {
-        setState { copy(isLoading = true) }
+        setState { copy(isLoading = true, message = "Loading data...") }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getCardDetailUseCase(cardId, false)
             }.onSuccess {
-                Log.e("test","Card ${it}")
                 setState { copy(card = it) }
                 process(Action.GetEmployees)
                 process(Action.GetCardType(it.cardTypeId.orEmpty()))
@@ -168,21 +225,32 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardType(cardTypeId: String) {
-        Log.e("test","GetCardtype aqui $cardTypeId")
+        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getCardTypeUseCase(cardTypeId)
             }.onSuccess {
-                Log.e("test","GetCardtype $it")
+                val audioDuration = if (stateFlow.first().solutionType == DEFINITIVE_SOLUTION) {
+                    it.audiosDurationClose
+                } else {
+                    it.audiosDurationPs
+                }.defaultIfNull(0)
+                Log.e("test", "Card Type $it")
+                setState {
+                    copy(
+                        cardType = cardType,
+                        audioDuration = audioDuration,
+                        isLoading = false
+                    )
+                }
             }.onFailure {
-                Log.e("test","GetCardtype error ${it.localizedMessage}")
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
             }
         }
     }
 
     private fun handleGetEmployees() {
-        setState { copy(isLoading = true, message = "Loading data...") }
+        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getEmployeesUseCase()

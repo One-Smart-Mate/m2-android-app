@@ -3,6 +3,7 @@ package com.ih.m2.data.api
 
 import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.CreateCardResponse
+import com.ih.m2.data.model.CreateDefinitiveSolutionRequest
 import com.ih.m2.data.model.GetCardDetailResponse
 import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
@@ -12,10 +13,12 @@ import com.ih.m2.data.model.GetPreclassifiersResponse
 import com.ih.m2.data.model.GetPrioritiesResponse
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.data.model.LoginResponse
+import com.ih.m2.data.model.SolutionResponse
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService  {
@@ -73,6 +76,11 @@ interface ApiService  {
     fun getCardsZone(
         @Path("siteId") sitId: String
     ): Call<GetCardsResponse>
+
+    @PUT("card/update/definitive-solution")
+    fun saveDefinitiveSolution(
+        @Body body: CreateDefinitiveSolutionRequest
+    ) : Call<SolutionResponse>
 
 }
 

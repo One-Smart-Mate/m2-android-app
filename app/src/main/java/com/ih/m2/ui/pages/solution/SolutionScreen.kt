@@ -3,12 +3,12 @@ package com.ih.m2.ui.pages.solution
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -16,7 +16,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -26,10 +25,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -46,21 +49,17 @@ import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.ScreenLoading
 import com.ih.m2.ui.components.SectionTag
-import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.card.SectionCardEvidence
 import com.ih.m2.ui.components.evidence.SectionAudiosEvidence
 import com.ih.m2.ui.components.evidence.SectionImagesEvidence
 import com.ih.m2.ui.components.evidence.SectionVideosEvidence
 import com.ih.m2.ui.extensions.defaultScreen
-import com.ih.m2.ui.extensions.getColor
-import com.ih.m2.ui.extensions.getInvertedColor
 import com.ih.m2.ui.extensions.getTextColor
-import com.ih.m2.ui.pages.carddetail.CardDetailViewModel
+import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
-import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.m2.ui.utils.PROVISIONAL_SOLUTION
 
@@ -73,6 +72,10 @@ fun SolutionScreen(
     viewModel: SolutionViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
+    val context = LocalContext.current
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+
+
     if (state.isLoading) {
         ScreenLoading(text = state.message)
     } else {
@@ -98,16 +101,29 @@ fun SolutionScreen(
             onAddEvidence = { uri, type ->
                 viewModel.process(SolutionViewModel.Action.OnAddEvidence(uri, type))
             },
-            onDeleteEvidence =  {
+            onDeleteEvidence = {
                 viewModel.process(SolutionViewModel.Action.OnDeleteEvidence(it))
             },
             evidences = state.evidences,
-            audioDuration = state.audioDuration
+            audioDuration = state.audioDuration,
+            solutionType = state.solutionType
         )
+    }
+    if (state.isLoading.not() && state.message.isNotEmpty()) {
+        Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
     }
 
     LaunchedEffect(viewModel) {
         viewModel.process(SolutionViewModel.Action.SetSolutionInfo(solutionType, cardId))
+    }
+    LaunchedEffect(viewModel, lifecycle) {
+        snapshotFlow { state.isSolutionSuccess }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (it) {
+                    navController.popBackStack()
+                }
+            }
     }
 }
 
@@ -126,6 +142,7 @@ fun getSolutionScreenTitle(solutionType: String): String {
     }
 }
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SolutionScreenContent(
@@ -143,7 +160,8 @@ fun SolutionScreenContent(
     onAddEvidence: (Uri, EvidenceType) -> Unit,
     onDeleteEvidence: (Evidence) -> Unit,
     audioDuration: Int,
-    ) {
+    solutionType: String,
+) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding)
@@ -177,7 +195,11 @@ fun SolutionScreenContent(
             item {
                 CustomSpacer()
                 AnimatedVisibility(visible = selectedEmployee != null) {
-                    SectionTag(title = "Selected user", value = selectedEmployee?.name.orEmpty(), modifier = Modifier.fillMaxWidth())
+                    SectionTag(
+                        title = "Selected user",
+                        value = selectedEmployee?.name.orEmpty(),
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
                 CustomSpacer()
             }
@@ -187,7 +209,10 @@ fun SolutionScreenContent(
                 HorizontalDivider()
                 SectionCardEvidence(
                     audioDuration = audioDuration,
-                    onAddEvidence = onAddEvidence
+                    onAddEvidence = onAddEvidence,
+                    imageType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.IMCL else EvidenceType.IMPS,
+                    audioType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.AUCL else EvidenceType.AUPS,
+                    videoType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.VICL else EvidenceType.VIPS
                 )
                 SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                     onDeleteEvidence(it)
@@ -263,9 +288,9 @@ fun SolutionScreenPreview() {
                 {},
                 emptyList(),
                 {},
-                selectedEmployee = Employee("","Fausto ",""),
+                selectedEmployee = Employee("", "Fausto ", ""),
                 "",
-                {},{}, emptyList(),{ _,_ -> },{},0
+                {}, {}, emptyList(), { _, _ -> }, {}, 0, ""
             )
         }
     }

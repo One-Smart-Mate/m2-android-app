@@ -67,7 +67,7 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCards(): List<Card> {
-        return cardDao.getCards().map { it.toDomain() }
+        return cardDao.getCards().map { it.toDomain() }.sortedBy { it.siteCardId }
     }
 
     override suspend fun getCardTypes(): List<CardType> {

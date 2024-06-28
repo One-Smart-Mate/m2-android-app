@@ -2,6 +2,7 @@ package com.ih.m2.ui.pages.home
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -118,14 +119,16 @@ fun HomeScreen(
                             )
                         )
                         navController.navigateToCardSolution(solutionType, card.id)
+                        viewModel.process(HomeViewModel.Action.ShouldRefreshList(true))
                     }
                 },
                 onDismissRequestActions = {
+                    viewModel.process(HomeViewModel.Action.ShouldRefreshList(false))
                     viewModel.process(HomeViewModel.Action.HandleBottomSheetActions(false))
                 },
                 isRefreshing = state.isRefreshing,
                 onRefresh = {
-                    viewModel.process(HomeViewModel.Action.OnRefresh)
+                    viewModel.process(HomeViewModel.Action.OnRefresh(true))
                 }
             )
         }
@@ -137,6 +140,10 @@ fun HomeScreen(
                 if (state.syncCatalogs) {
                     viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
                 }
+                Log.e("test"," LaunchedEeffect ${state.shouldRefreshList}")
+               if (state.shouldRefreshList) {
+                   viewModel.process(HomeViewModel.Action.OnRefresh(false))
+               }
             }
     }
 }
@@ -195,29 +202,7 @@ fun HomeContent(
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
         )
-//        LazyColumn {
-//            stickyHeader {
-//                HomeAppBar(
-//                    navController = navController,
-//                    padding = paddingValues.calculateTopPadding(),
-//                    user = user,
-//                    onFilterClick = {
-//                        onOpenBottomSheet()
-//                    })
-//            }
-//            items(cards) { card ->
-//                HomeCardItemList(
-//                    card = card,
-//                    onClick = {
-//                        navController.navigateToCardDetail(card.id)
-//                    },
-//                    onActionClick = {
-//                        onOpenBottomSheetActions(card)
-//                    },
-//                )
-//            }
-//
-//        }
+
         if (showBottomSheet) {
             FiltersBottomSheet(
                 selection = selection,

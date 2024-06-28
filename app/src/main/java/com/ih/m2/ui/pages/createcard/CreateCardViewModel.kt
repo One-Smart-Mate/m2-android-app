@@ -323,7 +323,7 @@ class CreateCardViewModel @AssistedInject constructor(
             }.onSuccess {
                 Log.e("Test", "Success ${it}")
                 delay(2000)
-                setState { copy(isLoading = false, message = EMPTY) }
+                setState { copy(isLoading = false, message = EMPTY, isCardSuccess = true) }
             }.onFailure {
                 Log.e("test", "Failure $it")
                 setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }

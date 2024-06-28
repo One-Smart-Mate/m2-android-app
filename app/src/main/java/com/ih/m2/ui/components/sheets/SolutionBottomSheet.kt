@@ -47,9 +47,9 @@ fun SolutionBottomSheetContent(
                 .copy(fontWeight = FontWeight.Bold)
         )
         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
-        CustomButton(text = stringResource(R.string.provisional_solution)) {
-            onSolutionClick(PROVISIONAL_SOLUTION)
-        }
+//        CustomButton(text = stringResource(R.string.provisional_solution)) {
+//            onSolutionClick(PROVISIONAL_SOLUTION)
+//        }
         CustomSpacer()
         CustomButton(
             text = stringResource(R.string.definitive_solution),

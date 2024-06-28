@@ -4,12 +4,15 @@ import com.google.gson.annotations.SerializedName
 import com.ih.m2.data.database.entities.evidence.EvidenceEntity
 import com.ih.m2.ui.utils.AUDIO_CLOSE
 import com.ih.m2.ui.utils.AUDIO_CREATION
+import com.ih.m2.ui.utils.AUDIO_PS
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.IMG_CLOSE
 import com.ih.m2.ui.utils.IMG_CREATION
+import com.ih.m2.ui.utils.IMG_PS
 import com.ih.m2.ui.utils.STATUS_A
 import com.ih.m2.ui.utils.VIDEO_CLOSE
 import com.ih.m2.ui.utils.VIDEO_CREATION
+import com.ih.m2.ui.utils.VIDEO_PS
 import java.util.UUID
 
 data class Evidence(
@@ -52,19 +55,19 @@ fun Evidence.toEntity(): EvidenceEntity {
 
 fun List<Evidence>.toImages(): List<Evidence> {
     return this.filter {
-        it.type == IMG_CREATION || it.type == IMG_CLOSE
+        it.type == IMG_CREATION || it.type == IMG_CLOSE || it.type == IMG_PS
     }
 }
 
 fun List<Evidence>.toVideos(): List<Evidence> {
     return this.filter {
-        it.type == VIDEO_CLOSE || it.type == VIDEO_CREATION
+        it.type == VIDEO_CLOSE || it.type == VIDEO_CREATION || it.type == VIDEO_PS
     }
 }
 
 fun List<Evidence>.toAudios(): List<Evidence> {
     return this.filter {
-        it.type == AUDIO_CREATION || it.type == AUDIO_CLOSE
+        it.type == AUDIO_CREATION || it.type == AUDIO_CLOSE || it.type == AUDIO_PS
     }
 }
 
