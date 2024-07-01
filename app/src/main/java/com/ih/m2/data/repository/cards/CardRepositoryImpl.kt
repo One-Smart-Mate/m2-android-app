@@ -21,7 +21,6 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
@@ -31,7 +30,6 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
@@ -41,8 +39,6 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            Log.e("Test", "Current error ${response.getErrorMessage()}")
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
@@ -52,7 +48,6 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
@@ -62,7 +57,6 @@ class CardRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }

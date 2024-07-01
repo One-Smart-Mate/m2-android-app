@@ -19,17 +19,22 @@ class AuthRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
-            FirebaseCrashlytics.getInstance().log(response.getErrorMessage())
             error(response.getErrorMessage())
         }
     }
 }
 
 fun <T> Response<T>.getErrorMessage(): String {
+    val instance = FirebaseCrashlytics.getInstance()
     try {
         val data = JSONObject(this.errorBody()?.charStream()?.readText().orEmpty())
-        return data.getString("message")
+        val message = data.getString("message")
+        instance.setCustomKey("Custom_Error_API_Service ", message)
+        instance.log(message)
+        instance.recordException(Exception(data.toString()))
+        return message
     } catch (e: Exception) {
+        instance.recordException(e)
         return e.localizedMessage.orEmpty()
     }
 }
