@@ -32,6 +32,8 @@ import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.getStatus
+import com.ih.m2.domain.model.preclassifierValue
+import com.ih.m2.domain.model.priorityValue
 import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toVideos
@@ -65,7 +67,9 @@ fun CardDetailScreen(
             ErrorScreen(
                 navController = navController,
                 errorMessage = screenState.error
-            )
+            ) {
+                viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+            }
         }
 
         is LCE.Loading, LCE.Uninitialized -> {
@@ -97,7 +101,7 @@ fun CardDetailContent(
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = "${stringResource(R.string.card)} ${card.id}"
+                    title = "${stringResource(R.string.card)} ${card.siteCardId}"
                 )
             }
 
@@ -133,11 +137,11 @@ fun CardInformationContent(
         )
         SectionTag(
             title = stringResource(R.string.preclassifier),
-            value = "${card.preclassifierCode} - ${card.preclassifierDescription}",
+            value = card.preclassifierValue(),
         )
         SectionTag(
             title = stringResource(R.string.priority),
-            value = "${card.priorityCode} - ${card.priorityDescription}",
+            value = card.priorityValue(),
         )
         SectionTag(
             title = stringResource(R.string.mechanic),
@@ -190,8 +194,9 @@ fun CardInformationContent(
 fun CardInformationEvidence(
     card: Card
 ) {
-    card.evidences?.let { evidences ->
-        ExpandableCard(title = "Evidences") {
+    if (card.evidences.isNullOrEmpty().not()) {
+        val evidences = card.evidences.orEmpty()
+        ExpandableCard(title = stringResource(R.string.evidences)) {
             val imagesList = evidences.toImages()
             if (imagesList.isNotEmpty()) {
                 EvidenceImagesCardSection(

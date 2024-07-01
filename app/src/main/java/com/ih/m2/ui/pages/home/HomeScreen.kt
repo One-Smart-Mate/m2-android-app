@@ -77,7 +77,9 @@ fun HomeScreen(
 
     when (val screenState = state.user) {
         is LCE.Fail -> {
-            ErrorScreen(navController = navController, errorMessage = screenState.error)
+            ErrorScreen(navController = navController, errorMessage = screenState.error) {
+                viewModel.process(HomeViewModel.Action.GetUser)
+            }
         }
 
         is LCE.Loading, LCE.Uninitialized -> {

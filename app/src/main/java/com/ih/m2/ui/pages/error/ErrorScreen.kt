@@ -33,18 +33,21 @@ import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.Size38
+import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun ErrorScreen(
     navController: NavController,
-    errorMessage: String
+    errorMessage: String,
+    onClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 color = MaterialTheme.colorScheme.error
-            ).padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal)
+            )
+            .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal)
     ) {
         Icon(
             Icons.Filled.KeyboardArrowLeft,
@@ -63,7 +66,7 @@ fun ErrorScreen(
         ) {
 
             Icon(
-                Icons.Filled.Close, contentDescription = "",
+                Icons.Filled.Close, contentDescription = EMPTY,
                 modifier = Modifier.size(100.dp),
                 tint = Color.White
             )
@@ -71,8 +74,10 @@ fun ErrorScreen(
             Text(
                 text = "Ups! Something went wrong!",
                 style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold,
-                        color = Color.White)
+                    .copy(
+                        fontWeight = FontWeight.Bold,
+                        color = Color.White
+                    )
             )
             CustomSpacer()
             Text(
@@ -83,7 +88,7 @@ fun ErrorScreen(
             )
             CustomSpacer()
             CustomButton(text = "Reload data", buttonType = ButtonType.ERROR) {
-
+                onClick()
             }
         }
     }
@@ -97,7 +102,9 @@ fun ErrorScreen(
 fun PreviewErrorScreen() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            ErrorScreen(rememberNavController(),"Unable to load the dat")
+            ErrorScreen(rememberNavController(), "Unable to load the dat") {
+
+            }
         }
     }
 }

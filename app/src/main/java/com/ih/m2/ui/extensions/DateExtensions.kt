@@ -40,10 +40,11 @@ val Date.nameOfMonth: String get() = SimpleDateFormat(MMM, Locale.getDefault()).
 
 
 fun String?.toFormatDate(): String {
+    if (this.isNullOrEmpty() || this.isBlank()) return EMPTY
     return try {
-        this?.toDate(ISO_FORMAT)?.DayAndDateWithYear.orEmpty()
+        this.toDate(ISO_FORMAT)?.DayAndDateWithYear.orEmpty()
     } catch (e: Exception) {
-        this?.toDate(NORMAL_FORMAT)?.DayAndDateWithYear.orEmpty()
+        this.toDate(NORMAL_FORMAT)?.DayAndDateWithYear.orEmpty()
     }
 
 }

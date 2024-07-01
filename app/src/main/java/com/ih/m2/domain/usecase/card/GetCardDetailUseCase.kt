@@ -1,5 +1,6 @@
 package com.ih.m2.domain.usecase.card
 
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.repository.cards.CardRepository
 import com.ih.m2.domain.repository.local.LocalRepository
@@ -15,7 +16,7 @@ class GetCardDetailUseCaseImpl @Inject constructor(
 ) : GetCardDetailUseCase {
 
     override suspend fun invoke(cardId: String, remote: Boolean): Card {
-        return if (remote) {
+        return if (remote && NetworkConnection.isConnected()) {
             cardRepository.getCardDetail(cardId)
         } else {
             localRepository.getCard(cardId)

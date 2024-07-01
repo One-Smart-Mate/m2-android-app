@@ -27,6 +27,8 @@ import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.getStatus
 import com.ih.m2.domain.model.isClosed
+import com.ih.m2.domain.model.preclassifierValue
+import com.ih.m2.domain.model.priorityValue
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.buttons.ButtonType
@@ -83,7 +85,11 @@ fun CardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.preclassifier),
-                value = "${card.preclassifierCode} ${card.preclassifierDescription}",
+                value = card.preclassifierValue(),
+            )
+            SectionTag(
+                title = stringResource(R.string.priority),
+                value = card.priorityValue(),
             )
             SectionTag(
                 title = stringResource(id = R.string.area),

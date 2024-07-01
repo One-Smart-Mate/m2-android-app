@@ -5,6 +5,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCase
@@ -40,7 +41,7 @@ class CardDetailViewModel @AssistedInject constructor(
         setState { copy(card = LCE.Loading) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardDetailUseCase(cardId)
+                getCardDetailUseCase(cardId = cardId)
             }.onSuccess {
                 setState { copy(card = LCE.Success(it)) }
             }.onFailure {

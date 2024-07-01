@@ -17,6 +17,7 @@ import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.domain.model.hasAudios
 import com.ih.m2.domain.model.hasImages
 import com.ih.m2.domain.model.hasVideos
+import com.ih.m2.domain.model.isBehaviorCardType
 import com.ih.m2.domain.model.isMaintenanceCardType
 import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
@@ -191,10 +192,13 @@ class CreateCardViewModel @AssistedInject constructor(
             process(Action.GetPreclassifiers(id))
             handleGetCardType(id)
             val state = stateFlow.first()
-            val cardType = state.cardTypeList.find { it.id == id }?.isMaintenanceCardType()
-            if (cardType.defaultIfNull(false)) {
-                handleGetPriorities()
+            val cardType = state.cardTypeList.find { it.id == id }
+
+            if (cardType.isBehaviorCardType()) {
                 setState { copy(isSecureCard = true) }
+            }
+            if (cardType.isMaintenanceCardType().defaultIfNull(false)) {
+                handleGetPriorities()
             } else {
                 val levelList = getLevelById("0", 0)
                 setState { copy(nodeLevelList = levelList) }

@@ -76,11 +76,15 @@ fun CardType.toEntity(): CardTypeEntity {
 }
 
 
+
 fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     return this.map {
         NodeCardItem(id = it.id, name = it.methodology, description = it.name)
     }
 }
 
-fun CardType.isMaintenance() = this.name == CARD_MAINTENANCE
-fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name == CARD_MAINTENANCE
+fun CardType.isBehavior() = this.methodology == "C" || this.name == "Comportamiento"
+
+fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
+
+fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == "Comportamiento".lowercase()

@@ -257,7 +257,33 @@ data class Card(
             )
         }
     }
+
 }
+
+fun Card.priorityValue(): String {
+    return if (
+        this.priorityId.isNullOrBlank().not() &&
+        this.priorityCode.isNullOrBlank().not() &&
+        this.priorityDescription.isNullOrBlank().not()
+    ) {
+        "${this.priorityCode} - ${this.priorityDescription}"
+    } else {
+        EMPTY
+    }
+}
+
+fun Card.preclassifierValue(): String {
+    return if (
+        this.preclassifierId.isBlank().not() &&
+        this.preclassifierCode.isBlank().not() &&
+        this.preclassifierDescription.isBlank().not()
+    ) {
+        "${this.preclassifierCode} - ${this.preclassifierDescription}"
+    } else {
+        EMPTY
+    }
+}
+
 
 @Composable
 fun Card.getStatus(): String {
@@ -367,7 +393,7 @@ fun Card.toEntity(): CardEntity {
     )
 }
 
-fun Card.isMaintenance() = this.cardTypeName == CARD_MAINTENANCE
+fun Card.isBehavior() = this.cardTypeMethodology == "C" || this.cardTypeMethodologyName == "Comportamiento"
 
 fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
     return CreateCardRequest(
@@ -375,7 +401,8 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardUUID = this.uuid,
         cardCreationDate = this.creationDate,
         areaId = this.areaId.toInt(),
-        priorityId = if (this.priorityId.isNullOrBlank().not()) this.priorityId?.toInt().defaultIfNull(0) else 0,
+        priorityId = if (this.priorityId.isNullOrBlank().not()) this.priorityId?.toInt()
+            .defaultIfNull(0) else 0,
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
