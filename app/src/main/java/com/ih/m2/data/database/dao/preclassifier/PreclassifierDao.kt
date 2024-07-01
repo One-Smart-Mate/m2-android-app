@@ -22,5 +22,5 @@ interface PreclassifierDao {
 
 
     @Query("SELECT * FROM preclassifier_table WHERE id=:id")
-    suspend fun getPreclassifier(id: String): PreclassifierEntity
+    suspend fun getPreclassifier(id: String?): PreclassifierEntity?
 }

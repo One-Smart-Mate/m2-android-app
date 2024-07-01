@@ -31,7 +31,7 @@ import com.ih.m2.data.database.entities.priority.PriorityEntity
         EvidenceEntity::class,
         EmployeeEntity::class
     ],
-    version = 1
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
 

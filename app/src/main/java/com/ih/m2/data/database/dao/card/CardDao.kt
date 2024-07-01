@@ -19,11 +19,11 @@ interface CardDao {
     suspend fun deleteCards()
 
     @Query("SELECT site_card_id FROM card_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLastSiteCardId(): Long
+    suspend fun getLastSiteCardId(): Long?
 
 
     @Query("SELECT id FROM card_table ORDER BY id DESC LIMIT 1")
-    suspend fun getLastCardId(): String
+    suspend fun getLastCardId(): String?
 
     @Query("SELECT * FROM card_table WHERE stored=:stored")
     suspend fun getLocalCards(stored: String): List<CardEntity>

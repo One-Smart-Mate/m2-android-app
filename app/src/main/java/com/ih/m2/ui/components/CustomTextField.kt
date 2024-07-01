@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +54,7 @@ fun CustomTextField(
 ) {
 
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
+    var text by rememberSaveable { mutableStateOf(EMPTY) }
 
 
     val leadingIcon = @Composable {
@@ -64,12 +66,16 @@ fun CustomTextField(
     }
 
     TextField(
-        value = value,
-        onValueChange = onChange,
+        value = text,
+        onValueChange = {
+            text = it
+            onChange(it)
+        },
         modifier = modifier,
         leadingIcon = leadingIcon,
         keyboardOptions = KeyboardOptions(
-            autoCorrect = false
+            autoCorrect = false,
+            keyboardType = KeyboardType.Text,
         ),
         visualTransformation = if (passwordVisible || isPassword.not()) VisualTransformation.None else PasswordVisualTransformation(),
         placeholder = { Text(placeholder) },
@@ -93,20 +99,18 @@ fun CustomTextField(
             if (isPassword) {
                 val image = if (passwordVisible)
                     painterResource(id = R.drawable.ic_visibility)
-                else  painterResource(id = R.drawable.ic_visibility_off)
+                else painterResource(id = R.drawable.ic_visibility_off)
 
                 // Please provide localized description for accessibility services
                 val description = if (passwordVisible) "Hide password" else "Show password"
 
-                IconButton(onClick = {passwordVisible = !passwordVisible}){
-                    Icon(painter  = image, description, tint = getColor())
+                IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                    Icon(painter = image, description, tint = getColor())
                 }
             }
         }
     )
 }
-
-
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -33,7 +33,7 @@ class CardWorker @AssistedInject constructor(
                 Result.failure()
             }
         } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
+            FirebaseCrashlytics.getInstance().recordException(e)
             Result.failure()
         }
     }

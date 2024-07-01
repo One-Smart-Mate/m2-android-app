@@ -1,6 +1,7 @@
 package com.ih.m2.domain.usecase.card
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.ui.functions.CustomException
 import com.ih.m2.data.model.CreateEvidenceRequest
@@ -59,6 +60,7 @@ class SyncCardsUseCaseImpl @Inject constructor(
                 Log.e("test", "saving card.. $remoteCard")
             }
         } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
             notificationManager.buildErrorNotification(id)
         }
     }

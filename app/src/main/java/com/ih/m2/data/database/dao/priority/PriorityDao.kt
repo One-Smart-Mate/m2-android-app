@@ -20,5 +20,5 @@ interface PriorityDao {
     suspend fun deletePriorities()
 
     @Query("SELECT * FROM priority_table WHERE id=:id")
-    suspend fun getPriority(id: String): PriorityEntity
+    suspend fun getPriority(id: String?): PriorityEntity?
 }

@@ -20,5 +20,5 @@ interface CardTypeDao {
     suspend fun deleteCardTypes()
 
     @Query("SELECT * FROM card_type_table WHERE id=:id")
-    suspend fun getCardType(id: String): CardTypeEntity
+    suspend fun getCardType(id: String?): CardTypeEntity?
 }

@@ -7,10 +7,8 @@ import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
 import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.CreateEvidenceRequest
-import com.ih.m2.ui.extensions.DayAndDateWithYear
 import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
-import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
 import com.ih.m2.ui.utils.CARD_MAINTENANCE
@@ -54,7 +52,7 @@ data class Card(
     @SerializedName("priorityId")
     val priorityId: String?,
     val priorityCode: String?,
-    val priorityDescription: String,
+    val priorityDescription: String?,
     val cardTypeMethodology: String?,
     val cardTypeMethodologyName: String?,
     val cardTypeValue: String?,
@@ -377,7 +375,7 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardUUID = this.uuid,
         cardCreationDate = this.creationDate,
         areaId = this.areaId.toInt(),
-        priorityId = this.priorityId?.toInt().defaultIfNull(0),
+        priorityId = if (this.priorityId.isNullOrBlank().not()) this.priorityId?.toInt().defaultIfNull(0) else 0,
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),

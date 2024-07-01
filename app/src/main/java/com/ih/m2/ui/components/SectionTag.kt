@@ -28,21 +28,23 @@ fun SectionTag(
     value: String,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier.padding(vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = title, style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.width(Size100)
-        )
-        CustomSpacer(
-            direction = SpacerDirection.HORIZONTAL,
-            space = SpacerSize.TINY
-        )
-        CustomTag(title = value, tagSize = TagSize.SMALL)
+    if (value.isNotEmpty()) {
+        Row(
+            modifier = modifier.padding(vertical = 4.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title, style = MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.width(Size100)
+            )
+            CustomSpacer(
+                direction = SpacerDirection.HORIZONTAL,
+                space = SpacerSize.TINY
+            )
+            CustomTag(title = value, tagSize = TagSize.SMALL)
+        }
     }
 }
 

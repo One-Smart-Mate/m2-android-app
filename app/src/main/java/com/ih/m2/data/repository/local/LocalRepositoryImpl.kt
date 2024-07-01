@@ -67,7 +67,7 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCards(): List<Card> {
-        return cardDao.getCards().map { it.toDomain() }.sortedBy { it.siteCardId }
+        return cardDao.getCards().map { it.toDomain() }.sortedByDescending { it.siteCardId }
     }
 
     override suspend fun getCardTypes(): List<CardType> {
@@ -135,28 +135,28 @@ class LocalRepositoryImpl @Inject constructor(
         levelDao.deleteLevels()
     }
 
-    override suspend fun getLastCardId(): String {
+    override suspend fun getLastCardId(): String? {
         return cardDao.getLastCardId()
     }
 
-    override suspend fun getLastSiteCardId(): Long {
+    override suspend fun getLastSiteCardId(): Long? {
         return cardDao.getLastSiteCardId()
     }
 
-    override suspend fun getCardType(id: String): CardType {
-        return cardTypeDao.getCardType(id).toDomain()
+    override suspend fun getCardType(id: String?): CardType? {
+        return cardTypeDao.getCardType(id)?.toDomain()
     }
 
-    override suspend fun getPreclassifier(id: String): Preclassifier {
-        return preclassifierDao.getPreclassifier(id).toDomain()
+    override suspend fun getPreclassifier(id: String?): Preclassifier? {
+        return preclassifierDao.getPreclassifier(id)?.toDomain()
     }
 
-    override suspend fun getPriority(id: String): Priority {
-        return priorityDao.getPriority(id).toDomain()
+    override suspend fun getPriority(id: String?): Priority? {
+        return priorityDao.getPriority(id)?.toDomain()
     }
 
-    override suspend fun getLevel(id: String): Level {
-        return levelDao.getLevel(id).toDomain()
+    override suspend fun getLevel(id: String?): Level? {
+        return levelDao.getLevel(id)?.toDomain()
     }
 
     override suspend fun saveCard(card: Card): Long {
@@ -172,7 +172,7 @@ class LocalRepositoryImpl @Inject constructor(
             val evidences =
                 evidenceDao.getEvidencesByCard(cardEntity.uuid).map { it.toDomain() }
             cardEntity.toDomain(evidences = evidences)
-        }
+        }.sortedByDescending { it.siteCardId }
     }
 
     override suspend fun deleteEvidence(id: String) {

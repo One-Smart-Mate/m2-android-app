@@ -49,7 +49,7 @@ data class CardEntity(
     @ColumnInfo(name = "priority_code")
     val priorityCode: String?,
     @ColumnInfo(name = "priority_description")
-    val priorityDescription: String,
+    val priorityDescription: String?,
     @ColumnInfo(name = "card_methodology")
     val cardTypeMethodology: String?,
     @ColumnInfo(name = "card_methodology_name")

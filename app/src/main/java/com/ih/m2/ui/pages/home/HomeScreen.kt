@@ -129,6 +129,9 @@ fun HomeScreen(
                 isRefreshing = state.isRefreshing,
                 onRefresh = {
                     viewModel.process(HomeViewModel.Action.OnRefresh(true))
+                },
+                onCreateCardClick = {
+                    viewModel.process(HomeViewModel.Action.ShouldRefreshList(true))
                 }
             )
         }
@@ -165,11 +168,13 @@ fun HomeContent(
     onDismissRequestActions: () -> Unit,
     onSolutionClick: (String) -> Unit,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onCreateCardClick: () -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
+                onCreateCardClick()
                 navController.navigateToCreateCard()
             }) {
                 Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.empty))
@@ -289,7 +294,7 @@ fun HomePreview() {
                 listOf(Card.mock()),
                 false,
                 false,
-                "", {}, {}, {}, {}, {}, {}, {}, {},false,{}
+                "", {}, {}, {}, {}, {}, {}, {}, {},false,{},{}
             )
         }
     }

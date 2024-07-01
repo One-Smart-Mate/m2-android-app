@@ -231,9 +231,9 @@ class SolutionViewModel @AssistedInject constructor(
                 getCardTypeUseCase(cardTypeId)
             }.onSuccess {
                 val audioDuration = if (stateFlow.first().solutionType == DEFINITIVE_SOLUTION) {
-                    it.audiosDurationClose
+                    it?.audiosDurationClose
                 } else {
-                    it.audiosDurationPs
+                    it?.audiosDurationPs
                 }.defaultIfNull(0)
                 Log.e("test", "Card Type $it")
                 setState {

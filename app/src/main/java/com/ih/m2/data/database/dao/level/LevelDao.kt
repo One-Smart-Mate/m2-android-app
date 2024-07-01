@@ -21,7 +21,7 @@ interface LevelDao {
     suspend fun deleteLevels()
 
     @Query("SELECT * FROM level_table WHERE id=:id")
-    suspend fun getLevel(id: String): LevelEntity
+    suspend fun getLevel(id: String?): LevelEntity?
 
 
 }

@@ -40,7 +40,7 @@ class CardDetailViewModel @AssistedInject constructor(
         setState { copy(card = LCE.Loading) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardDetailUseCase("155")
+                getCardDetailUseCase(cardId)
             }.onSuccess {
                 setState { copy(card = LCE.Success(it)) }
             }.onFailure {

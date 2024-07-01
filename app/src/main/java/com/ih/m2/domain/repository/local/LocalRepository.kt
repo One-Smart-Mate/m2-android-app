@@ -17,8 +17,8 @@ interface LocalRepository {
 
     suspend fun saveCards(list: List<Card>)
     suspend fun getCards(): List<Card>
-    suspend fun getLastCardId(): String
-    suspend fun getLastSiteCardId(): Long
+    suspend fun getLastCardId(): String?
+    suspend fun getLastSiteCardId(): Long?
     suspend fun saveCard(card: Card): Long
     suspend fun getLocalCards(): List<Card>
     suspend fun deleteCard(id: String)
@@ -27,19 +27,19 @@ interface LocalRepository {
 
     suspend fun getCardTypes(): List<CardType>
     suspend fun saveCardTypes(list: List<CardType>)
-    suspend fun getCardType(id: String): CardType
+    suspend fun getCardType(id: String?): CardType?
 
     suspend fun getPreclassifiers(): List<Preclassifier>
     suspend fun savePreclassifiers(list: List<Preclassifier>)
-    suspend fun getPreclassifier(id: String): Preclassifier
+    suspend fun getPreclassifier(id: String?): Preclassifier?
 
     suspend fun getPriorities(): List<Priority>
     suspend fun savePriorities(list: List<Priority>)
-    suspend fun getPriority(id: String): Priority
+    suspend fun getPriority(id: String?): Priority?
 
     suspend fun saveLevels(list: List<Level>)
     suspend fun getLevels(): List<Level>
-    suspend fun getLevel(id: String): Level
+    suspend fun getLevel(id: String?): Level?
 
     suspend fun removeLevels()
     suspend fun removeCards()

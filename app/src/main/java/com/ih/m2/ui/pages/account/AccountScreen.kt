@@ -156,19 +156,19 @@ fun AccountContent(
                     }
                 )
 
-                ListItem(
-                    headlineContent = { Text(text = "Dev") },
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.Build,
-                            contentDescription = stringResource(R.string.empty),
-                        )
-                    },
-                    tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        onDevClick()
-                    }
-                )
+//                ListItem(
+//                    headlineContent = { Text(text = "Dev") },
+//                    leadingContent = {
+//                        Icon(
+//                            Icons.Filled.Build,
+//                            contentDescription = stringResource(R.string.empty),
+//                        )
+//                    },
+//                    tonalElevation = PaddingNormal,
+//                    modifier = Modifier.clickable {
+//                        onDevClick()
+//                    }
+//                )
 
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.logout)) },

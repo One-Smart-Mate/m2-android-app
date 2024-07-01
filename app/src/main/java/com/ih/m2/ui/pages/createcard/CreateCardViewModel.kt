@@ -68,7 +68,7 @@ class CreateCardViewModel @AssistedInject constructor(
         val preclassifierList: List<NodeCardItem> = emptyList(),
         val selectedPreclassifier: String = EMPTY,
         val priorityList: List<NodeCardItem> = emptyList(),
-        val selectedPriority: String = "",
+        val selectedPriority: String = EMPTY,
         val nodeLevelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
         val selectedLevelList: Map<Int, String> = mutableMapOf(),
         val lastSelectedLevel: String = EMPTY,
@@ -336,11 +336,13 @@ class CreateCardViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 getCardTypeUseCase(id)
             }.onSuccess {
-                setState {
-                    copy(
-                        cardType = it,
-                        audioDuration = it.audiosDurationCreate.defaultIfNull(60)
-                    )
+                it?.let {
+                    setState {
+                        copy(
+                            cardType = it,
+                            audioDuration = it.audiosDurationCreate.defaultIfNull(60)
+                        )
+                    }
                 }
             }.onFailure {
                 setState { copy(message = it.localizedMessage.orEmpty()) }
