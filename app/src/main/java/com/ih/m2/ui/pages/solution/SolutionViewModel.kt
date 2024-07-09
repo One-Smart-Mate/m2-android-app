@@ -9,6 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Employee
@@ -28,7 +29,9 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -90,18 +93,20 @@ class SolutionViewModel @AssistedInject constructor(
 
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
+            setState { copy(message = EMPTY) }
             val state = stateFlow.first()
-            val maxImages = imagesQuantity(state.solutionType, state.cardType)
+            val cardType = state.cardType.defaultIfNull(getCardTypeUseCase(state.card?.cardTypeId.orEmpty()))
+            val maxImages = imagesQuantity(state.solutionType, cardType)
             if (state.evidences.toImages().size == maxImages) {
                 setState { copy(message = context.getString(R.string.limit_images)) }
                 return@launch
             }
-            val maxVideos = videoQuantity(state.solutionType, state.cardType)
+            val maxVideos = videoQuantity(state.solutionType, cardType)
             if (state.evidences.toVideos().size == maxVideos) {
                 setState { copy(message = context.getString(R.string.limit_videos)) }
                 return@launch
             }
-            val maxAudios = audiosQuantity(state.solutionType, state.cardType)
+            val maxAudios = audiosQuantity(state.solutionType, cardType)
             if (state.evidences.toAudios().size == maxAudios) {
                 setState { copy(message = context.getString(R.string.limit_audios)) }
                 return@launch
@@ -114,7 +119,7 @@ class SolutionViewModel @AssistedInject constructor(
                     type = type.name
                 )
             )
-            setState { copy(evidences = list) }
+            setState { copy(evidences = list, cardType = cardType) }
         }
     }
 
@@ -151,12 +156,16 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleOnSave() {
-        setState { copy(isLoading = true, message = "Saving solution...") }
+        setState { copy(isLoading = true, message = context.getString(R.string.saving_solution)) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
 
+            if (NetworkConnection.isConnected().not()) {
+                setState { copy(isLoading = false, message = context.getString(R.string.please_connect_to_internet)) }
+                return@launch
+            }
             if (state.selectedEmployee == null) {
-                setState { copy(isLoading = false, message = "Please select a user!") }
+                setState { copy(isLoading = false, message = context.getString(R.string.please_select_a_user)) }
                 return@launch
             }
             kotlin.runCatching {

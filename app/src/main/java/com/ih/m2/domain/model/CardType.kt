@@ -83,8 +83,11 @@ fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     }
 }
 
-fun CardType.isBehavior() = this.methodology == "C" || this.name == "Comportamiento"
+fun CardType.isBehavior() = this.methodology == "C" ||
+        this.name == "Comportamiento" ||
+        this.methodology == "Comportamiento" ||
+        this.name == "C"
 
 fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
-fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == "Comportamiento".lowercase()
+fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == "Comportamiento".lowercase() || this?.name?.lowercase() == "C".lowercase()

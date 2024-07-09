@@ -4,6 +4,7 @@ package com.ih.m2.data.api
 import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.CreateCardResponse
 import com.ih.m2.data.model.CreateDefinitiveSolutionRequest
+import com.ih.m2.data.model.CreateProvisionalSolutionRequest
 import com.ih.m2.data.model.GetCardDetailResponse
 import com.ih.m2.data.model.GetCardTypesResponse
 import com.ih.m2.data.model.GetCardsResponse
@@ -72,14 +73,20 @@ interface ApiService  {
         @Path("siteId") siteId: String
     ) : Call<GetEmployeesResponse>
 
-    @GET("card/all/zone/{siteId}")
+    @GET("card/all/zone/{superiorId}/{siteId}")
     fun getCardsZone(
+        @Path("superiorId") superiorId: String,
         @Path("siteId") sitId: String
     ): Call<GetCardsResponse>
 
     @PUT("card/update/definitive-solution")
     fun saveDefinitiveSolution(
         @Body body: CreateDefinitiveSolutionRequest
+    ) : Call<SolutionResponse>
+
+    @PUT("card/update/provisional-solution")
+    fun saveProvisionalSolution(
+        @Body body: CreateProvisionalSolutionRequest
     ) : Call<SolutionResponse>
 
 }

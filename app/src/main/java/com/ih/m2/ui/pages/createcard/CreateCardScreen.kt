@@ -180,7 +180,6 @@ fun CreateCardScreen(
             .collect {
                 if (it) {
                     navController.popBackStack()
-                    context.runWorkRequest()
                 }
             }
     }
@@ -390,7 +389,7 @@ fun PreclassifierContent(
 ) {
     if (preclassifierList.isNotEmpty()) {
         Text(
-            text = stringResource(R.string.preclassifier),
+            text = stringResource(R.string.type_of_problem),
             style = MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold)
         )
@@ -414,6 +413,7 @@ fun CardTypeContent(
     cardTypeList: List<NodeCardItem>,
     onCardTypeClick: (NodeCardItem) -> Unit,
     selectedCardType: String,
+
 ) {
     Text(
         text = stringResource(R.string.card_types),

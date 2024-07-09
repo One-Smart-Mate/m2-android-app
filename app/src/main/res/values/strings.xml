@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">M2 App</string>
+    <string name="app_name" translatable="false">M2 App</string>
     <string name="account">Account</string>
     <string name="settings">Settings</string>
     <string name="notifications">Notifications</string>
@@ -11,7 +11,6 @@
     <string name="enter_your_email">Enter your email</string>
     <string name="enter_your_password">Enter your password</string>
     <string name="login">Login</string>
-    <string name="m2_app">M2 App</string>
 
 
     <string name="all_open_cards">All open cards</string>
@@ -25,14 +24,13 @@
     <string name="clean_filters">Clean filters</string>
     <string name="images">Images</string>
     <string name="videos">Videos</string>
-    <string name="comments">Comments</string>
+    <string name="comments">Problem description</string>
     <string name="audios">Audios</string>
     <string name="welcome_back">Welcome Back! %1$s</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
     <string name="status">Status</string>
     <string name="type_card">Type of card</string>
-    <string name="preclassifier">Preclassifier</string>
     <string name="area">Area</string>
     <string name="level">Level</string>
     <string name="created_by">Created by</string>
@@ -64,10 +62,21 @@
 
     <string name="limit_images">Limit of images allowed for this card type</string>
     <string name="limit_videos">Limit of videos allowed for this card type</string>
-    <string name="limit_audios">Limit of audios allowed for this card type></string>
-    <string name="saving_card">Saving card...</string>
+    <string name="limit_audios">Limit of audios allowed for this card type</string>
+    <string name="saving_card">Saving card…</string>
     <string name="user">User</string>
-    <string name="search_for_a_user">Search for a user...</string>
+    <string name="search_for_a_user">Search for a user…</string>
     <string name="comments_at_solution">Comments at solution</string>
     <string name="evidences">Evidences</string>
+    <string name="local_card">Local card</string>
+    <string name="loading_data">Loading data…</string>
+    <string name="selected_user">Selected user</string>
+
+    <string name="type_of_problem">Type of problem</string>
+    <string name="saving_solution">Saving solution…</string>
+    <string name="please_select_a_user">Please select a user!</string>
+    <string name="please_connect_to_internet">Please connect to internet</string>
+    <string name="select_a_card_type">Select a card type</string>
+    <string name="anomalies">Anomalies</string>
+    <string name="behavior">Behavior</string>
 </resources>

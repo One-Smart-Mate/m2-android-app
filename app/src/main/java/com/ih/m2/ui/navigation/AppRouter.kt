@@ -17,6 +17,7 @@ private object Route {
     const val DEV = "dev"
     const val SOLUTION_PATH = "solution-card"
     const val SOLUTION  = "$SOLUTION_PATH/{$ARG_SOLUTION}/{$ARG_CARD_ID}"
+    const val PRE_HOME_PATH ="pre-home"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -27,4 +28,5 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object CreateCard: Screen(Route.CREATE_CARD)
     data object Dev: Screen(Route.DEV)
     data object Solution: Screen(Route.SOLUTION, Route.SOLUTION_PATH)
+    data object PreHome: Screen(Route.PRE_HOME_PATH)
 }

@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 interface GetCardsZoneUseCase {
     suspend operator fun invoke(
-        superiorId: String = EMPTY,
+        superiorId: String,
     ): List<Card>
 }
 
@@ -20,11 +20,11 @@ class GetCardsZoneUseCaseImpl @Inject constructor(
 ) : GetCardsZoneUseCase {
 
     override suspend fun invoke(superiorId: String): List<Card> {
+        val siteId = localRepository.getSiteId()
         return if (NetworkConnection.isConnected()) {
-            val siteId = localRepository.getSiteId()
-            cardRepository.getCardsZone(siteId)
+            cardRepository.getCardsZone(superiorId = superiorId, siteId = siteId)
         } else {
-            localRepository.getCardsZone(superiorId)
+            localRepository.getCardsZone(superiorId = superiorId, siteId = siteId)
         }
     }
 }

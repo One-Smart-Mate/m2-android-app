@@ -11,8 +11,11 @@ val PaddingToolbar = 36.dp
 
 val Size1 = 1.dp
 val Size38 = 38.dp
+val Size40 = 40.dp
+val Size50 = 50.dp
 val Size100 = 100.dp
 val Size110 = 110.dp
+val Size115 = 115.dp
 val Size150 = 150.dp
 val Size160 = 160.dp
 val Size170 = 170.dp

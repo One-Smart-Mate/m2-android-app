@@ -27,8 +27,13 @@ const val VIDEO_CLOSE = "VICL"
 const val VIDEO_PS = "VIPS"
 
 const val STORED_REMOTE = "stored_network"
-const val STORED_LOCAL = "stored_local;"
+const val STORED_LOCAL = "stored_local"
+const val SAFE = "safe"
+const val UNSAFE = "unsafe"
 
 const val CARD_MAINTENANCE = "Mantenimiento"
 const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"
+
+const val CARD_ANOMALIES = "anomalies"
+const val CARD_BEHAVIOR = "Behavior"

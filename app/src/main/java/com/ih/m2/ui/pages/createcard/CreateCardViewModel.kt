@@ -9,6 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Evidence
@@ -17,6 +18,7 @@ import com.ih.m2.domain.model.NodeCardItem
 import com.ih.m2.domain.model.hasAudios
 import com.ih.m2.domain.model.hasImages
 import com.ih.m2.domain.model.hasVideos
+import com.ih.m2.domain.model.isBehavior
 import com.ih.m2.domain.model.isBehaviorCardType
 import com.ih.m2.domain.model.isMaintenanceCardType
 import com.ih.m2.domain.model.toAudios
@@ -33,15 +35,15 @@ import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.SAFE
+import com.ih.m2.ui.utils.UNSAFE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.UUID
 import kotlin.coroutines.CoroutineContext
 
@@ -55,7 +57,8 @@ class CreateCardViewModel @AssistedInject constructor(
     private val getLevelsUseCase: GetLevelsUseCase,
     private val getCardTypeUseCase: GetCardTypeUseCase,
     private val getCardsZoneUseCase: GetCardsZoneUseCase,
-    @ApplicationContext private val context: Context
+    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+    @ApplicationContext private val context: Context,
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
     init {
@@ -308,12 +311,24 @@ class CreateCardViewModel @AssistedInject constructor(
         setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
+            val isBehavior = state.cardType?.isBehavior().defaultIfNull(false)
+            if (isBehavior && state.selectedSecureOption.isEmpty()) {
+                setState { copy(isLoading = false, message = "Select if the card is Safe or UnSafe") }
+                return@launch
+            }
+
+            val cardTypeValue = when(state.selectedSecureOption) {
+                context.getString(R.string.safe) -> SAFE
+                context.getString(R.string.unsafe) -> UNSAFE
+                else -> EMPTY
+            }
+
             val card = Card.fromCreateCard(
                 cardId = state.cardId,
                 areaId = state.lastSelectedLevel.toLong(),
                 level = state.selectedLevelList.keys.last().toLong(),
                 priorityId = state.selectedPriority,
-                cardTypeValue = state.selectedSecureOption,
+                cardTypeValue = cardTypeValue,
                 cardTypeId = state.selectedCardType,
                 preclassifierId = state.selectedPreclassifier,
                 comment = state.comment,
@@ -330,6 +345,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 setState { copy(isLoading = false, message = EMPTY, isCardSuccess = true) }
             }.onFailure {
                 Log.e("test", "Failure $it")
+                firebaseAnalyticsHelper.logCreateCardException(it)
                 setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
             }
         }
@@ -365,6 +381,7 @@ class CreateCardViewModel @AssistedInject constructor(
             }
         }
     }
+
 
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<CreateCardViewModel, UiState> {

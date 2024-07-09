@@ -4,6 +4,7 @@ import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.repository.cards.CardRepository
 import com.ih.m2.domain.repository.local.LocalRepository
+import com.ih.m2.ui.extensions.defaultIfNull
 import javax.inject.Inject
 
 interface GetCardDetailUseCase {
@@ -18,6 +19,7 @@ class GetCardDetailUseCaseImpl @Inject constructor(
     override suspend fun invoke(cardId: String, remote: Boolean): Card {
         return if (remote && NetworkConnection.isConnected()) {
             cardRepository.getCardDetail(cardId)
+                .defaultIfNull(localRepository.getCard(cardId))
         } else {
             localRepository.getCard(cardId)
         }

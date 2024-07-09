@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="account">Cuenta</string>
+    <string name="settings">Configuración</string>
+    <string name="notifications">Notificaciones</string>
+    <string name="logout">Cerrar sesión</string>
+    <string name="information">Información</string>
+    <string name="empty" />
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="enter_your_email">Ingresa tu correo electrónico</string>
+    <string name="enter_your_password">Ingresa tu contraseña</string>
+    <string name="login">Iniciar sesión</string>
+
+    <string name="all_open_cards">Todas las tarjetas abiertas</string>
+    <string name="my_open_cards">Mis tarjetas abiertas</string>
+    <string name="assigned_cards">Mis tarjetas asignadas</string>
+    <string name="unassigned_cards">Tarjetas sin asignar</string>
+    <string name="expired_cards">Tarjetas expiradas</string>
+    <string name="closed_cards">Tarjetas cerradas</string>
+    <string name="filters">Filtros</string>
+    <string name="apply">Aplicar</string>
+    <string name="clean_filters">Limpiar filtros</string>
+    <string name="images">Imágenes</string>
+    <string name="videos">Videos</string>
+    <string name="comments">Descripción del problema</string>
+    <string name="audios">Audios</string>
+    <string name="welcome_back">Bienvenido de regreso! %1$s</string>
+    <string name="open">Abierto</string>
+    <string name="closed">Cerrado</string>
+    <string name="status">Estatus</string>
+
+    <string name="type_card">Tipo de tarjeta</string>
+    <string name="area">Área</string>
+    <string name="level">Nivel</string>
+    <string name="created_by">Creador</string>
+    <string name="date">Fecha</string>
+    <string name="due_date">Fecha de vencimiento</string>
+    <string name="actions">Acciones</string>
+
+    <string name="card_types">Tipo de tarjetas</string>
+    <string name="card_type">Tipo de tarjeta</string>
+    <string name="priority">Prioridad</string>
+    <string name="save">Guardar</string>
+    <string name="created_date">Fecha de creación</string>
+
+    <string name="mechanic">Mecánico</string>
+    <string name="creator">Creador</string>
+    <string name="no_apply">No aplica</string>
+    <string name="provisional_solution">Solución provisional</string>
+    <string name="provisional_user">Usuario provisional</string>
+    <string name="provisional_date">Fecha provisional</string>
+    <string name="provisional_comments">Comentarios provisionales</string>
+    <string name="definitive_solution">Solución definitiva</string>
+    <string name="definitive_date">Fecha definitiva</string>
+    <string name="definitive_user">Usuario definitivo</string>
+    <string name="definitive_comments">Comentarios definitivos</string>
+    <string name="card">Tarjeta</string>
+    <string name="loading_card_details">Cargando detalle de tarjeta…</string>
+    <string name="sync_remote_catalogs">Sincronizar catalogos remotos</string>
+    <string name="sync_catalogs">Sincronizando catalogos…</string>
+    <string name="safe">Segura</string>
+    <string name="unsafe">Insegura</string>
+
+    <string name="limit_images">Limite de imágenes permitidas</string>
+    <string name="limit_videos">Limite de videos permitidos</string>
+    <string name="limit_audios">Limite de audios permitidos</string>
+    <string name="saving_card">Guardando tarjeta…</string>
+    <string name="user">Usuario</string>
+    <string name="search_for_a_user">Buscar usuario…</string>
+    <string name="comments_at_solution">Comentarios</string>
+    <string name="evidences">Evidencias</string>
+    <string name="local_card">Tarjeta local</string>
+    <string name="loading_data">Cargando datos…</string>
+    <string name="selected_user">Usuario seleccionado</string>
+    <string name="type_of_problem">Tipo de problema</string>
+    <string name="saving_solution">Actualizando solución…</string>
+    <string name="please_select_a_user">Por favor selecciona a un usuario!</string>
+    <string name="please_connect_to_internet">Por favor conectate a internet</string>
+    <string name="select_a_card_type">Selecciona un tipo de tarjeta</string>
+    <string name="anomalies">Anomalías</string>
+    <string name="behavior">Comportamiento</string>
+
+</resources>

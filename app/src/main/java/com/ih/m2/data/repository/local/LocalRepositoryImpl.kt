@@ -27,6 +27,7 @@ import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toEntity
 import com.ih.m2.domain.repository.local.LocalRepository
 import com.ih.m2.ui.utils.STORED_LOCAL
+import com.ih.m2.ui.utils.STORED_REMOTE
 import javax.inject.Inject
 
 class LocalRepositoryImpl @Inject constructor(
@@ -60,14 +61,14 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveCards(list: List<Card>) {
-        cardDao.deleteCards()
+        cardDao.deleteRemoteCards(STORED_REMOTE)
         list.forEach {
             cardDao.insertCard(it.toEntity())
         }
     }
 
     override suspend fun getCards(): List<Card> {
-        return cardDao.getCards().map { it.toDomain() }.sortedByDescending { it.siteCardId }
+        return cardDao.getCards().map { it.toDomain() }.sortedByDescending { it.id }
     }
 
     override suspend fun getCardTypes(): List<CardType> {
@@ -191,8 +192,8 @@ class LocalRepositoryImpl @Inject constructor(
         return cardDao.getCard(cardId).toDomain()
     }
 
-    override suspend fun getCardsZone(superiorId: String): List<Card> {
-        return cardDao.getCardsZone(superiorId).map { it.toDomain() }
+    override suspend fun getCardsZone(siteId: String, superiorId: String): List<Card> {
+        return cardDao.getCardsZone(siteId, superiorId).map { it.toDomain() }
     }
 
     override suspend fun saveEmployees(list: List<Employee>) {

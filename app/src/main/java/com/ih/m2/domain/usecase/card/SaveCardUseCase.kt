@@ -1,6 +1,7 @@
 package com.ih.m2.domain.usecase.card
 
 import android.util.Log
+import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.repository.local.LocalRepository
 import com.ih.m2.ui.extensions.defaultIfNull
@@ -12,29 +13,17 @@ interface SaveCardUseCase {
 
 class SaveCardUseCaseImpl @Inject constructor(
     private val localRepository: LocalRepository,
-) : SaveCardUseCase {
+    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+    ) : SaveCardUseCase {
 
     override suspend fun invoke(card: Card): Long {
-        Log.e("test","aquiii")
         val lastCardId = localRepository.getLastCardId()
-        Log.e("test","aquiii 2- ${lastCardId.defaultIfNull("0").toLong().plus(1).toString()}")
-
         val lastSiteCardId = localRepository.getLastSiteCardId()
-        Log.e("test","aquiii 8 - ${lastSiteCardId.defaultIfNull(0).plus(1)}")
-
         val user = localRepository.getUser()
-        Log.e("test","aquiii 3 $user")
-
         val cardType = localRepository.getCardType(card.cardTypeId)
-        Log.e("test","aquiii 4 $cardType")
-
         val area = localRepository.getLevel(card.areaId.toString())
-        Log.e("test","aquiii 5 $area")
-
         val priority = localRepository.getPriority(card.priorityId)
-        Log.e("test","aquiii 6 $priority")
         val preclassifier = localRepository.getPreclassifier(card.preclassifierId)
-        Log.e("test","aquiii 7 $preclassifier")
 
         val updatedCard = card.copy(
             id = lastCardId.defaultIfNull("0").toLong().plus(1).toString(),
@@ -56,6 +45,7 @@ class SaveCardUseCaseImpl @Inject constructor(
         card.evidences?.forEach {
             localRepository.saveEvidence(it)
         }
+        firebaseAnalyticsHelper.logCreateCard(updatedCard)
         Log.e("Card","Card $updatedCard")
         return id
     }

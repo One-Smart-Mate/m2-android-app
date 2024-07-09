@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -44,6 +45,8 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
+import com.ih.m2.domain.model.enableDefinitiveSolution
+import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.PullToRefreshLazyColumn
@@ -55,8 +58,10 @@ import com.ih.m2.ui.components.buttons.CustomIconButton
 import com.ih.m2.ui.components.images.CircularImage
 import com.ih.m2.ui.components.sheets.FiltersBottomSheet
 import com.ih.m2.ui.components.sheets.SolutionBottomSheet
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.headerContent
+import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
@@ -134,7 +139,9 @@ fun HomeScreen(
                 },
                 onCreateCardClick = {
                     viewModel.process(HomeViewModel.Action.ShouldRefreshList(true))
-                }
+                },
+                showProvisionalSolution = state.selectedCard?.enableProvisionalSolution().defaultIfNull(false),
+                showDefinitiveSolution = state.selectedCard?.enableDefinitiveSolution().defaultIfNull(false),
             )
         }
     }
@@ -145,10 +152,10 @@ fun HomeScreen(
                 if (state.syncCatalogs) {
                     viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
                 }
-                Log.e("test"," LaunchedEeffect ${state.shouldRefreshList}")
-               if (state.shouldRefreshList) {
-                   viewModel.process(HomeViewModel.Action.OnRefresh(false))
-               }
+                Log.e("test", " LaunchedEeffect ${state.shouldRefreshList}")
+                if (state.shouldRefreshList) {
+                    viewModel.process(HomeViewModel.Action.OnRefresh(false))
+                }
             }
     }
 }
@@ -171,7 +178,9 @@ fun HomeContent(
     onSolutionClick: (String) -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    onCreateCardClick: () -> Unit
+    onCreateCardClick: () -> Unit,
+    showProvisionalSolution: Boolean,
+    showDefinitiveSolution: Boolean
 ) {
     Scaffold(
         floatingActionButton = {
@@ -222,7 +231,9 @@ fun HomeContent(
         if (showBottomSheetActions) {
             SolutionBottomSheet(
                 onSolutionClick = onSolutionClick,
-                onDismissRequest = onDismissRequestActions
+                onDismissRequest = onDismissRequestActions,
+                showProvisionalSolution = showProvisionalSolution,
+                showDefinitiveSolution = showDefinitiveSolution
             )
         }
     }
@@ -296,7 +307,7 @@ fun HomePreview() {
                 listOf(Card.mock()),
                 false,
                 false,
-                "", {}, {}, {}, {}, {}, {}, {}, {},false,{},{}
+                "", {}, {}, {}, {}, {}, {}, {}, {}, false, {}, {}, true,true
             )
         }
     }

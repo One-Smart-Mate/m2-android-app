@@ -139,9 +139,10 @@ class NotificationManager @Inject constructor(private val context: Context) {
 
     fun buildErrorNotification(
         notificationId: Int,
+        message: String
     ) {
         val builder =
-            getBuilderNotification("Ups!", "We get some issues with the upload cards!")
+            getBuilderNotification("Ups!", "Error: $message")
         NotificationManagerCompat.from(context).apply {
             if (ActivityCompat.checkSelfPermission(
                     context,

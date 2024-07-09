@@ -1,5 +1,6 @@
 package com.ih.m2.domain.model
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.google.gson.annotations.SerializedName
@@ -7,8 +8,12 @@ import com.ih.m2.R
 import com.ih.m2.data.database.entities.card.CardEntity
 import com.ih.m2.data.model.CreateCardRequest
 import com.ih.m2.data.model.CreateEvidenceRequest
+import com.ih.m2.ui.extensions.ISO_FORMAT
+import com.ih.m2.ui.extensions.NORMAL_FORMAT
 import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.m2.ui.extensions.defaultIfNull
+import com.ih.m2.ui.extensions.toDate
+import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.utils.ALL_OPEN_CARDS
 import com.ih.m2.ui.utils.ASSIGNED_CARDS
 import com.ih.m2.ui.utils.CARD_MAINTENANCE
@@ -174,7 +179,7 @@ data class Card(
                 "2021-11-08T04:38:21.000Z",
                 "",
                 emptyList(),
-                ""
+                STORED_LOCAL
             )
         }
 
@@ -289,7 +294,7 @@ fun Card.preclassifierValue(): String {
 fun Card.getStatus(): String {
     return when (status) {
         STATUS_P, STATUS_A, STATUS_V -> stringResource(id = R.string.open)
-        STATUS_R, STATUS_C -> stringResource(id = R.string.open)
+        STATUS_R, STATUS_C -> stringResource(id = R.string.closed)
         else -> stringResource(id = R.string.open)
     }
 }
@@ -412,3 +417,47 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
     )
 }
 
+fun Card.validateDate(): String {
+   return if (this.stored == STORED_REMOTE) {
+        creationDate.toFormatDate(ISO_FORMAT)
+    } else {
+        creationDate.toFormatDate(NORMAL_FORMAT)
+    }
+}
+
+fun Card.validateProvisionalDate(): String {
+    return if (this.stored == STORED_REMOTE) {
+        cardProvisionalSolutionDate.toFormatDate(ISO_FORMAT)
+    } else {
+        cardProvisionalSolutionDate.toFormatDate(NORMAL_FORMAT)
+    }
+}
+fun Card.validateCloseDate(): String {
+    return if (this.stored == STORED_REMOTE) {
+        cardDefinitiveSolutionDate.toFormatDate(ISO_FORMAT)
+    } else {
+        cardDefinitiveSolutionDate.toFormatDate(NORMAL_FORMAT)
+    }
+}
+
+fun Card.cardTitle(): String {
+    return  if (stored == STORED_LOCAL) {
+        this.cardTypeName.orEmpty()
+    } else {
+       "${this.cardTypeName} ${this.siteCardId}"
+    }
+}
+
+fun Card.enableProvisionalSolution(): Boolean {
+    return this.userProvisionalSolutionId.isNullOrEmpty() ||
+            this.userProvisionalSolutionName.isNullOrBlank() ||
+            this.userAppProvisionalSolutionId.isNullOrBlank() ||
+            this.userAppProvisionalSolutionName.isNullOrBlank()
+}
+
+fun Card.enableDefinitiveSolution(): Boolean {
+    return this.userDefinitiveSolutionId.isNullOrEmpty() ||
+            this.userDefinitiveSolutionName.isNullOrBlank() ||
+            this.userAppDefinitiveSolutionId.isNullOrBlank() ||
+            this.userAppDefinitiveSolutionName.isNullOrBlank()
+}

@@ -13,6 +13,7 @@ import com.ih.m2.ui.pages.carddetail.CardDetailScreen
 import com.ih.m2.ui.pages.createcard.CreateCardScreen
 import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
+import com.ih.m2.ui.pages.home.PreHomeScreen
 import com.ih.m2.ui.pages.login.LoginScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
 import com.ih.m2.ui.utils.LOAD_CATALOGS
@@ -62,6 +63,10 @@ fun AppNavigation(
             val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
             SolutionScreen(navController = navController, solutionType = solutionType, cardId = cardId)
         }
+
+        composable(Screen.PreHome.route) {
+            PreHomeScreen(navController = navController)
+        }
     }
 }
 
@@ -74,6 +79,9 @@ fun NavController.navigateAndClean(route: String) {
 
 fun NavController.navigateToHome() {
     navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
+}
+fun NavController.navigateToHome(param: String) {
+    navigate("${Screen.Home.path}?$ARG_SYNC_CATALOG=")
 }
 
 fun NavController.navigateToLogin() {

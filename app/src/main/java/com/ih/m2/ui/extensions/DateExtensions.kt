@@ -2,6 +2,7 @@ package com.ih.m2.ui.extensions
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.encoders.annotations.Encodable.Ignore
 import com.ih.m2.ui.utils.EMPTY
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -14,6 +15,7 @@ const val MMM = "MMM"
 const val EEE_MMM_DD_YYYY = "EEE, MMM dd, yyyy, HH:mm a z"
 const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.ss'Z'"
 const val NORMAL_FORMAT = "yyyy-MM-dd HH:mm:ss"
+const val TIME_STAMP_FORMAT = "yyyyMMdd_HHmmss"
 
 val Date.YYYY_MM_DD_HH_MM_SS: String
     get() = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
@@ -32,21 +34,22 @@ fun Date.toCalendar(): Calendar {
 
 val Date.DayAndDateWithYear: String
     get() =
-        SimpleDateFormat(EEE_MMM_DD_YYYY, Locale.US).format(this).toString()
+        SimpleDateFormat(EEE_MMM_DD_YYYY, Locale.getDefault()).format(this).toString()
 
 val Date.dayOfWeek: String get() = SimpleDateFormat(EEEE, Locale.getDefault()).format(this)
 val Date.dayOfMonth: String get() = SimpleDateFormat(DD, Locale.getDefault()).format(this)
 val Date.nameOfMonth: String get() = SimpleDateFormat(MMM, Locale.getDefault()).format(this)
 
 
-fun String?.toFormatDate(): String {
-    if (this.isNullOrEmpty() || this.isBlank()) return EMPTY
+fun String?.toFormatDate(format: String): String {
     return try {
-        this.toDate(ISO_FORMAT)?.DayAndDateWithYear.orEmpty()
+        if (this.isNullOrEmpty() || this.isBlank() || this.isEmpty()) return EMPTY
+        this.toDate(format)?.DayAndDateWithYear.orEmpty()
     } catch (e: Exception) {
-        this.toDate(NORMAL_FORMAT)?.DayAndDateWithYear.orEmpty()
+        Log.e("test","Exception ${e.localizedMessage}")
+        FirebaseCrashlytics.getInstance().recordException(e)
+        EMPTY
     }
-
 }
 
-fun Date.timeStamp() = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(this)
+fun Date.timeStamp(): String = SimpleDateFormat(TIME_STAMP_FORMAT, Locale.getDefault()).format(this)

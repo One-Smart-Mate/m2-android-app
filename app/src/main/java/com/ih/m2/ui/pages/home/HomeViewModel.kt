@@ -7,11 +7,14 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.extensions.toFilterStatus
@@ -32,6 +35,7 @@ class HomeViewModel @AssistedInject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
+    private val syncCardsUseCase: SyncCardsUseCase,
     @ApplicationContext private val context: Context,
 ) : MavericksViewModel<HomeViewModel.UiState>(initialState) {
 
@@ -108,7 +112,7 @@ class HomeViewModel @AssistedInject constructor(
     private fun handleSyncCatalogs(syncCatalogs: String) {
         Log.e("test","Sync $syncCatalogs")
         if (syncCatalogs == LOAD_CATALOGS) {
-            setState { copy(user = LCE.Loading, loadingMessage = "Loading data...") }
+            setState { copy(user = LCE.Loading, loadingMessage = context.getString(R.string.loading_data)) }
             viewModelScope.launch(coroutineContext) {
                 kotlin.runCatching {
                     syncCatalogsUseCase(syncCards = true)
@@ -164,13 +168,29 @@ class HomeViewModel @AssistedInject constructor(
     private fun handleOnRefresh(remotes: Boolean) {
         setState { copy(isRefreshing = remotes) }
         viewModelScope.launch(coroutineContext) {
+            if (remotes) {
+                handleSyncCards()
+            }
             kotlin.runCatching {
+                Log.e("test","Get Remote cards")
                 getCardsUseCase(syncRemote = remotes)
             }.onSuccess {
                 setState { copy( cardList = it, isRefreshing = false, shouldRefreshList = false) }
             }.onFailure {
                 setState { copy(isRefreshing = false) }
             }
+        }
+    }
+
+    private suspend fun handleSyncCards() {
+        kotlin.runCatching {
+            val result = getCardsUseCase(localCards = true)
+            syncCardsUseCase(result)
+        }.onSuccess {
+            Log.e("test","Success Sync")
+        }.onFailure {
+            Log.e("test","error")
+            FirebaseCrashlytics.getInstance().recordException(it)
         }
     }
 

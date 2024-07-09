@@ -25,24 +25,27 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.cardTitle
 import com.ih.m2.domain.model.getStatus
 import com.ih.m2.domain.model.isClosed
 import com.ih.m2.domain.model.preclassifierValue
 import com.ih.m2.domain.model.priorityValue
+import com.ih.m2.domain.model.validateDate
 import com.ih.m2.ui.components.CustomSpacer
+import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.SectionTag
+import com.ih.m2.ui.components.TagSize
+import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
-import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getInvertedColor
-import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingSmall
-import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.PaddingTinySmall
 import com.ih.m2.ui.theme.Size1
+import com.ih.m2.ui.utils.STORED_LOCAL
 
 @Composable
 fun CardItemList(
@@ -62,7 +65,7 @@ fun CardItemList(
             modifier = Modifier.padding(PaddingSmall)
         ) {
             Text(
-                text = "${card.cardTypeName} ${card.siteCardId}",
+                text = card.cardTitle(),
                 style = MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
@@ -75,6 +78,14 @@ fun CardItemList(
                 showVoice = card.evidenceAudioCreation > 0
             )
 
+            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
+                CustomTag(
+                    title = stringResource(R.string.local_card),
+                    tagSize = TagSize.SMALL,
+                    tagType = TagType.OUTLINE,
+                )
+            }
+
             SectionTag(
                 title = stringResource(id = R.string.status),
                 value = card.getStatus(),
@@ -84,7 +95,7 @@ fun CardItemList(
                 value = card.cardTypeName.orEmpty(),
             )
             SectionTag(
-                title = stringResource(id = R.string.preclassifier),
+                title = stringResource(id = R.string.type_of_problem),
                 value = card.preclassifierValue(),
             )
             SectionTag(
@@ -101,7 +112,7 @@ fun CardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.creationDate.toFormatDate(),
+                value = card.validateDate(),
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
@@ -177,7 +188,7 @@ fun CardSectionItemList(
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
 @Composable
 fun HomeCardItemListPreview() {
@@ -186,9 +197,7 @@ fun HomeCardItemListPreview() {
             Column {
                 CardItemList(Card.mock(), {}) {}
                 CustomSpacer()
-                (1..<3).map {
-                    CardSectionItemList(Card.mock())
-                }
+
             }
         }
     }

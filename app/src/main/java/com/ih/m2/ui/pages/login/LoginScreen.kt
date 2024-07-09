@@ -177,7 +177,7 @@ fun LoginTitle() {
 
         ) {
         Text(
-            text = stringResource(R.string.m2_app), style = MaterialTheme.typography.displayMedium
+            text = stringResource(R.string.app_name), style = MaterialTheme.typography.displayMedium
                 .copy(color = getColor())
         )
     }

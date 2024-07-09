@@ -110,7 +110,7 @@ fun SolutionScreen(
         )
     }
     if (state.isLoading.not() && state.message.isNotEmpty()) {
-        Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
+        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
     }
 
     LaunchedEffect(viewModel) {
@@ -196,7 +196,7 @@ fun SolutionScreenContent(
                 CustomSpacer()
                 AnimatedVisibility(visible = selectedEmployee != null) {
                     SectionTag(
-                        title = "Selected user",
+                        title = stringResource(R.string.selected_user),
                         value = selectedEmployee?.name.orEmpty(),
                         modifier = Modifier.fillMaxWidth()
                     )

@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -37,6 +38,9 @@ import com.ih.m2.domain.model.priorityValue
 import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toVideos
+import com.ih.m2.domain.model.validateCloseDate
+import com.ih.m2.domain.model.validateDate
+import com.ih.m2.domain.model.validateProvisionalDate
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.ScreenLoading
@@ -44,7 +48,6 @@ import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.orDefault
-import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.pages.createcard.PhotoCardItem
 import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.theme.M2androidappTheme
@@ -61,6 +64,7 @@ fun CardDetailScreen(
     viewModel: CardDetailViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     when (val screenState = state.card) {
         is LCE.Fail -> {
@@ -83,7 +87,7 @@ fun CardDetailScreen(
             )
         }
     }
-    LaunchedEffect(viewModel) {
+    LaunchedEffect(viewModel, lifecycle) {
         viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
     }
 }
@@ -118,10 +122,10 @@ fun CardDetailContent(
 fun CardInformationContent(
     card: Card
 ) {
-    ExpandableCard(title = stringResource(R.string.information)) {
+    ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.creationDate.toFormatDate(),
+            value = card.creationDate,
         )
         SectionTag(
             title = stringResource(R.string.due_date),
@@ -131,12 +135,13 @@ fun CardInformationContent(
             title = stringResource(R.string.status),
             value = card.getStatus(),
         )
+
         SectionTag(
             title = stringResource(R.string.card_types),
             value = card.cardTypeName.orEmpty(),
         )
         SectionTag(
-            title = stringResource(R.string.preclassifier),
+            title = stringResource(R.string.type_of_problem),
             value = card.preclassifierValue(),
         )
         SectionTag(
@@ -166,7 +171,7 @@ fun CardInformationContent(
         )
         SectionTag(
             title = stringResource(R.string.provisional_date),
-            value = card.cardProvisionalSolutionDate?.toFormatDate().orDefault(),
+            value = card.validateProvisionalDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.provisional_comments),
@@ -177,7 +182,7 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
         SectionTag(
             title = stringResource(R.string.definitive_date),
-            value = card.cardDefinitiveSolutionDate?.toFormatDate().orDefault(),
+            value = card.validateCloseDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.definitive_user),
@@ -201,7 +206,7 @@ fun CardInformationEvidence(
             if (imagesList.isNotEmpty()) {
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images),
-                    evidences = imagesList
+                    evidences = imagesList,
                 )
             }
             val videoList = evidences.toVideos()
@@ -225,8 +230,9 @@ fun CardInformationEvidence(
 @Composable
 fun EvidenceImagesCardSection(
     title: String,
-    evidences: List<Evidence>
-) {
+    evidences: List<Evidence>,
+
+    ) {
     Column {
         Text(
             text = title,
@@ -235,7 +241,13 @@ fun EvidenceImagesCardSection(
         )
         LazyRow {
             items(evidences) {
-                PhotoCardItem(model = it.url, showIcon = false)
+                PhotoCardItem(
+                    model = it.url,
+                    showIcon = false,
+                    modifier = Modifier
+                        .width(Size200)
+                        .height(Size250)
+                )
             }
         }
     }

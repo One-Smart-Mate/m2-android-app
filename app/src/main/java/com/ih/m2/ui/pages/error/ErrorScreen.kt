@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
@@ -41,7 +42,7 @@ fun ErrorScreen(
     errorMessage: String,
     onClick: () -> Unit
 ) {
-    Column(
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .background(
@@ -49,46 +50,48 @@ fun ErrorScreen(
             )
             .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal)
     ) {
-        Icon(
-            Icons.Filled.KeyboardArrowLeft,
-            contentDescription = stringResource(R.string.empty),
-            modifier = Modifier
-                .size(Size38)
-                .clickable {
-                    navController.popBackStack()
-                },
-            tint = Color.White
-        )
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
+        item {
             Icon(
-                Icons.Filled.Close, contentDescription = EMPTY,
-                modifier = Modifier.size(100.dp),
+                Icons.Filled.KeyboardArrowLeft,
+                contentDescription = stringResource(R.string.empty),
+                modifier = Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
                 tint = Color.White
             )
-            CustomSpacer()
-            Text(
-                text = "Ups! Something went wrong!",
-                style = MaterialTheme.typography.titleLarge
-                    .copy(
-                        fontWeight = FontWeight.Bold,
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Icon(
+                    Icons.Filled.Close, contentDescription = EMPTY,
+                    modifier = Modifier.size(100.dp),
+                    tint = Color.White
+                )
+                CustomSpacer()
+                Text(
+                    text = "Ups! Something went wrong!",
+                    style = MaterialTheme.typography.titleLarge
+                        .copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                )
+                CustomSpacer()
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.bodyLarge.copy(
                         color = Color.White
                     )
-            )
-            CustomSpacer()
-            Text(
-                text = errorMessage,
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = Color.White
                 )
-            )
-            CustomSpacer()
-            CustomButton(text = "Reload data", buttonType = ButtonType.ERROR) {
-                onClick()
+                CustomSpacer()
+                CustomButton(text = "Reload data", buttonType = ButtonType.ERROR) {
+                    onClick()
+                }
             }
         }
     }

@@ -28,11 +28,12 @@ import com.ih.m2.ui.theme.PaddingNormal
 @Composable
 fun ExpandableCard(
     title: String,
+    expanded: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
 
     val isExpanded = remember {
-        mutableStateOf(false)
+        mutableStateOf(expanded)
     }
 
     val arrowIcon = if (isExpanded.value) {

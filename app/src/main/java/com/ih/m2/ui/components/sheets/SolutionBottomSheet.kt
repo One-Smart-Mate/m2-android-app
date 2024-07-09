@@ -1,5 +1,6 @@
 package com.ih.m2.ui.components.sheets
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,9 +28,11 @@ import com.ih.m2.ui.utils.PROVISIONAL_SOLUTION
 fun SolutionBottomSheet(
     onSolutionClick: (String) -> Unit,
     onDismissRequest: () -> Unit,
+    showProvisionalSolution: Boolean,
+    showDefinitiveSolution: Boolean
 ) {
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
-        SolutionBottomSheetContent {
+        SolutionBottomSheetContent(showProvisionalSolution, showDefinitiveSolution) {
             onSolutionClick(it)
         }
     }
@@ -37,6 +40,8 @@ fun SolutionBottomSheet(
 
 @Composable
 fun SolutionBottomSheetContent(
+    showProvisionalSolution: Boolean,
+    showDefinitiveSolution: Boolean,
     onSolutionClick: (String) -> Unit
 ) {
     Column(
@@ -47,15 +52,19 @@ fun SolutionBottomSheetContent(
                 .copy(fontWeight = FontWeight.Bold)
         )
         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
-//        CustomButton(text = stringResource(R.string.provisional_solution)) {
-//            onSolutionClick(PROVISIONAL_SOLUTION)
-//        }
+        AnimatedVisibility(visible = showProvisionalSolution) {
+            CustomButton(text = stringResource(R.string.provisional_solution)) {
+                onSolutionClick(PROVISIONAL_SOLUTION)
+            }
+        }
         CustomSpacer()
-        CustomButton(
-            text = stringResource(R.string.definitive_solution),
-            buttonType = ButtonType.OUTLINE
-        ) {
-            onSolutionClick(DEFINITIVE_SOLUTION)
+        AnimatedVisibility(visible = showDefinitiveSolution) {
+            CustomButton(
+                text = stringResource(R.string.definitive_solution),
+                buttonType = ButtonType.OUTLINE
+            ) {
+                onSolutionClick(DEFINITIVE_SOLUTION)
+            }
         }
     }
 }
@@ -65,7 +74,7 @@ fun SolutionBottomSheetContent(
 fun SolutionBottomSheetPreview() {
     M2androidappTheme {
         Surface {
-            SolutionBottomSheetContent {
+            SolutionBottomSheetContent(true, true) {
 
             }
         }
