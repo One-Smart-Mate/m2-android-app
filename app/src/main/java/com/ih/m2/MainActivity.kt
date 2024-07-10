@@ -38,7 +38,7 @@ class MainActivity : ComponentActivity() {
             checkNotificationPermissions()
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            workRequest(applicationContext)
+           // workRequest(applicationContext)
         }
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {

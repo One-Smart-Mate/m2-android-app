@@ -35,7 +35,8 @@ class SplashViewModel @Inject constructor(
                 getUserUseCase()
             }.onSuccess {
                 val route = if (it != null) {
-                    Screen.Home.route
+                   // Screen.Home.route
+                    Screen.HomeV2.route
                 } else {
                     Screen.Login.route
                 }

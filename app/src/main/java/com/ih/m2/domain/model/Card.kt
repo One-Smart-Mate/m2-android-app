@@ -398,7 +398,12 @@ fun Card.toEntity(): CardEntity {
     )
 }
 
+fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL }
+fun List<Card>.toBehaviorList() = this.filter { it.isBehavior() }
+fun List<Card>.toAnomaliesList() = this.filter { it.isAnomalies() }
+
 fun Card.isBehavior() = this.cardTypeMethodology == "C" || this.cardTypeMethodologyName == "Comportamiento"
+fun Card.isAnomalies() = this.cardTypeMethodology == "M" || this.cardTypeMethodologyName == "Mantenimiento"
 
 fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
     return CreateCardRequest(

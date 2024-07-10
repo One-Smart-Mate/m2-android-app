@@ -80,5 +80,14 @@
     <string name="select_a_card_type">Selecciona un tipo de tarjeta</string>
     <string name="anomalies">Anomalías</string>
     <string name="behavior">Comportamiento</string>
+    <string name="create_card">Crear tarjeta</string>
+    <string name="contact_support">Contactar soporte técnico</string>
+    <string name="sync_cards">Sincornizar tarjetas</string>
+    <string name="anomalies_cards">Tarjetas Anomalias</string>
+    <string name="behaviour_cards">Tarjetas Comportamiento</string>
+    <string name="upload_cards">Subiendo tarjetas locales…</string>
+    <string name="local_cards">Tarjetas locales %1$s</string>
+    <string name="total_cards">Total %1$s</string>
+    <string name="cards">Tarjetas</string>
 
 </resources>

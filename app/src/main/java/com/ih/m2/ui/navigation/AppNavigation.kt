@@ -10,10 +10,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ih.m2.ui.pages.account.AccountScreen
 import com.ih.m2.ui.pages.carddetail.CardDetailScreen
+import com.ih.m2.ui.pages.cardlist.CardListScreen
 import com.ih.m2.ui.pages.createcard.CreateCardScreen
 import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
-import com.ih.m2.ui.pages.home.PreHomeScreen
+import com.ih.m2.ui.pages.home.HomeScreenV2
 import com.ih.m2.ui.pages.login.LoginScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
 import com.ih.m2.ui.utils.LOAD_CATALOGS
@@ -36,6 +37,14 @@ fun AppNavigation(
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
             HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
+        }
+        composable(
+            Screen.HomeV2.route,
+            arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType })
+        ) {
+            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
+            Log.e("test","Arguments $syncCatalogs")
+            HomeScreenV2(navController = navController, syncCatalogs = syncCatalogs)
         }
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)
@@ -64,9 +73,14 @@ fun AppNavigation(
             SolutionScreen(navController = navController, solutionType = solutionType, cardId = cardId)
         }
 
-        composable(Screen.PreHome.route) {
-            PreHomeScreen(navController = navController)
+        composable(
+            Screen.CardList.route,
+            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType })
+        ) {
+            val filter = it.arguments?.getString(ARG_CARD_FILTER).orEmpty()
+            CardListScreen(navController = navController, filter = filter)
         }
+
     }
 }
 
@@ -80,9 +94,11 @@ fun NavController.navigateAndClean(route: String) {
 fun NavController.navigateToHome() {
     navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
 }
-fun NavController.navigateToHome(param: String) {
-    navigate("${Screen.Home.path}?$ARG_SYNC_CATALOG=")
+
+fun NavController.navigateToHomeV2() {
+    navigateAndClean("${Screen.HomeV2.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
 }
+
 
 fun NavController.navigateToLogin() {
     navigateAndClean(Screen.Login.route)
@@ -101,6 +117,12 @@ fun NavController.navigateToCardDetail(id: String) {
 fun NavController.navigateToCardSolution(solutionType: String, cardId: String) {
     navigate(
         "${Screen.Solution.path}/$solutionType/$cardId"
+    )
+}
+
+fun NavController.navigateToCardList(filter: String) {
+    navigate(
+        "${Screen.CardList.path}/$filter"
     )
 }
 

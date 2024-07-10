@@ -43,6 +43,7 @@ import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.navigation.navigateToHome
+import com.ih.m2.ui.navigation.navigateToHomeV2
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.Size150
@@ -85,7 +86,8 @@ fun LoginScreen(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.isAuthenticated) {
-                    navController.navigateToHome()
+                    //  navController.navigateToHome()
+                    navController.navigateToHomeV2()
                 }
             }
     }

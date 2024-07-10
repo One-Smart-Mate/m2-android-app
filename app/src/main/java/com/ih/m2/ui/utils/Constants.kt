@@ -36,4 +36,4 @@ const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"
 
 const val CARD_ANOMALIES = "anomalies"
-const val CARD_BEHAVIOR = "Behavior"
+const val CARD_BEHAVIOR = "behavior"

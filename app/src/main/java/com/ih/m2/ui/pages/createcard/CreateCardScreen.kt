@@ -224,7 +224,7 @@ fun CreateCardContent(
             state = lazyColumState
         ) {
             stickyHeader {
-                CustomAppBar(navController = navController, title = "Create card")
+                CustomAppBar(navController = navController, title = stringResource(R.string.create_card))
             }
             item {
                 CustomSpacer()
