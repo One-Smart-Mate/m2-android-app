@@ -46,7 +46,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         val syncCatalogs: Boolean = true,
         val cards: List<Card> = emptyList(),
         val refreshCards: Boolean = false,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
     ) : MavericksState
 
     sealed class Action {
@@ -101,7 +101,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getCardsUseCase()
             }.onSuccess { cards ->
                 Log.e("test", "Cards -> $cards")
-                setState { copy(cards = cards, refreshCards = false, isLoading = false) }
+                setState { copy(cards = cards, refreshCards = false, isLoading = false, message = EMPTY) }
             }.onFailure {
                 setState { copy(cards = emptyList(), refreshCards = false, isLoading = false) }
             }
@@ -114,7 +114,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getUserUseCase()
             }.onSuccess { user ->
                 process(Action.GetCards)
-                user?.let { setState { copy(state = LCE.Success(user), isLoading = false) } }
+                user?.let { setState { copy(state = LCE.Success(user), isLoading = false, message = EMPTY) } }
             }.onFailure {
                 setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
             }

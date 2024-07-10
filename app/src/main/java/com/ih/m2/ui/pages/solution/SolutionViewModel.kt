@@ -74,6 +74,7 @@ class SolutionViewModel @AssistedInject constructor(
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data class GetCardDetail(val cardId: String) : Action()
         data class GetCardType(val id: String) : Action()
+        data object ClearMessage: Action()
     }
 
     fun process(action: Action) {
@@ -88,12 +89,12 @@ class SolutionViewModel @AssistedInject constructor(
             is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
             is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
             is Action.GetCardType -> handleGetCardType(action.id)
+            is Action.ClearMessage -> setState { copy(message = EMPTY) }
         }
     }
 
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
-            setState { copy(message = EMPTY) }
             val state = stateFlow.first()
             val cardType = state.cardType.defaultIfNull(getCardTypeUseCase(state.card?.cardTypeId.orEmpty()))
             val maxImages = imagesQuantity(state.solutionType, cardType)
@@ -219,7 +220,7 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardDetail(cardId: String) {
-        setState { copy(isLoading = true, message = "Loading data...") }
+        setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getCardDetailUseCase(cardId, false)

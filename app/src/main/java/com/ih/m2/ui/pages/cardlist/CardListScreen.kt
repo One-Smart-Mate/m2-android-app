@@ -21,10 +21,16 @@ import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.enableDefinitiveSolution
+import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.sheets.SolutionBottomSheet
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.navigateToCardDetail
+import com.ih.m2.ui.navigation.navigateToCardSolution
+import com.ih.m2.ui.pages.home.HomeViewModel
 import com.ih.m2.ui.pages.home.components.CardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 
@@ -43,7 +49,25 @@ fun CardListScreen(
         CardListContent(
             navController = navController,
             cards = state.cards,
-            title = state.title
+            title = state.title,
+            showBottomSheetActions = state.showBottomSheetActions,
+            showProvisionalSolution = state.selectedCard?.enableProvisionalSolution()
+                .defaultIfNull(false),
+            showDefinitiveSolution = state.selectedCard?.enableDefinitiveSolution()
+                .defaultIfNull(false),
+            onSolutionClick = { solutionType ->
+                state.selectedCard?.let { card ->
+                    viewModel.process(CardListViewModel.Action.OnDismissBottomSheet)
+                    viewModel.process(CardListViewModel.Action.OnRefreshCards)
+                    navController.navigateToCardSolution(solutionType, card.id)
+                }
+            },
+            onDismissRequestClick = {
+                viewModel.process(CardListViewModel.Action.OnDismissBottomSheet)
+            },
+            onActionClick = {
+                viewModel.process(CardListViewModel.Action.OnActionClick(it))
+            }
         )
     }
 
@@ -51,14 +75,26 @@ fun CardListScreen(
         snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
-                viewModel.process(CardListViewModel.Action.GetCards(filter))
+                if (state.refreshCards) {
+                    viewModel.process(CardListViewModel.Action.GetCards(filter))
+                }
             }
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardListContent(navController: NavController, cards: List<Card>, title: String) {
+fun CardListContent(
+    navController: NavController,
+    cards: List<Card>,
+    title: String,
+    showBottomSheetActions: Boolean,
+    showProvisionalSolution: Boolean,
+    showDefinitiveSolution: Boolean,
+    onSolutionClick: (String) -> Unit,
+    onDismissRequestClick: () -> Unit,
+    onActionClick: (Card) -> Unit
+) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
@@ -72,8 +108,18 @@ fun CardListContent(navController: NavController, cards: List<Card>, title: Stri
                     onClick = {
                         navController.navigateToCardDetail(it.id)
                     },
-                    onActionClick = {})
+                    onActionClick = {
+                        onActionClick(it)
+                    })
             }
+        }
+        if (showBottomSheetActions) {
+            SolutionBottomSheet(
+                onSolutionClick = onSolutionClick,
+                onDismissRequest = onDismissRequestClick,
+                showProvisionalSolution = showProvisionalSolution,
+                showDefinitiveSolution = showDefinitiveSolution
+            )
         }
     }
 }
@@ -88,7 +134,13 @@ private fun CardListScreenScreenPreview() {
             CardListContent(
                 navController = rememberNavController(),
                 cards = emptyList(),
-                title = "Cards"
+                title = "Cards",
+                showProvisionalSolution = false,
+                showDefinitiveSolution = false,
+                showBottomSheetActions = false,
+                onSolutionClick = {},
+                onDismissRequestClick = {},
+                onActionClick = {}
             )
         }
     }

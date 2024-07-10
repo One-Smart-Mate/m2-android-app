@@ -57,6 +57,8 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
+import com.ih.m2.domain.model.enableDefinitiveSolution
+import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
 import com.ih.m2.domain.model.toLocalCards
@@ -68,6 +70,8 @@ import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.components.images.CircularImage
+import com.ih.m2.ui.components.sheets.SolutionBottomSheet
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.headerContent
@@ -150,7 +154,7 @@ private fun HomeContentV2(
     user: User?,
     cards: List<Card>,
     onSyncCardsClick:() -> Unit,
-    onCardClick: (String) -> Unit
+    onCardClick: (String) -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -204,6 +208,8 @@ private fun HomeContentV2(
                 }
             }
         }
+
+
     }
 }
 
@@ -305,7 +311,7 @@ private fun HomeScreenPreview() {
                 user = User.mockUser(),
                 cards = emptyList(),
                 onSyncCardsClick = {},
-                onCardClick = {}
+                onCardClick = {},
             )
         }
     }

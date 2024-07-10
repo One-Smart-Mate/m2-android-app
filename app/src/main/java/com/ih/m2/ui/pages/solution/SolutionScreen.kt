@@ -20,13 +20,19 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -57,13 +63,17 @@ import com.ih.m2.ui.components.evidence.SectionVideosEvidence
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getTextColor
 import com.ih.m2.ui.extensions.runWorkRequest
+import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
+import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.m2.ui.utils.PROVISIONAL_SOLUTION
+import kotlinx.coroutines.launch
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SolutionScreen(
     navController: NavController,
@@ -74,7 +84,8 @@ fun SolutionScreen(
     val state by viewModel.collectAsState()
     val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
-
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     if (state.isLoading) {
         ScreenLoading(text = state.message)
@@ -110,7 +121,21 @@ fun SolutionScreen(
         )
     }
     if (state.isLoading.not() && state.message.isNotEmpty()) {
-        Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+        scope.launch {
+            snackBarHostState.showSnackbar(
+                message = state.message,
+            )
+            viewModel.process(SolutionViewModel.Action.ClearMessage)
+        }
+    }
+
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar)
+        )
     }
 
     LaunchedEffect(viewModel) {
