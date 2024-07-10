@@ -31,7 +31,7 @@ import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.utils.EMPTY
 
 @Composable
-fun ScreenLoading(
+fun LoadingScreen(
     text: String = EMPTY
 ) {
 
@@ -92,7 +92,7 @@ fun ScreenLoading(
 fun ScreenLoadingPreview() {
     M2androidappTheme {
         Scaffold { _ ->
-            ScreenLoading("Loading catalogs and cards...")
+            LoadingScreen("Loading catalogs and cards...")
         }
     }
 }

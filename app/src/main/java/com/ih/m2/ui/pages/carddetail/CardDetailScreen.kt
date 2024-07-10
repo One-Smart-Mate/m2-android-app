@@ -39,11 +39,10 @@ import com.ih.m2.domain.model.toAudios
 import com.ih.m2.domain.model.toImages
 import com.ih.m2.domain.model.toVideos
 import com.ih.m2.domain.model.validateCloseDate
-import com.ih.m2.domain.model.validateDate
 import com.ih.m2.domain.model.validateProvisionalDate
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.ExpandableCard
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.extensions.defaultScreen
@@ -77,7 +76,7 @@ fun CardDetailScreen(
         }
 
         is LCE.Loading, LCE.Uninitialized -> {
-            ScreenLoading(text = stringResource(R.string.loading_card_details))
+            LoadingScreen(text = stringResource(R.string.loading_card_details))
         }
 
         is LCE.Success -> {

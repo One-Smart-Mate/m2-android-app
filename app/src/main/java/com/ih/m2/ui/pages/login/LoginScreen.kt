@@ -21,13 +21,19 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -44,10 +50,14 @@ import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.navigation.navigateToHomeV2
+import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
+import com.ih.m2.ui.theme.PaddingToolbar
 import com.ih.m2.ui.theme.Size150
+import kotlinx.coroutines.launch
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun LoginScreen(
     viewModel: LoginViewModel = mavericksViewModel(),
@@ -56,6 +66,8 @@ fun LoginScreen(
 
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     LoginContent(
         email = state.email,
@@ -77,9 +89,22 @@ fun LoginScreen(
         }
     )
 
-    if (state.errorMessage.isNotEmpty()) {
-        Toast.makeText(LocalContext.current, state.errorMessage, Toast.LENGTH_LONG)
-            .show()
+    if (state.message.isNotEmpty() && state.isLoading.not()) {
+        scope.launch {
+            snackBarHostState.showSnackbar(
+                message = state.message,
+            )
+            viewModel.process(LoginViewModel.Action.ClearMessage)
+        }
+
+    }
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar)
+        )
     }
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }

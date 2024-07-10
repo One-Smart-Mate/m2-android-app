@@ -16,15 +16,12 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
-import com.ih.m2.ui.navigation.ARG_SYNC_CATALOG
-import com.ih.m2.ui.pages.cardlist.CardListViewModel
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.LOAD_CATALOGS
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -63,7 +60,7 @@ class HomeViewModelV2 @AssistedInject constructor(
             is Action.GetCards -> handleGetCards()
             is Action.RefreshCards -> setState { copy(refreshCards = true) }
             is Action.SyncCards -> handleSyncCards()
-            is Action.ClearMessage -> setState { copy(message = EMPTY) }
+            is Action.ClearMessage -> cleanScreenStates()
 
         }
     }
@@ -101,9 +98,10 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getCardsUseCase()
             }.onSuccess { cards ->
                 Log.e("test", "Cards -> $cards")
-                setState { copy(cards = cards, refreshCards = false, isLoading = false, message = EMPTY) }
+                setState { copy(cards = cards) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(cards = emptyList(), refreshCards = false, isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -114,9 +112,12 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getUserUseCase()
             }.onSuccess { user ->
                 process(Action.GetCards)
-                user?.let { setState { copy(state = LCE.Success(user), isLoading = false, message = EMPTY) } }
+                user?.let {
+                    Log.e("test", "User -> $it")
+                    setState { copy(state = LCE.Success(user)) }
+                }
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -132,11 +133,15 @@ class HomeViewModelV2 @AssistedInject constructor(
                 val result = getCardsUseCase(localCards = true)
                 syncCardsUseCase(result)
             }.onSuccess {
-                setState { copy(isLoading = false, message = EMPTY) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
+    }
+
+    private fun cleanScreenStates(message: String = EMPTY) {
+        setState { copy(isLoading = false, message = message, refreshCards = false) }
     }
 
     @AssistedFactory

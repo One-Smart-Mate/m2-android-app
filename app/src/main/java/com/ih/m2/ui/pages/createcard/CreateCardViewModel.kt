@@ -105,6 +105,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data object GetLevels : Action()
         data class GetCardsZone(val superiorId: String) : Action()
+        data object ClearMessage: Action()
     }
 
     fun process(action: Action) {
@@ -123,6 +124,7 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
             is Action.GetLevels -> handleGetLevels()
             is Action.GetCardsZone -> handleGetCardsZone(action.superiorId)
+            is Action.ClearMessage -> cleanScreenStates()
         }
     }
 
@@ -264,8 +266,9 @@ class CreateCardViewModel @AssistedInject constructor(
                 setState {
                     copy(preclassifierList = it.filter { it.cardTypeId == id }.toNodeItemCard())
                 }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -278,7 +281,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 setState { copy(cardTypeList = it.toNodeItemList()) }
                 process(Action.GetLevels)
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -289,8 +292,9 @@ class CreateCardViewModel @AssistedInject constructor(
                 getPrioritiesUseCase()
             }.onSuccess {
                 setState { copy(priorityList = it.toNodeItemCard()) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -301,8 +305,9 @@ class CreateCardViewModel @AssistedInject constructor(
                 getLevelsUseCase()
             }.onSuccess {
                 setState { copy(levelList = it.toNodeItemList()) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -341,12 +346,13 @@ class CreateCardViewModel @AssistedInject constructor(
                 saveCardUseCase(card)
             }.onSuccess {
                 Log.e("Test", "Success ${it}")
-                delay(2000)
-                setState { copy(isLoading = false, message = EMPTY, isCardSuccess = true) }
+                delay(1500)
+                setState { copy(isCardSuccess = true) }
+                cleanScreenStates()
             }.onFailure {
                 Log.e("test", "Failure $it")
                 firebaseAnalyticsHelper.logCreateCardException(it)
-                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -363,9 +369,10 @@ class CreateCardViewModel @AssistedInject constructor(
                             audioDuration = it.audiosDurationCreate.defaultIfNull(60)
                         )
                     }
+                    cleanScreenStates()
                 }
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -376,10 +383,15 @@ class CreateCardViewModel @AssistedInject constructor(
                 getCardsZoneUseCase(superiorId)
             }.onSuccess {
                 setState { copy(cardsZone = it) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
+    }
+
+    private fun cleanScreenStates(message: String = EMPTY) {
+        setState { copy(isLoading = false, message = message) }
     }
 
 

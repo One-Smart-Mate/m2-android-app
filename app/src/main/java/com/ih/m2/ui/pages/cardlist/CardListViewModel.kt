@@ -42,8 +42,8 @@ class CardListViewModel @AssistedInject constructor(
     sealed class Action {
         data class GetCards(val filter: String) : Action()
         data class OnActionClick(val card: Card) : Action()
-        data object OnDismissBottomSheet: Action()
-        data object OnRefreshCards: Action()
+        data object OnDismissBottomSheet : Action()
+        data object OnRefreshCards : Action()
     }
 
     fun process(action: Action) {
@@ -55,13 +55,14 @@ class CardListViewModel @AssistedInject constructor(
                     showBottomSheetActions = true
                 )
             }
+
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
             is Action.OnDismissBottomSheet -> setState { copy(showBottomSheetActions = false) }
         }
     }
 
     private fun handleGetCards(filter: String) {
-        Log.e("test", "filter $filter")
+        Log.e("test", "Cards filter $filter")
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
@@ -88,7 +89,13 @@ class CardListViewModel @AssistedInject constructor(
                     )
                 }
             }.onFailure {
-                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = it.localizedMessage.orEmpty(),
+                        refreshCards = false
+                    )
+                }
             }
         }
     }

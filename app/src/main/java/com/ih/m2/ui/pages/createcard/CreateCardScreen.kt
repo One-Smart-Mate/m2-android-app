@@ -68,7 +68,7 @@ import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.RadioGroup
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.card.SectionCardEvidence
@@ -80,6 +80,7 @@ import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.runWorkRequest
+import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.pages.home.components.CardSectionItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
@@ -100,13 +101,12 @@ fun CreateCardScreen(
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
-    val context = LocalContext.current
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
 
     if (state.isLoading) {
-        ScreenLoading(state.message)
+        LoadingScreen(state.message)
     } else {
         CreateCardContent(
             navController = navController,
@@ -161,6 +161,7 @@ fun CreateCardScreen(
             snackBarHostState.showSnackbar(
                 message = state.message,
             )
+            viewModel.process(CreateCardViewModel.Action.ClearMessage)
         }
 
     }

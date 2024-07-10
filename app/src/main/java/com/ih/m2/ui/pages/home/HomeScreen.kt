@@ -50,7 +50,7 @@ import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.PullToRefreshLazyColumn
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SpacerDirection
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
@@ -61,7 +61,6 @@ import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.headerContent
-import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
@@ -88,7 +87,7 @@ fun HomeScreen(
         }
 
         is LCE.Loading, LCE.Uninitialized -> {
-            ScreenLoading(text = state.loadingMessage)
+            LoadingScreen(text = state.loadingMessage)
         }
 
         is LCE.Success -> {

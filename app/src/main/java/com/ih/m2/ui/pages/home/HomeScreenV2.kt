@@ -2,7 +2,6 @@ package com.ih.m2.ui.pages.home
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
@@ -15,11 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
@@ -41,7 +38,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,28 +53,23 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.User
-import com.ih.m2.domain.model.enableDefinitiveSolution
-import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
 import com.ih.m2.domain.model.toLocalCards
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SpacerDirection
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.components.images.CircularImage
-import com.ih.m2.ui.components.sheets.SolutionBottomSheet
-import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardList
 import com.ih.m2.ui.navigation.navigateToCreateCard
-import com.ih.m2.ui.pages.error.ErrorScreen
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingToolbar
@@ -100,7 +91,7 @@ fun HomeScreenV2(
     val scope = rememberCoroutineScope()
 
     if (state.isLoading) {
-        ScreenLoading(text = state.message)
+        LoadingScreen(text = state.message)
     } else {
         HomeContentV2(
             navController = navController,

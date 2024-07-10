@@ -2,7 +2,6 @@ package com.ih.m2.ui.pages.cardlist
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,13 +23,12 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.enableDefinitiveSolution
 import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.ui.components.CustomAppBar
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
-import com.ih.m2.ui.pages.home.HomeViewModel
 import com.ih.m2.ui.pages.home.components.CardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 
@@ -44,7 +42,7 @@ fun CardListScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     if (state.isLoading) {
-        ScreenLoading(text = state.message)
+        LoadingScreen(text = state.message)
     } else {
         CardListContent(
             navController = navController,

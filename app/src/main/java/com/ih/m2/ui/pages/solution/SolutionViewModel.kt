@@ -29,9 +29,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -179,10 +177,11 @@ class SolutionViewModel @AssistedInject constructor(
                 )
             }.onSuccess {
                 Log.e("Test", "Solution Success ${it}")
-                setState { copy(isLoading = false, isSolutionSuccess = true, message = EMPTY) }
+                setState { copy(isSolutionSuccess = true) }
+                cleanScreenStates()
             }.onFailure {
                 Log.e("Test", "Solution Failure ${it.localizedMessage}")
-                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -229,7 +228,7 @@ class SolutionViewModel @AssistedInject constructor(
                 process(Action.GetEmployees)
                 process(Action.GetCardType(it.cardTypeId.orEmpty()))
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -250,11 +249,11 @@ class SolutionViewModel @AssistedInject constructor(
                     copy(
                         cardType = cardType,
                         audioDuration = audioDuration,
-                        isLoading = false
                     )
                 }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -265,13 +264,18 @@ class SolutionViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 getEmployeesUseCase()
             }.onSuccess {
-                setState { copy(isLoading = false, message = EMPTY, employeeList = it) }
+                setState { copy(employeeList = it) }
+                cleanScreenStates()
             }.onFailure {
-                setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
 
+
+    private fun cleanScreenStates(message: String = EMPTY) {
+        setState { copy(isLoading = false, message = message) }
+    }
 
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<SolutionViewModel, UiState> {

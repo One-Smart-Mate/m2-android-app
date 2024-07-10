@@ -53,7 +53,7 @@ import com.ih.m2.domain.model.toVideos
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.card.SectionCardEvidence
@@ -62,8 +62,6 @@ import com.ih.m2.ui.components.evidence.SectionImagesEvidence
 import com.ih.m2.ui.components.evidence.SectionVideosEvidence
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getTextColor
-import com.ih.m2.ui.extensions.runWorkRequest
-import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingLarge
 import com.ih.m2.ui.theme.PaddingNormal
@@ -82,13 +80,12 @@ fun SolutionScreen(
     viewModel: SolutionViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
-    val context = LocalContext.current
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     if (state.isLoading) {
-        ScreenLoading(text = state.message)
+        LoadingScreen(text = state.message)
     } else {
         SolutionScreenContent(
             navController = navController,

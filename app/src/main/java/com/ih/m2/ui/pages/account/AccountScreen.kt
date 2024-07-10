@@ -41,7 +41,7 @@ import com.ih.m2.core.ui.functions.getContext
 import com.ih.m2.core.ui.functions.openAppSettings
 import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
-import com.ih.m2.ui.components.ScreenLoading
+import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.Screen
@@ -59,7 +59,7 @@ fun AccountScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     if (state.isLoading) {
-        ScreenLoading(stringResource(R.string.sync_catalogs))
+        LoadingScreen(stringResource(R.string.sync_catalogs))
     } else {
         AccountContent(
             navController = navController,

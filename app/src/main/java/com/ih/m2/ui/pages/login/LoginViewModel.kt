@@ -27,7 +27,7 @@ class LoginViewModel @AssistedInject constructor(
 
     data class UiState(
         val isLoading: Boolean = false,
-        val errorMessage: String = EMPTY,
+        val message: String = EMPTY,
         val isAuthenticated: Boolean = false,
         val email: String = EMPTY,
         val password: String = EMPTY
@@ -37,6 +37,7 @@ class LoginViewModel @AssistedInject constructor(
         data class Login(val email: String, val password: String) : Action()
         data class SetEmail(val email: String): Action()
         data class SetPassword(val password: String): Action()
+        data object ClearMessage: Action()
     }
 
     fun process(action: Action) {
@@ -44,6 +45,7 @@ class LoginViewModel @AssistedInject constructor(
             is Action.Login -> handleLogin(action.email, action.password)
             is Action.SetEmail -> handleSetEmail(action.email)
             is Action.SetPassword -> handleSetPassword(action.password)
+            is Action.ClearMessage -> setState { copy(message = EMPTY) }
         }
     }
 
@@ -55,7 +57,7 @@ class LoginViewModel @AssistedInject constructor(
             }.onSuccess {
                 handleSaveUser(it)
             }.onFailure {
-                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty(), email = EMPTY, password = EMPTY) }
+                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty(), email = EMPTY, password = EMPTY) }
             }
         }
     }
@@ -67,7 +69,7 @@ class LoginViewModel @AssistedInject constructor(
             }.onSuccess {
                 setState { copy(isLoading = false, isAuthenticated = true) }
             }.onFailure {
-                setState { copy(isLoading = false, errorMessage = it.localizedMessage.orEmpty()) }
+                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
             }
         }
     }
