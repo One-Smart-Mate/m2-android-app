@@ -29,7 +29,7 @@ import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
-import com.ih.m2.ui.pages.home.components.CardItemList
+import com.ih.m2.ui.components.card.CardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 
 @Composable

@@ -39,7 +39,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -79,9 +78,7 @@ import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getIconColor
 import com.ih.m2.ui.extensions.getPrimaryColor
-import com.ih.m2.ui.extensions.runWorkRequest
-import com.ih.m2.ui.pages.home.HomeViewModelV2
-import com.ih.m2.ui.pages.home.components.CardSectionItemList
+import com.ih.m2.ui.components.card.CardSectionItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingTiny

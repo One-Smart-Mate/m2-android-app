@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -39,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -52,6 +54,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.NetworkStatus
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
@@ -63,6 +66,7 @@ import com.ih.m2.ui.components.SpacerDirection
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
+import com.ih.m2.ui.components.card.NetworkCard
 import com.ih.m2.ui.components.images.CircularImage
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.extensions.getPrimaryColor
@@ -102,7 +106,8 @@ fun HomeScreenV2(
             },
             onCardClick = {
                 navController.navigateToCardList(it)
-            }
+            },
+            networkStatus = state.networkStatus
         )
     }
 
@@ -144,8 +149,9 @@ private fun HomeContentV2(
     navController: NavController,
     user: User?,
     cards: List<Card>,
-    onSyncCardsClick:() -> Unit,
+    onSyncCardsClick: () -> Unit,
     onCardClick: (String) -> Unit,
+    networkStatus: NetworkStatus
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -157,6 +163,7 @@ private fun HomeContentV2(
                         navController = navController,
                         user = it,
                         padding = padding.calculateTopPadding(),
+                        networkStatus = networkStatus
                     )
                 }
             }
@@ -164,7 +171,7 @@ private fun HomeContentV2(
                 HomeSectionCardItem(
                     title = stringResource(R.string.create_card),
                     icon = Icons.Outlined.Create
-                ){
+                ) {
                     navController.navigateToCreateCard()
                 }
                 HomeSectionCardItem(
@@ -174,7 +181,7 @@ private fun HomeContentV2(
                         R.string.local_cards,
                         cards.toLocalCards().size
                     ) else EMPTY
-                ){
+                ) {
                     onSyncCardsClick()
                 }
                 HomeSectionCardItem(
@@ -184,7 +191,7 @@ private fun HomeContentV2(
                         R.string.total_cards,
                         cards.toAnomaliesList().size
                     ) else EMPTY
-                ){
+                ) {
                     onCardClick(CARD_ANOMALIES)
                 }
                 HomeSectionCardItem(
@@ -194,7 +201,7 @@ private fun HomeContentV2(
                         R.string.total_cards,
                         cards.toBehaviorList().size
                     ) else EMPTY
-                ){
+                ) {
                     onCardClick(CARD_BEHAVIOR)
                 }
             }
@@ -239,7 +246,7 @@ private fun HomeSectionCardItem(
 }
 
 @Composable
-private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp) {
+private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp, networkStatus: NetworkStatus) {
     Column(
         modifier = Modifier.headerContent(padding),
         horizontalAlignment = Alignment.End
@@ -286,6 +293,8 @@ private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp) 
                 }
             }
         }
+        CustomSpacer()
+        NetworkCard(networkStatus = networkStatus)
         CustomSpacer(space = SpacerSize.LARGE)
     }
 }
@@ -303,6 +312,7 @@ private fun HomeScreenPreview() {
                 cards = emptyList(),
                 onSyncCardsClick = {},
                 onCardClick = {},
+                networkStatus = NetworkStatus.WIFI_CONNECTED
             )
         }
     }

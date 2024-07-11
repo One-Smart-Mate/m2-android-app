@@ -2,12 +2,16 @@ package com.ih.m2.core.ui.functions
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import com.ih.m2.BuildConfig
+import com.ih.m2.domain.model.NetworkStatus
 
 import java.io.File
 import java.text.SimpleDateFormat

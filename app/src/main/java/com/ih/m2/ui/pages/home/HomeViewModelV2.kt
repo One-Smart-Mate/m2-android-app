@@ -11,6 +11,7 @@ import com.ih.m2.R
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.NetworkStatus
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
@@ -44,6 +45,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         val cards: List<Card> = emptyList(),
         val refreshCards: Boolean = false,
         val isLoading: Boolean = false,
+        val networkStatus: NetworkStatus = NetworkStatus.WIFI_CONNECTED
     ) : MavericksState
 
     sealed class Action {
@@ -51,7 +53,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         data object GetCards : Action()
         data object RefreshCards : Action()
         data object SyncCards : Action()
-        data object ClearMessage:Action()
+        data object ClearMessage : Action()
     }
 
     fun process(action: Action) {
@@ -65,7 +67,9 @@ class HomeViewModelV2 @AssistedInject constructor(
         }
     }
 
+
     private fun handleSyncCatalogs(syncCatalogs: String) {
+        checkNetworkStatus()
         if (syncCatalogs == LOAD_CATALOGS) {
             setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
             viewModelScope.launch(coroutineContext) {
@@ -82,6 +86,17 @@ class HomeViewModelV2 @AssistedInject constructor(
         }
     }
 
+    private fun checkNetworkStatus() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                NetworkConnection.networkStatus(context)
+            }.onSuccess {
+                setState { copy(networkStatus = it) }
+            }.onFailure {
+                cleanScreenStates()
+            }
+        }
+    }
     private fun handleCheckUser() {
         viewModelScope.launch(coroutineContext) {
             if (stateFlow.first().state is LCE.Success) {
@@ -126,7 +141,12 @@ class HomeViewModelV2 @AssistedInject constructor(
         setState { copy(isLoading = true, message = context.getString(R.string.upload_cards)) }
         viewModelScope.launch(coroutineContext) {
             if (NetworkConnection.isConnected().not()) {
-                setState { copy(isLoading = false, message = context.getString(R.string.please_connect_to_internet)) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
                 return@launch
             }
             kotlin.runCatching {

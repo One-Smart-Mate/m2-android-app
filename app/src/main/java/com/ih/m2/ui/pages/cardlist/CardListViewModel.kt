@@ -78,7 +78,7 @@ class CardListViewModel @AssistedInject constructor(
                     }
 
                     else -> it
-                }
+                }.sortedByDescending { item -> item.id }
                 setState {
                     copy(
                         cards = filterCards,

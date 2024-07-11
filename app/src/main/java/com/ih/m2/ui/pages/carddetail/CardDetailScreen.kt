@@ -3,6 +3,7 @@ package com.ih.m2.ui.pages.carddetail
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -18,6 +19,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -45,6 +49,8 @@ import com.ih.m2.ui.components.ExpandableCard
 import com.ih.m2.ui.components.LoadingScreen
 import com.ih.m2.ui.components.SectionTag
 import com.ih.m2.ui.components.VideoPlayer
+import com.ih.m2.ui.components.evidence.PreviewVideo
+import com.ih.m2.ui.components.images.PreviewImage
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.orDefault
 import com.ih.m2.ui.pages.createcard.PhotoCardItem
@@ -54,6 +60,7 @@ import com.ih.m2.ui.theme.PaddingTiny
 import com.ih.m2.ui.theme.Size120
 import com.ih.m2.ui.theme.Size200
 import com.ih.m2.ui.theme.Size250
+import com.ih.m2.ui.utils.EMPTY
 
 
 @Composable
@@ -229,9 +236,13 @@ fun CardInformationEvidence(
 @Composable
 fun EvidenceImagesCardSection(
     title: String,
-    evidences: List<Evidence>,
-
-    ) {
+    evidences: List<Evidence>) {
+    var imageUrl by remember {
+        mutableStateOf(EMPTY)
+    }
+    var openImage by remember {
+        mutableStateOf(false)
+    }
     Column {
         Text(
             text = title,
@@ -246,8 +257,16 @@ fun EvidenceImagesCardSection(
                     modifier = Modifier
                         .width(Size200)
                         .height(Size250)
+                        .clickable {
+                            imageUrl = it.url
+                            openImage = true
+                        }
                 )
             }
+        }
+        PreviewImage(openImage = openImage, model = imageUrl) {
+            openImage = false
+            imageUrl = EMPTY
         }
     }
 }
@@ -257,6 +276,12 @@ fun EvidenceVideoCardSection(
     title: String,
     evidences: List<Evidence>
 ) {
+    var videoUrl by remember {
+        mutableStateOf(EMPTY)
+    }
+    var openVideo by remember {
+        mutableStateOf(false)
+    }
     Column {
         Text(
             text = title,
@@ -265,14 +290,22 @@ fun EvidenceVideoCardSection(
         )
         LazyRow {
             items(evidences) {
-                VideoPlayer(
+                PhotoCardItem(
+                    model = it.url,
+                    showIcon = false,
                     modifier = Modifier
                         .width(Size200)
                         .height(Size250)
-                        .padding(PaddingTiny),
-                    url = it.url
+                        .clickable {
+                            videoUrl = it.url
+                            openVideo = true
+                        }
                 )
             }
+        }
+        PreviewVideo(openVideo = openVideo, url = videoUrl) {
+            videoUrl = EMPTY
+            openVideo = false
         }
     }
 }

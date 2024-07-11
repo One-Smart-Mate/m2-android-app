@@ -3,7 +3,6 @@ package com.ih.m2.ui.pages.home
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -29,7 +27,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -66,7 +63,7 @@ import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
 import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.pages.error.ErrorScreen
-import com.ih.m2.ui.pages.home.components.CardItemList
+import com.ih.m2.ui.components.card.CardItemList
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.utils.EMPTY
 

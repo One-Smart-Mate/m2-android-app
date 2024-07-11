@@ -89,5 +89,10 @@
     <string name="local_cards">Tarjetas locales %1$s</string>
     <string name="total_cards">Total %1$s</string>
     <string name="cards">Tarjetas</string>
+    <string name="wifi_connected">Wifi conectado</string>
+    <string name="wifi_disconnected">Wifi desconectado</string>
+    <string name="data_mobile_connected">Datos móviles conectado</string>
+    <string name="data_mobile_disconnected">Datos móviles desconectados</string>
+    <string name="no_internet_access">Sin acceso a internet</string>
 
 </resources>
