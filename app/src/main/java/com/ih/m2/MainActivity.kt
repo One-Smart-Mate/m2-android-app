@@ -41,6 +41,7 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkNotificationPermissions()
         }
+        checkNetworkPermissions()
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //           // workRequest(applicationContext)
 //        }
@@ -71,18 +72,27 @@ class MainActivity : ComponentActivity() {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-     fun workRequest(context: Context) {
+    fun workRequest(context: Context) {
         val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
             .setInitialDelay(Duration.ofSeconds(5))
             .setBackoffCriteria(
                 backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(60*5)
+                duration = Duration.ofSeconds(60 * 5)
             ).build()
         WorkManager.getInstance(context).enqueue(workRequest)
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkNotificationPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.ACCESS_NETWORK_STATE), 1)
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+    }
+
+    private fun checkNetworkPermissions() {
+        ActivityCompat.requestPermissions(
+            this, arrayOf(
+                Manifest.permission.ACCESS_NETWORK_STATE,
+                Manifest.permission.CHANGE_NETWORK_STATE
+            ), 2
+        )
     }
 }

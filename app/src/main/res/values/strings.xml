@@ -95,5 +95,8 @@
     <string name="no_internet_access">No internet access</string>
     <string name="use_data_mobile">Allow data mobile</string>
     <string name="network_preferences_allowed">You need to allow to use the mobile data to sync the cards</string>
+    <string name="company">Company</string>
+    <string name="site">Site</string>
+    <string name="profile">Profile</string>
 
 </resources>

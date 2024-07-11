@@ -16,6 +16,7 @@ import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.home.HomeScreenV2
 import com.ih.m2.ui.pages.login.LoginScreen
+import com.ih.m2.ui.pages.profile.ProfileScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
 import com.ih.m2.ui.utils.LOAD_CATALOGS
 
@@ -81,6 +82,12 @@ fun AppNavigation(
             CardListScreen(navController = navController, filter = filter)
         }
 
+        composable(
+            Screen.Profile.route
+        ) {
+            ProfileScreen(navController = navController)
+        }
+
     }
 }
 
@@ -128,4 +135,8 @@ fun NavController.navigateToCardList(filter: String) {
 
 fun NavController.navigateToCreateCard() {
     navigate(Screen.CreateCard.route)
+}
+
+fun NavController.navigateToProfile() {
+    navigate(Screen.Profile.route)
 }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -16,12 +17,13 @@ import com.ih.m2.R
 @Composable
 fun CircularImage(
     image: String,
+    size: Dp = 54.dp
 ) {
     GlideImage(
         model = image,
         contentDescription = stringResource(id = R.string.empty),
         modifier = Modifier
-            .size(54.dp)
+            .size(size)
             .clip(CircleShape),
         failure = placeholder(R.drawable.ic_launcher_background),
         loading = placeholder(R.drawable.ic_launcher_background),

@@ -96,5 +96,8 @@
     <string name="no_internet_access">Sin acceso a internet</string>
     <string name="use_data_mobile">Usar datos mobiles</string>
     <string name="network_preferences_allowed">Necesitas permitir el uso de datos mobiles para subir tarjetas</string>
+    <string name="company">Compañía</string>
+    <string name="site">Sitio</string>
+    <string name="profile">Perfil</string>
 
 </resources>

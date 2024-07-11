@@ -10,6 +10,7 @@ import com.ih.m2.ui.pages.createcard.CreateCardViewModel
 import com.ih.m2.ui.pages.home.HomeViewModel
 import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.pages.login.LoginViewModel
+import com.ih.m2.ui.pages.profile.ProfileViewModel
 import com.ih.m2.ui.pages.solution.SolutionViewModel
 import dagger.Binds
 import dagger.Module
@@ -62,4 +63,9 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(SolutionViewModel::class)
     fun bindSolutionViewModel(factory: SolutionViewModel.Factory): AssistedViewModelFactory<*, *>
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(ProfileViewModel::class)
+    fun bindProfileViewModel(factory: ProfileViewModel.Factory): AssistedViewModelFactory<*, *>
 }

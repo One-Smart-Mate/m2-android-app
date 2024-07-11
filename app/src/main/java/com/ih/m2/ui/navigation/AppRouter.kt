@@ -25,6 +25,8 @@ private object Route {
 
     const val CARD_LIST_PATH = "card-list"
     const val CARD_LIST  = "$CARD_LIST_PATH/{$ARG_CARD_FILTER}"
+
+    const val PROFILE = "profile"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -37,4 +39,5 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object Dev: Screen(Route.DEV)
     data object Solution: Screen(Route.SOLUTION, Route.SOLUTION_PATH)
     data object CardList: Screen(Route.CARD_LIST, Route.CARD_LIST_PATH)
+    data object Profile: Screen(Route.PROFILE)
 }

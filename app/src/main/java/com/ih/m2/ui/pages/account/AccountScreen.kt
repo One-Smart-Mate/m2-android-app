@@ -48,6 +48,7 @@ import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.Screen
 import com.ih.m2.ui.navigation.navigateToLogin
+import com.ih.m2.ui.navigation.navigateToProfile
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 
@@ -65,7 +66,6 @@ fun AccountScreen(
     } else {
         AccountContent(
             navController = navController,
-            onAccount = {},
             onLogout = {
                 viewModel.process(AccountViewModel.Action.Logout)
             },
@@ -101,7 +101,6 @@ fun AccountScreen(
 @Composable
 fun AccountContent(
     navController: NavController,
-    onAccount: () -> Unit,
     onLogout: () -> Unit,
     onSyncCatalogs: () -> Unit,
     context: Context,
@@ -131,8 +130,7 @@ fun AccountContent(
                     },
                     tonalElevation = PaddingNormal,
                     modifier = Modifier.clickable {
-                        onAccount()
-                        Toast.makeText(context, "Open info", Toast.LENGTH_SHORT).show()
+                        navController.navigateToProfile()
                     }
                 )
 
@@ -238,7 +236,6 @@ fun AccountPreview() {
             val context = LocalContext.current
             AccountContent(
                 navController = rememberNavController(),
-                onAccount = {},
                 onLogout = {},
                 onSyncCatalogs = {},
                 context,

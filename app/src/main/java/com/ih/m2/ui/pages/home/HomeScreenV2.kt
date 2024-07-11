@@ -21,6 +21,7 @@ import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -250,7 +251,7 @@ private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp, 
         horizontalAlignment = Alignment.End
     ) {
         Icon(
-            Icons.Default.AccountCircle,
+            Icons.Outlined.Settings,
             contentDescription = stringResource(R.string.empty),
             tint = getColor(),
             modifier = Modifier.clickable {
