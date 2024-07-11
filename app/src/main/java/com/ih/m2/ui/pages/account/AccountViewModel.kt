@@ -6,9 +6,11 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.core.notifications.NotificationManager
+import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.logout.LogoutUseCase
 import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.NETWORK_DATA_MOBILE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -21,20 +23,27 @@ class AccountViewModel @AssistedInject constructor(
     private val coroutineContext: CoroutineContext,
     private val logoutUseCase: LogoutUseCase,
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
+    private val sharedPreferences: SharedPreferences
 ) : MavericksViewModel<AccountViewModel.UiState>(initialState) {
 
 
     data class UiState(
         val logout: Boolean = false,
         val message: String = EMPTY,
-        val isLoading: Boolean = false
+        val isLoading: Boolean = false,
+        val checked: Boolean = false
     ) : MavericksState
+
+    init {
+        getNetworkPreferences()
+    }
 
     sealed class Action {
         data object Logout: Action()
         data object SyncCatalogs: Action()
         data object ShowNotification: Action()
+        data class OnSwitchChange(val checked: Boolean): Action()
     }
 
     fun process(action: Action) {
@@ -42,8 +51,28 @@ class AccountViewModel @AssistedInject constructor(
             is Action.Logout -> handleLogout()
             is Action.SyncCatalogs -> handleSyncCatalogs()
             is Action.ShowNotification -> handleShowNotification()
+            is Action.OnSwitchChange -> handleOnSwitchChange(action.checked)
         }
     }
+
+    private fun handleOnSwitchChange(checked: Boolean) {
+        val network = if (checked) {
+            NETWORK_DATA_MOBILE
+        } else {
+            EMPTY
+        }
+        viewModelScope.launch(coroutineContext) {
+            sharedPreferences.saveNetworkPreference(network)
+            setState { copy(checked = checked) }
+        }
+    }
+
+    private fun getNetworkPreferences() {
+        val network = sharedPreferences.getNetworkPreference()
+        val checked = network.isNotEmpty()
+        setState { copy(checked = checked) }
+    }
+
     private fun handleLogout() {
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {

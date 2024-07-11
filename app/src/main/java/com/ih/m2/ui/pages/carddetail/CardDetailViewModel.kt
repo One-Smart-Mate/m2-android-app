@@ -34,7 +34,6 @@ class CardDetailViewModel @AssistedInject constructor(
         when (action) {
             is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
         }
-
     }
 
     private fun handleGetCardDetail(cardId: String) {

@@ -3,6 +3,9 @@ package com.ih.m2
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -18,6 +21,7 @@ import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.workmanager.CardWorker
 import com.ih.m2.ui.navigation.AppNavigation
 import com.ih.m2.ui.pages.splash.SplashViewModel
@@ -37,13 +41,14 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkNotificationPermissions()
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-           // workRequest(applicationContext)
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//           // workRequest(applicationContext)
+//        }
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             splashViewModel.isAuthenticated.value.not()
         }
+        observeNetworkChanges()
 
         setContent {
             M2androidappTheme {
@@ -51,6 +56,18 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(startDestination = state.value)
             }
         }
+    }
+
+    private fun observeNetworkChanges() {
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+            .build()
+
+        val connectivityManager =
+            getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
+        connectivityManager?.requestNetwork(networkRequest, NetworkConnection.networkCallback)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -66,6 +83,6 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     private fun checkNotificationPermissions() {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS), 1)
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.POST_NOTIFICATIONS, Manifest.permission.ACCESS_NETWORK_STATE), 1)
     }
 }

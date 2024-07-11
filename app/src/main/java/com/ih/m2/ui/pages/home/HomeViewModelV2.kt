@@ -1,6 +1,7 @@
 package com.ih.m2.ui.pages.home
 
 import android.content.Context
+import android.net.ConnectivityManager
 import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
@@ -9,6 +10,8 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.core.network.NetworkConnection
+import com.ih.m2.core.network.NetworkConnectionStatus
+import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.NetworkStatus
@@ -23,8 +26,10 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class HomeViewModelV2 @AssistedInject constructor(
@@ -34,6 +39,7 @@ class HomeViewModelV2 @AssistedInject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
     private val syncCardsUseCase: SyncCardsUseCase,
+    private val sharedPreferences: SharedPreferences,
     @ApplicationContext private val context: Context,
 ) : MavericksViewModel<HomeViewModelV2.UiState>(initialState) {
 
@@ -45,7 +51,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         val cards: List<Card> = emptyList(),
         val refreshCards: Boolean = false,
         val isLoading: Boolean = false,
-        val networkStatus: NetworkStatus = NetworkStatus.WIFI_CONNECTED
+        val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS
     ) : MavericksState
 
     sealed class Action {
@@ -63,13 +69,15 @@ class HomeViewModelV2 @AssistedInject constructor(
             is Action.RefreshCards -> setState { copy(refreshCards = true) }
             is Action.SyncCards -> handleSyncCards()
             is Action.ClearMessage -> cleanScreenStates()
-
         }
+    }
+
+    init {
+        checkNetworkStatus()
     }
 
 
     private fun handleSyncCatalogs(syncCatalogs: String) {
-        checkNetworkStatus()
         if (syncCatalogs == LOAD_CATALOGS) {
             setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
             viewModelScope.launch(coroutineContext) {
@@ -86,17 +94,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         }
     }
 
-    private fun checkNetworkStatus() {
-        viewModelScope.launch(coroutineContext) {
-            kotlin.runCatching {
-                NetworkConnection.networkStatus(context)
-            }.onSuccess {
-                setState { copy(networkStatus = it) }
-            }.onFailure {
-                cleanScreenStates()
-            }
-        }
-    }
+
     private fun handleCheckUser() {
         viewModelScope.launch(coroutineContext) {
             if (stateFlow.first().state is LCE.Success) {
@@ -140,6 +138,7 @@ class HomeViewModelV2 @AssistedInject constructor(
     private fun handleSyncCards() {
         setState { copy(isLoading = true, message = context.getString(R.string.upload_cards)) }
         viewModelScope.launch(coroutineContext) {
+            val state = stateFlow.first()
             if (NetworkConnection.isConnected().not()) {
                 setState {
                     copy(
@@ -149,16 +148,58 @@ class HomeViewModelV2 @AssistedInject constructor(
                 }
                 return@launch
             }
+            if (state.networkStatus == NetworkStatus.DATA_CONNECTED
+                && sharedPreferences.getNetworkPreference().isEmpty()) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.network_preferences_allowed)
+                    )
+                }
+                return@launch
+            }
             kotlin.runCatching {
                 val result = getCardsUseCase(localCards = true)
                 syncCardsUseCase(result)
             }.onSuccess {
-                cleanScreenStates()
+                handleGetCards()
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
+
+    private fun checkNetworkStatus() {
+        viewModelScope.launch {
+            NetworkConnection.initObserve(object : NetworkConnectionStatus {
+                override fun onNetworkChange(networkStatus: NetworkStatus) {
+                    setState { copy(networkStatus = networkStatus) }
+                    checkConnectivity(networkStatus)
+                }
+            })
+            if (stateFlow.first().networkStatus == NetworkStatus.NO_INTERNET_ACCESS) {
+                val networkStatus = NetworkConnection.networkStatus(context)
+                setState { copy(networkStatus = networkStatus) }
+                checkConnectivity(networkStatus)
+            }
+        }
+    }
+    private fun checkConnectivity(networkStatus: NetworkStatus) {
+        viewModelScope.launch(coroutineContext) {
+            val isDisconnected = NetworkConnection.isConnected().not()
+            val networkState = when {
+                isDisconnected && networkStatus == NetworkStatus.WIFI_CONNECTED -> {
+                    NetworkStatus.WIFI_DISCONNECTED
+                }
+                isDisconnected && networkStatus == NetworkStatus.DATA_CONNECTED -> {
+                    NetworkStatus.DATA_DISCONNECTED
+                }
+                else -> networkStatus
+            }
+            setState { copy(networkStatus = networkState) }
+        }
+    }
+
 
     private fun cleanScreenStates(message: String = EMPTY) {
         setState { copy(isLoading = false, message = message, refreshCards = false) }

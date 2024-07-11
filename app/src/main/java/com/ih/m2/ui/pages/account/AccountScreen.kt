@@ -20,6 +20,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -28,6 +29,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.flowWithLifecycle
@@ -74,6 +76,10 @@ fun AccountScreen(
             onDevClick = {
                 navController.navigate(Screen.Dev.route)
                 //  viewModel.process(AccountViewModel.Action.ShowNotification)
+            },
+            checked = state.checked,
+            onSwitchChange = {
+                viewModel.process(AccountViewModel.Action.OnSwitchChange(it))
             }
         )
     }
@@ -99,7 +105,9 @@ fun AccountContent(
     onLogout: () -> Unit,
     onSyncCatalogs: () -> Unit,
     context: Context,
-    onDevClick: () -> Unit
+    onDevClick: () -> Unit,
+    checked: Boolean,
+    onSwitchChange: (Boolean) -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -157,18 +165,37 @@ fun AccountContent(
                 )
 
                 ListItem(
-                    headlineContent = { Text(text = "Dev") },
+                    headlineContent = { Text(text = stringResource(R.string.use_data_mobile)) },
                     leadingContent = {
                         Icon(
-                            Icons.Filled.Build,
+                            painterResource(id = R.drawable.ic_wifi),
                             contentDescription = stringResource(R.string.empty),
                         )
                     },
+                    trailingContent = {
+                        Switch(checked = checked, onCheckedChange = {
+                            onSwitchChange(it)
+                        })
+                    },
                     tonalElevation = PaddingNormal,
                     modifier = Modifier.clickable {
-                        onDevClick()
+                        onSyncCatalogs()
                     }
                 )
+
+//                ListItem(
+//                    headlineContent = { Text(text = "Dev") },
+//                    leadingContent = {
+//                        Icon(
+//                            Icons.Filled.Build,
+//                            contentDescription = stringResource(R.string.empty),
+//                        )
+//                    },
+//                    tonalElevation = PaddingNormal,
+//                    modifier = Modifier.clickable {
+//                        onDevClick()
+//                    }
+//                )
 
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.logout)) },
@@ -215,7 +242,8 @@ fun AccountPreview() {
                 onLogout = {},
                 onSyncCatalogs = {},
                 context,
-                onDevClick = {}
+                onDevClick = {},
+                onSwitchChange = {}, checked = true
             )
         }
     }

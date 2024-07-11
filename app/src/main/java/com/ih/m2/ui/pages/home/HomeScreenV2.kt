@@ -206,8 +206,6 @@ private fun HomeContentV2(
                 }
             }
         }
-
-
     }
 }
 
@@ -295,7 +293,7 @@ private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp, 
         }
         CustomSpacer()
         NetworkCard(networkStatus = networkStatus)
-        CustomSpacer(space = SpacerSize.LARGE)
+        CustomSpacer()
     }
 }
 

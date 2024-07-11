@@ -21,6 +21,7 @@ class GetCardsZoneUseCaseImpl @Inject constructor(
 
     override suspend fun invoke(superiorId: String): List<Card> {
         val siteId = localRepository.getSiteId()
+        Log.e("test","Get Card Zones $superiorId -- $siteId")
         return if (NetworkConnection.isConnected()) {
             cardRepository.getCardsZone(superiorId = superiorId, siteId = siteId)
         } else {
