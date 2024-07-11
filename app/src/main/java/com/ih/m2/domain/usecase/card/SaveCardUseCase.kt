@@ -1,6 +1,7 @@
 package com.ih.m2.domain.usecase.card
 
 import android.util.Log
+import com.ih.m2.core.FileHelper
 import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.repository.local.LocalRepository
@@ -14,6 +15,7 @@ interface SaveCardUseCase {
 class SaveCardUseCaseImpl @Inject constructor(
     private val localRepository: LocalRepository,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+    private val fileHelper: FileHelper
     ) : SaveCardUseCase {
 
     override suspend fun invoke(card: Card): Long {
@@ -46,6 +48,7 @@ class SaveCardUseCaseImpl @Inject constructor(
             localRepository.saveEvidence(it)
         }
         firebaseAnalyticsHelper.logCreateCard(updatedCard)
+        fileHelper.logCreateCard(updatedCard)
         Log.e("Card","Card $updatedCard")
         return id
     }

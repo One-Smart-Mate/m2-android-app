@@ -1,6 +1,7 @@
 package com.ih.m2.domain.usecase.card
 
 import android.util.Log
+import com.ih.m2.core.FileHelper
 import com.ih.m2.data.model.CreateDefinitiveSolutionRequest
 import com.ih.m2.data.model.CreateEvidenceRequest
 import com.ih.m2.data.model.CreateProvisionalSolutionRequest
@@ -27,6 +28,7 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
     private val cardRepository: CardRepository,
     private val localRepository: LocalRepository,
     private val firebaseStorageRepository: FirebaseStorageRepository,
+    private val fileHelper: FileHelper
 ) : SaveCardSolutionUseCase {
 
     override suspend fun invoke(
@@ -54,6 +56,7 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
                     evidences = evidenceList.toList(),
                     comments = comments
                 )
+                fileHelper.logDefinitiveSolution(request)
                 val card = cardRepository.saveDefinitiveSolution(request)
                 Log.e("Test","Solution New card $card")
                 localRepository.saveCard(card)
@@ -67,6 +70,7 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
                     evidences = evidenceList.toList(),
                     comments = comments
                 )
+                fileHelper.logProvisionalSolution(request)
                 val card = cardRepository.saveProvisionalSolution(request)
                 Log.e("Test","Solution New card $card")
                 localRepository.saveCard(card)

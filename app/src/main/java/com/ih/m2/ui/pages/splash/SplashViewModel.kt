@@ -2,6 +2,8 @@ package com.ih.m2.ui.pages.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ih.m2.core.FileHelper
+import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel

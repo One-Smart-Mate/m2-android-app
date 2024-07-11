@@ -98,5 +98,6 @@
     <string name="company">Company</string>
     <string name="site">Site</string>
     <string name="profile">Profile</string>
+    <string name="app_version">App version %1$s</string>
 
 </resources>

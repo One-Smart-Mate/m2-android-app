@@ -21,6 +21,7 @@ import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
+import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.workmanager.CardWorker
 import com.ih.m2.ui.navigation.AppNavigation
@@ -29,9 +30,11 @@ import com.ih.m2.ui.theme.M2androidappTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.time.Duration
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
     private val splashViewModel: SplashViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,7 +53,6 @@ class MainActivity : ComponentActivity() {
             splashViewModel.isAuthenticated.value.not()
         }
         observeNetworkChanges()
-
         setContent {
             M2androidappTheme {
                 val state = splashViewModel.startRoute.collectAsState()

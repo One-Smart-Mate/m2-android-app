@@ -9,6 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
@@ -40,7 +41,8 @@ class SolutionViewModel @AssistedInject constructor(
     private val getCardDetailUseCase: GetCardDetailUseCase,
     private val getCardTypeUseCase: GetCardTypeUseCase,
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
-    @ApplicationContext private val context: Context
+    @ApplicationContext private val context: Context,
+    private val fileHelper: FileHelper
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
 
 
@@ -180,6 +182,7 @@ class SolutionViewModel @AssistedInject constructor(
                 setState { copy(isSolutionSuccess = true) }
                 cleanScreenStates()
             }.onFailure {
+                fileHelper.logException(it)
                 Log.e("Test", "Solution Failure ${it.localizedMessage}")
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }

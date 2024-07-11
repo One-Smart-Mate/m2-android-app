@@ -9,6 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.network.NetworkConnectionStatus
 import com.ih.m2.core.preferences.SharedPreferences
@@ -41,6 +42,7 @@ class HomeViewModelV2 @AssistedInject constructor(
     private val syncCardsUseCase: SyncCardsUseCase,
     private val sharedPreferences: SharedPreferences,
     @ApplicationContext private val context: Context,
+    private val fileHelper: FileHelper
 ) : MavericksViewModel<HomeViewModelV2.UiState>(initialState) {
 
 
@@ -86,6 +88,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 }.onSuccess {
                     handleCheckUser()
                 }.onFailure {
+                    fileHelper.logException(it)
                     handleCheckUser()
                 }
             }
@@ -164,6 +167,7 @@ class HomeViewModelV2 @AssistedInject constructor(
             }.onSuccess {
                 handleGetCards()
             }.onFailure {
+                fileHelper.logException(it)
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }

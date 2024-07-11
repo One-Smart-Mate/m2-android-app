@@ -2,6 +2,7 @@ package com.ih.m2.domain.usecase.card
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.m2.core.FileHelper
 import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.ui.functions.CustomException
 import com.ih.m2.data.model.CreateEvidenceRequest
@@ -22,7 +23,8 @@ class SyncCardsUseCaseImpl @Inject constructor(
     private val localRepository: LocalRepository,
     private val firebaseStorageRepository: FirebaseStorageRepository,
     private val notificationManager: NotificationManager,
-    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper
+    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+    private val fileHelper: FileHelper
 ) : SyncCardsUseCase {
 
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
@@ -33,7 +35,6 @@ class SyncCardsUseCaseImpl @Inject constructor(
             0
         }
         val progressByCard: Float = 100f / cardList.size
-
 
         try {
             cardList.forEach { card ->
@@ -48,6 +49,7 @@ class SyncCardsUseCaseImpl @Inject constructor(
                     }
                 }
                 val cardRequest = card.toCardRequest(evidences)
+                fileHelper.logCreateCardRequest(cardRequest)
                 Log.e("test", "Current card request.. ${cardRequest}")
                 val remoteCard = cardRepository.saveCard(cardRequest)
                 firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
@@ -68,6 +70,7 @@ class SyncCardsUseCaseImpl @Inject constructor(
             Log.e("test", "saving card exception.. ${e.localizedMessage}")
             firebaseAnalyticsHelper.logSyncCardException(e)
             FirebaseCrashlytics.getInstance().recordException(e)
+            fileHelper.logException(e)
             if (cardList.isNotEmpty()) {
                 notificationManager.buildErrorNotification(id, e.localizedMessage.orEmpty())
             }

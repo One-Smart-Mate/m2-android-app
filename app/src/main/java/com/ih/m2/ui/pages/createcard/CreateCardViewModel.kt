@@ -9,6 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.core.FileHelper
 import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
@@ -59,6 +60,7 @@ class CreateCardViewModel @AssistedInject constructor(
     private val getCardsZoneUseCase: GetCardsZoneUseCase,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     @ApplicationContext private val context: Context,
+    private val fileHelper: FileHelper
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
     init {
@@ -351,6 +353,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 cleanScreenStates()
             }.onFailure {
                 Log.e("test", "Failure $it")
+                fileHelper.logException(it)
                 firebaseAnalyticsHelper.logCreateCardException(it)
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }

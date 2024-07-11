@@ -2,8 +2,11 @@ package com.ih.m2.ui.pages.account
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,11 +19,13 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -80,7 +85,8 @@ fun AccountScreen(
             checked = state.checked,
             onSwitchChange = {
                 viewModel.process(AccountViewModel.Action.OnSwitchChange(it))
-            }
+            },
+            uri = state.uri
         )
     }
     if (state.message.isNotEmpty()) {
@@ -106,7 +112,8 @@ fun AccountContent(
     context: Context,
     onDevClick: () -> Unit,
     checked: Boolean,
-    onSwitchChange: (Boolean) -> Unit
+    onSwitchChange: (Boolean) -> Unit,
+    uri: Uri? = null
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -171,9 +178,17 @@ fun AccountContent(
                         )
                     },
                     trailingContent = {
-                        Switch(checked = checked, onCheckedChange = {
-                            onSwitchChange(it)
-                        })
+                        Switch(
+                            checked = checked, onCheckedChange = {
+                                onSwitchChange(it)
+                            },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                            )
+                        )
                     },
                     tonalElevation = PaddingNormal,
                     modifier = Modifier.clickable {
@@ -211,7 +226,11 @@ fun AccountContent(
 
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 ListItem(
-                    headlineContent = { Text("App Version ${BuildConfig.VERSION_NAME}") },
+                    headlineContent = { Text(
+                        stringResource(
+                            R.string.app_version,
+                            BuildConfig.VERSION_NAME
+                        )) },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Info,
@@ -220,6 +239,26 @@ fun AccountContent(
                     },
                     tonalElevation = PaddingNormal
                 )
+                AnimatedVisibility (visible = uri != null) {
+                    ListItem(
+                        headlineContent = { Text("Share app logs") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Filled.Share,
+                                contentDescription = stringResource(R.string.empty),
+                            )
+                        },
+                        tonalElevation = PaddingNormal,
+                        modifier = Modifier.clickable {
+                            val intent = Intent(Intent.ACTION_SEND)
+                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            intent.setType("*/*")
+                            intent.putExtra(Intent.EXTRA_STREAM, uri)
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            context.startActivity(intent)
+                        }
+                    )
+                }
             }
         }
     }

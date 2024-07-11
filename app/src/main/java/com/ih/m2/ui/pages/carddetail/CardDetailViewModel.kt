@@ -5,6 +5,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
@@ -18,7 +19,8 @@ import kotlin.coroutines.CoroutineContext
 class CardDetailViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
-    private val getCardDetailUseCase: GetCardDetailUseCase
+    private val getCardDetailUseCase: GetCardDetailUseCase,
+    private val fileHelper: FileHelper
 ) : MavericksViewModel<CardDetailViewModel.UiState>(initialState) {
 
 
@@ -44,6 +46,7 @@ class CardDetailViewModel @AssistedInject constructor(
             }.onSuccess {
                 setState { copy(card = LCE.Success(it)) }
             }.onFailure {
+                fileHelper.logException(it)
                 setState { copy(card = LCE.Fail(it.localizedMessage.orEmpty())) }
             }
         }
