@@ -1,8 +1,11 @@
 package com.ih.m2.ui.pages.home
 
 import android.content.Context
+import android.icu.util.Calendar
 import android.net.ConnectivityManager
+import android.os.Build
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -21,6 +24,12 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.ui.extensions.DayAndDateWithYear
+import com.ih.m2.ui.extensions.DayMonthWithTimeZone
+import com.ih.m2.ui.extensions.NORMAL_FORMAT
+import com.ih.m2.ui.extensions.defaultIfNull
+import com.ih.m2.ui.extensions.lastSyncDate
+import com.ih.m2.ui.extensions.toDate
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.LOAD_CATALOGS
 import dagger.assisted.Assisted
@@ -31,6 +40,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import kotlin.coroutines.CoroutineContext
 
 class HomeViewModelV2 @AssistedInject constructor(
@@ -53,7 +65,9 @@ class HomeViewModelV2 @AssistedInject constructor(
         val cards: List<Card> = emptyList(),
         val refreshCards: Boolean = false,
         val isLoading: Boolean = false,
-        val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS
+        val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS,
+        val syncCompleted: Boolean = false,
+        val lastSyncUpdate: String = EMPTY
     ) : MavericksState
 
     sealed class Action {
@@ -86,6 +100,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 kotlin.runCatching {
                     syncCatalogsUseCase(syncCards = true)
                 }.onSuccess {
+                    setState { copy(syncCompleted = true) }
                     handleCheckUser()
                 }.onFailure {
                     fileHelper.logException(it)
@@ -115,10 +130,23 @@ class HomeViewModelV2 @AssistedInject constructor(
             }.onSuccess { cards ->
                 Log.e("test", "Cards -> $cards")
                 setState { copy(cards = cards) }
+                checkLastUpdate()
                 cleanScreenStates()
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
+        }
+    }
+
+    private fun checkLastUpdate() {
+        viewModelScope.launch {
+            val lastUpdate = sharedPreferences.getLastSyncDate()
+            val lastUpdateText = if (lastUpdate.isNotEmpty()) {
+                lastUpdate.lastSyncDate(context)
+            } else {
+                context.getString(R.string.right_now)
+            }
+            setState { copy(lastSyncUpdate = lastUpdateText) }
         }
     }
 
@@ -152,7 +180,8 @@ class HomeViewModelV2 @AssistedInject constructor(
                 return@launch
             }
             if (state.networkStatus == NetworkStatus.DATA_CONNECTED
-                && sharedPreferences.getNetworkPreference().isEmpty()) {
+                && sharedPreferences.getNetworkPreference().isEmpty()
+            ) {
                 setState {
                     copy(
                         isLoading = false,
@@ -165,6 +194,8 @@ class HomeViewModelV2 @AssistedInject constructor(
                 val result = getCardsUseCase(localCards = true)
                 syncCardsUseCase(result)
             }.onSuccess {
+                sharedPreferences.saveLastSyncDate()
+                checkLastUpdate()
                 handleGetCards()
             }.onFailure {
                 fileHelper.logException(it)
@@ -188,6 +219,7 @@ class HomeViewModelV2 @AssistedInject constructor(
             }
         }
     }
+
     private fun checkConnectivity(networkStatus: NetworkStatus) {
         viewModelScope.launch(coroutineContext) {
             val isDisconnected = NetworkConnection.isConnected().not()
@@ -195,9 +227,11 @@ class HomeViewModelV2 @AssistedInject constructor(
                 isDisconnected && networkStatus == NetworkStatus.WIFI_CONNECTED -> {
                     NetworkStatus.WIFI_DISCONNECTED
                 }
+
                 isDisconnected && networkStatus == NetworkStatus.DATA_CONNECTED -> {
                     NetworkStatus.DATA_DISCONNECTED
                 }
+
                 else -> networkStatus
             }
             setState { copy(networkStatus = networkState) }
@@ -206,7 +240,14 @@ class HomeViewModelV2 @AssistedInject constructor(
 
 
     private fun cleanScreenStates(message: String = EMPTY) {
-        setState { copy(isLoading = false, message = message, refreshCards = false) }
+        setState {
+            copy(
+                isLoading = false,
+                message = message,
+                refreshCards = false,
+                syncCompleted = true
+            )
+        }
     }
 
     @AssistedFactory

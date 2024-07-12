@@ -9,18 +9,24 @@ import android.provider.Settings.Global
 import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -117,6 +123,56 @@ fun DevScreen() {
                             url = "https://firebasestorage.googleapis.com/v0/b/android-m2-app.appspot.com/o/evidence%2Fcreated%2Fvideos%2F1c6e286c-a897-4504-aed6-d62659996ef1%2FVIDEO_CR_20240707_012558.mp4?alt=media&token=b077ec04-7a05-4f86-a60f-9ca6b53a8ee1"
                         )
                     }
+                }
+
+                Column {
+
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 20.dp,
+                                color = MaterialTheme.colorScheme.primaryContainer,
+                                shape = CircleShape
+                            ),
+                    ) {}
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 20.dp,
+                                color = MaterialTheme.colorScheme.secondaryContainer,
+                                shape = CircleShape
+                            ),
+                    ) {}
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 20.dp,
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
+                                shape = CircleShape
+                            ),
+                    ) {}
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 20.dp,
+                                color = MaterialTheme.colorScheme.onBackground,
+                                shape = CircleShape
+                            ),
+                    ) {}
+                    Box(
+                        modifier = Modifier
+                            .size(50.dp)
+                            .border(
+                                width = 20.dp,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                shape = CircleShape
+                            ),
+                    ) {}
+
                 }
 
 //               PreviewImage(openImage = showButton,

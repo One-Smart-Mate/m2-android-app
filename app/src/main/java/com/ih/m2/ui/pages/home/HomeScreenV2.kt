@@ -78,6 +78,7 @@ import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingToolbar
+import com.ih.m2.ui.theme.Size2
 import com.ih.m2.ui.utils.CARD_ANOMALIES
 import com.ih.m2.ui.utils.CARD_BEHAVIOR
 import com.ih.m2.ui.utils.EMPTY
@@ -108,7 +109,8 @@ fun HomeScreenV2(
             onCardClick = {
                 navController.navigateToCardList(it)
             },
-            networkStatus = state.networkStatus
+            networkStatus = state.networkStatus,
+            lastSyncUpdateDate = state.lastSyncUpdate
         )
     }
 
@@ -134,7 +136,7 @@ fun HomeScreenV2(
         snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
-                if (state.syncCatalogs) {
+                if (state.syncCatalogs && state.syncCompleted.not()) {
                     viewModel.process(HomeViewModelV2.Action.SyncCatalogs(syncCatalogs))
                 }
                 if (state.refreshCards) {
@@ -152,7 +154,8 @@ private fun HomeContentV2(
     cards: List<Card>,
     onSyncCardsClick: () -> Unit,
     onCardClick: (String) -> Unit,
-    networkStatus: NetworkStatus
+    networkStatus: NetworkStatus,
+    lastSyncUpdateDate: String,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -178,10 +181,13 @@ private fun HomeContentV2(
                 HomeSectionCardItem(
                     title = stringResource(R.string.sync_cards),
                     icon = Icons.Outlined.Refresh,
-                    description = if (cards.isNotEmpty()) stringResource(
+                    subText = stringResource(
+                        R.string.last_update, lastSyncUpdateDate
+                    ),
+                    description = stringResource(
                         R.string.local_cards,
                         cards.toLocalCards().size
-                    ) else EMPTY
+                    )
                 ) {
                     onSyncCardsClick()
                 }
@@ -215,6 +221,7 @@ private fun HomeSectionCardItem(
     title: String,
     icon: ImageVector,
     description: String = EMPTY,
+    subText: String = EMPTY,
     onClick: () -> Unit
 ) {
     Card(
@@ -237,15 +244,32 @@ private fun HomeSectionCardItem(
                 modifier = Modifier.padding(PaddingNormal)
             )
             AnimatedVisibility(visible = description.isNotEmpty()) {
-                Text(text = description, style = MaterialTheme.typography.bodyMedium)
-                CustomSpacer()
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = description, style = MaterialTheme.typography.bodyMedium
+                            .copy(fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier.padding(bottom = Size2)
+                    )
+                    AnimatedVisibility(visible = subText.isNotEmpty()) {
+                        Text(text = subText, style = MaterialTheme.typography.bodySmall)
+                    }
+                    CustomSpacer()
+                }
             }
         }
     }
 }
 
 @Composable
-private fun HomeAppBarV2(navController: NavController, user: User, padding: Dp, networkStatus: NetworkStatus) {
+private fun HomeAppBarV2(
+    navController: NavController,
+    user: User,
+    padding: Dp,
+    networkStatus: NetworkStatus
+) {
     Column(
         modifier = Modifier.headerContent(padding),
         horizontalAlignment = Alignment.End
@@ -311,7 +335,8 @@ private fun HomeScreenPreview() {
                 cards = emptyList(),
                 onSyncCardsClick = {},
                 onCardClick = {},
-                networkStatus = NetworkStatus.WIFI_CONNECTED
+                networkStatus = NetworkStatus.WIFI_CONNECTED,
+                lastSyncUpdateDate = ""
             )
         }
     }

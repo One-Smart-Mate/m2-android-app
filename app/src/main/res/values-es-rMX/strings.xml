@@ -100,5 +100,14 @@
     <string name="site">Sitio</string>
     <string name="profile">Perfil</string>
     <string name="app_version">App version %1$s</string>
+    <string name="share_app_logs">Compartir logs</string>
+    <string name="right_now">un momento</string>
+    <string name="last_update">Ultima sincronización hace %1$s</string>
+    <string name="day">día</string>
+    <string name="days">días</string>
+    <string name="hour">hora</string>
+    <string name="hours">horas</string>
+    <string name="minute">minuto</string>
+    <string name="minutes">minutos</string>
 
 </resources>

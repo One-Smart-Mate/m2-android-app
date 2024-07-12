@@ -99,5 +99,13 @@
     <string name="site">Site</string>
     <string name="profile">Profile</string>
     <string name="app_version">App version %1$s</string>
-
+    <string name="share_app_logs">Share app logs</string>
+    <string name="right_now">right now</string>
+    <string name="last_update">Last update %1$s</string>
+    <string name="day">day</string>
+    <string name="days">days</string>
+    <string name="hour">hour</string>
+    <string name="hours">hours</string>
+    <string name="minute">minute</string>
+    <string name="minutes">minutes</string>
 </resources>

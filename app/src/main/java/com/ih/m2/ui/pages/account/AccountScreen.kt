@@ -8,11 +8,11 @@ import android.net.Uri
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
@@ -211,26 +212,14 @@ fun AccountContent(
 //                )
 
                 ListItem(
-                    headlineContent = { Text(stringResource(R.string.logout)) },
-                    leadingContent = {
-                        Icon(
-                            Icons.Filled.ExitToApp,
-                            contentDescription = stringResource(R.string.empty),
+                    headlineContent = {
+                        Text(
+                            stringResource(
+                                R.string.app_version,
+                                BuildConfig.VERSION_NAME
+                            )
                         )
                     },
-                    tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        onLogout()
-                    }
-                )
-
-                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
-                ListItem(
-                    headlineContent = { Text(
-                        stringResource(
-                            R.string.app_version,
-                            BuildConfig.VERSION_NAME
-                        )) },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Info,
@@ -239,9 +228,9 @@ fun AccountContent(
                     },
                     tonalElevation = PaddingNormal
                 )
-                AnimatedVisibility (visible = uri != null) {
+                AnimatedVisibility(visible = uri != null) {
                     ListItem(
-                        headlineContent = { Text("Share app logs") },
+                        headlineContent = { Text(stringResource(R.string.share_app_logs)) },
                         leadingContent = {
                             Icon(
                                 Icons.Filled.Share,
@@ -250,17 +239,44 @@ fun AccountContent(
                         },
                         tonalElevation = PaddingNormal,
                         modifier = Modifier.clickable {
-                            val intent = Intent(Intent.ACTION_SEND)
-                            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                            intent.setType("*/*")
-                            intent.putExtra(Intent.EXTRA_STREAM, uri)
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                            context.startActivity(intent)
+                            shareUri(context, uri)
                         }
                     )
                 }
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.logout)) },
+                    leadingContent = {
+                        Icon(
+                            Icons.AutoMirrored.Outlined.ExitToApp,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    modifier = Modifier.clickable {
+                        onLogout()
+                    }
+                )
             }
         }
+    }
+}
+
+private fun shareUri(context: Context, uri: Uri?) {
+    try {
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.setType("*/*")
+        intent.putExtra(Intent.EXTRA_STREAM, uri)
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(
+            context,
+            "Can't share the data $uri",
+            Toast.LENGTH_SHORT
+        ).show()
     }
 }
 
