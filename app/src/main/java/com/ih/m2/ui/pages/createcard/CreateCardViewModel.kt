@@ -106,7 +106,7 @@ class CreateCardViewModel @AssistedInject constructor(
         data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data object GetLevels : Action()
-        data class GetCardsZone(val superiorId: String) : Action()
+        data object GetCardsZone : Action()
         data object ClearMessage : Action()
     }
 
@@ -125,9 +125,8 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
             is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
             is Action.GetLevels -> handleGetLevels()
-            is Action.GetCardsZone -> handleGetCardsZone(action.superiorId)
+            is Action.GetCardsZone -> handleGetCardsZone()
             is Action.ClearMessage -> cleanScreenStates()
-            else -> {}
         }
     }
 
@@ -256,7 +255,7 @@ class CreateCardViewModel @AssistedInject constructor(
         if (isEmpty.not()) {
             setState { copy(evidences = emptyList()) }
         } else {
-            process(Action.GetCardsZone(id))
+            process(Action.GetCardsZone)
         }
         setState { copy(lastLevelCompleted = isEmpty) }
     }
@@ -391,10 +390,11 @@ class CreateCardViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleGetCardsZone(superiorId: String) {
+    private fun handleGetCardsZone() {
         viewModelScope.launch(coroutineContext) {
+            val id = stateFlow.first().lastSelectedLevel
             kotlin.runCatching {
-                getCardsZoneUseCase(superiorId)
+                getCardsZoneUseCase(id)
             }.onSuccess {
                 setState { copy(cardsZone = it) }
                 cleanScreenStates()

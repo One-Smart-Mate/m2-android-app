@@ -52,9 +52,6 @@ class MainActivity : ComponentActivity() {
             checkNotificationPermissions()
         }
         checkNetworkPermissions()
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//           // workRequest(applicationContext)
-//        }
         val splashScreen = installSplashScreen()
         splashScreen.setKeepOnScreenCondition {
             splashViewModel.isAuthenticated.value.not()
@@ -83,7 +80,6 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     fun workRequest(context: Context) {
         val uuid = WorkManagerUUID.get()
-        Log.e("test", "Aquiii ${uuid}")
         uuid?.let {
             val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
                 .setId(uuid)
