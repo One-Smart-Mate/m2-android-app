@@ -114,7 +114,8 @@ fun HomeScreenV2(
                 navController.navigateToCardList(it)
             },
             networkStatus = state.networkStatus,
-            lastSyncUpdateDate = state.lastSyncUpdate
+            lastSyncUpdateDate = state.lastSyncUpdate,
+            showSyncCards = state.showSyncCards
         )
     }
 
@@ -142,7 +143,7 @@ fun HomeScreenV2(
             .collect {
                 if (state.syncCatalogs && state.syncCompleted.not()) {
                     viewModel.process(HomeViewModelV2.Action.SyncCatalogs(syncCatalogs))
-                } else{
+                } else if (state.isSyncing.not()) {
                     viewModel.process(HomeViewModelV2.Action.GetCards)
                 }
             }
@@ -159,6 +160,7 @@ private fun HomeContentV2(
     onCardClick: (String) -> Unit,
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
+    showSyncCards: Boolean
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -175,7 +177,7 @@ private fun HomeContentV2(
                 }
             }
             item {
-                AnimatedVisibility(visible = cards.toLocalCards().isNotEmpty()) {
+                AnimatedVisibility(visible = showSyncCards) {
                     HomeSectionCardItem(
                         title = stringResource(R.string.sync_cards),
                         icon = Icons.Outlined.Refresh,
@@ -345,7 +347,8 @@ private fun HomeScreenPreview() {
                 onSyncCardsClick = {},
                 onCardClick = {},
                 networkStatus = NetworkStatus.WIFI_CONNECTED,
-                lastSyncUpdateDate = ""
+                lastSyncUpdateDate = "",
+                showSyncCards = true
             )
         }
     }

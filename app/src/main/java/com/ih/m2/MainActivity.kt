@@ -25,6 +25,7 @@ import androidx.work.WorkManager
 import androidx.work.await
 import com.airbnb.mvrx.Mavericks
 import com.ih.m2.core.FileHelper
+import com.ih.m2.core.WorkManagerUUID
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.workmanager.CardWorker
 import com.ih.m2.ui.extensions.EEE_MMM_DD_YYYY
@@ -81,7 +82,7 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun workRequest(context: Context) {
-        val uuid = TestObject.getUUID()
+        val uuid = WorkManagerUUID.get()
         Log.e("test", "Aquiii ${uuid}")
         uuid?.let {
             val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
@@ -111,15 +112,4 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-object TestObject {
 
-
-    private var uuid: UUID? = null
-
-    fun getUUID(): UUID? {
-        if (uuid == null) {
-            uuid = UUID.randomUUID()
-        }
-        return uuid
-    }
-}

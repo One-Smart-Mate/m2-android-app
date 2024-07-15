@@ -11,8 +11,8 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
-import com.ih.m2.TestObject
 import com.ih.m2.core.FileHelper
+import com.ih.m2.core.WorkManagerUUID
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.network.NetworkConnectionStatus
 import com.ih.m2.core.preferences.SharedPreferences
@@ -20,6 +20,7 @@ import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.NetworkStatus
 import com.ih.m2.domain.model.User
+import com.ih.m2.domain.model.toLocalCards
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
@@ -32,6 +33,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -44,7 +46,6 @@ class HomeViewModelV2 @AssistedInject constructor(
     private val getUserUseCase: GetUserUseCase,
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
-    private val syncCardsUseCase: SyncCardsUseCase,
     private val sharedPreferences: SharedPreferences,
     @ApplicationContext private val context: Context,
     private val fileHelper: FileHelper
@@ -56,17 +57,18 @@ class HomeViewModelV2 @AssistedInject constructor(
         val message: String = EMPTY,
         val syncCatalogs: Boolean = true,
         val cards: List<Card> = emptyList(),
-        val refreshCards: Boolean = true,
+        val isSyncing: Boolean = true,
         val isLoading: Boolean = false,
         val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS,
         val syncCompleted: Boolean = false,
-        val lastSyncUpdate: String = EMPTY
+        val lastSyncUpdate: String = EMPTY,
+        val showSyncCards: Boolean = false
     ) : MavericksState
 
     sealed class Action {
         data class SyncCatalogs(val syncCatalogs: String = EMPTY) : Action()
         data object GetCards : Action()
-        data object RefreshCards : Action()
+        data object SetIsSync : Action()
         data class SyncCards(val context: Context) : Action()
         data object ClearMessage : Action()
     }
@@ -75,7 +77,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         when (action) {
             is Action.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
             is Action.GetCards -> handleGetCards()
-            is Action.RefreshCards -> setState { copy(refreshCards = true) }
+            is Action.SetIsSync -> setState { copy(isSyncing = true) }
             is Action.SyncCards -> handleSyncCards(action.context)
             is Action.ClearMessage -> cleanScreenStates()
         }
@@ -83,7 +85,6 @@ class HomeViewModelV2 @AssistedInject constructor(
 
     init {
         checkNetworkStatus()
-        Log.e("test", "UUID -> ${TestObject.getUUID()}")
     }
 
 
@@ -121,7 +122,12 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getCardsUseCase()
             }.onSuccess { cards ->
                 Log.e("test", "Cards -> $cards")
-                setState { copy(cards = cards) }
+                setState {
+                    copy(
+                        cards = cards,
+                        showSyncCards = cards.toLocalCards().isNotEmpty()
+                    )
+                }
                 checkLastUpdate()
                 cleanScreenStates()
             }.onFailure {
@@ -159,14 +165,23 @@ class HomeViewModelV2 @AssistedInject constructor(
     }
 
     private fun handleSyncCards(appContext: Context) {
-        setState { copy(isLoading = true, message = this@HomeViewModelV2.context.getString(R.string.upload_cards)) }
+        setState {
+            copy(
+                isLoading = true,
+                message = context.getString(R.string.upload_cards),
+                showSyncCards = false,
+                isSyncing = true
+            )
+        }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
             if (NetworkConnection.isConnected().not()) {
                 setState {
                     copy(
                         isLoading = false,
-                        message = this@HomeViewModelV2.context.getString(R.string.please_connect_to_internet),
+                        message = context.getString(R.string.please_connect_to_internet),
+                        showSyncCards = true,
+                        isSyncing = false
                     )
                 }
                 return@launch
@@ -177,50 +192,37 @@ class HomeViewModelV2 @AssistedInject constructor(
                 setState {
                     copy(
                         isLoading = false,
-                        message = this@HomeViewModelV2.context.getString(R.string.network_preferences_allowed)
+                        message = context.getString(R.string.network_preferences_allowed),
+                        showSyncCards = true,
+                        isSyncing = false
                     )
                 }
                 return@launch
             }
-       ///     setState { copy(cards = emptyList()) }
-//            withContext(coroutineContext) {
-//                appContext.runWorkRequest()
-//                TestObject.getUUID()?.let { uuid ->
-//                    WorkManager.getInstance(appContext)
-//                        .getWorkInfoByIdFlow(uuid)
-//                        .collect {
-//                            when (it.state) {
-//                                WorkInfo.State.FAILED,
-//                                WorkInfo.State.BLOCKED,
-//                                WorkInfo.State.CANCELLED -> {
-//                                    handleGetCards()
-//                                }
-//                                WorkInfo.State.SUCCEEDED -> {
-//                                    sharedPreferences.saveLastSyncDate()
-//                                    checkLastUpdate()
-//                                    handleGetCards()
-//                                }
-//                                else -> {
-//
-//                                }
-//                            }
-//                        }
-//                }
-//            }
+            appContext.runWorkRequest()
+            WorkManagerUUID.get()?.let { uuid ->
+                WorkManager.getInstance(appContext)
+                    .getWorkInfoByIdFlow(uuid)
+                    .collect {
+                        when (it.state) {
+                            WorkInfo.State.FAILED,
+                            WorkInfo.State.BLOCKED,
+                            WorkInfo.State.CANCELLED -> {
+                                handleGetCards()
+                            }
 
-//            kotlin.runCatching {
-//                val result = getCardsUseCase(localCards = true)
-//                syncCardsUseCase(result)
-//            }.onSuccess {
-//                sharedPreferences.saveLastSyncDate()
-//                delay(1200)
-//                checkLastUpdate()
-//                handleGetCards()
-//            }.onFailure {
-//                handleGetCards()
-//                fileHelper.logException(it)
-//                cleanScreenStates(it.localizedMessage.orEmpty())
-//            }
+                            WorkInfo.State.SUCCEEDED -> {
+                                sharedPreferences.saveLastSyncDate()
+                                checkLastUpdate()
+                                handleGetCards()
+                            }
+
+                            else -> {
+
+                            }
+                        }
+                    }
+            } ?: handleGetCards()
         }
     }
 
@@ -264,7 +266,8 @@ class HomeViewModelV2 @AssistedInject constructor(
             copy(
                 isLoading = false,
                 message = message,
-                syncCompleted = true
+                syncCompleted = true,
+                isSyncing = false
             )
         }
     }
