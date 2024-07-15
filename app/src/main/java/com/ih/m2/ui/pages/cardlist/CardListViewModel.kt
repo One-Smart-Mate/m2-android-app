@@ -9,9 +9,12 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CARD_ANOMALIES
 import com.ih.m2.ui.utils.CARD_BEHAVIOR
 import com.ih.m2.ui.utils.EMPTY
@@ -19,6 +22,7 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
@@ -27,6 +31,7 @@ class CardListViewModel @AssistedInject constructor(
     private val coroutineContext: CoroutineContext,
     private val getCardsUseCase: GetCardsUseCase,
     @ApplicationContext private val context: Context,
+    private val getUserUseCase: GetUserUseCase
 ) : MavericksViewModel<CardListViewModel.UiState>(initialState) {
 
     data class UiState(
@@ -34,30 +39,24 @@ class CardListViewModel @AssistedInject constructor(
         val title: String = EMPTY,
         val isLoading: Boolean = false,
         val message: String = EMPTY,
-        val selectedCard: Card? = null,
-        val showBottomSheetActions: Boolean = false,
-        val refreshCards: Boolean = true
+        val refreshCards: Boolean = true,
+        val filter: String = EMPTY,
+        val cardTypes: String = EMPTY
     ) : MavericksState
 
     sealed class Action {
         data class GetCards(val filter: String) : Action()
-        data class OnActionClick(val card: Card) : Action()
-        data object OnDismissBottomSheet : Action()
         data object OnRefreshCards : Action()
+        data class OnFilterChange(val filter: String) : Action()
+        data object OnApplyFilterClick : Action()
     }
 
     fun process(action: Action) {
         when (action) {
             is Action.GetCards -> handleGetCards(action.filter)
-            is Action.OnActionClick -> setState {
-                copy(
-                    selectedCard = action.card,
-                    showBottomSheetActions = true
-                )
-            }
-
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
-            is Action.OnDismissBottomSheet -> setState { copy(showBottomSheetActions = false) }
+            is Action.OnFilterChange -> setState { copy(filter = action.filter) }
+            is Action.OnApplyFilterClick -> handleOnApplyFilterClick()
         }
     }
 
@@ -78,14 +77,15 @@ class CardListViewModel @AssistedInject constructor(
                     }
 
                     else -> it
-                }.sortedByDescending { item -> item.id }
+                }.sortedByDescending { item -> item.siteCardId }
                 setState {
                     copy(
                         cards = filterCards,
                         isLoading = false,
                         message = EMPTY,
                         title = getTitle(filter),
-                        refreshCards = false
+                        refreshCards = false,
+                        cardTypes = filter
                     )
                 }
             }.onFailure {
@@ -96,6 +96,21 @@ class CardListViewModel @AssistedInject constructor(
                         refreshCards = false
                     )
                 }
+            }
+        }
+    }
+
+    private fun handleOnApplyFilterClick() {
+        viewModelScope.launch(coroutineContext) {
+            val filter = stateFlow.first().filter
+            if (filter.isEmpty()) {
+                handleGetCards(stateFlow.first().cardTypes)
+            } else {
+                val cards = getCardsUseCase()
+                val user = getUserUseCase()
+                val filteredList =
+                    cards.filterByStatus(filter.toFilterStatus(context), user?.userId.orEmpty())
+                setState { copy(cards = filteredList) }
             }
         }
     }

@@ -18,6 +18,7 @@ import com.ih.m2.ui.pages.home.HomeScreenV2
 import com.ih.m2.ui.pages.login.LoginScreen
 import com.ih.m2.ui.pages.profile.ProfileScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
+import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.LOAD_CATALOGS
 
 @Composable
@@ -44,7 +45,6 @@ fun AppNavigation(
             arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType })
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-            Log.e("test","Arguments $syncCatalogs")
             HomeScreenV2(navController = navController, syncCatalogs = syncCatalogs)
         }
         composable(Screen.Account.route) {
@@ -57,8 +57,12 @@ fun AppNavigation(
             val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
             CardDetailScreen(navController = navController, cardId = cardId)
         }
-        composable(Screen.CreateCard.route) {
-            CreateCardScreen(navController = navController)
+        composable(
+            Screen.CreateCard.route,
+            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType })
+        ) {
+            val filter = it.arguments?.getString(ARG_CARD_FILTER).orEmpty()
+            CreateCardScreen(navController = navController, filter = filter)
         }
         composable(Screen.Dev.route) {
             DevScreen()
@@ -71,7 +75,11 @@ fun AppNavigation(
         ) {
             val solutionType = it.arguments?.getString(ARG_SOLUTION).orEmpty()
             val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
-            SolutionScreen(navController = navController, solutionType = solutionType, cardId = cardId)
+            SolutionScreen(
+                navController = navController,
+                solutionType = solutionType,
+                cardId = cardId
+            )
         }
 
         composable(
@@ -133,8 +141,8 @@ fun NavController.navigateToCardList(filter: String) {
     )
 }
 
-fun NavController.navigateToCreateCard() {
-    navigate(Screen.CreateCard.route)
+fun NavController.navigateToCreateCard(filter: String = EMPTY) {
+    navigate("${Screen.CreateCard.path}/$filter")
 }
 
 fun NavController.navigateToProfile() {

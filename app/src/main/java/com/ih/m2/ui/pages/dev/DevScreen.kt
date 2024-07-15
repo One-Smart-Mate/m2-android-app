@@ -28,6 +28,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -52,8 +54,10 @@ import com.bumptech.glide.integration.compose.GlideImage
 import com.google.firebase.storage.FirebaseStorage
 import com.ih.m2.MainActivity
 import com.ih.m2.R
+import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.ui.functions.createAudioFile
 import com.ih.m2.core.ui.functions.openAppSettings
+import com.ih.m2.ui.components.QrCamera
 import com.ih.m2.ui.components.VideoPlayer
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.components.buttons.CustomIconButton
@@ -65,6 +69,7 @@ import com.ih.m2.ui.components.launchers.VideoLauncher
 import com.ih.m2.ui.components.sheets.RecordAudioBottomSheet
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.extensions.getActivity
+import com.ih.m2.ui.extensions.runWorkRequest
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.pages.createcard.PhotoCardItem
 import com.ih.m2.ui.theme.Size200
@@ -72,9 +77,11 @@ import com.ih.m2.ui.theme.Size250
 import com.ih.m2.ui.utils.AndroidAudioPlayer
 import com.ih.m2.ui.utils.AndroidAudioRecorder
 import com.ih.m2.ui.utils.EMPTY
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -86,10 +93,10 @@ import kotlin.coroutines.coroutineContext
 fun DevScreen() {
 
     var showButton by remember {
-
         mutableStateOf(false)
     }
     val context = LocalContext.current
+    val notificationManager = NotificationManager(context)
     Scaffold { padding ->
         LazyRow(
             modifier = Modifier.defaultScreen(padding)
@@ -103,75 +110,38 @@ fun DevScreen() {
                         .width(Size200)
                         .height(Size250)
                         .clickable {
-                            showButton = true
+
                         }
                 )
 
                 if (showButton) {
-                    Dialog(
-                        onDismissRequest = {
-                            showButton = false
-                        },
-                        properties = DialogProperties(
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = false,
-                            usePlatformDefaultWidth = false
-                        )
-                    ) {
-                        VideoPlayer(
-                            modifier = Modifier.fillMaxSize(),
-                            url = "https://firebasestorage.googleapis.com/v0/b/android-m2-app.appspot.com/o/evidence%2Fcreated%2Fvideos%2F1c6e286c-a897-4504-aed6-d62659996ef1%2FVIDEO_CR_20240707_012558.mp4?alt=media&token=b077ec04-7a05-4f86-a60f-9ca6b53a8ee1"
-                        )
-                    }
+                    QrCamera(
+                         modifier = Modifier.fillParentMaxSize()
+                    )
+//                    Dialog(
+//                        onDismissRequest = {
+//                            showButton = false
+//                        },
+//                        properties = DialogProperties(
+//                            dismissOnBackPress = true,
+//                            dismissOnClickOutside = false,
+//                            usePlatformDefaultWidth = false
+//                        )
+//                    ) {
+//                        VideoPlayer(
+//                            modifier = Modifier.fillMaxSize(),
+//                            url = "https://firebasestorage.googleapis.com/v0/b/android-m2-app.appspot.com/o/evidence%2Fcreated%2Fvideos%2F1c6e286c-a897-4504-aed6-d62659996ef1%2FVIDEO_CR_20240707_012558.mp4?alt=media&token=b077ec04-7a05-4f86-a60f-9ca6b53a8ee1"
+//                        )
+//                    }
                 }
 
                 Column {
 
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .border(
-                                width = 20.dp,
-                                color = MaterialTheme.colorScheme.primaryContainer,
-                                shape = CircleShape
-                            ),
-                    ) {}
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .border(
-                                width = 20.dp,
-                                color = MaterialTheme.colorScheme.secondaryContainer,
-                                shape = CircleShape
-                            ),
-                    ) {}
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .border(
-                                width = 20.dp,
-                                color = MaterialTheme.colorScheme.tertiaryContainer,
-                                shape = CircleShape
-                            ),
-                    ) {}
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .border(
-                                width = 20.dp,
-                                color = MaterialTheme.colorScheme.onBackground,
-                                shape = CircleShape
-                            ),
-                    ) {}
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .border(
-                                width = 20.dp,
-                                color = MaterialTheme.colorScheme.onSurface,
-                                shape = CircleShape
-                            ),
-                    ) {}
+                    Button(onClick = {
+                        notificationManager.buildNotification("test","test")
+                    }) {
+                        Text( "Test Push")
+                    }
 
                 }
 

@@ -82,7 +82,7 @@
     <string name="behavior">Comportamiento</string>
     <string name="create_card">Crear tarjeta</string>
     <string name="contact_support">Contactar soporte técnico</string>
-    <string name="sync_cards">Sincornizar tarjetas</string>
+    <string name="sync_cards">Sincronizar tarjetas</string>
     <string name="anomalies_cards">Tarjetas Anomalias</string>
     <string name="behaviour_cards">Tarjetas Comportamiento</string>
     <string name="upload_cards">Subiendo tarjetas locales…</string>
@@ -94,8 +94,8 @@
     <string name="data_mobile_connected">Datos móviles conectado</string>
     <string name="data_mobile_disconnected">Datos móviles desconectados</string>
     <string name="no_internet_access">Sin acceso a internet</string>
-    <string name="use_data_mobile">Usar datos mobiles</string>
-    <string name="network_preferences_allowed">Necesitas permitir el uso de datos mobiles para subir tarjetas</string>
+    <string name="use_data_mobile">Usar datos móviles</string>
+    <string name="network_preferences_allowed">Necesitas permitir el uso de datos móviles para subir tarjetas</string>
     <string name="company">Compañía</string>
     <string name="site">Sitio</string>
     <string name="profile">Perfil</string>
@@ -109,5 +109,14 @@
     <string name="hours">horas</string>
     <string name="minute">minuto</string>
     <string name="minutes">minutos</string>
-
+    <string name="uploading_cards">Cargando tarjetas</string>
+    <string name="we_re_uploading_the_local_cards">Subiendo tarjetas locales…</string>
+    <string name="cards_uploaded_successfully">Tarjetas subidas correctamente</string>
+    <string name="success">Éxito!</string>
+    <string name="in_progress">En progreso</string>
+    <string name="something_went_wrong">Algo salió mal!</string>
+    <string name="error">Error: %1$s</string>
+    <string name="success_update">Actualizado correctamente!</string>
+    <string name="card_successfully">Tarjeta creada!</string>
+    <string name="card_successfully_desc">Se registro correctamente</string>
 </resources>

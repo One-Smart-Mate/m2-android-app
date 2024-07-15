@@ -12,6 +12,9 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.CoroutineContext
 
 @HiltWorker
 class CardWorker @AssistedInject constructor(
@@ -19,15 +22,17 @@ class CardWorker @AssistedInject constructor(
     @Assisted workerParameters: WorkerParameters,
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCardsUseCase: SyncCardsUseCase,
+    private val customCoroutineContext: CoroutineContext,
 ) : CoroutineWorker(context, workerParameters) {
-    override suspend fun doWork(): Result {
-        return try {
+    override suspend fun doWork(): Result = withContext(customCoroutineContext) {
+        try {
             val isConnected = NetworkConnection.isConnected()
             Log.e("test", "Working!!!  $isConnected")
-            return if (isConnected) {
+            if (isConnected) {
                 val localCardList = getCardsUseCase(localCards = true)
-                Log.e("List","Local Cards List ${localCardList.size}")
+                Log.e("List", "Local Cards List ${localCardList.size}")
                 syncCardsUseCase(localCardList)
+                //delay(3000)
                 Result.success()
             } else {
                 Result.failure()

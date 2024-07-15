@@ -26,6 +26,7 @@ roomRuntime = "2.6.1"
 timber = "5.0.1"
 hiltCommon = "1.2.0"
 workRuntimeKtx = "2.9.0"
+firebaseMessagingKtx = "24.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -72,6 +73,7 @@ hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hil
 hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "android-hilt-navigation-compose" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 androidx-hilt-common = { group = "androidx.hilt", name = "hilt-common", version.ref = "hiltCommon" }
+firebase-messaging-ktx = { group = "com.google.firebase", name = "firebase-messaging-ktx", version.ref = "firebaseMessagingKtx" }
 
 
 

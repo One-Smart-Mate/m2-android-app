@@ -8,6 +8,7 @@ import com.ih.m2.domain.model.Level
 import com.ih.m2.domain.model.Preclassifier
 import com.ih.m2.domain.model.Priority
 import com.ih.m2.domain.model.User
+import com.ih.m2.ui.utils.EMPTY
 
 interface LocalRepository {
     suspend fun saveUser(user: User): Long
@@ -25,7 +26,7 @@ interface LocalRepository {
     suspend fun getCard(cardId: String): Card
     suspend fun getCardsZone(siteId: String,superiorId: String): List<Card>
 
-    suspend fun getCardTypes(): List<CardType>
+    suspend fun getCardTypes(filter: String = EMPTY): List<CardType>
     suspend fun saveCardTypes(list: List<CardType>)
     suspend fun getCardType(id: String?): CardType?
 

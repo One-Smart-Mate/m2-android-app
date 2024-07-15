@@ -14,6 +14,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.cardTitle
+import com.ih.m2.domain.model.enableDefinitiveSolution
+import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.domain.model.getStatus
 import com.ih.m2.domain.model.isClosed
 import com.ih.m2.domain.model.preclassifierValue
@@ -35,6 +41,7 @@ import com.ih.m2.ui.components.TagSize
 import com.ih.m2.ui.components.TagType
 import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
+import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.getInvertedColor
 import com.ih.m2.ui.pages.createcard.CardItemIcon
 import com.ih.m2.ui.theme.M2androidappTheme
@@ -48,8 +55,11 @@ import com.ih.m2.ui.utils.STORED_LOCAL
 fun CardItemList(
     card: Card,
     onClick: () -> Unit,
-    onActionClick: () -> Unit
+    onSolutionClick: (String) -> Unit
 ) {
+    var showSolutionBottomSheet by remember {
+        mutableStateOf(false)
+    }
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -122,10 +132,23 @@ fun CardItemList(
                     text = stringResource(R.string.actions),
                     buttonType = ButtonType.OUTLINE,
                 ) {
-                    onActionClick()
+                    showSolutionBottomSheet = true
                 }
             }
         }
+    }
+    if (showSolutionBottomSheet) {
+        SolutionBottomSheet(
+            onSolutionClick = {
+                showSolutionBottomSheet = false
+                onSolutionClick(it)
+                              },
+            onDismissRequest = {
+                showSolutionBottomSheet = false
+            },
+            showProvisionalSolution = card.enableProvisionalSolution(),
+            showDefinitiveSolution = card.enableDefinitiveSolution()
+        )
     }
 }
 

@@ -1,5 +1,6 @@
 package com.ih.m2.core.di
 
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import dagger.Module
 import dagger.Provides
@@ -14,4 +15,8 @@ object FirebaseModule {
     @Provides
     @Singleton
     fun provideFirebaseStorage() = FirebaseStorage.getInstance()
+
+    @Provides
+    @Singleton
+    fun provideFirebaseMessaging() = FirebaseMessaging.getInstance()
 }

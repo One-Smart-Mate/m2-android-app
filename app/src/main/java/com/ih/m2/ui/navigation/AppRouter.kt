@@ -18,7 +18,10 @@ private object Route {
     const val ACCOUNT = "account"
     const val CARD_DETAIL_PATH = "card-detail"
     const val CARD_DETAIL = "$CARD_DETAIL_PATH/{${ARG_CARD_ID}}"
-    const val CREATE_CARD = "create-card"
+
+    const val CREATE_CARD_PATH = "create-card"
+    const val CREATE_CARD = "$CREATE_CARD_PATH/{$ARG_CARD_FILTER}"
+
     const val DEV = "dev"
     const val SOLUTION_PATH = "solution-card"
     const val SOLUTION  = "$SOLUTION_PATH/{$ARG_SOLUTION}/{$ARG_CARD_ID}"
@@ -35,7 +38,7 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object HomeV2: Screen(Route.HOME_V2, Route.HOME_PATH_V2)
     data object Account: Screen(Route.ACCOUNT)
     data object CardDetail: Screen(Route.CARD_DETAIL, Route.CARD_DETAIL_PATH)
-    data object CreateCard: Screen(Route.CREATE_CARD)
+    data object CreateCard: Screen(Route.CREATE_CARD, Route.CREATE_CARD_PATH)
     data object Dev: Screen(Route.DEV)
     data object Solution: Screen(Route.SOLUTION, Route.SOLUTION_PATH)
     data object CardList: Screen(Route.CARD_LIST, Route.CARD_LIST_PATH)

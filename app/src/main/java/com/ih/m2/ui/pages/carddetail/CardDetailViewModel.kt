@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.carddetail
 
+import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -35,6 +36,7 @@ class CardDetailViewModel @AssistedInject constructor(
     fun process(action: Action) {
         when (action) {
             is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
+            else -> {}
         }
     }
 
@@ -44,6 +46,7 @@ class CardDetailViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 getCardDetailUseCase(cardId = cardId)
             }.onSuccess {
+                Log.e("test","$cardId ---- $it")
                 setState { copy(card = LCE.Success(it)) }
             }.onFailure {
                 fileHelper.logException(it)

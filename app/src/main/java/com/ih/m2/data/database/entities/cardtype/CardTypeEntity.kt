@@ -55,7 +55,9 @@ data class CardTypeEntity(
     @ColumnInfo(name = "audios_duration_ps")
     val audiosDurationPs: Int?,
     @ColumnInfo(name = "videos_duration_ps")
-    val videosDurationPs: Int?
+    val videosDurationPs: Int?,
+    @ColumnInfo(name = "card_type_methodology")
+    val cardTypeMethodology: String?
 )
 
 fun CardTypeEntity.toDomain(): CardType {
@@ -81,6 +83,7 @@ fun CardTypeEntity.toDomain(): CardType {
         quantityAudiosPs = this.quantityAudiosPs.defaultIfNull(0),
         quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
         audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
-        videosDurationPs = this.videosDurationPs.defaultIfNull(0)
+        videosDurationPs = this.videosDurationPs.defaultIfNull(0),
+        cardTypeMethodology = this.cardTypeMethodology
     )
 }

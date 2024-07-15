@@ -108,4 +108,15 @@
     <string name="hours">hours</string>
     <string name="minute">minute</string>
     <string name="minutes">minutes</string>
+    <string name="uploading_cards">Uploading cards</string>
+    <string name="we_re_uploading_the_local_cards">We\'re uploading the local cards…</string>
+    <string name="cards_uploaded_successfully">Cards uploaded successfully</string>
+    <string name="success">Success!</string>
+    <string name="in_progress">In progress</string>
+    <string name="something_went_wrong">Something went wrong!</string>
+    <string name="error">Error: %1$s</string>
+    <string name="success_update">Updated successfully!</string>
+
+    <string name="card_successfully">Card created successfully!</string>
+    <string name="card_successfully_desc">Created successfully</string>
 </resources>

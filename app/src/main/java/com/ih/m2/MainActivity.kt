@@ -17,19 +17,25 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.Lifecycle
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.Operation
 import androidx.work.WorkManager
+import androidx.work.await
 import com.airbnb.mvrx.Mavericks
 import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.workmanager.CardWorker
+import com.ih.m2.ui.extensions.EEE_MMM_DD_YYYY
 import com.ih.m2.ui.navigation.AppNavigation
 import com.ih.m2.ui.pages.splash.SplashViewModel
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.utils.EMPTY
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.time.Duration
+import java.util.UUID
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -75,13 +81,19 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun workRequest(context: Context) {
-        val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
-            .setInitialDelay(Duration.ofSeconds(5))
-            .setBackoffCriteria(
-                backoffPolicy = BackoffPolicy.LINEAR,
-                duration = Duration.ofSeconds(60 * 5)
-            ).build()
-        WorkManager.getInstance(context).enqueue(workRequest)
+        val uuid = TestObject.getUUID()
+        Log.e("test", "Aquiii ${uuid}")
+        uuid?.let {
+            val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
+                .setId(uuid)
+                .setInitialDelay(Duration.ofSeconds(5))
+                .setBackoffCriteria(
+                    backoffPolicy = BackoffPolicy.LINEAR,
+                    duration = Duration.ofSeconds(60 * 5)
+                ).build()
+            WorkManager.getInstance(context).enqueue(workRequest)
+        }
+
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -96,5 +108,18 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.CHANGE_NETWORK_STATE
             ), 2
         )
+    }
+}
+
+object TestObject {
+
+
+    private var uuid: UUID? = null
+
+    fun getUUID(): UUID? {
+        if (uuid == null) {
+            uuid = UUID.randomUUID()
+        }
+        return uuid
     }
 }

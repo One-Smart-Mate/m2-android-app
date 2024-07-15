@@ -11,6 +11,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.core.FileHelper
 import com.ih.m2.core.network.NetworkConnection
+import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
 import com.ih.m2.domain.model.Employee
@@ -26,6 +27,7 @@ import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.PROVISIONAL_SOLUTION
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -42,7 +44,8 @@ class SolutionViewModel @AssistedInject constructor(
     private val getCardTypeUseCase: GetCardTypeUseCase,
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
     @ApplicationContext private val context: Context,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    private val notificationManager: NotificationManager
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
 
 
@@ -74,7 +77,7 @@ class SolutionViewModel @AssistedInject constructor(
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data class GetCardDetail(val cardId: String) : Action()
         data class GetCardType(val id: String) : Action()
-        data object ClearMessage: Action()
+        data object ClearMessage : Action()
     }
 
     fun process(action: Action) {
@@ -90,13 +93,15 @@ class SolutionViewModel @AssistedInject constructor(
             is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
             is Action.GetCardType -> handleGetCardType(action.id)
             is Action.ClearMessage -> setState { copy(message = EMPTY) }
+            else -> {}
         }
     }
 
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
             val state = stateFlow.first()
-            val cardType = state.cardType.defaultIfNull(getCardTypeUseCase(state.card?.cardTypeId.orEmpty()))
+            val cardType =
+                state.cardType.defaultIfNull(getCardTypeUseCase(state.card?.cardTypeId.orEmpty()))
             val maxImages = imagesQuantity(state.solutionType, cardType)
             if (state.evidences.toImages().size == maxImages) {
                 setState { copy(message = context.getString(R.string.limit_images)) }
@@ -162,11 +167,21 @@ class SolutionViewModel @AssistedInject constructor(
             val state = stateFlow.first()
 
             if (NetworkConnection.isConnected().not()) {
-                setState { copy(isLoading = false, message = context.getString(R.string.please_connect_to_internet)) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
                 return@launch
             }
             if (state.selectedEmployee == null) {
-                setState { copy(isLoading = false, message = context.getString(R.string.please_select_a_user)) }
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_select_a_user)
+                    )
+                }
                 return@launch
             }
             kotlin.runCatching {
@@ -180,12 +195,28 @@ class SolutionViewModel @AssistedInject constructor(
             }.onSuccess {
                 Log.e("Test", "Solution Success ${it}")
                 setState { copy(isSolutionSuccess = true) }
+                buildNotification()
                 cleanScreenStates()
             }.onFailure {
                 fileHelper.logException(it)
                 Log.e("Test", "Solution Failure ${it.localizedMessage}")
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
+        }
+    }
+
+    private fun buildNotification() {
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            val title = if (state.solutionType == PROVISIONAL_SOLUTION) {
+                context.getString(R.string.provisional_solution)
+            } else {
+                context.getString(R.string.definitive_solution)
+            }
+            val description = context.getString(R.string.success_update)
+            notificationManager.buildNotification(
+                title, description
+            )
         }
     }
 

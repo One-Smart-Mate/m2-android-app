@@ -2,9 +2,11 @@ package com.ih.m2.ui.pages.home
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -95,6 +98,7 @@ fun HomeScreenV2(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
 
     if (state.isLoading) {
         LoadingScreen(text = state.message)
@@ -104,7 +108,7 @@ fun HomeScreenV2(
             user = (state.state as? LCE.Success)?.value,
             cards = state.cards,
             onSyncCardsClick = {
-                viewModel.process(HomeViewModelV2.Action.SyncCards)
+                viewModel.process(HomeViewModelV2.Action.SyncCards(context))
             },
             onCardClick = {
                 navController.navigateToCardList(it)
@@ -138,8 +142,7 @@ fun HomeScreenV2(
             .collect {
                 if (state.syncCatalogs && state.syncCompleted.not()) {
                     viewModel.process(HomeViewModelV2.Action.SyncCatalogs(syncCatalogs))
-                }
-                if (state.refreshCards) {
+                } else{
                     viewModel.process(HomeViewModelV2.Action.GetCards)
                 }
             }
@@ -172,24 +175,20 @@ private fun HomeContentV2(
                 }
             }
             item {
-                HomeSectionCardItem(
-                    title = stringResource(R.string.create_card),
-                    icon = Icons.Outlined.Create
-                ) {
-                    navController.navigateToCreateCard()
-                }
-                HomeSectionCardItem(
-                    title = stringResource(R.string.sync_cards),
-                    icon = Icons.Outlined.Refresh,
-                    subText = stringResource(
-                        R.string.last_update, lastSyncUpdateDate
-                    ),
-                    description = stringResource(
-                        R.string.local_cards,
-                        cards.toLocalCards().size
-                    )
-                ) {
-                    onSyncCardsClick()
+                AnimatedVisibility(visible = cards.toLocalCards().isNotEmpty()) {
+                    HomeSectionCardItem(
+                        title = stringResource(R.string.sync_cards),
+                        icon = Icons.Outlined.Refresh,
+                        subText = stringResource(
+                            R.string.last_update, lastSyncUpdateDate
+                        ),
+                        description = stringResource(
+                            R.string.local_cards,
+                            cards.toLocalCards().size
+                        )
+                    ) {
+                        onSyncCardsClick()
+                    }
                 }
                 HomeSectionCardItem(
                     title = stringResource(R.string.anomalies_cards),
@@ -317,7 +316,17 @@ private fun HomeAppBarV2(
             }
         }
         CustomSpacer()
-        NetworkCard(networkStatus = networkStatus)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            NetworkCard(networkStatus = networkStatus)
+            Icon(
+                painter = painterResource(id = R.drawable.ic_qr_scan),
+                contentDescription = EMPTY,
+                tint = getColor()
+            )
+        }
         CustomSpacer()
     }
 }

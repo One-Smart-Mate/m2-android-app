@@ -12,6 +12,7 @@ import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
+import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
 class CoreApplication:  Application(), Configuration.Provider {
@@ -28,13 +29,14 @@ class CoreApplication:  Application(), Configuration.Provider {
 
 class CustomWorkerFactory @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
-    private val syncCardsUseCase: SyncCardsUseCase
-): WorkerFactory() {
+    private val syncCardsUseCase: SyncCardsUseCase,
+    private val coroutineContext: CoroutineContext,
+    ): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker {
-        return CardWorker(appContext, workerParameters, getCardsUseCase, syncCardsUseCase)
+        return CardWorker(appContext, workerParameters, getCardsUseCase, syncCardsUseCase, coroutineContext)
     }
 }

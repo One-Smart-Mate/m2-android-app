@@ -71,8 +71,12 @@ class LocalRepositoryImpl @Inject constructor(
         return cardDao.getCards().map { it.toDomain() }.sortedByDescending { it.id }
     }
 
-    override suspend fun getCardTypes(): List<CardType> {
-        return cardTypeDao.getCardTypes().map { it.toDomain() }
+    override suspend fun getCardTypes(filter: String): List<CardType> {
+        return if (filter.isEmpty()) {
+            cardTypeDao.getCardTypes().map { it.toDomain() }
+        } else {
+            cardTypeDao.getCardTypesByMethodology(filter).map { it.toDomain() }
+        }
     }
 
     override suspend fun saveCardTypes(list: List<CardType>) {
@@ -189,7 +193,10 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getCard(cardId: String): Card {
-        return cardDao.getCard(cardId).toDomain()
+        val card = cardDao.getCard(cardId)
+        val evidences =
+            evidenceDao.getEvidencesByCard(card.uuid).map { it.toDomain() }
+        return card.toDomain(evidences = evidences)
     }
 
     override suspend fun getCardsZone(siteId: String, superiorId: String): List<Card> {
@@ -197,9 +204,9 @@ class LocalRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveEmployees(list: List<Employee>) {
-       list.forEach {
-           employeeDao.insertEmployee(it.toEntity())
-       }
+        list.forEach {
+            employeeDao.insertEmployee(it.toEntity())
+        }
     }
 
     override suspend fun deleteEmployees() {

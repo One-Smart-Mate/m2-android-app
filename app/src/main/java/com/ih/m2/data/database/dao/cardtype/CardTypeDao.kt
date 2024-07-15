@@ -13,6 +13,9 @@ interface CardTypeDao {
     @Query("SELECT * FROM card_type_table")
     suspend fun getCardTypes(): List<CardTypeEntity>
 
+    @Query("SELECT * FROM card_type_table WHERE card_type_methodology=:filter")
+    suspend fun getCardTypesByMethodology(filter: String): List<CardTypeEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertCardType(cardTypeEntity: CardTypeEntity): Long
 

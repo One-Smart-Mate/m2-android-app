@@ -93,7 +93,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateCardScreen(
     navController: NavController,
-    viewModel: CreateCardViewModel = mavericksViewModel()
+    viewModel: CreateCardViewModel = mavericksViewModel(),
+    filter: String = EMPTY
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -176,6 +177,9 @@ fun CreateCardScreen(
         snapshotFlow { state.isCardSuccess }
             .flowWithLifecycle(lifecycle)
             .collect {
+                if (filter.isNotEmpty()) {
+                    viewModel.process(CreateCardViewModel.Action.GetCardTypes(filter))
+                }
                 if (it) {
                     navController.popBackStack()
                 }
@@ -448,8 +452,8 @@ fun PhotoCardItem(
     ) {
         GlideImage(
             model = model, contentDescription = stringResource(id = R.string.empty),
-            failure = placeholder(R.drawable.ic_launcher_background),
-            loading = placeholder(R.drawable.ic_launcher_background),
+            failure = placeholder(R.drawable.loading_image),
+            loading = placeholder(R.drawable.loading_image),
             modifier = modifier.padding(PaddingTiny)
         )
         if (showIcon) {

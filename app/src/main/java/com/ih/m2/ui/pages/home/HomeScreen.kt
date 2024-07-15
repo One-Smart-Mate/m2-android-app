@@ -197,9 +197,7 @@ fun HomeContent(
                     onClick = {
                         navController.navigateToCardDetail(card.id)
                     },
-                    onActionClick = {
-                        onOpenBottomSheetActions(card)
-                    },
+                    onSolutionClick = {}
                 )
             },
             header = {

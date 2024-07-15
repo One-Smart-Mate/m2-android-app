@@ -35,6 +35,9 @@ import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
+import com.ih.m2.ui.utils.CARD_ANOMALIES
+import com.ih.m2.ui.utils.CARD_TYPE_METHODOLOGY_C
+import com.ih.m2.ui.utils.CARD_TYPE_METHODOLOGY_M
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.SAFE
 import com.ih.m2.ui.utils.UNSAFE
@@ -63,9 +66,6 @@ class CreateCardViewModel @AssistedInject constructor(
     private val fileHelper: FileHelper
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
-    init {
-        process(Action.GetCardTypes)
-    }
 
     data class UiState(
         val cardTypeList: List<NodeCardItem> = emptyList(),
@@ -93,7 +93,7 @@ class CreateCardViewModel @AssistedInject constructor(
     ) : MavericksState
 
     sealed class Action {
-        data object GetCardTypes : Action()
+        data class GetCardTypes(val filter: String) : Action()
         data class SetCardType(val id: String) : Action()
         data class GetPreclassifiers(val id: String) : Action()
         data class SetPreclassifier(val id: String) : Action()
@@ -107,12 +107,12 @@ class CreateCardViewModel @AssistedInject constructor(
         data class OnDeleteEvidence(val evidence: Evidence) : Action()
         data object GetLevels : Action()
         data class GetCardsZone(val superiorId: String) : Action()
-        data object ClearMessage: Action()
+        data object ClearMessage : Action()
     }
 
     fun process(action: Action) {
         when (action) {
-            is Action.GetCardTypes -> handleGetCardTypes()
+            is Action.GetCardTypes -> handleGetCardTypes(action.filter)
             is Action.SetCardType -> handleSetCardType(action.id)
             is Action.GetPreclassifiers -> handleGetPreclassifiers(action.id)
             is Action.SetPreclassifier -> handleSetPreclassifier(action.id)
@@ -127,6 +127,7 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.GetLevels -> handleGetLevels()
             is Action.GetCardsZone -> handleGetCardsZone(action.superiorId)
             is Action.ClearMessage -> cleanScreenStates()
+            else -> {}
         }
     }
 
@@ -275,10 +276,15 @@ class CreateCardViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleGetCardTypes() {
+    private fun handleGetCardTypes(filter: String) {
         viewModelScope.launch(coroutineContext) {
+            val cardType = if (filter == CARD_ANOMALIES) {
+                CARD_TYPE_METHODOLOGY_M
+            } else {
+                CARD_TYPE_METHODOLOGY_C
+            }
             kotlin.runCatching {
-                getCardTypesUseCase()
+                getCardTypesUseCase(filter = cardType)
             }.onSuccess {
                 setState { copy(cardTypeList = it.toNodeItemList()) }
                 process(Action.GetLevels)
@@ -320,11 +326,16 @@ class CreateCardViewModel @AssistedInject constructor(
             val state = stateFlow.first()
             val isBehavior = state.cardType?.isBehavior().defaultIfNull(false)
             if (isBehavior && state.selectedSecureOption.isEmpty()) {
-                setState { copy(isLoading = false, message = "Select if the card is Safe or UnSafe") }
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = "Select if the card is Safe or UnSafe"
+                    )
+                }
                 return@launch
             }
 
-            val cardTypeValue = when(state.selectedSecureOption) {
+            val cardTypeValue = when (state.selectedSecureOption) {
                 context.getString(R.string.safe) -> SAFE
                 context.getString(R.string.unsafe) -> UNSAFE
                 else -> EMPTY
@@ -348,7 +359,6 @@ class CreateCardViewModel @AssistedInject constructor(
                 saveCardUseCase(card)
             }.onSuccess {
                 Log.e("Test", "Success ${it}")
-                delay(1500)
                 setState { copy(isCardSuccess = true) }
                 cleanScreenStates()
             }.onFailure {
@@ -359,6 +369,7 @@ class CreateCardViewModel @AssistedInject constructor(
             }
         }
     }
+
 
     private fun handleGetCardType(id: String) {
         viewModelScope.launch(coroutineContext) {

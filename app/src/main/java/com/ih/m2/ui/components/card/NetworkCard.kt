@@ -31,11 +31,12 @@ import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun NetworkCard(
-    networkStatus: NetworkStatus
+    networkStatus: NetworkStatus,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     Row(
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier
     ) {
         Text(
             text = getNetworkStatus(networkStatus,context),

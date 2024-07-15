@@ -10,6 +10,8 @@ import com.ih.m2.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.m2.domain.usecase.card.SaveCardSolutionUseCaseImpl
 import com.ih.m2.domain.usecase.card.SaveCardUseCase
 import com.ih.m2.domain.usecase.card.SaveCardUseCaseImpl
+import com.ih.m2.domain.usecase.card.SyncCardUseCase
+import com.ih.m2.domain.usecase.card.SyncCardUseCaseImpl
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCaseImpl
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
@@ -22,6 +24,8 @@ import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.m2.domain.usecase.employee.GetEmployeesUseCaseImpl
+import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCase
+import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCaseImpl
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
@@ -94,8 +98,14 @@ interface DomainBindingModule {
     fun bindSyncCardsUseCase(syncCardsUseCaseImpl: SyncCardsUseCaseImpl): SyncCardsUseCase
 
     @Binds
+    fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
+
+    @Binds
     fun bindGetEmployeesUseCase(getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl): GetEmployeesUseCase
 
     @Binds
     fun bindSaveCardSolutionUseCase(saveCardSolutionUseCaseImpl: SaveCardSolutionUseCaseImpl): SaveCardSolutionUseCase
+
+    @Binds
+    fun bindFirebaseTokenUseCase(getFirebaseTokenUseCaseImpl: GetFirebaseTokenUseCaseImpl): GetFirebaseTokenUseCase
 }

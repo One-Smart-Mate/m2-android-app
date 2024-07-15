@@ -1,9 +1,12 @@
 package com.ih.m2.ui.pages.splash
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.FileHelper
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,7 +20,8 @@ import kotlin.coroutines.CoroutineContext
 @HiltViewModel
 class SplashViewModel @Inject constructor(
     private val coroutineContext: CoroutineContext,
-    private val getUserUseCase: GetUserUseCase
+    private val getUserUseCase: GetUserUseCase,
+    private val getFirebaseTokenUseCase: GetFirebaseTokenUseCase
 ) : ViewModel() {
 
     private val _isAuthenticated = MutableStateFlow(false)
@@ -45,6 +49,18 @@ class SplashViewModel @Inject constructor(
                 navigateToScreen(route)
             }.onFailure {
                 navigateToScreen(Screen.Login.route)
+            }
+        }
+    }
+
+    private fun getFirebaseToken() {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                getFirebaseTokenUseCase()
+            }.onSuccess {
+                Log.e("test","Token $it")
+            }.onFailure {
+                FirebaseCrashlytics.getInstance().recordException(it)
             }
         }
     }

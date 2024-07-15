@@ -37,6 +37,9 @@ const val DEFINITIVE_SOLUTION = "definitive_solution"
 
 const val CARD_ANOMALIES = "anomalies"
 const val CARD_BEHAVIOR = "behavior"
+const val CARD_TYPE_METHODOLOGY_C = "C"
+const val CARD_TYPE_METHODOLOGY_M = "M"
+
 
 const val NETWORK_WIFI = "network_wifi"
 const val NETWORK_DATA_MOBILE = "network_data_mobile"

@@ -2,35 +2,54 @@ package com.ih.m2.ui.pages.cardlist
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.enableDefinitiveSolution
 import com.ih.m2.domain.model.enableProvisionalSolution
 import com.ih.m2.ui.components.CustomAppBar
+import com.ih.m2.ui.components.CustomSpacer
+import com.ih.m2.ui.components.EmptyData
 import com.ih.m2.ui.components.LoadingScreen
+import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.defaultScreen
 import com.ih.m2.ui.navigation.navigateToCardDetail
 import com.ih.m2.ui.navigation.navigateToCardSolution
 import com.ih.m2.ui.components.card.CardItemList
+import com.ih.m2.ui.components.sheets.FiltersBottomSheet
+import com.ih.m2.ui.components.sheets.FiltersBottomSheetV2
+import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.theme.M2androidappTheme
+import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun CardListScreen(
@@ -48,23 +67,19 @@ fun CardListScreen(
             navController = navController,
             cards = state.cards,
             title = state.title,
-            showBottomSheetActions = state.showBottomSheetActions,
-            showProvisionalSolution = state.selectedCard?.enableProvisionalSolution()
-                .defaultIfNull(false),
-            showDefinitiveSolution = state.selectedCard?.enableDefinitiveSolution()
-                .defaultIfNull(false),
-            onSolutionClick = { solutionType ->
-                state.selectedCard?.let { card ->
-                    viewModel.process(CardListViewModel.Action.OnDismissBottomSheet)
-                    viewModel.process(CardListViewModel.Action.OnRefreshCards)
-                    navController.navigateToCardSolution(solutionType, card.id)
-                }
+            onSolutionClick = { card, solutionType ->
+                viewModel.process(CardListViewModel.Action.OnRefreshCards)
+                navController.navigateToCardSolution(solutionType, card.id)
             },
-            onDismissRequestClick = {
-                viewModel.process(CardListViewModel.Action.OnDismissBottomSheet)
+            onCreateCardClick = {
+                viewModel.process(CardListViewModel.Action.OnRefreshCards)
+                navController.navigateToCreateCard(filter)
             },
-            onActionClick = {
-                viewModel.process(CardListViewModel.Action.OnActionClick(it))
+            onFilterChange = {
+                viewModel.process(CardListViewModel.Action.OnFilterChange(it))
+            },
+            onClickApply = {
+                viewModel.process(CardListViewModel.Action.OnApplyFilterClick)
             }
         )
     }
@@ -78,6 +93,7 @@ fun CardListScreen(
                 }
             }
     }
+
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -86,38 +102,52 @@ fun CardListContent(
     navController: NavController,
     cards: List<Card>,
     title: String,
-    showBottomSheetActions: Boolean,
-    showProvisionalSolution: Boolean,
-    showDefinitiveSolution: Boolean,
-    onSolutionClick: (String) -> Unit,
-    onDismissRequestClick: () -> Unit,
-    onActionClick: (Card) -> Unit
+    onSolutionClick: (Card, String) -> Unit,
+    onCreateCardClick: () -> Unit,
+    onFilterChange: (String) -> Unit,
+    onClickApply: () -> Unit
 ) {
-    Scaffold { padding ->
+
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = {
+                onCreateCardClick()
+            }) {
+                Icon(Icons.Filled.Add, contentDescription = EMPTY)
+            }
+        }
+    ) { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(navController = navController, title = title)
+                Box(
+                    modifier = Modifier.fillParentMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    FiltersBottomSheetV2(
+                        onFilterChange = onFilterChange,
+                        onClickApply = onClickApply
+                    )
+                }
+                CustomSpacer(space = SpacerSize.SMALL)
             }
-            items(cards) {
+            items(cards) { card ->
                 CardItemList(
-                    card = it,
+                    card = card,
                     onClick = {
-                        navController.navigateToCardDetail(it.id)
+                        navController.navigateToCardDetail(card.id)
                     },
-                    onActionClick = {
-                        onActionClick(it)
+                    onSolutionClick = { solution ->
+                        onSolutionClick(card, solution)
                     })
             }
-        }
-        if (showBottomSheetActions) {
-            SolutionBottomSheet(
-                onSolutionClick = onSolutionClick,
-                onDismissRequest = onDismissRequestClick,
-                showProvisionalSolution = showProvisionalSolution,
-                showDefinitiveSolution = showDefinitiveSolution
-            )
+            item {
+                AnimatedVisibility(visible = cards.isEmpty()) {
+                    EmptyData(modifier = Modifier.fillMaxSize())
+                }
+            }
         }
     }
 }
@@ -133,12 +163,10 @@ private fun CardListScreenScreenPreview() {
                 navController = rememberNavController(),
                 cards = emptyList(),
                 title = "Cards",
-                showProvisionalSolution = false,
-                showDefinitiveSolution = false,
-                showBottomSheetActions = false,
-                onSolutionClick = {},
-                onDismissRequestClick = {},
-                onActionClick = {}
+                onSolutionClick = {_,_ -> },
+                onCreateCardClick = {},
+                onFilterChange = {},
+                onClickApply = {}
             )
         }
     }

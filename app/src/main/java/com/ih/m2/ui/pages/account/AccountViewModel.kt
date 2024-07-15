@@ -65,6 +65,7 @@ class AccountViewModel @AssistedInject constructor(
             is Action.SyncCatalogs -> handleSyncCatalogs()
             is Action.ShowNotification -> handleShowNotification()
             is Action.OnSwitchChange -> handleOnSwitchChange(action.checked)
+            else -> {}
         }
     }
 

@@ -1,11 +1,16 @@
 package com.ih.m2.domain.usecase.card
 
+import android.content.Context
 import android.util.Log
 import com.ih.m2.core.FileHelper
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.NetworkStatus
+import com.ih.m2.domain.repository.cards.CardRepository
 import com.ih.m2.domain.repository.local.LocalRepository
 import com.ih.m2.ui.extensions.defaultIfNull
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 interface SaveCardUseCase {
@@ -15,12 +20,15 @@ interface SaveCardUseCase {
 class SaveCardUseCaseImpl @Inject constructor(
     private val localRepository: LocalRepository,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val fileHelper: FileHelper
-    ) : SaveCardUseCase {
+    private val fileHelper: FileHelper,
+    private val syncCardUseCase: SyncCardUseCase,
+    @ApplicationContext private val context: Context
+) : SaveCardUseCase {
 
     override suspend fun invoke(card: Card): Long {
         val lastCardId = localRepository.getLastCardId()
         val lastSiteCardId = localRepository.getLastSiteCardId()
+        Log.e("test", "LastsiteCardId $lastSiteCardId")
         val user = localRepository.getUser()
         val cardType = localRepository.getCardType(card.cardTypeId)
         val area = localRepository.getLevel(card.areaId.toString())
@@ -43,13 +51,19 @@ class SaveCardUseCaseImpl @Inject constructor(
             creatorId = user?.userId,
             creatorName = user?.name.orEmpty(),
         )
-        val id = localRepository.saveCard(updatedCard)
-        card.evidences?.forEach {
-            localRepository.saveEvidence(it)
+        val id: Long
+        if (NetworkConnection.networkStatus(context) == NetworkStatus.WIFI_CONNECTED) {
+            id = syncCardUseCase(updatedCard)?.id?.toLong().defaultIfNull(0L)
+        } else {
+            id = localRepository.saveCard(updatedCard)
+            card.evidences?.forEach {
+                localRepository.saveEvidence(it)
+            }
         }
+
         firebaseAnalyticsHelper.logCreateCard(updatedCard)
         fileHelper.logCreateCard(updatedCard)
-        Log.e("Card","Card $updatedCard")
+        Log.e("Card", "Card $updatedCard")
         return id
     }
 }

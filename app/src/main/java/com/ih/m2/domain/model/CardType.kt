@@ -44,7 +44,8 @@ data class CardType(
     @SerializedName("audiosDurationPs")
     val audiosDurationPs: Int?,
     @SerializedName("videosDurationPs")
-    val videosDurationPs: Int?
+    val videosDurationPs: Int?,
+    val cardTypeMethodology: String?
 )
 
 
@@ -71,7 +72,8 @@ fun CardType.toEntity(): CardTypeEntity {
         quantityAudiosPs = this.quantityAudiosPs.defaultIfNull(0),
         quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
         audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
-        videosDurationPs = this.videosDurationPs.defaultIfNull(0)
+        videosDurationPs = this.videosDurationPs.defaultIfNull(0),
+        cardTypeMethodology = this.cardTypeMethodology
     )
 }
 
@@ -79,15 +81,16 @@ fun CardType.toEntity(): CardTypeEntity {
 
 fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     return this.map {
-        NodeCardItem(id = it.id, name = it.methodology, description = it.name)
+        NodeCardItem(id = it.id, name = it.methodology, description = it.cardTypeMethodology.orEmpty())
     }
 }
 
-fun CardType.isBehavior() = this.methodology == "C" ||
-        this.name == "Comportamiento" ||
-        this.methodology == "Comportamiento" ||
-        this.name == "C"
+fun CardType.isBehavior() = this.cardTypeMethodology?.lowercase() == "c" ||
+        this.name.lowercase() == "comportamiento" ||
+        this.methodology.lowercase() == "comportamiento" ||
+        this.name.lowercase() == "c"
 
 fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
-fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == "Comportamiento".lowercase() || this?.name?.lowercase() == "C".lowercase()
+fun NodeCardItem?.isBehaviorCardType(): Boolean =
+        this?.description?.lowercase() == "c" || this?.description?.lowercase() == "comportamiento"

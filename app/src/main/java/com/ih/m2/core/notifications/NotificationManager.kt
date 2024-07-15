@@ -6,10 +6,19 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Build
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material3.Icon
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.IconCompat
+import androidx.core.graphics.drawable.toBitmap
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.R
 import com.ih.m2.ui.utils.EMPTY
@@ -19,14 +28,14 @@ import kotlin.random.Random
 class NotificationManager @Inject constructor(private val context: Context) {
     private fun getChannelId(): String = "${Random.nextInt(1000, 9000)}"
     private fun getNotificationId(): Int = Random.nextInt(100, 900)
-
+    private val maxProgress = 100
 
     fun buildNotification(
         title: String = EMPTY,
         description: String = EMPTY
     ) {
         try {
-            val builder = getBuilderNotification(title, description)
+            val builder = getBuilderNotification(title, description, icon = R.drawable.ic_check)
 
             with(NotificationManagerCompat.from(context)) {
                 if (ActivityCompat.checkSelfPermission(
@@ -42,17 +51,28 @@ class NotificationManager @Inject constructor(private val context: Context) {
         }
     }
 
-    fun buildProgressNotification(
-        updateProgress: Boolean = false,
-    ): Int {
+    fun buildNotificationSuccessCard() {
+        try {
+            buildNotification(
+                title = context.getString(R.string.card_successfully),
+                description = context.getString(R.string.card_successfully_desc)
+            )
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
+        }
+    }
+
+    fun buildProgressNotification(): Int {
         val currentProgress = 0
-        val PROGRESS_MAX = 100
         val notificationId = getNotificationId()
         val builder =
-            getBuilderNotification("Uploading cards", "We're uploading the local cards...")
+            getBuilderNotification(
+                context.getString(R.string.uploading_cards),
+                context.getString(R.string.we_re_uploading_the_local_cards), R.drawable.ic_cloud
+            )
 
         NotificationManagerCompat.from(context).apply {
-            builder.setProgress(PROGRESS_MAX, currentProgress, false)
+            builder.setProgress(maxProgress, currentProgress, false)
             if (ActivityCompat.checkSelfPermission(
                     context,
                     Manifest.permission.POST_NOTIFICATIONS
@@ -69,22 +89,21 @@ class NotificationManager @Inject constructor(private val context: Context) {
         notificationId: Int,
         currentProgress: Int
     ) {
-        val PROGRESS_MAX = 100
 
         val description = if (currentProgress == 100) {
-            "Cards uploaded successfully"
+            context.getString(R.string.cards_uploaded_successfully)
         } else {
-            "We're uploading the local cards..."
+            context.getString(R.string.we_re_uploading_the_local_cards)
         }
 
         val title = if (currentProgress == 100) {
-            "Success!"
+            context.getString(R.string.success)
         } else {
-            "Uploading cards"
+            context.getString(R.string.in_progress)
         }
 
         val builder =
-            getBuilderNotification(title, description)
+            getBuilderNotification(title, description, R.drawable.ic_cloud)
         NotificationManagerCompat.from(context).apply {
             if (ActivityCompat.checkSelfPermission(
                     context,
@@ -95,7 +114,7 @@ class NotificationManager @Inject constructor(private val context: Context) {
                 if (currentProgress == 100) {
                     builder.setProgress(0, 0, false)
                 } else {
-                    builder.setProgress(PROGRESS_MAX, currentProgress, false)
+                    builder.setProgress(maxProgress, currentProgress, false)
                 }
                 notify(notificationId, builder.build())
             }
@@ -105,15 +124,18 @@ class NotificationManager @Inject constructor(private val context: Context) {
     private fun getBuilderNotification(
         title: String,
         description: String,
-        priority: Int = NotificationCompat.PRIORITY_HIGH
+        priority: Int = NotificationCompat.PRIORITY_HIGH,
+        icon: Int = R.drawable.ic_circle_notification
     ): NotificationCompat.Builder {
         val channelId = getChannelId()
         buildNotificationChannel(channelId)
         return NotificationCompat.Builder(context, channelId)
             .setContentTitle(title)
             .setContentText(description)
-            .setSmallIcon(R.drawable.ic_circle_notification)
+            .setSmallIcon(icon)
             .setPriority(priority)
+            .setShowWhen(true)
+            .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setAutoCancel(true)
     }
 
@@ -126,7 +148,7 @@ class NotificationManager @Inject constructor(private val context: Context) {
             val name = "m2_create_card"
             val descriptionText = "Create card notification"
 
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(channelId, name, importance).apply {
                 description = descriptionText
             }
@@ -142,7 +164,12 @@ class NotificationManager @Inject constructor(private val context: Context) {
         message: String
     ) {
         val builder =
-            getBuilderNotification("Ups!", "Error: $message")
+            getBuilderNotification(
+                context.getString(R.string.something_went_wrong),
+                context.getString(
+                    R.string.error, message
+                ), R.drawable.ic_error
+            )
         NotificationManagerCompat.from(context).apply {
             if (ActivityCompat.checkSelfPermission(
                     context,
