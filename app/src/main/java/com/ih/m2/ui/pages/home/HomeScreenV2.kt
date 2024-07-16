@@ -79,7 +79,6 @@ import com.ih.m2.ui.extensions.getPrimaryColor
 import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardList
-import com.ih.m2.ui.navigation.navigateToCreateCard
 import com.ih.m2.ui.navigation.navigateToQrScanner
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
@@ -88,6 +87,7 @@ import com.ih.m2.ui.theme.Size2
 import com.ih.m2.ui.utils.CARD_ANOMALIES
 import com.ih.m2.ui.utils.CARD_BEHAVIOR
 import com.ih.m2.ui.utils.EMPTY
+import com.ih.m2.ui.utils.LOAD_CATALOGS
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -119,6 +119,10 @@ fun HomeScreenV2(
             networkStatus = state.networkStatus,
             lastSyncUpdateDate = state.lastSyncUpdate,
             showSyncCards = state.showSyncCards,
+            showSyncCatalogs = state.showSyncCatalogsCard,
+            onSyncCatalogsClick = {
+                viewModel.process(HomeViewModelV2.Action.SyncCatalogs(LOAD_CATALOGS))
+            }
         )
     }
 
@@ -164,6 +168,8 @@ private fun HomeContentV2(
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
     showSyncCards: Boolean,
+    showSyncCatalogs: Boolean,
+    onSyncCatalogsClick: () -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -193,6 +199,15 @@ private fun HomeContentV2(
                         )
                     ) {
                         onSyncCardsClick()
+                    }
+                }
+                AnimatedVisibility(visible = showSyncCatalogs) {
+                    HomeSectionCardItem(
+                        title = stringResource(R.string.sync_remote_catalogs),
+                        icon = Icons.Outlined.Refresh,
+                        description = stringResource(R.string.you_have_new_catalogs_to_sync)
+                    ) {
+                        onSyncCatalogsClick()
                     }
                 }
                 HomeSectionCardItem(
@@ -355,6 +370,8 @@ private fun HomeScreenPreview() {
                 networkStatus = NetworkStatus.WIFI_CONNECTED,
                 lastSyncUpdateDate = "",
                 showSyncCards = true,
+                showSyncCatalogs = true,
+                onSyncCatalogsClick = {}
             )
         }
     }

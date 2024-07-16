@@ -20,6 +20,8 @@ class SharedPreferences @Inject constructor(
         private const val NETWORK_PREFERENCES = "network_preference"
         private const val LOG_FILE_PREFERENCES = "path_log_file"
         private const val LAST_SYNC_PREFERENCES = "last_sync_date"
+        private const val FIREBASE_TOKEN_PREFERENCES = "firebase_token"
+        private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
     }
 
     init {
@@ -31,6 +33,8 @@ class SharedPreferences @Inject constructor(
             with(it.edit()) {
                 remove(NETWORK_PREFERENCES)
                 remove(LAST_SYNC_PREFERENCES)
+                remove(FIREBASE_TOKEN_PREFERENCES)
+                remove(NOTIFICATION_TYPE_PREFERENCES)
                 commit()
             }
         }
@@ -73,6 +77,41 @@ class SharedPreferences @Inject constructor(
 
     fun getLastSyncDate(): String {
         return sharedPreferences?.getString(LAST_SYNC_PREFERENCES, EMPTY).orEmpty()
+    }
+
+    fun saveFirebaseToken(token: String) {
+        sharedPreferences?.let {
+            with(it.edit()) {
+                putString(FIREBASE_TOKEN_PREFERENCES, token)
+                commit()
+            }
+        }
+    }
+
+    fun getFirebaseToken(): String {
+        return sharedPreferences?.getString(FIREBASE_TOKEN_PREFERENCES, EMPTY).orEmpty()
+    }
+
+    fun saveNotificationType(type: String = EMPTY) {
+        sharedPreferences?.let {
+            with(it.edit()) {
+                putString(NOTIFICATION_TYPE_PREFERENCES, type.uppercase())
+                commit()
+            }
+        }
+    }
+
+    fun getNotificationType(): String {
+        return sharedPreferences?.getString(NOTIFICATION_TYPE_PREFERENCES, EMPTY).orEmpty().uppercase()
+    }
+
+    fun removeNotification() {
+        sharedPreferences?.let {
+            with(it.edit()) {
+                remove(NOTIFICATION_TYPE_PREFERENCES)
+                commit()
+            }
+        }
     }
 
 }

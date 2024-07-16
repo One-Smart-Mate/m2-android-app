@@ -2,7 +2,6 @@ package com.ih.m2.ui.pages.home
 
 import android.content.Context
 import android.util.Log
-import androidx.work.Operation
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.airbnb.mvrx.MavericksState
@@ -13,6 +12,7 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.core.FileHelper
 import com.ih.m2.core.WorkManagerUUID
+import com.ih.m2.core.firebase.FirebaseNotificationType
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.network.NetworkConnectionStatus
 import com.ih.m2.core.preferences.SharedPreferences
@@ -22,8 +22,8 @@ import com.ih.m2.domain.model.NetworkStatus
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.model.toLocalCards
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
-import com.ih.m2.domain.usecase.card.SyncCardsUseCase
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase
+import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.extensions.lastSyncDate
 import com.ih.m2.ui.extensions.runWorkRequest
@@ -33,11 +33,8 @@ import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
 
 class HomeViewModelV2 @AssistedInject constructor(
@@ -48,7 +45,8 @@ class HomeViewModelV2 @AssistedInject constructor(
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
     private val sharedPreferences: SharedPreferences,
     @ApplicationContext private val context: Context,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
 ) : MavericksViewModel<HomeViewModelV2.UiState>(initialState) {
 
 
@@ -62,7 +60,8 @@ class HomeViewModelV2 @AssistedInject constructor(
         val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS,
         val syncCompleted: Boolean = false,
         val lastSyncUpdate: String = EMPTY,
-        val showSyncCards: Boolean = false
+        val showSyncCards: Boolean = false,
+        val showSyncCatalogsCard: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -95,7 +94,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 kotlin.runCatching {
                     syncCatalogsUseCase(syncCards = true)
                 }.onSuccess {
-                    setState { copy(syncCompleted = true) }
+                    setState { copy(syncCompleted = true, showSyncCatalogsCard = false) }
                     handleCheckUser()
                 }.onFailure {
                     fileHelper.logException(it)
@@ -122,13 +121,17 @@ class HomeViewModelV2 @AssistedInject constructor(
                 getCardsUseCase()
             }.onSuccess { cards ->
                 Log.e("test", "Cards -> $cards")
+                val showCards = cards.toLocalCards().isNotEmpty()
                 setState {
                     copy(
                         cards = cards,
-                        showSyncCards = cards.toLocalCards().isNotEmpty()
+                        showSyncCards = showCards
                     )
                 }
-                checkLastUpdate()
+                if (showCards) {
+                    checkLastUpdate()
+                }
+                checkPreferences()
                 cleanScreenStates()
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
@@ -207,13 +210,8 @@ class HomeViewModelV2 @AssistedInject constructor(
                         when (it.state) {
                             WorkInfo.State.FAILED,
                             WorkInfo.State.BLOCKED,
-                            WorkInfo.State.CANCELLED -> {
-                                handleGetCards()
-                            }
-
+                            WorkInfo.State.CANCELLED,
                             WorkInfo.State.SUCCEEDED -> {
-                                sharedPreferences.saveLastSyncDate()
-                                checkLastUpdate()
                                 handleGetCards()
                             }
 
@@ -267,10 +265,25 @@ class HomeViewModelV2 @AssistedInject constructor(
                 isLoading = false,
                 message = message,
                 syncCompleted = true,
-                isSyncing = false
+                isSyncing = false,
             )
         }
     }
+
+    private fun checkPreferences() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                when (getFirebaseNotificationUseCase()) {
+                    FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
+                        setState { copy(showSyncCatalogsCard = true) }
+                    }
+
+                    else -> {}
+                }
+            }
+        }
+    }
+
 
     @AssistedFactory
     interface Factory : AssistedViewModelFactory<HomeViewModelV2, UiState> {

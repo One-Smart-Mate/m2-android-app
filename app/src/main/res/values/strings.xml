@@ -120,4 +120,5 @@
     <string name="card_successfully">Card created successfully!</string>
     <string name="card_successfully_desc">Created successfully</string>
     <string name="valid_superior_id">You need to enter a valid area id</string>
+    <string name="you_have_new_catalogs_to_sync">You have new catalogs to sync</string>
 </resources>

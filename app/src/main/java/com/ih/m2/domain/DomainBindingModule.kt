@@ -26,12 +26,16 @@ import com.ih.m2.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.m2.domain.usecase.employee.GetEmployeesUseCaseImpl
 import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCaseImpl
+import com.ih.m2.domain.usecase.firebase.SyncFirebaseTokenUseCase
+import com.ih.m2.domain.usecase.firebase.SyncFirebaseTokenUseCaseImpl
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCaseImpl
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCaseImpl
 import com.ih.m2.domain.usecase.logout.LogoutUseCase
 import com.ih.m2.domain.usecase.logout.LogoutUseCaseImpl
+import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCase
+import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCaseImpl
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
@@ -108,4 +112,10 @@ interface DomainBindingModule {
 
     @Binds
     fun bindFirebaseTokenUseCase(getFirebaseTokenUseCaseImpl: GetFirebaseTokenUseCaseImpl): GetFirebaseTokenUseCase
+
+    @Binds
+    fun bindSyncFirebaseTokenUseCase(syncFirebaseTokenUseCaseImpl: SyncFirebaseTokenUseCaseImpl):SyncFirebaseTokenUseCase
+
+    @Binds
+    fun bindGetFirebaseNotificationUseCase(getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl): GetFirebaseNotificationUseCase
 }

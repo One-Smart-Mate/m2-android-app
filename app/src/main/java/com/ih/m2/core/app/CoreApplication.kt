@@ -7,6 +7,7 @@ import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.core.workmanager.CardWorker
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
@@ -15,7 +16,7 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
-class CoreApplication:  Application(), Configuration.Provider {
+class CoreApplication: Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: CustomWorkerFactory
@@ -31,12 +32,20 @@ class CustomWorkerFactory @Inject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCardsUseCase: SyncCardsUseCase,
     private val coroutineContext: CoroutineContext,
+    private val sharedPreferences: SharedPreferences
     ): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
         workerParameters: WorkerParameters
     ): ListenableWorker {
-        return CardWorker(appContext, workerParameters, getCardsUseCase, syncCardsUseCase, coroutineContext)
+        return CardWorker(
+            appContext,
+            workerParameters,
+            getCardsUseCase,
+            syncCardsUseCase,
+            coroutineContext,
+            sharedPreferences
+        )
     }
 }

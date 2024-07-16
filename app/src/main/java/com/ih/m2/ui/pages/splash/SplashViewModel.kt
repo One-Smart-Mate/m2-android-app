@@ -7,6 +7,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.FileHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCase
+import com.ih.m2.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,7 @@ import kotlin.coroutines.CoroutineContext
 class SplashViewModel @Inject constructor(
     private val coroutineContext: CoroutineContext,
     private val getUserUseCase: GetUserUseCase,
-    private val getFirebaseTokenUseCase: GetFirebaseTokenUseCase
+    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase
 ) : ViewModel() {
 
     private val _isAuthenticated = MutableStateFlow(false)
@@ -31,6 +32,7 @@ class SplashViewModel @Inject constructor(
     val startRoute = _startRoute.asStateFlow()
 
     init {
+        handleSyncFirebaseToken()
         handleGetUser()
     }
 
@@ -53,14 +55,10 @@ class SplashViewModel @Inject constructor(
         }
     }
 
-    private fun getFirebaseToken() {
-        viewModelScope.launch {
+    private fun handleSyncFirebaseToken() {
+        viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getFirebaseTokenUseCase()
-            }.onSuccess {
-                Log.e("test","Token $it")
-            }.onFailure {
-                FirebaseCrashlytics.getInstance().recordException(it)
+                syncFirebaseTokenUseCase()
             }
         }
     }

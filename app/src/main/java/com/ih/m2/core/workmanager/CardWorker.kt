@@ -7,6 +7,7 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.network.NetworkConnection
+import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.SyncCardsUseCase
@@ -23,16 +24,15 @@ class CardWorker @AssistedInject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     private val syncCardsUseCase: SyncCardsUseCase,
     private val customCoroutineContext: CoroutineContext,
+    private val sharedPreferences: SharedPreferences
 ) : CoroutineWorker(context, workerParameters) {
     override suspend fun doWork(): Result = withContext(customCoroutineContext) {
         try {
             val isConnected = NetworkConnection.isConnected()
-            Log.e("test", "Working!!!  $isConnected")
             if (isConnected) {
                 val localCardList = getCardsUseCase(localCards = true)
-                Log.e("List", "Local Cards List ${localCardList.size}")
                 syncCardsUseCase(localCardList)
-                //delay(3000)
+                sharedPreferences.saveLastSyncDate()
                 Result.success()
             } else {
                 Result.failure()
