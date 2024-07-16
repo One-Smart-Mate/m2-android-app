@@ -67,7 +67,6 @@ class CardListViewModel @AssistedInject constructor(
 
     private fun validateFilter(filter: String) {
         val isFromQr = filter.contains(":")
-        Log.e("test", "Filteeer $filter -- ${isFromQr}")
         if (isFromQr) {
             val superiorId = filter.substringAfter(":")
             handleGetCardsZone(superiorId)
@@ -77,7 +76,6 @@ class CardListViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCards(filter: String) {
-        Log.e("test", "Cards filter $filter")
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
@@ -134,7 +132,6 @@ class CardListViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardsZone(superiorId: String) {
-        Log.e("test", "superiorId $superiorId")
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {

@@ -65,21 +65,30 @@ fun QrScannerScreen(
         Box(
             Modifier.fillMaxSize()
         ) {
-            QrCamera {
-                if (it.isNotEmpty()) {
-                    isLoading = true
-                    scope.launch {
-                        val id = "superiorId:$it"
-                        navController.navigateToCardList(id)
-                    }
-                } else {
+            QrCamera(
+                onCameraError = {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = context.getString(R.string.valid_superior_id),
+                            message = it
                         )
                     }
+                },
+                onClick = {
+                    if (it.isNotEmpty()) {
+                        isLoading = true
+                        scope.launch {
+                            val id = "superiorId:$it"
+                            navController.navigateToCardList(id)
+                        }
+                    } else {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(
+                                message = context.getString(R.string.valid_superior_id),
+                            )
+                        }
+                    }
                 }
-            }
+            )
             Box(
                 modifier = Modifier
                     .padding(vertical = PaddingToolbarVertical, horizontal = PaddingNormal)

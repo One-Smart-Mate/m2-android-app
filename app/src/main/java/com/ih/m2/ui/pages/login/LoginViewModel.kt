@@ -46,7 +46,6 @@ class LoginViewModel @AssistedInject constructor(
             is Action.SetEmail -> handleSetEmail(action.email)
             is Action.SetPassword -> handleSetPassword(action.password)
             is Action.ClearMessage -> setState { copy(message = EMPTY) }
-            else -> {}
         }
     }
 

@@ -6,6 +6,10 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
+import com.ih.m2.ui.extensions.ISO_FORMAT
+import com.ih.m2.ui.extensions.NORMAL_FORMAT
+import com.ih.m2.ui.extensions.toDate
+import com.ih.m2.ui.extensions.toFormatDate
 import com.ih.m2.ui.utils.STORED_REMOTE
 
 
@@ -140,6 +144,14 @@ data class CardEntity(
     val stored: String?
 )
 
+fun CardEntity.validateDate(): String {
+    return if (this.stored == STORED_REMOTE) {
+        creationDate.toFormatDate(ISO_FORMAT)
+    } else {
+        creationDate.toFormatDate(NORMAL_FORMAT)
+    }
+}
+
 fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
     return Card(
         id = this.id,
@@ -202,6 +214,7 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
         stored = this.stored ?: STORED_REMOTE,
-        evidences = evidences
+        evidences = evidences,
+        creationDateFormatted = validateDate()
     )
 }

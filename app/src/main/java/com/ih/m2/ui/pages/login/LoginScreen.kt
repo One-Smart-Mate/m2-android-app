@@ -46,10 +46,12 @@ import com.ih.m2.R
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTextField
 import com.ih.m2.ui.components.SpacerSize
+import com.ih.m2.ui.components.buttons.ButtonType
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.extensions.getColor
 import com.ih.m2.ui.navigation.navigateToHome
 import com.ih.m2.ui.navigation.navigateToHomeV2
+import com.ih.m2.ui.navigation.navigateToRestoreAccount
 import com.ih.m2.ui.pages.home.HomeViewModelV2
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
@@ -84,6 +86,9 @@ fun LoginScreen(
                     state.password
                 )
             )
+        },
+        onNavigateToPassword = {
+            navController.navigateToRestoreAccount()
         }
     )
 
@@ -121,7 +126,8 @@ fun LoginContent(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
+    onNavigateToPassword: () -> Unit
 ) {
     LazyColumn(
         modifier = modifier.background(color = MaterialTheme.colorScheme.primary)
@@ -134,7 +140,8 @@ fun LoginContent(
                 onEmailChange = onEmailChange,
                 onPasswordChange = onPasswordChange,
                 isButtonLoading = isButtonLoading,
-                onLogin = onLogin
+                onLogin = onLogin,
+                onNavigateToPassword = onNavigateToPassword
             )
         }
     }
@@ -146,7 +153,8 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
+    onNavigateToPassword: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
@@ -178,6 +186,10 @@ fun LoginForm(
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomButton(text = stringResource(R.string.login), isLoading = isButtonLoading) {
                 onLogin()
+            }
+            CustomSpacer()
+            CustomButton(text = "Forgot password?", buttonType = ButtonType.TEXT) {
+                onNavigateToPassword()
             }
         }
     }
@@ -211,7 +223,8 @@ fun LoginPreview() {
                 onEmailChange = {},
                 onPasswordChange = {},
                 isButtonLoading = false,
-                onLogin = {}
+                onLogin = {},
+                onNavigateToPassword = {}
             )
         }
     }

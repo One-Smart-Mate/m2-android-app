@@ -22,12 +22,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
@@ -36,6 +38,7 @@ import com.ih.m2.R
 import com.ih.m2.core.ui.LCE
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.Evidence
+import com.ih.m2.domain.model.getCreationDate
 import com.ih.m2.domain.model.getStatus
 import com.ih.m2.domain.model.preclassifierValue
 import com.ih.m2.domain.model.priorityValue
@@ -94,7 +97,13 @@ fun CardDetailScreen(
         }
     }
     LaunchedEffect(viewModel, lifecycle) {
-        viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+       snapshotFlow { state }
+           .flowWithLifecycle(lifecycle)
+           .collect {
+               if (it.card !is LCE.Success) {
+                   viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+               }
+           }
     }
 }
 
@@ -131,7 +140,7 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.creationDate,
+            value = card.getCreationDate(),
         )
         SectionTag(
             title = stringResource(R.string.due_date),

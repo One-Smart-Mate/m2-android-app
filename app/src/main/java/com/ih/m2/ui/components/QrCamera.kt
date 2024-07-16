@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.rounded.Create
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,11 +34,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import com.ih.m2.R
 import com.ih.m2.core.BarcodeAnalyzerHelper
 import com.ih.m2.ui.components.buttons.CustomButton
 import com.ih.m2.ui.theme.PaddingNormal
@@ -45,6 +50,7 @@ import com.ih.m2.ui.utils.EMPTY
 
 @Composable
 fun QrCamera(
+    onCameraError: (String) -> Unit,
     onClick: (String) -> Unit
 ) {
     var code by remember {
@@ -112,6 +118,7 @@ fun QrCamera(
                             imageAnalysis
                         )
                     } catch (e: Exception) {
+                        onCameraError(e.localizedMessage.orEmpty())
                         e.printStackTrace()
                     }
                     previewView
@@ -124,19 +131,20 @@ fun QrCamera(
                     .padding(PaddingNormal)
             ) {
                 CustomTextField(
-                    label = "Enter the id",
-                    icon = Icons.Outlined.Build,
+                    label = stringResource(R.string.enter_the_qr_code),
+                    icon = Icons.Rounded.Create,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     code = it
                 }
                 CustomSpacer()
                 CustomButton(
-                    text = "Apply",
+                    text = stringResource(id = R.string.apply),
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     onClick(code)
                 }
+                CustomSpacer()
             }
         }
 

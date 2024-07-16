@@ -1,6 +1,8 @@
 package com.ih.m2.ui.navigation
 
 import android.util.Log
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -16,6 +18,7 @@ import com.ih.m2.ui.pages.dev.DevScreen
 import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.home.HomeScreenV2
 import com.ih.m2.ui.pages.login.LoginScreen
+import com.ih.m2.ui.pages.password.RestoreAccountScreen
 import com.ih.m2.ui.pages.profile.ProfileScreen
 import com.ih.m2.ui.pages.qr.QrScannerScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
@@ -29,7 +32,11 @@ fun AppNavigation(
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = startDestination
+        startDestination = startDestination,
+        enterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        exitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.Start, tween(700)) },
+        popEnterTransition = { slideIntoContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) },
+        popExitTransition = { slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700)) }
     ) {
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
@@ -103,6 +110,11 @@ fun AppNavigation(
             QrScannerScreen(navController = navController)
         }
 
+        composable(
+            Screen.RestoreAccount.route
+        ) {
+            RestoreAccountScreen(navController = navController)
+        }
     }
 }
 
@@ -158,4 +170,8 @@ fun NavController.navigateToProfile() {
 
 fun NavController.navigateToQrScanner() {
     navigate(Screen.QrScanner.route)
+}
+
+fun NavController.navigateToRestoreAccount() {
+    navigate(Screen.RestoreAccount.route)
 }

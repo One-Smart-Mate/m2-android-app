@@ -8,6 +8,9 @@ import com.google.firebase.storage.StorageReference
 import com.ih.m2.domain.model.Evidence
 import com.ih.m2.domain.model.EvidenceType
 import com.ih.m2.domain.repository.firebase.FirebaseStorageRepository
+import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.ui.extensions.YYYY_MM_DD_HH_MM_SS
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.timeStamp
 import com.ih.m2.ui.utils.EMPTY
 import kotlinx.coroutines.tasks.await
@@ -17,15 +20,17 @@ import java.util.Locale
 import javax.inject.Inject
 
 class FirebaseStorageRepositoryImpl @Inject constructor(
-    private val firebaseStorage: FirebaseStorage
+    private val firebaseStorage: FirebaseStorage,
+    private val getUserUseCase: GetUserUseCase
 ) : FirebaseStorageRepository {
 
     override suspend fun uploadEvidence(evidence: Evidence): String {
         return try {
+            val siteId = getUserUseCase()?.siteId.defaultIfNull("0")
             val evidenceType = EvidenceType.valueOf(evidence.type)
             val evidenceName = getEvidenceFileName(evidenceType)
             val evidenceReference =
-                getEvidenceReference(evidenceType, evidenceName, evidence.cardId)
+                getEvidenceReference(evidenceType, evidenceName, evidence.cardId, siteId)
             evidenceReference.putFile(Uri.parse(evidence.url)).await()
             val url = evidenceReference.downloadUrl.await()
             Log.e("test", "Result image ${url}")
@@ -39,7 +44,7 @@ class FirebaseStorageRepositoryImpl @Inject constructor(
     private fun getEvidenceFileName(
         type: EvidenceType
     ): String {
-        val timeStamp: String = Date().timeStamp()
+        val timeStamp: String = Date().YYYY_MM_DD_HH_MM_SS
         return when (type) {
             EvidenceType.IMCR -> "IMAGE_CR_${timeStamp}.jpg"
             EvidenceType.VICR -> "VIDEO_CR_${timeStamp}.mp4"
@@ -56,18 +61,24 @@ class FirebaseStorageRepositoryImpl @Inject constructor(
     private fun getEvidenceReference(
         type: EvidenceType,
         evidenceName: String,
-        cardId: String
+        cardId: String,
+        siteId: String,
     ): StorageReference {
+        val prefixImages = "site-${siteId}/$cardId/images/$evidenceName"
+        val prefixVideos = "site-${siteId}/$cardId/videos/$evidenceName"
+        val prefixAudios = "site-${siteId}/$cardId/audios/$evidenceName"
         return when (type) {
-            EvidenceType.IMCR -> firebaseStorage.reference.child("evidence/created/images/$cardId/$evidenceName")
-            EvidenceType.VICR -> firebaseStorage.reference.child("evidence/created/videos/$cardId/$evidenceName")
-            EvidenceType.AUCR -> firebaseStorage.reference.child("evidence/created/audios/$cardId/$evidenceName")
-            EvidenceType.IMCL -> firebaseStorage.reference.child("evidence/closed/images/$cardId/$evidenceName")
-            EvidenceType.VICL -> firebaseStorage.reference.child("evidence/closed/videos/$cardId/$evidenceName")
-            EvidenceType.AUCL -> firebaseStorage.reference.child("evidence/closed/audios/$cardId/$evidenceName")
-            EvidenceType.IMPS -> firebaseStorage.reference.child("evidence/provisional_solution/images/$cardId/$evidenceName")
-            EvidenceType.AUPS -> firebaseStorage.reference.child("evidence/provisional_solution/audios/$cardId/$evidenceName")
-            EvidenceType.VIPS ->  firebaseStorage.reference.child("evidence/provisional_solution/videos/$cardId/$evidenceName")
+            EvidenceType.IMCR, EvidenceType.IMCL, EvidenceType.IMPS -> firebaseStorage.reference.child(
+                prefixImages
+            )
+
+            EvidenceType.VICR, EvidenceType.VICL, EvidenceType.VIPS -> firebaseStorage.reference.child(
+                prefixVideos
+            )
+
+            EvidenceType.AUCR, EvidenceType.AUCL, EvidenceType.AUPS -> firebaseStorage.reference.child(
+                prefixAudios
+            )
         }
     }
 }

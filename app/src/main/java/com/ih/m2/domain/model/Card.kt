@@ -114,7 +114,8 @@ data class Card(
     val updatedAt: String?,
     val deletedAt: String?,
     val evidences: List<Evidence>? = emptyList(),
-    val stored: String? = STORED_REMOTE
+    val stored: String? = STORED_REMOTE,
+    val creationDateFormatted: String? = null
 ) {
     companion object {
         fun mock(): Card {
@@ -422,13 +423,13 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
     )
 }
 
-fun Card.validateDate(): String {
-   return if (this.stored == STORED_REMOTE) {
-        creationDate.toFormatDate(ISO_FORMAT)
-    } else {
-        creationDate.toFormatDate(NORMAL_FORMAT)
-    }
+fun Card.getCreationDate(): String {
+   return this.creationDateFormatted.defaultIfNull(
+       creationDate
+   )
 }
+
+
 
 fun Card.validateProvisionalDate(): String {
     return if (this.stored == STORED_REMOTE) {

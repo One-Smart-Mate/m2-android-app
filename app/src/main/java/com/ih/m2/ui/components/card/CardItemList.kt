@@ -29,11 +29,11 @@ import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.cardTitle
 import com.ih.m2.domain.model.enableDefinitiveSolution
 import com.ih.m2.domain.model.enableProvisionalSolution
+import com.ih.m2.domain.model.getCreationDate
 import com.ih.m2.domain.model.getStatus
 import com.ih.m2.domain.model.isClosed
 import com.ih.m2.domain.model.preclassifierValue
 import com.ih.m2.domain.model.priorityValue
-import com.ih.m2.domain.model.validateDate
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.CustomTag
 import com.ih.m2.ui.components.SectionTag
@@ -119,7 +119,7 @@ fun CardItemList(
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.validateDate(),
+                value = card.getCreationDate(),
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),

@@ -53,7 +53,7 @@ fun CustomButton(
     }
 
     val buttonModifier = when (buttonType) {
-        ButtonType.DEFAULT, ButtonType.ERROR -> {
+        ButtonType.DEFAULT, ButtonType.ERROR, ButtonType.TEXT -> {
             modifier
                 .fillMaxWidth()
                 .height(54.dp)
@@ -86,7 +86,7 @@ fun CustomButton(
 }
 
 enum class ButtonType {
-    DEFAULT, OUTLINE, ERROR
+    DEFAULT, OUTLINE, ERROR, TEXT
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -107,6 +107,10 @@ fun CustomButtonPreview() {
                 }
                 CustomSpacer()
                 CustomButton(text = "Error", buttonType = ButtonType.ERROR) {
+
+                }
+
+                CustomButton(text = "Text", buttonType = ButtonType.TEXT) {
 
                 }
             }
