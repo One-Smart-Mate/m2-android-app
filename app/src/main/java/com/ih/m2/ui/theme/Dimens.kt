@@ -8,6 +8,7 @@ val PaddingSmall = 12.dp
 val PaddingNormal = 16.dp
 val PaddingLarge = 24.dp
 val PaddingToolbar = 36.dp
+val PaddingToolbarVertical = 45.dp
 
 val Size1 = 1.dp
 val Size2 = 2.dp

@@ -17,6 +17,7 @@ import com.ih.m2.ui.pages.home.HomeScreen
 import com.ih.m2.ui.pages.home.HomeScreenV2
 import com.ih.m2.ui.pages.login.LoginScreen
 import com.ih.m2.ui.pages.profile.ProfileScreen
+import com.ih.m2.ui.pages.qr.QrScannerScreen
 import com.ih.m2.ui.pages.solution.SolutionScreen
 import com.ih.m2.ui.utils.EMPTY
 import com.ih.m2.ui.utils.LOAD_CATALOGS
@@ -96,6 +97,12 @@ fun AppNavigation(
             ProfileScreen(navController = navController)
         }
 
+        composable(
+            Screen.QrScanner.route
+        ) {
+            QrScannerScreen(navController = navController)
+        }
+
     }
 }
 
@@ -147,4 +154,8 @@ fun NavController.navigateToCreateCard(filter: String = EMPTY) {
 
 fun NavController.navigateToProfile() {
     navigate(Screen.Profile.route)
+}
+
+fun NavController.navigateToQrScanner() {
+    navigate(Screen.QrScanner.route)
 }

@@ -122,14 +122,16 @@ fun CardListContent(
         ) {
             stickyHeader {
                 CustomAppBar(navController = navController, title = title)
-                Box(
-                    modifier = Modifier.fillParentMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    FiltersBottomSheetV2(
-                        onFilterChange = onFilterChange,
-                        onClickApply = onClickApply
-                    )
+                AnimatedVisibility(visible = cards.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier.fillParentMaxWidth(),
+                        contentAlignment = Alignment.CenterEnd
+                    ) {
+                        FiltersBottomSheetV2(
+                            onFilterChange = onFilterChange,
+                            onClickApply = onClickApply
+                        )
+                    }
                 }
                 CustomSpacer(space = SpacerSize.SMALL)
             }

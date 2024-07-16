@@ -70,8 +70,6 @@ fun LoginScreen(
     val scope = rememberCoroutineScope()
 
     LoginContent(
-        email = state.email,
-        password = state.password,
         onEmailChange = {
             viewModel.process(LoginViewModel.Action.SetEmail(it))
         },
@@ -111,7 +109,6 @@ fun LoginScreen(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.isAuthenticated) {
-                    //  navController.navigateToHome()
                     navController.navigateToHomeV2()
                 }
             }
@@ -121,8 +118,6 @@ fun LoginScreen(
 @Composable
 fun LoginContent(
     modifier: Modifier = Modifier,
-    email: String,
-    password: String,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
@@ -136,8 +131,6 @@ fun LoginContent(
             Spacer(modifier = Modifier.fillMaxHeight())
             LoginForm(
                 modifier = Modifier.fillParentMaxSize(),
-                email = email,
-                password = password,
                 onEmailChange = onEmailChange,
                 onPasswordChange = onPasswordChange,
                 isButtonLoading = isButtonLoading,
@@ -150,8 +143,6 @@ fun LoginContent(
 @Composable
 fun LoginForm(
     modifier: Modifier,
-    email: String,
-    password: String,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
@@ -166,7 +157,6 @@ fun LoginForm(
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
-                value = email,
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.email),
                 placeholder = stringResource(R.string.enter_your_email),
@@ -176,7 +166,6 @@ fun LoginForm(
             }
             CustomSpacer()
             CustomTextField(
-                value = password,
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.enter_your_password),
@@ -219,8 +208,6 @@ fun LoginPreview() {
     M2androidappTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             LoginContent(
-                email = "test@gmial.com",
-                password = "Password",
                 onEmailChange = {},
                 onPasswordChange = {},
                 isButtonLoading = false,

@@ -36,6 +36,7 @@ import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.CARD_ANOMALIES
+import com.ih.m2.ui.utils.CARD_BEHAVIOR
 import com.ih.m2.ui.utils.CARD_TYPE_METHODOLOGY_C
 import com.ih.m2.ui.utils.CARD_TYPE_METHODOLOGY_M
 import com.ih.m2.ui.utils.EMPTY
@@ -277,10 +278,16 @@ class CreateCardViewModel @AssistedInject constructor(
 
     private fun handleGetCardTypes(filter: String) {
         viewModelScope.launch(coroutineContext) {
-            val cardType = if (filter == CARD_ANOMALIES) {
-                CARD_TYPE_METHODOLOGY_M
-            } else {
-                CARD_TYPE_METHODOLOGY_C
+            val cardType = when (filter) {
+                CARD_ANOMALIES -> {
+                    CARD_TYPE_METHODOLOGY_M
+                }
+                CARD_BEHAVIOR -> {
+                    CARD_TYPE_METHODOLOGY_C
+                }
+                else -> {
+                    EMPTY
+                }
             }
             kotlin.runCatching {
                 getCardTypesUseCase(filter = cardType)

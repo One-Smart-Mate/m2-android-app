@@ -30,6 +30,7 @@ private object Route {
     const val CARD_LIST  = "$CARD_LIST_PATH/{$ARG_CARD_FILTER}"
 
     const val PROFILE = "profile"
+    const val QR_SCANNER = "qr-scanner"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -43,4 +44,5 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object Solution: Screen(Route.SOLUTION, Route.SOLUTION_PATH)
     data object CardList: Screen(Route.CARD_LIST, Route.CARD_LIST_PATH)
     data object Profile: Screen(Route.PROFILE)
+    data object QrScanner: Screen(Route.QR_SCANNER)
 }

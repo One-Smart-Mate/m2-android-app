@@ -35,8 +35,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,6 +80,7 @@ import com.ih.m2.ui.extensions.headerContent
 import com.ih.m2.ui.navigation.navigateToAccount
 import com.ih.m2.ui.navigation.navigateToCardList
 import com.ih.m2.ui.navigation.navigateToCreateCard
+import com.ih.m2.ui.navigation.navigateToQrScanner
 import com.ih.m2.ui.theme.M2androidappTheme
 import com.ih.m2.ui.theme.PaddingNormal
 import com.ih.m2.ui.theme.PaddingToolbar
@@ -115,7 +118,7 @@ fun HomeScreenV2(
             },
             networkStatus = state.networkStatus,
             lastSyncUpdateDate = state.lastSyncUpdate,
-            showSyncCards = state.showSyncCards
+            showSyncCards = state.showSyncCards,
         )
     }
 
@@ -160,7 +163,7 @@ private fun HomeContentV2(
     onCardClick: (String) -> Unit,
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
-    showSyncCards: Boolean
+    showSyncCards: Boolean,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -172,7 +175,7 @@ private fun HomeContentV2(
                         navController = navController,
                         user = it,
                         padding = padding.calculateTopPadding(),
-                        networkStatus = networkStatus
+                        networkStatus = networkStatus,
                     )
                 }
             }
@@ -269,7 +272,7 @@ private fun HomeAppBarV2(
     navController: NavController,
     user: User,
     padding: Dp,
-    networkStatus: NetworkStatus
+    networkStatus: NetworkStatus,
 ) {
     Column(
         modifier = Modifier.headerContent(padding),
@@ -326,7 +329,10 @@ private fun HomeAppBarV2(
             Icon(
                 painter = painterResource(id = R.drawable.ic_qr_scan),
                 contentDescription = EMPTY,
-                tint = getColor()
+                tint = getColor(),
+                modifier = Modifier.clickable {
+                    navController.navigateToQrScanner()
+                }
             )
         }
         CustomSpacer()
@@ -348,7 +354,7 @@ private fun HomeScreenPreview() {
                 onCardClick = {},
                 networkStatus = NetworkStatus.WIFI_CONNECTED,
                 lastSyncUpdateDate = "",
-                showSyncCards = true
+                showSyncCards = true,
             )
         }
     }

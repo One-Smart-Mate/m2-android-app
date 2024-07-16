@@ -64,11 +64,6 @@ fun LoadingScreen(
                 Text(
                     text = text,
                     modifier = Modifier
-                        .graphicsLayer {
-                            scaleX = scale
-                            scaleY = scale
-                            transformOrigin = TransformOrigin.Center
-                        }
                         .align(Alignment.Center),
                     // Text composable does not take TextMotion as a parameter.
                     // Provide it via style argument but make sure that we are copying from current theme

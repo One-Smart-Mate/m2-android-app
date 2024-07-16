@@ -10,10 +10,14 @@ import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.filterByStatus
+import com.ih.m2.domain.model.isAnomalies
+import com.ih.m2.domain.model.isBehavior
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
+import com.ih.m2.domain.usecase.card.GetCardsZoneUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.extensions.toFilterStatus
 import com.ih.m2.ui.utils.CARD_ANOMALIES
 import com.ih.m2.ui.utils.CARD_BEHAVIOR
@@ -31,7 +35,8 @@ class CardListViewModel @AssistedInject constructor(
     private val coroutineContext: CoroutineContext,
     private val getCardsUseCase: GetCardsUseCase,
     @ApplicationContext private val context: Context,
-    private val getUserUseCase: GetUserUseCase
+    private val getUserUseCase: GetUserUseCase,
+    private val getCardsZoneUseCase: GetCardsZoneUseCase
 ) : MavericksViewModel<CardListViewModel.UiState>(initialState) {
 
     data class UiState(
@@ -53,10 +58,21 @@ class CardListViewModel @AssistedInject constructor(
 
     fun process(action: Action) {
         when (action) {
-            is Action.GetCards -> handleGetCards(action.filter)
+            is Action.GetCards -> validateFilter(action.filter)
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
             is Action.OnFilterChange -> setState { copy(filter = action.filter) }
             is Action.OnApplyFilterClick -> handleOnApplyFilterClick()
+        }
+    }
+
+    private fun validateFilter(filter: String) {
+        val isFromQr = filter.contains(":")
+        Log.e("test", "Filteeer $filter -- ${isFromQr}")
+        if (isFromQr) {
+            val superiorId = filter.substringAfter(":")
+            handleGetCardsZone(superiorId)
+        } else {
+            handleGetCards(filter)
         }
     }
 
@@ -89,13 +105,7 @@ class CardListViewModel @AssistedInject constructor(
                     )
                 }
             }.onFailure {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = it.localizedMessage.orEmpty(),
-                        refreshCards = false
-                    )
-                }
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
@@ -120,6 +130,49 @@ class CardListViewModel @AssistedInject constructor(
             CARD_ANOMALIES -> context.getString(R.string.anomalies_cards)
             CARD_BEHAVIOR -> context.getString(R.string.behaviour_cards)
             else -> context.getString(R.string.cards)
+        }
+    }
+
+    private fun handleGetCardsZone(superiorId: String) {
+        Log.e("test", "superiorId $superiorId")
+        setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                getCardsZoneUseCase(superiorId)
+            }.onSuccess {
+                setState {
+                    val isBehavior = it.firstOrNull()?.isBehavior().defaultIfNull(false)
+                    val isAnomalies = it.firstOrNull()?.isAnomalies().defaultIfNull(false)
+                    val result = if (isBehavior) {
+                        Pair(it.toBehaviorList(), CARD_BEHAVIOR)
+                    } else if (isAnomalies) {
+                        Pair(it.toAnomaliesList(), CARD_ANOMALIES)
+                    } else {
+                        Pair(it, EMPTY)
+                    }
+                    Log.e("test", "Cards zones $it -- $isBehavior ?? $isAnomalies")
+                    copy(
+                        cards = result.first,
+                        isLoading = false,
+                        message = EMPTY,
+                        title = getTitle(result.second),
+                        refreshCards = false,
+                        cardTypes = result.second
+                    )
+                }
+            }.onFailure {
+                cleanScreenStates()
+            }
+        }
+    }
+
+    private fun cleanScreenStates(message: String = EMPTY) {
+        setState {
+            copy(
+                isLoading = false,
+                message = message,
+                refreshCards = false
+            )
         }
     }
 

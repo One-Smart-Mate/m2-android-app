@@ -110,29 +110,23 @@ fun DevScreen() {
                         .width(Size200)
                         .height(Size250)
                         .clickable {
-
+                            showButton = true
                         }
                 )
 
                 if (showButton) {
-                    QrCamera(
-                         modifier = Modifier.fillParentMaxSize()
-                    )
-//                    Dialog(
-//                        onDismissRequest = {
-//                            showButton = false
-//                        },
-//                        properties = DialogProperties(
-//                            dismissOnBackPress = true,
-//                            dismissOnClickOutside = false,
-//                            usePlatformDefaultWidth = false
-//                        )
-//                    ) {
-//                        VideoPlayer(
-//                            modifier = Modifier.fillMaxSize(),
-//                            url = "https://firebasestorage.googleapis.com/v0/b/android-m2-app.appspot.com/o/evidence%2Fcreated%2Fvideos%2F1c6e286c-a897-4504-aed6-d62659996ef1%2FVIDEO_CR_20240707_012558.mp4?alt=media&token=b077ec04-7a05-4f86-a60f-9ca6b53a8ee1"
-//                        )
-//                    }
+                    Dialog(
+                        onDismissRequest = {
+                            showButton = false
+                        },
+                        properties = DialogProperties(
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = false,
+                            usePlatformDefaultWidth = false
+                        )
+                    ) {
+
+                    }
                 }
 
                 Column {

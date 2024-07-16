@@ -57,7 +57,7 @@ fun String?.toFormatDate(format: String): String {
     } catch (e: Exception) {
         Log.e("test", "Exception ${e.localizedMessage}")
         FirebaseCrashlytics.getInstance().recordException(e)
-        EMPTY
+        this.orEmpty()
     }
 }
 

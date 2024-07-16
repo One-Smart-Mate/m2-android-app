@@ -10,30 +10,59 @@ import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
-class BarcodeAnalyzerHelper(private val context: Context) : ImageAnalysis.Analyzer {
+import android.graphics.ImageFormat
 
-    private val options = BarcodeScannerOptions.Builder()
-        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
-        .build()
+import com.google.zxing.*
+import com.google.zxing.common.HybridBinarizer
+import java.nio.ByteBuffer
 
-    private val scanner = BarcodeScanning.getClient(options)
+class BarcodeAnalyzerHelper(
+    private val onQrCodeScanned: (String) -> Unit
+): ImageAnalysis.Analyzer {
 
-    @SuppressLint("UnsafeOptInUsageError")
-    override fun analyze(imageProxy: ImageProxy) {
-        imageProxy.image
-            ?.let { image ->
-                scanner.process(
-                    InputImage.fromMediaImage(
-                        image, imageProxy.imageInfo.rotationDegrees
+    private val supportedImageFormats = listOf(
+        ImageFormat.YUV_420_888,
+        ImageFormat.YUV_422_888,
+        ImageFormat.YUV_444_888,
+    )
+
+    override fun analyze(image: ImageProxy) {
+        if(image.format in supportedImageFormats) {
+            val bytes = image.planes.first().buffer.toByteArray()
+            val source = PlanarYUVLuminanceSource(
+                bytes,
+                image.width,
+                image.height,
+                0,
+                0,
+                image.width,
+                image.height,
+                false
+            )
+            val binaryBmp = BinaryBitmap(HybridBinarizer(source))
+            try {
+                val result = MultiFormatReader().apply {
+                    setHints(
+                        mapOf(
+                            DecodeHintType.POSSIBLE_FORMATS to arrayListOf(
+                                BarcodeFormat.QR_CODE
+                            )
+                        )
                     )
-                ).addOnSuccessListener { barcode ->
-                    barcode?.takeIf { it.isNotEmpty() }
-                        ?.mapNotNull { it.rawValue }
-                        ?.joinToString(",")
-                        ?.let { Toast.makeText(context, it, Toast.LENGTH_SHORT).show() }
-                }.addOnCompleteListener {
-                    imageProxy.close()
-                }
+                }.decode(binaryBmp)
+                onQrCodeScanned(result.text)
+            } catch(e: Exception) {
+                e.printStackTrace()
+            } finally {
+                image.close()
             }
+        }
+    }
+
+    private fun ByteBuffer.toByteArray(): ByteArray {
+        rewind()
+        return ByteArray(remaining()).also {
+            get(it)
+        }
     }
 }

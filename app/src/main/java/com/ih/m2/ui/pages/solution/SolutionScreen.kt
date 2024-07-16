@@ -90,7 +90,6 @@ fun SolutionScreen(
         SolutionScreenContent(
             navController = navController,
             title = getSolutionScreenTitle(state.solutionType),
-            query = state.query,
             onSearch = {
                 viewModel.process(SolutionViewModel.Action.OnSearchEmployee(it))
             },
@@ -99,7 +98,6 @@ fun SolutionScreen(
                 viewModel.process(SolutionViewModel.Action.OnSelectEmployee(it))
             },
             selectedEmployee = state.selectedEmployee,
-            comments = state.comments,
             onCommentChange = {
                 viewModel.process(SolutionViewModel.Action.OnCommentChange(it))
             },
@@ -170,12 +168,10 @@ fun getSolutionScreenTitle(solutionType: String): String {
 fun SolutionScreenContent(
     title: String,
     navController: NavController,
-    query: String,
     onSearch: (String) -> Unit,
     employeeList: List<Employee>,
     onSelectEmployee: (Employee) -> Unit,
     selectedEmployee: Employee? = null,
-    comments: String,
     onCommentChange: (String) -> Unit,
     onSave: () -> Unit,
     evidences: List<Evidence>,
@@ -200,7 +196,6 @@ fun SolutionScreenContent(
                         .fillMaxWidth()
                         .padding(PaddingNormal),
                     label = stringResource(R.string.search_for_a_user),
-                    value = query,
                     icon = Icons.Filled.Search
                 ) {
                     onSearch(it)
@@ -256,7 +251,6 @@ fun SolutionScreenContent(
                         .fillMaxWidth()
                         .padding(PaddingNormal),
                     label = stringResource(R.string.comments_at_solution),
-                    value = comments,
                     icon = Icons.Filled.Create
                 ) {
                     onCommentChange(it)
@@ -303,17 +297,7 @@ fun UserCardItem(
 fun SolutionScreenPreview() {
     M2androidappTheme {
         Surface {
-            SolutionScreenContent(
-                "Provisional solution",
-                rememberNavController(),
-                "",
-                {},
-                emptyList(),
-                {},
-                selectedEmployee = Employee("", "Fausto ", ""),
-                "",
-                {}, {}, emptyList(), { _, _ -> }, {}, 0, ""
-            )
+
         }
     }
 }

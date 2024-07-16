@@ -129,7 +129,6 @@ fun CreateCardScreen(
             },
             selectedLevelList = state.selectedLevelList,
             lastLevelCompleted = state.lastLevelCompleted,
-            comment = state.comment,
             onCommentChange = {
                 viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
             },
@@ -204,7 +203,6 @@ fun CreateCardContent(
     onLevelClick: (NodeCardItem, key: Int) -> Unit,
     selectedLevelList: Map<Int, String>,
     lastLevelCompleted: Boolean,
-    comment: String,
     onCommentChange: (String) -> Unit,
     isSecureCard: Boolean = false,
     selectedSecureOption: String = EMPTY,
@@ -278,7 +276,6 @@ fun CreateCardContent(
                     CustomSpacer()
                     CustomTextField(
                         label = stringResource(R.string.comments),
-                        value = comment,
                         icon = Icons.Filled.Create,
                         modifier = Modifier.fillParentMaxWidth(),
                         maxLines = 5
@@ -560,7 +557,6 @@ fun CreateCardPreview() {
                 onLevelClick = { _, _ -> },
                 selectedLevelList = emptyMap(),
                 lastLevelCompleted = true,
-                comment = EMPTY,
                 onCommentChange = {},
                 evidences = emptyList(),
                 onAddEvidence = { _, _ -> },

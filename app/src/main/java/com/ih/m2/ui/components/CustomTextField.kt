@@ -46,7 +46,6 @@ fun CustomTextField(
     modifier: Modifier = Modifier,
     label: String,
     placeholder: String = EMPTY,
-    value: String,
     icon: ImageVector,
     maxLines: Int = 1,
     isPassword: Boolean = false,
@@ -122,7 +121,6 @@ private fun LoginPreview() {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             Column {
                 CustomTextField(
-                    value = "",
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(R.string.email),
                     placeholder = stringResource(R.string.enter_your_email),
@@ -130,7 +128,6 @@ private fun LoginPreview() {
                 ) {}
                 CustomSpacer()
                 CustomTextField(
-                    value = "",
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(R.string.password),
                     placeholder = stringResource(R.string.enter_your_password),
