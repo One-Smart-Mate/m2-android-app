@@ -12,6 +12,8 @@ import androidx.compose.material.icons.Icons
 
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -124,14 +126,14 @@ private fun LoginPreview() {
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(R.string.email),
                     placeholder = stringResource(R.string.enter_your_email),
-                    icon = Icons.Default.Email
+                    icon = Icons.Outlined.Email
                 ) {}
                 CustomSpacer()
                 CustomTextField(
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(R.string.password),
                     placeholder = stringResource(R.string.enter_your_password),
-                    icon = Icons.Default.Lock,
+                    icon = Icons.Outlined.Lock,
                     isPassword = true
                 ) {}
             }

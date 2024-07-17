@@ -3,6 +3,7 @@ package com.ih.m2.data.repository.auth
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.LoginRequest
+import com.ih.m2.data.model.RestorePasswordRequest
 import com.ih.m2.data.model.toDomain
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.repository.auth.AuthRepository
@@ -19,6 +20,27 @@ class AuthRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun sendRestorePasswordCode(data: RestorePasswordRequest) {
+        val response = apiService.sendRestorePasswordCode(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun verifyPasswordCode(data: RestorePasswordRequest) {
+        val response = apiService.verifyPasswordCode(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun resetPassword(data: RestorePasswordRequest) {
+        val response = apiService.resetPassword(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
             error(response.getErrorMessage())
         }
     }

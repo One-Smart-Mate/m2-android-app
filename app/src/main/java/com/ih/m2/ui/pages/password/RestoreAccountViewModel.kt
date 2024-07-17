@@ -1,16 +1,22 @@
 package com.ih.m2.ui.pages.password
 
-import android.util.Log
+import android.content.Context
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.m2.R
+import com.ih.m2.core.notifications.NotificationManager
+import com.ih.m2.data.model.RestorePasswordRequest
+import com.ih.m2.domain.usecase.password.ResetPasswordUseCase
+import com.ih.m2.domain.usecase.password.SendRestorePasswordCodeUseCase
+import com.ih.m2.domain.usecase.password.VerifyPasswordCodeUseCase
 import com.ih.m2.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.delay
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
@@ -18,6 +24,11 @@ import kotlin.coroutines.CoroutineContext
 class RestoreAccountViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
+    @ApplicationContext private val context: Context,
+    private val sendRestorePasswordCodeUseCase: SendRestorePasswordCodeUseCase,
+    private val verifyPasswordCodeUseCase: VerifyPasswordCodeUseCase,
+    private val resetPasswordUseCase: ResetPasswordUseCase,
+    private val notificationManager: NotificationManager
 ) : MavericksViewModel<RestoreAccountViewModel.UiState>(initialState) {
 
 
@@ -54,32 +65,35 @@ class RestoreAccountViewModel @AssistedInject constructor(
     }
 
     private fun handleOnAction(action: String) {
-        Log.e("test","Action $action")
         setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
             when(action) {
                 "email_check" -> {
                     if (state.email.isEmpty()) {
-                        setState { copy(isLoading = false, message= "Enter a valid email") }
+                        setState { copy(isLoading = false, message= context.getString(R.string.enter_a_valid_email)) }
                         return@launch
                     }
                     handleCheckEmail()
                 }
                 "code_check" -> {
                     if (state.code.isEmpty()) {
-                        setState { copy(isLoading = false, message= "Enter a valid code") }
+                        setState { copy(isLoading = false, message= context.getString(R.string.enter_a_valid_code)) }
                         return@launch
                     }
                     handleCheckCode()
                 }
                 "password_check" -> {
                     if (state.password.isEmpty() || state.confirmPassword.isEmpty()) {
-                        setState { copy(isLoading = false, message= "Enter a valid password") }
+                        setState { copy(isLoading = false, message= context.getString(R.string.enter_a_valid_password)) }
                         return@launch
                     }
                     if (state.password != state.confirmPassword) {
-                        setState { copy(isLoading = false, message= "Different passwords") }
+                        setState { copy(isLoading = false, message= context.getString(R.string.different_passwords)) }
+                        return@launch
+                    }
+                    if (state.password.length <= 7) {
+                        setState { copy(isLoading = false, message= context.getString(R.string.password_must_be_at_least_8_characters)) }
                         return@launch
                     }
                     handleChangePassword()
@@ -94,18 +108,64 @@ class RestoreAccountViewModel @AssistedInject constructor(
     }
 
     private fun handleCheckEmail() {
-        setState { copy(isLoading = false, currentStep = 2) }
+        viewModelScope.launch(coroutineContext) {
+            val email = stateFlow.first().email
+            val request = RestorePasswordRequest(email = email)
+            kotlin.runCatching {
+                sendRestorePasswordCodeUseCase(request)
+            }.onSuccess {
+                setState { copy(isLoading = false, currentStep = 2) }
+            }.onFailure {
+                setState { copy(isLoading = false, message = getErrorMessage(it.localizedMessage.orEmpty())) }
+            }
+        }
     }
     private fun handleCheckCode() {
-        setState { copy(isLoading = false, currentStep = 3) }
+        viewModelScope.launch(coroutineContext) {
+            val state = stateFlow.first()
+            val request = RestorePasswordRequest(email = state.email, resetCode = state.code)
+            kotlin.runCatching {
+                verifyPasswordCodeUseCase(request)
+            }.onSuccess {
+                setState { copy(isLoading = false, currentStep = 3) }
+            }.onFailure {
+                setState { copy(isLoading = false, message = getErrorMessage(it.localizedMessage.orEmpty())) }
+            }
+        }
     }
 
     private fun handleChangePassword() {
-        setState { copy(isLoading = false, isComplete = true) }
+        viewModelScope.launch(coroutineContext) {
+            val state = stateFlow.first()
+            val request = RestorePasswordRequest(
+                email = state.email,
+                resetCode = state.code,
+                newPassword = state.password
+            )
+            kotlin.runCatching {
+                resetPasswordUseCase(request)
+            }.onSuccess {
+                notificationManager.buildNotificationSuccessChangePassword()
+                setState { copy(isLoading = false, isComplete = true) }
+            }.onFailure {
+                setState { copy(isLoading = false, message = getErrorMessage(it.localizedMessage.orEmpty())) }
+            }
+        }
     }
 
     private fun handleResendCode() {
         setState { copy(canResend = false) }
+        handleCheckEmail()
+    }
+
+    private fun getErrorMessage(error: String): String {
+        return when(error) {
+            "User not found" -> context.getString(R.string.user_not_found)
+            "Wrong reset code" -> context.getString(R.string.wrong_reset_code)
+            "ResetCode must be longer than or equal to 6 characters" -> context.getString(R.string.code_must_be_longer_or_equal_to_6_characters)
+            "NewPassword must be longer than or equal to 8 characters" -> context.getString(R.string.password_must_be_at_least_8_characters)
+            else -> context.getString(R.string.something_went_wrong)
+        }
     }
 
     @AssistedFactory

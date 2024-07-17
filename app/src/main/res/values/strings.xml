@@ -122,4 +122,15 @@
     <string name="valid_superior_id">You need to enter a valid area id</string>
     <string name="you_have_new_catalogs_to_sync">You have new catalogs to sync</string>
     <string name="enter_the_qr_code">Enter the qr code</string>
+
+    <string name="user_not_found">User not found</string>
+    <string name="wrong_reset_code">Wrong reset code</string>
+    <string name="code_must_be_longer_or_equal_to_6_characters">Code must be longer or equal to 6 characters</string>
+    <string name="password_must_be_at_least_8_characters">Password must be at least 8 characters</string>
+    <string name="password_reset">Password reset</string>
+    <string name="password_successfully_updated">Password successfully updated!</string>
+    <string name="enter_a_valid_email">Enter a valid email</string>
+    <string name="enter_a_valid_code">Enter a valid code</string>
+    <string name="enter_a_valid_password">Enter a valid password</string>
+    <string name="different_passwords">Different passwords</string>
 </resources>

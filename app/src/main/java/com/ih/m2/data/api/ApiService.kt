@@ -14,6 +14,7 @@ import com.ih.m2.data.model.GetPreclassifiersResponse
 import com.ih.m2.data.model.GetPrioritiesResponse
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.data.model.LoginResponse
+import com.ih.m2.data.model.RestorePasswordRequest
 import com.ih.m2.data.model.SolutionResponse
 import retrofit2.Call
 import retrofit2.http.Body
@@ -22,12 +23,12 @@ import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
 
-interface ApiService  {
+interface ApiService {
 
     @POST("auth/login")
     fun login(
         @Body body: LoginRequest
-    ) : Call<LoginResponse>
+    ): Call<LoginResponse>
 
     @GET("card/all/{siteId}")
     fun getCards(
@@ -60,18 +61,18 @@ interface ApiService  {
     @POST("card/create")
     fun createCard(
         @Body body: CreateCardRequest
-    ) : Call<CreateCardResponse>
+    ): Call<CreateCardResponse>
 
 
     @GET("level/all/{siteId}")
     fun getLevels(
         @Path("siteId") siteId: String
-    ) : Call<GetLevelsResponse>
+    ): Call<GetLevelsResponse>
 
     @GET("users/all/{siteId}")
     fun getEmployees(
         @Path("siteId") siteId: String
-    ) : Call<GetEmployeesResponse>
+    ): Call<GetEmployeesResponse>
 
     @GET("card/all/zone/{superiorId}/{siteId}")
     fun getCardsZone(
@@ -82,12 +83,27 @@ interface ApiService  {
     @PUT("card/update/definitive-solution")
     fun saveDefinitiveSolution(
         @Body body: CreateDefinitiveSolutionRequest
-    ) : Call<SolutionResponse>
+    ): Call<SolutionResponse>
 
     @PUT("card/update/provisional-solution")
     fun saveProvisionalSolution(
         @Body body: CreateProvisionalSolutionRequest
-    ) : Call<SolutionResponse>
+    ): Call<SolutionResponse>
+
+    @POST("users/send-code")
+    fun sendRestorePasswordCode(
+        @Body body: RestorePasswordRequest
+    ): Call<Any>
+
+    @POST("users/verify-code")
+    fun verifyPasswordCode(
+        @Body body: RestorePasswordRequest
+    ): Call<Any>
+
+    @POST("users/reset-password")
+    fun resetPassword(
+        @Body body: RestorePasswordRequest
+    ): Call<Any>
 
 }
 

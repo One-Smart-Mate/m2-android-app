@@ -202,6 +202,19 @@ class HomeViewModelV2 @AssistedInject constructor(
                 }
                 return@launch
             }
+            if (state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED  ||
+                state.networkStatus == NetworkStatus.DATA_DISCONNECTED) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet),
+                        showSyncCards = true,
+                        isSyncing = false
+                    )
+                }
+                return@launch
+            }
             appContext.runWorkRequest()
             WorkManagerUUID.get()?.let { uuid ->
                 WorkManager.getInstance(appContext)

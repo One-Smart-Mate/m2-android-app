@@ -120,6 +120,18 @@
     <string name="card_successfully">Tarjeta creada!</string>
     <string name="card_successfully_desc">Se registro correctamente</string>
     <string name="valid_superior_id">Ingresa un id de área válido</string>
-    <string name="you_have_new_catalogs_to_sync">Tienes nuevos catalogos por sincronizar</string>
+    <string name="you_have_new_catalogs_to_sync">Tienes nuevos catálogos por sincronizar</string>
     <string name="enter_the_qr_code">Ingresa el código del QR</string>
+
+    <string name="user_not_found">Usuario no encontrado</string>
+    <string name="wrong_reset_code">Código de verificación incorrecto</string>
+    <string name="code_must_be_longer_or_equal_to_6_characters">El código debe ser igual o mayor a 6 caracteres</string>
+    <string name="password_must_be_at_least_8_characters">La contraseña debe tener al menos 8 caracteres</string>
+    <string name="password_reset">Cambio de contraseña</string>
+    <string name="password_successfully_updated">Tu contraseña fue actualizada!</string>
+    <string name="enter_a_valid_email">Ingresa un correo electrónico válido</string>
+    <string name="enter_a_valid_code">Ingresa un código válido</string>
+    <string name="enter_a_valid_password">Ingresa una contraseña valida</string>
+    <string name="different_passwords">Las contraseñas no coinciden</string>
+
 </resources>

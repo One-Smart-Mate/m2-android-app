@@ -62,6 +62,17 @@ class NotificationManager @Inject constructor(private val context: Context) {
         }
     }
 
+    fun buildNotificationSuccessChangePassword() {
+        try {
+            buildNotification(
+                title = context.getString(R.string.password_reset),
+                description = context.getString(R.string.password_successfully_updated)
+            )
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
+        }
+    }
+
     fun buildProgressNotification(): Int {
         val currentProgress = 0
         val notificationId = getNotificationId()

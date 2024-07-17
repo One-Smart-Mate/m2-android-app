@@ -43,5 +43,6 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 }
 
 enum class FirebaseNotificationType(val type: String) {
-    SYNC_REMOTE_CATALOGS("SYNC_CATALOGS"), UNKNOWN(EMPTY)
+    SYNC_REMOTE_CATALOGS("SYNC_REMOTE_CATALOGS"), UNKNOWN(EMPTY),
+    SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS")
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -53,7 +54,7 @@ fun FiltersBottomSheetV2(
         mutableStateOf(false)
     }
 
-    CustomIconButton(text = stringResource(R.string.filters), icon = Icons.Default.Menu) {
+    CustomIconButton(text = stringResource(R.string.filters), icon = Icons.Outlined.Menu) {
         showFiltersBottomSheet = true
     }
 

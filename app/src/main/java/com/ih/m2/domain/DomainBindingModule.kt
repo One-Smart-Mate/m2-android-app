@@ -36,6 +36,12 @@ import com.ih.m2.domain.usecase.logout.LogoutUseCase
 import com.ih.m2.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCaseImpl
+import com.ih.m2.domain.usecase.password.ResetPasswordUseCase
+import com.ih.m2.domain.usecase.password.ResetPasswordUseCaseImpl
+import com.ih.m2.domain.usecase.password.SendRestorePasswordCodeUseCase
+import com.ih.m2.domain.usecase.password.SendRestorePasswordCodeUseCaseImpl
+import com.ih.m2.domain.usecase.password.VerifyPasswordCodeUseCase
+import com.ih.m2.domain.usecase.password.VerifyPasswordCodeUseCaseImpl
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
@@ -118,4 +124,13 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetFirebaseNotificationUseCase(getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl): GetFirebaseNotificationUseCase
+
+    @Binds
+    fun bindSendRestorePasswordUseCase(sendRestorePasswordCodeUseCaseImpl: SendRestorePasswordCodeUseCaseImpl): SendRestorePasswordCodeUseCase
+
+    @Binds
+    fun bindResetPasswordUseCase(resetPasswordUseCaseImpl: ResetPasswordUseCaseImpl): ResetPasswordUseCase
+
+    @Binds
+    fun bindVerifyPasswordCodeUseCase(verifyPasswordCodeUseCaseImpl: VerifyPasswordCodeUseCaseImpl): VerifyPasswordCodeUseCase
 }
