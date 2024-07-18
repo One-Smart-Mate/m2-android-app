@@ -23,6 +23,7 @@ class SyncFirebaseTokenUseCaseImpl @Inject constructor(
                 Log.e("Firebase","Token $token")
                 sharedPreferences.saveFirebaseToken(token)
             }
+            Log.e("Firebase","Token $storedToken")
             true
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)

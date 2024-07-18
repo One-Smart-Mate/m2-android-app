@@ -27,6 +27,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
         try {
             if (this::sharedPreferences.isInitialized) {
                 val notificationType = data["notification_type"].orEmpty()
+                Log.e("test","Notification $notificationType")
                 if (notificationType.isNotEmpty()) {
                     sharedPreferences.saveNotificationType(notificationType)
                 }

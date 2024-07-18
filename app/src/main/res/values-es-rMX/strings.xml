@@ -82,7 +82,7 @@
     <string name="behavior">Comportamiento</string>
     <string name="create_card">Crear tarjeta</string>
     <string name="contact_support">Contactar soporte técnico</string>
-    <string name="sync_cards">Sincronizar tarjetas</string>
+    <string name="sync_cards">Sincronizar tarjetas locales</string>
     <string name="anomalies_cards">Tarjetas Anomalias</string>
     <string name="behaviour_cards">Tarjetas Comportamiento</string>
     <string name="upload_cards">Subiendo tarjetas locales…</string>
@@ -133,5 +133,7 @@
     <string name="enter_a_valid_code">Ingresa un código válido</string>
     <string name="enter_a_valid_password">Ingresa una contraseña valida</string>
     <string name="different_passwords">Las contraseñas no coinciden</string>
+    <string name="sync_remote_cards">Sincronizar tarjetas remotas</string>
+    <string name="sync_remote_cards_description">Hay nuevas tarjetas creadas</string>
 
 </resources>

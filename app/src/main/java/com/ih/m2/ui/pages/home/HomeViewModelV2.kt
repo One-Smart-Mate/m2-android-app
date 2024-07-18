@@ -61,7 +61,8 @@ class HomeViewModelV2 @AssistedInject constructor(
         val syncCompleted: Boolean = false,
         val lastSyncUpdate: String = EMPTY,
         val showSyncCards: Boolean = false,
-        val showSyncCatalogsCard: Boolean = false
+        val showSyncCatalogsCard: Boolean = false,
+        val showSyncRemoteCards: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -70,6 +71,7 @@ class HomeViewModelV2 @AssistedInject constructor(
         data object SetIsSync : Action()
         data class SyncCards(val context: Context) : Action()
         data object ClearMessage : Action()
+        data object SyncRemoteCards : Action()
     }
 
     fun process(action: Action) {
@@ -79,6 +81,7 @@ class HomeViewModelV2 @AssistedInject constructor(
             is Action.SetIsSync -> setState { copy(isSyncing = true) }
             is Action.SyncCards -> handleSyncCards(action.context)
             is Action.ClearMessage -> cleanScreenStates()
+            is Action.SyncRemoteCards -> handleGetRemoteCards()
         }
     }
 
@@ -115,17 +118,18 @@ class HomeViewModelV2 @AssistedInject constructor(
         }
     }
 
-    private fun handleGetCards() {
+    private fun handleGetCards(syncRemote: Boolean = false) {
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardsUseCase()
+                getCardsUseCase(syncRemote = syncRemote)
             }.onSuccess { cards ->
-                Log.e("test", "Cards -> $cards")
+                Log.e("test", "Cards $syncRemote-> $cards")
                 val showCards = cards.toLocalCards().isNotEmpty()
                 setState {
                     copy(
                         cards = cards,
-                        showSyncCards = showCards
+                        showSyncCards = showCards,
+                        showSyncRemoteCards = false
                     )
                 }
                 if (showCards) {
@@ -138,6 +142,47 @@ class HomeViewModelV2 @AssistedInject constructor(
             }
         }
     }
+
+    private fun handleGetRemoteCards() {
+        setState {
+            copy(
+                isLoading = true,
+                message = context.getString(R.string.loading_data),
+                isSyncing = true
+            )
+        }
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            if (NetworkConnection.isConnected().not() ||
+                state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
+                state.networkStatus == NetworkStatus.DATA_DISCONNECTED
+            ) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet),
+                        isSyncing = false,
+                    )
+                }
+                return@launch
+            }
+            if (state.networkStatus == NetworkStatus.DATA_CONNECTED
+                && sharedPreferences.getNetworkPreference().isEmpty()
+            ) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.network_preferences_allowed),
+                        isSyncing = false,
+                    )
+                }
+                return@launch
+            }
+            handleGetCards(syncRemote = true)
+        }
+    }
+
 
     private fun checkLastUpdate() {
         viewModelScope.launch {
@@ -178,7 +223,10 @@ class HomeViewModelV2 @AssistedInject constructor(
         }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
-            if (NetworkConnection.isConnected().not()) {
+            if (NetworkConnection.isConnected().not() ||
+                state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
+                state.networkStatus == NetworkStatus.DATA_DISCONNECTED) {
                 setState {
                     copy(
                         isLoading = false,
@@ -202,19 +250,7 @@ class HomeViewModelV2 @AssistedInject constructor(
                 }
                 return@launch
             }
-            if (state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
-                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED  ||
-                state.networkStatus == NetworkStatus.DATA_DISCONNECTED) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.please_connect_to_internet),
-                        showSyncCards = true,
-                        isSyncing = false
-                    )
-                }
-                return@launch
-            }
+
             appContext.runWorkRequest()
             WorkManagerUUID.get()?.let { uuid ->
                 WorkManager.getInstance(appContext)
@@ -291,7 +327,13 @@ class HomeViewModelV2 @AssistedInject constructor(
                         setState { copy(showSyncCatalogsCard = true) }
                     }
 
-                    else -> {}
+                    FirebaseNotificationType.SYNC_REMOTE_CARDS -> {
+                        setState { copy(showSyncRemoteCards = true) }
+                    }
+
+                    else -> {
+
+                    }
                 }
             }
         }

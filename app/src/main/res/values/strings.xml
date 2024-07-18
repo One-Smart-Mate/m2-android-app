@@ -81,7 +81,7 @@
     <string name="behavior">Behavior</string>
     <string name="create_card">Create card</string>
     <string name="contact_support">Contact support</string>
-    <string name="sync_cards">Sync cards</string>
+    <string name="sync_cards">Sync local cards</string>
     <string name="anomalies_cards">Anomalies cards</string>
     <string name="behaviour_cards">Behaviour cards</string>
     <string name="upload_cards">Uploading local cards…</string>
@@ -133,4 +133,6 @@
     <string name="enter_a_valid_code">Enter a valid code</string>
     <string name="enter_a_valid_password">Enter a valid password</string>
     <string name="different_passwords">Different passwords</string>
+    <string name="sync_remote_cards">Sync remote cards</string>
+    <string name="sync_remote_cards_description">There are new cards created</string>
 </resources>

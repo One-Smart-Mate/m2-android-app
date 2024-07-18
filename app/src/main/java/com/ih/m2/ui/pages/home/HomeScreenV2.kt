@@ -122,6 +122,10 @@ fun HomeScreenV2(
             showSyncCatalogs = state.showSyncCatalogsCard,
             onSyncCatalogsClick = {
                 viewModel.process(HomeViewModelV2.Action.SyncCatalogs(LOAD_CATALOGS))
+            },
+            showSyncRemoteCards = state.showSyncRemoteCards,
+            onSyncRemoteCardsClick = {
+                viewModel.process(HomeViewModelV2.Action.SyncRemoteCards)
             }
         )
     }
@@ -169,7 +173,9 @@ private fun HomeContentV2(
     lastSyncUpdateDate: String,
     showSyncCards: Boolean,
     showSyncCatalogs: Boolean,
-    onSyncCatalogsClick: () -> Unit
+    onSyncCatalogsClick: () -> Unit,
+    showSyncRemoteCards: Boolean,
+    onSyncRemoteCardsClick: () -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -185,7 +191,19 @@ private fun HomeContentV2(
                     )
                 }
             }
+
+
             item {
+                AnimatedVisibility(visible = showSyncRemoteCards) {
+                    HomeSectionCardItem(
+                        title = stringResource(R.string.sync_remote_cards),
+                        icon = Icons.Outlined.Refresh,
+                        description = stringResource(R.string.sync_remote_cards_description),
+                    ) {
+                        onSyncRemoteCardsClick()
+                    }
+                }
+
                 AnimatedVisibility(visible = showSyncCards) {
                     HomeSectionCardItem(
                         title = stringResource(R.string.sync_cards),
@@ -371,7 +389,9 @@ private fun HomeScreenPreview() {
                 lastSyncUpdateDate = "",
                 showSyncCards = true,
                 showSyncCatalogs = true,
-                onSyncCatalogsClick = {}
+                onSyncCatalogsClick = {},
+                showSyncRemoteCards = true,
+                onSyncRemoteCardsClick = {}
             )
         }
     }

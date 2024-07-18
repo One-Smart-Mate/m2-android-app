@@ -5,6 +5,7 @@ import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.repository.cards.CardRepository
 import com.ih.m2.domain.repository.local.LocalRepository
+import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import javax.inject.Inject
 
 interface GetCardsUseCase {
@@ -16,7 +17,8 @@ interface GetCardsUseCase {
 
 class GetCardsUseCaseImpl @Inject constructor(
     private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository
+    private val localRepository: LocalRepository,
+    private val notificationUseCase: GetFirebaseNotificationUseCase
 ) : GetCardsUseCase {
 
     override suspend fun invoke(syncRemote: Boolean, localCards: Boolean): List<Card> {
@@ -25,6 +27,7 @@ class GetCardsUseCaseImpl @Inject constructor(
             val siteId = localRepository.getSiteId()
             val remoteCards = cardRepository.getCardsByUser(siteId)
             localRepository.saveCards(remoteCards)
+            notificationUseCase(remove = true)
         }
         return if (localCards) {
             localRepository.getLocalCards()
