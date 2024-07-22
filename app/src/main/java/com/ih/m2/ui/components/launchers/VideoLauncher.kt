@@ -38,8 +38,10 @@ fun VideoLauncher(
             }
         },
             onResult = {
-                capturedVideoUri = uri
-                onComplete(capturedVideoUri)
+                if (it) {
+                    capturedVideoUri = uri
+                    onComplete(capturedVideoUri)
+                }
             })
 
     val permissionLauncher = rememberLauncherForActivityResult(

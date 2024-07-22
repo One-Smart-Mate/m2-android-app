@@ -135,5 +135,7 @@
     <string name="different_passwords">Las contraseñas no coinciden</string>
     <string name="sync_remote_cards">Sincronizar tarjetas remotas</string>
     <string name="sync_remote_cards_description">Hay nuevas tarjetas creadas</string>
+    <string name="empty_data">Sin datos</string>
+    <string name="recording_time">Tiempo de grabación: %1$s</string>
 
 </resources>

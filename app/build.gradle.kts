@@ -123,11 +123,11 @@ dependencies {
 
     implementation(libs.androidx.work.runtime.ktx)
 
-    implementation("androidx.camera:camera-camera2:1.3.3")
-    implementation("androidx.camera:camera-lifecycle:1.3.3")
-    implementation("androidx.camera:camera-view:1.3.3")
-    implementation("com.google.mlkit:barcode-scanning:17.2.0")
-    implementation("com.google.mlkit:text-recognition:16.0.0")
-    implementation("com.google.zxing:core:3.3.3")
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.barcode.scanning)
+    implementation(libs.text.recognition)
+    implementation(libs.core)
 
 }

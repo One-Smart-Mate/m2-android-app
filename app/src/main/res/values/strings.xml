@@ -135,4 +135,6 @@
     <string name="different_passwords">Different passwords</string>
     <string name="sync_remote_cards">Sync remote cards</string>
     <string name="sync_remote_cards_description">There are new cards created</string>
+    <string name="empty_data">Empty data</string>
+    <string name="recording_time">Recording time: %1$s</string>
 </resources>

@@ -62,7 +62,6 @@ fun QrCamera(
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(context)
     }
-    cameraProviderFuture.get().unbindAll()
     var hasCamPermission by remember {
         mutableStateOf(
             ContextCompat.checkSelfPermission(
@@ -111,6 +110,7 @@ fun QrCamera(
                         }
                     )
                     try {
+                        cameraProviderFuture.get().unbindAll()
                         cameraProviderFuture.get().bindToLifecycle(
                             lifecycleOwner,
                             selector,

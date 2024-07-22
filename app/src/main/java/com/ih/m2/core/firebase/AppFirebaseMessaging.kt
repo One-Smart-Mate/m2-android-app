@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.ui.utils.EMPTY
 import dagger.hilt.android.AndroidEntryPoint
@@ -16,17 +17,21 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
     @Inject
     lateinit var sharedPreferences: SharedPreferences
 
+    @Inject
+    lateinit var notificationManager: NotificationManager
+
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Log.e("AppFirebaseMessaging", "onMessageReceived ${Gson().toJson(message)}")
-        saveNotificationType(message.data)
-
+        saveNotificationType(message)
+        handleNotification(message)
     }
 
-    private fun saveNotificationType(data: MutableMap<String, String>) {
+
+    private fun saveNotificationType(message: RemoteMessage) {
         try {
             if (this::sharedPreferences.isInitialized) {
-                val notificationType = data["notification_type"].orEmpty()
+                val notificationType = message.getType()
                 Log.e("test","Notification $notificationType")
                 if (notificationType.isNotEmpty()) {
                     sharedPreferences.saveNotificationType(notificationType)
@@ -34,6 +39,20 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
             }
         } catch (e: Exception) {
             Log.e("AppFirebaseMessaging", "saveNotificationType ${e}")
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+    }
+
+    private fun handleNotification(message: RemoteMessage) {
+        try {
+            if (this::notificationManager.isInitialized) {
+                notificationManager.buildNotification(
+                    title = message.getTitle(),
+                    description = message.getDescription()
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("AppFirebaseMessaging", "handleNotification ${e}")
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
@@ -46,4 +65,22 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 enum class FirebaseNotificationType(val type: String) {
     SYNC_REMOTE_CATALOGS("SYNC_REMOTE_CATALOGS"), UNKNOWN(EMPTY),
     SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS")
+}
+
+fun RemoteMessage.getType(): String {
+    return this.data[FirebaseMessage.MESSAGE_TYPE].orEmpty()
+}
+
+fun RemoteMessage.getTitle(): String {
+    return this.data[FirebaseMessage.TITLE].orEmpty()
+}
+
+fun RemoteMessage.getDescription(): String {
+    return this.data[FirebaseMessage.DESCRIPTION].orEmpty()
+}
+
+object FirebaseMessage {
+    const val MESSAGE_TYPE = "notification_type"
+    const val TITLE = "notification_title"
+    const val DESCRIPTION = "notification_description"
 }

@@ -451,7 +451,7 @@ fun PhotoCardItem(
             model = model, contentDescription = stringResource(id = R.string.empty),
             failure = placeholder(R.drawable.loading_image),
             loading = placeholder(R.drawable.loading_image),
-            modifier = modifier.padding(PaddingTiny)
+            modifier = modifier.padding(PaddingTiny),
         )
         if (showIcon) {
             Box {

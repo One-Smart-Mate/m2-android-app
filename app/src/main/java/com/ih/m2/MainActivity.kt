@@ -90,7 +90,6 @@ class MainActivity : ComponentActivity() {
                 ).build()
             WorkManager.getInstance(context).enqueue(workRequest)
         }
-
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

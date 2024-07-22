@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import com.ih.m2.R
 import com.ih.m2.ui.extensions.getPrimaryColor
@@ -56,7 +57,7 @@ fun EmptyData(
             tint = getPrimaryColor(),
             modifier = Modifier.size(Size100)
         )
-        Text(text = "No data", style = MaterialTheme.typography.titleLarge
+        Text(text = stringResource(R.string.empty_data), style = MaterialTheme.typography.titleLarge
             .copy(color = animatedColor))
 
     }

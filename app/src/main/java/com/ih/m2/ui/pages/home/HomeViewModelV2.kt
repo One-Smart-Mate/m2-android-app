@@ -92,12 +92,24 @@ class HomeViewModelV2 @AssistedInject constructor(
 
     private fun handleSyncCatalogs(syncCatalogs: String) {
         if (syncCatalogs == LOAD_CATALOGS) {
-            setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
+            setState {
+                copy(
+                    isLoading = true,
+                    message = context.getString(R.string.loading_data),
+                    isSyncing = true
+                )
+            }
             viewModelScope.launch(coroutineContext) {
                 kotlin.runCatching {
                     syncCatalogsUseCase(syncCards = true)
                 }.onSuccess {
-                    setState { copy(syncCompleted = true, showSyncCatalogsCard = false) }
+                    setState {
+                        copy(
+                            syncCompleted = true,
+                            showSyncCatalogsCard = false,
+                            isSyncing = false
+                        )
+                    }
                     handleCheckUser()
                 }.onFailure {
                     fileHelper.logException(it)
@@ -226,7 +238,8 @@ class HomeViewModelV2 @AssistedInject constructor(
             if (NetworkConnection.isConnected().not() ||
                 state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
                 state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
-                state.networkStatus == NetworkStatus.DATA_DISCONNECTED) {
+                state.networkStatus == NetworkStatus.DATA_DISCONNECTED
+            ) {
                 setState {
                     copy(
                         isLoading = false,
