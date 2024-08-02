@@ -25,7 +25,7 @@ fun CircularImage(
         modifier = Modifier
             .size(size)
             .clip(CircleShape),
-        failure = placeholder(R.drawable.ic_launcher_background),
-        loading = placeholder(R.drawable.ic_launcher_background),
+        failure = placeholder(R.drawable.loading_image),
+        loading = placeholder(R.drawable.loading_image),
     )
 }

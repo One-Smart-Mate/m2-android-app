@@ -250,7 +250,7 @@ fun SolutionScreenContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(PaddingNormal),
-                    label = stringResource(R.string.comments_at_solution),
+                    label = stringResource(R.string.comment_solution),
                     icon = Icons.Filled.Create
                 ) {
                     onCommentChange(it)

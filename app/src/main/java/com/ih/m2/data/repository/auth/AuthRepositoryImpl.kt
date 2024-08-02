@@ -1,9 +1,11 @@
 package com.ih.m2.data.repository.auth
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.data.api.ApiService
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.data.model.RestorePasswordRequest
+import com.ih.m2.data.model.UpdateTokenRequest
 import com.ih.m2.data.model.toDomain
 import com.ih.m2.domain.model.User
 import com.ih.m2.domain.repository.auth.AuthRepository
@@ -40,6 +42,13 @@ class AuthRepositoryImpl @Inject constructor(
 
     override suspend fun resetPassword(data: RestorePasswordRequest) {
         val response = apiService.resetPassword(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun updateToken(data: UpdateTokenRequest) {
+        val response = apiService.updateToken(data).execute()
         if (!response.isSuccessful || response.body() == null) {
             error(response.getErrorMessage())
         }

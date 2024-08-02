@@ -1,6 +1,5 @@
 package com.ih.m2.domain.usecase.logout
 
-import com.ih.m2.core.FileHelper
 import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.domain.repository.local.LocalRepository
 import com.ih.m2.domain.usecase.catalogs.CleanCatalogsUseCase

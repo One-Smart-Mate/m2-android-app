@@ -1,14 +1,12 @@
 package com.ih.m2
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -17,27 +15,19 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.Lifecycle
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.Operation
 import androidx.work.WorkManager
-import androidx.work.await
 import com.airbnb.mvrx.Mavericks
-import com.ih.m2.core.FileHelper
-import com.ih.m2.core.WorkManagerUUID
+import com.ih.m2.core.workmanager.WorkManagerUUID
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.workmanager.CardWorker
-import com.ih.m2.ui.extensions.EEE_MMM_DD_YYYY
 import com.ih.m2.ui.navigation.AppNavigation
 import com.ih.m2.ui.pages.splash.SplashViewModel
 import com.ih.m2.ui.theme.M2androidappTheme
-import com.ih.m2.ui.utils.EMPTY
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
 import java.time.Duration
-import java.util.UUID
-import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -16,6 +16,7 @@ import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.data.model.LoginResponse
 import com.ih.m2.data.model.RestorePasswordRequest
 import com.ih.m2.data.model.SolutionResponse
+import com.ih.m2.data.model.UpdateTokenRequest
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -103,6 +104,11 @@ interface ApiService {
     @POST("users/reset-password")
     fun resetPassword(
         @Body body: RestorePasswordRequest
+    ): Call<Any>
+
+    @POST("users/app-token")
+    fun updateToken(
+        @Body body: UpdateTokenRequest
     ): Call<Any>
 
 }

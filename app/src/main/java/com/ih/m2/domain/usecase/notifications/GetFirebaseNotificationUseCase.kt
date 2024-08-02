@@ -6,18 +6,43 @@ import com.ih.m2.core.preferences.SharedPreferences
 import javax.inject.Inject
 
 interface GetFirebaseNotificationUseCase {
-    suspend operator fun invoke(remove: Boolean = false): FirebaseNotificationType
+    suspend operator fun invoke(
+        remove: Boolean = false,
+        syncCatalogs: Boolean = false,
+        syncCards: Boolean = false
+    ): FirebaseNotificationType
 }
 
 data class GetFirebaseNotificationUseCaseImpl @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) : GetFirebaseNotificationUseCase {
 
-    override suspend fun invoke(remove: Boolean): FirebaseNotificationType {
+    override suspend fun invoke(
+        remove: Boolean,
+        syncCatalogs: Boolean,
+        syncCards: Boolean
+    ): FirebaseNotificationType {
         return try {
             if (remove) {
-                sharedPreferences.removeNotification()
-                FirebaseNotificationType.UNKNOWN
+                when {
+                    syncCards -> {
+                        if (sharedPreferences.getNotificationType() == FirebaseNotificationType.SYNC_REMOTE_CARDS.name) {
+                            sharedPreferences.removeNotification()
+                            FirebaseNotificationType.UNKNOWN
+                        }
+                    }
+
+                    syncCatalogs -> {
+                        if (sharedPreferences.getNotificationType() == FirebaseNotificationType.SYNC_REMOTE_CATALOGS.name) {
+                            sharedPreferences.removeNotification()
+                            FirebaseNotificationType.UNKNOWN
+                        }
+                    }
+                    else -> {
+                        sharedPreferences.removeNotification()
+                        FirebaseNotificationType.UNKNOWN
+                    }
+                }
             }
             val notificationType = sharedPreferences.getNotificationType()
             if (notificationType.isNotEmpty()) {

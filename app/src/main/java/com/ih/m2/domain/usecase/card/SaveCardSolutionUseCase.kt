@@ -1,7 +1,7 @@
 package com.ih.m2.domain.usecase.card
 
 import android.util.Log
-import com.ih.m2.core.FileHelper
+import com.ih.m2.core.file.FileHelper
 import com.ih.m2.data.model.CreateDefinitiveSolutionRequest
 import com.ih.m2.data.model.CreateEvidenceRequest
 import com.ih.m2.data.model.CreateProvisionalSolutionRequest

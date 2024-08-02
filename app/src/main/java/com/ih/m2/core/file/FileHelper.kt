@@ -1,8 +1,7 @@
-package com.ih.m2.core
+package com.ih.m2.core.file
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson

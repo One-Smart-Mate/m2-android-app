@@ -27,7 +27,7 @@ class GetCardsUseCaseImpl @Inject constructor(
             val siteId = localRepository.getSiteId()
             val remoteCards = cardRepository.getCardsByUser(siteId)
             localRepository.saveCards(remoteCards)
-            notificationUseCase(remove = true)
+            notificationUseCase(remove = true, syncCards = true)
         }
         return if (localCards) {
             localRepository.getLocalCards()

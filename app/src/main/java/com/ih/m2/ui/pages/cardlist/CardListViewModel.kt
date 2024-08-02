@@ -8,7 +8,9 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
+import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.domain.model.Card
+import com.ih.m2.domain.model.NetworkStatus
 import com.ih.m2.domain.model.filterByStatus
 import com.ih.m2.domain.model.isAnomalies
 import com.ih.m2.domain.model.isBehavior
@@ -46,7 +48,8 @@ class CardListViewModel @AssistedInject constructor(
         val message: String = EMPTY,
         val refreshCards: Boolean = true,
         val filter: String = EMPTY,
-        val cardTypes: String = EMPTY
+        val cardTypes: String = EMPTY,
+        val isRefreshing: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -54,6 +57,7 @@ class CardListViewModel @AssistedInject constructor(
         data object OnRefreshCards : Action()
         data class OnFilterChange(val filter: String) : Action()
         data object OnApplyFilterClick : Action()
+        data object OnRefreshCardList: Action()
     }
 
     fun process(action: Action) {
@@ -62,6 +66,7 @@ class CardListViewModel @AssistedInject constructor(
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
             is Action.OnFilterChange -> setState { copy(filter = action.filter) }
             is Action.OnApplyFilterClick -> handleOnApplyFilterClick()
+            is Action.OnRefreshCardList -> handleOnRefreshCardList()
         }
     }
 
@@ -75,11 +80,12 @@ class CardListViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleGetCards(filter: String) {
-        setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
+    private fun handleGetCards(filter: String, message: String = context.getString(R.string.loading_data)) {
+        setState { copy(isLoading = true, message = message) }
         viewModelScope.launch(coroutineContext) {
+            Log.e("Test","Refresh ${stateFlow.first().isRefreshing}")
             kotlin.runCatching {
-                getCardsUseCase()
+                getCardsUseCase(syncRemote = stateFlow.first().isRefreshing)
             }.onSuccess {
                 val filterCards = when (filter) {
                     CARD_ANOMALIES -> {
@@ -99,7 +105,8 @@ class CardListViewModel @AssistedInject constructor(
                         message = EMPTY,
                         title = getTitle(filter),
                         refreshCards = false,
-                        cardTypes = filter
+                        cardTypes = filter,
+                        isRefreshing = false
                     )
                 }
             }.onFailure {
@@ -170,6 +177,14 @@ class CardListViewModel @AssistedInject constructor(
                 message = message,
                 refreshCards = false
             )
+        }
+    }
+
+    private fun handleOnRefreshCardList() {
+        setState { copy(isRefreshing = true) }
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            handleGetCards(state.filter, context.getString(R.string.syncing_remote_cards))
         }
     }
 

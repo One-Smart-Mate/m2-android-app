@@ -6,6 +6,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -38,6 +39,7 @@ import com.ih.m2.ui.components.CustomAppBar
 import com.ih.m2.ui.components.CustomSpacer
 import com.ih.m2.ui.components.EmptyData
 import com.ih.m2.ui.components.LoadingScreen
+import com.ih.m2.ui.components.PullToRefreshLazyColumn
 import com.ih.m2.ui.components.SpacerSize
 import com.ih.m2.ui.components.sheets.SolutionBottomSheet
 import com.ih.m2.ui.extensions.defaultIfNull
@@ -80,6 +82,10 @@ fun CardListScreen(
             },
             onClickApply = {
                 viewModel.process(CardListViewModel.Action.OnApplyFilterClick)
+            },
+            isRefreshing = state.isRefreshing,
+            onRefresh = {
+                viewModel.process(CardListViewModel.Action.OnRefreshCardList)
             }
         )
     }
@@ -96,7 +102,6 @@ fun CardListScreen(
 
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CardListContent(
     navController: NavController,
@@ -105,7 +110,9 @@ fun CardListContent(
     onSolutionClick: (Card, String) -> Unit,
     onCreateCardClick: () -> Unit,
     onFilterChange: (String) -> Unit,
-    onClickApply: () -> Unit
+    onClickApply: () -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit
 ) {
 
     Scaffold(
@@ -117,14 +124,23 @@ fun CardListContent(
             }
         }
     ) { padding ->
-        LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
-        ) {
-            stickyHeader {
+        PullToRefreshLazyColumn(
+            items = cards,
+            content = { card ->
+                CardItemList(
+                    card = card,
+                    onClick = {
+                        navController.navigateToCardDetail(card.id)
+                    },
+                    onSolutionClick = { solution ->
+                        onSolutionClick(card, solution)
+                    })
+            },
+            header = {
                 CustomAppBar(navController = navController, title = title)
                 AnimatedVisibility(visible = cards.isNotEmpty()) {
                     Box(
-                        modifier = Modifier.fillParentMaxWidth(),
+                        modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
                         FiltersBottomSheetV2(
@@ -134,23 +150,45 @@ fun CardListContent(
                     }
                 }
                 CustomSpacer(space = SpacerSize.SMALL)
-            }
-            items(cards) { card ->
-                CardItemList(
-                    card = card,
-                    onClick = {
-                        navController.navigateToCardDetail(card.id)
-                    },
-                    onSolutionClick = { solution ->
-                        onSolutionClick(card, solution)
-                    })
-            }
-            item {
-                AnimatedVisibility(visible = cards.isEmpty()) {
-                    EmptyData(modifier = Modifier.fillMaxSize())
-                }
-            }
-        }
+            },
+            isRefreshing = isRefreshing,
+            onRefresh = onRefresh,
+            modifier = Modifier.defaultScreen(padding)
+        )
+//        LazyColumn(
+//            modifier = Modifier.defaultScreen(padding),
+//        ) {
+//            stickyHeader {
+//                CustomAppBar(navController = navController, title = title)
+//                AnimatedVisibility(visible = cards.isNotEmpty()) {
+//                    Box(
+//                        modifier = Modifier.fillParentMaxWidth(),
+//                        contentAlignment = Alignment.CenterEnd
+//                    ) {
+//                        FiltersBottomSheetV2(
+//                            onFilterChange = onFilterChange,
+//                            onClickApply = onClickApply
+//                        )
+//                    }
+//                }
+//                CustomSpacer(space = SpacerSize.SMALL)
+//            }
+//            items(cards) { card ->
+//                CardItemList(
+//                    card = card,
+//                    onClick = {
+//                        navController.navigateToCardDetail(card.id)
+//                    },
+//                    onSolutionClick = { solution ->
+//                        onSolutionClick(card, solution)
+//                    })
+//            }
+//            item {
+//                AnimatedVisibility(visible = cards.isEmpty()) {
+//                    EmptyData(modifier = Modifier.fillMaxSize())
+//                }
+//            }
+//        }
     }
 }
 
@@ -165,10 +203,12 @@ private fun CardListScreenScreenPreview() {
                 navController = rememberNavController(),
                 cards = emptyList(),
                 title = "Cards",
-                onSolutionClick = {_,_ -> },
+                onSolutionClick = { _, _ -> },
                 onCreateCardClick = {},
                 onFilterChange = {},
-                onClickApply = {}
+                onClickApply = {},
+                isRefreshing = false,
+                {}
             )
         }
     }

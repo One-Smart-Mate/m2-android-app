@@ -2,9 +2,8 @@ package com.ih.m2.domain.usecase.card
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.m2.core.FileHelper
+import com.ih.m2.core.file.FileHelper
 import com.ih.m2.core.notifications.NotificationManager
-import com.ih.m2.core.ui.functions.CustomException
 import com.ih.m2.data.model.CreateEvidenceRequest
 import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card

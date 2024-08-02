@@ -9,7 +9,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
-import com.ih.m2.core.FileHelper
+import com.ih.m2.core.file.FileHelper
 import com.ih.m2.core.network.NetworkConnection
 import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.domain.model.Card

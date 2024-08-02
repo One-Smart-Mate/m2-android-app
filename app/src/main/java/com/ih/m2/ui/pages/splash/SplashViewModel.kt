@@ -1,12 +1,7 @@
 package com.ih.m2.ui.pages.splash
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.m2.core.FileHelper
-import com.ih.m2.domain.model.Card
-import com.ih.m2.domain.usecase.firebase.GetFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.ui.navigation.Screen

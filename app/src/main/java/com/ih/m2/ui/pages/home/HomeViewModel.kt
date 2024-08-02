@@ -117,10 +117,8 @@ class HomeViewModel @AssistedInject constructor(
                 kotlin.runCatching {
                     syncCatalogsUseCase(syncCards = true)
                 }.onSuccess {
-                    Log.e("test","Sync $it")
                     process(Action.GetUser)
                 }.onFailure {
-                    Log.e("test","Sync failure ${it.localizedMessage}")
                     process(Action.GetUser)
                 }
             }

@@ -36,13 +36,7 @@ class SyncCatalogsUseCaseImpl @Inject constructor(
             getLevelsUseCase(true)
             getEmployeesUseCase(true)
             getCardsUseCase(syncCards)
-            when (getFirebaseNotificationUseCase()) {
-                FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
-                    getFirebaseNotificationUseCase(remove = true)
-                }
-
-                else -> {}
-            }
+            getFirebaseNotificationUseCase(remove = true, syncCatalogs = true)
             true
         } catch (e: Exception) {
             Log.e("test", "Exception ${e.localizedMessage}")

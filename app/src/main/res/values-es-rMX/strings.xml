@@ -137,5 +137,9 @@
     <string name="sync_remote_cards_description">Hay nuevas tarjetas creadas</string>
     <string name="empty_data">Sin datos</string>
     <string name="recording_time">Tiempo de grabación: %1$s</string>
-
+    <string name="unable_to_read_the_qr_code">Código QR no válido</string>
+    <string name="comment_solution">Solución aplicada</string>
+    <string name="syncing_remote_cards">Sincronizando tarjetas remotas</string>
+    <string name="important">Importante!</string>
+    <string name="update_catalogs_action_message">Tus catálogos están desactualizados, actualiza primero para crear nuevas tarjetas</string>
 </resources>

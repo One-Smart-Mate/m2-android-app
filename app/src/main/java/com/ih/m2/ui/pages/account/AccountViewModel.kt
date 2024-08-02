@@ -1,13 +1,12 @@
 package com.ih.m2.ui.pages.account
 
 import android.net.Uri
-import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.ih.m2.core.FileHelper
+import com.ih.m2.core.file.FileHelper
 import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.preferences.SharedPreferences
 import com.ih.m2.domain.usecase.catalogs.SyncCatalogsUseCase

@@ -1,4 +1,4 @@
-package com.ih.m2.core
+package com.ih.m2.core.workmanager
 
 import java.util.UUID
 

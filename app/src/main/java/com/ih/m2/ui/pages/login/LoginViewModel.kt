@@ -1,5 +1,6 @@
 package com.ih.m2.ui.pages.login
 
+import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -7,6 +8,7 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.data.model.LoginRequest
 import com.ih.m2.domain.model.User
+import com.ih.m2.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.m2.domain.usecase.login.LoginUseCase
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.m2.ui.utils.EMPTY
@@ -21,7 +23,8 @@ class LoginViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
     private val loginUseCase: LoginUseCase,
-    private val saveUserUseCase: SaveUserUseCase
+    private val saveUserUseCase: SaveUserUseCase,
+    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase
 ) : MavericksViewModel<LoginViewModel.UiState>(initialState) {
 
 
@@ -67,9 +70,18 @@ class LoginViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 saveUserUseCase(user)
             }.onSuccess {
+                handleSyncFirebaseToken()
                 setState { copy(isLoading = false, isAuthenticated = true) }
             }.onFailure {
                 setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+            }
+        }
+    }
+
+    private fun handleSyncFirebaseToken() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                syncFirebaseTokenUseCase()
             }
         }
     }

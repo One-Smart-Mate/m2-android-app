@@ -9,7 +9,8 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.m2.R
-import com.ih.m2.core.FileHelper
+import com.ih.m2.core.file.FileHelper
+import com.ih.m2.core.firebase.FirebaseNotificationType
 import com.ih.m2.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.m2.domain.model.Card
 import com.ih.m2.domain.model.CardType
@@ -32,6 +33,7 @@ import com.ih.m2.domain.usecase.card.SaveCardUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.m2.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.m2.domain.usecase.level.GetLevelsUseCase
+import com.ih.m2.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.m2.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.m2.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.m2.ui.extensions.defaultIfNull
@@ -64,6 +66,7 @@ class CreateCardViewModel @AssistedInject constructor(
     private val getCardsZoneUseCase: GetCardsZoneUseCase,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     @ApplicationContext private val context: Context,
+    private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
     private val fileHelper: FileHelper
 ) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
 
@@ -130,6 +133,7 @@ class CreateCardViewModel @AssistedInject constructor(
             is Action.ClearMessage -> cleanScreenStates()
         }
     }
+
 
     private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
@@ -320,6 +324,7 @@ class CreateCardViewModel @AssistedInject constructor(
             }.onSuccess {
                 setState { copy(levelList = it.toNodeItemList()) }
                 cleanScreenStates()
+                checkCatalogs()
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
@@ -413,6 +418,20 @@ class CreateCardViewModel @AssistedInject constructor(
 
     private fun cleanScreenStates(message: String = EMPTY) {
         setState { copy(isLoading = false, message = message) }
+    }
+
+    private fun checkCatalogs() {
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                delay(2000L)
+                when (getFirebaseNotificationUseCase()) {
+                    FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
+                        cleanScreenStates(context.getString(R.string.update_catalogs_action_message))
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
 

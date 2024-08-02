@@ -199,6 +199,8 @@ private fun HomeContentV2(
                         title = stringResource(R.string.sync_remote_cards),
                         icon = Icons.Outlined.Refresh,
                         description = stringResource(R.string.sync_remote_cards_description),
+                        subText = stringResource(R.string.important),
+                        subTextColor = MaterialTheme.colorScheme.error
                     ) {
                         onSyncRemoteCardsClick()
                     }
@@ -223,7 +225,9 @@ private fun HomeContentV2(
                     HomeSectionCardItem(
                         title = stringResource(R.string.sync_remote_catalogs),
                         icon = Icons.Outlined.Refresh,
-                        description = stringResource(R.string.you_have_new_catalogs_to_sync)
+                        description = stringResource(R.string.you_have_new_catalogs_to_sync),
+                        subText = stringResource(R.string.important),
+                        subTextColor = MaterialTheme.colorScheme.error
                     ) {
                         onSyncCatalogsClick()
                     }
@@ -259,6 +263,7 @@ private fun HomeSectionCardItem(
     icon: ImageVector,
     description: String = EMPTY,
     subText: String = EMPTY,
+    subTextColor: Color = Color.Unspecified,
     onClick: () -> Unit
 ) {
     Card(
@@ -291,7 +296,8 @@ private fun HomeSectionCardItem(
                         modifier = Modifier.padding(bottom = Size2)
                     )
                     AnimatedVisibility(visible = subText.isNotEmpty()) {
-                        Text(text = subText, style = MaterialTheme.typography.bodySmall)
+                        Text(text = subText, style = MaterialTheme.typography.bodySmall
+                            .copy(color = subTextColor))
                     }
                     CustomSpacer()
                 }

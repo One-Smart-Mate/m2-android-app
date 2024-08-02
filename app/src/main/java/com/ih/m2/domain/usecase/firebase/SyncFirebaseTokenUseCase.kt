@@ -3,6 +3,7 @@ package com.ih.m2.domain.usecase.firebase
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.m2.core.preferences.SharedPreferences
+import com.ih.m2.domain.usecase.user.UpdateTokenUseCase
 import javax.inject.Inject
 
 interface SyncFirebaseTokenUseCase {
@@ -11,18 +12,21 @@ interface SyncFirebaseTokenUseCase {
 
 class SyncFirebaseTokenUseCaseImpl @Inject constructor(
     private val getFirebaseTokenUseCase: GetFirebaseTokenUseCase,
-    private val sharedPreferences: SharedPreferences
+    private val sharedPreferences: SharedPreferences,
+    private val updateTokenUseCase: UpdateTokenUseCase
 ) : SyncFirebaseTokenUseCase {
 
     override suspend fun invoke(): Boolean {
         return try {
-            val storedToken = sharedPreferences.getFirebaseToken()
+            var storedToken = sharedPreferences.getFirebaseToken()
             if (storedToken.isEmpty()) {
                 //save to service
                 val token = getFirebaseTokenUseCase()
                 Log.e("Firebase","Token $token")
                 sharedPreferences.saveFirebaseToken(token)
+                storedToken = token
             }
+           updateTokenUseCase(storedToken)
             Log.e("Firebase","Token $storedToken")
             true
         } catch (e: Exception) {

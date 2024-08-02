@@ -7,6 +7,7 @@ import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
 import com.ih.m2.core.notifications.NotificationManager
 import com.ih.m2.core.preferences.SharedPreferences
+import com.ih.m2.ui.extensions.defaultIfNull
 import com.ih.m2.ui.utils.EMPTY
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -72,11 +73,15 @@ fun RemoteMessage.getType(): String {
 }
 
 fun RemoteMessage.getTitle(): String {
-    return this.data[FirebaseMessage.TITLE].orEmpty()
+    return this.data[FirebaseMessage.TITLE].defaultIfNull(
+        this.notification?.title.orEmpty()
+    )
 }
 
 fun RemoteMessage.getDescription(): String {
-    return this.data[FirebaseMessage.DESCRIPTION].orEmpty()
+    return this.data[FirebaseMessage.DESCRIPTION].defaultIfNull(
+        this.notification?.body.orEmpty()
+    )
 }
 
 object FirebaseMessage {

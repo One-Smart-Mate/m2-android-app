@@ -50,6 +50,8 @@ import com.ih.m2.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.m2.domain.usecase.saveuser.SaveUserUseCaseImpl
 import com.ih.m2.domain.usecase.user.GetUserUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCaseImpl
+import com.ih.m2.domain.usecase.user.UpdateTokenUseCase
+import com.ih.m2.domain.usecase.user.UpdateTokenUseCaseImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -133,4 +135,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindVerifyPasswordCodeUseCase(verifyPasswordCodeUseCaseImpl: VerifyPasswordCodeUseCaseImpl): VerifyPasswordCodeUseCase
+
+    @Binds
+    fun bindUpdateTokenUseCase(updateTokenUseCaseImpl: UpdateTokenUseCaseImpl): UpdateTokenUseCase
 }
