@@ -54,7 +54,7 @@ class SyncCardsUseCaseImpl @Inject constructor(
                 val remoteCard = cardRepository.saveCard(cardRequest)
                 firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
                 Log.e("test", "Current card remote.. $remoteCard")
-                localRepository.deleteCard(card.id)
+                localRepository.deleteCard(card.uuid)
                 localRepository.saveCard(remoteCard)
                 if (handleNotification) {
                     currentProgress += progressByCard
@@ -63,6 +63,7 @@ class SyncCardsUseCaseImpl @Inject constructor(
                         currentProgress = currentProgress.toInt(),
                     )
                 }
+                fileHelper.logCreateCardRequestSuccess(remoteCard)
                 firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
                 Log.e("test", "saving card.. $remoteCard")
             }

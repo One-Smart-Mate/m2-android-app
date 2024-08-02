@@ -87,6 +87,17 @@ class FileHelper @Inject constructor(
         }
     }
 
+    fun logCreateCardRequestSuccess(card: Card) {
+        try {
+            getLocalFile()?.let {
+                it.appendText("\n********************** Card Success Sync - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************")
+                it.appendText("${Gson().toJson(card)}\n")
+            }
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+    }
+
     fun logException(exception: Throwable) {
         try {
             getLocalFile()?.let {

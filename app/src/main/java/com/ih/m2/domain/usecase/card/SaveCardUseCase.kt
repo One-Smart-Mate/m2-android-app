@@ -51,14 +51,9 @@ class SaveCardUseCaseImpl @Inject constructor(
             creatorId = user?.userId,
             creatorName = user?.name.orEmpty(),
         )
-        val id: Long
-        if (NetworkConnection.networkStatus(context) == NetworkStatus.WIFI_CONNECTED) {
-            id = syncCardUseCase(updatedCard)?.id?.toLong().defaultIfNull(0L)
-        } else {
-            id = localRepository.saveCard(updatedCard)
-            card.evidences?.forEach {
-                localRepository.saveEvidence(it)
-            }
+        val id = localRepository.saveCard(updatedCard)
+        card.evidences?.forEach {
+            localRepository.saveEvidence(it)
         }
 
         firebaseAnalyticsHelper.logCreateCard(updatedCard)

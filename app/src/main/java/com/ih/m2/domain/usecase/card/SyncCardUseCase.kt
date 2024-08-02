@@ -48,6 +48,7 @@ class SyncCardUseCaseImpl @Inject constructor(
             firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
             Log.e("test", "saving card.. $remoteCard")
             notificationManager.buildNotificationSuccessCard()
+            fileHelper.logCreateCardRequestSuccess(remoteCard)
             remoteCard
         } catch (e: Exception) {
             Log.e("test", "saving card exception.. ${e.localizedMessage}")

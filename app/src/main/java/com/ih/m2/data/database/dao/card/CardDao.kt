@@ -32,7 +32,7 @@ interface CardDao {
     suspend fun getLocalCards(stored: String): List<CardEntity>
 
 
-    @Query("DELETE FROM card_table WHERE id=:id")
+    @Query("DELETE FROM card_table WHERE card_uuid=:id")
     suspend fun deleteCard(id: String)
 
     @Query("SELECT * FROM card_table WHERE id=:cardId")
