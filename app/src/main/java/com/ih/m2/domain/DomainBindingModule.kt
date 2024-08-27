@@ -2,6 +2,9 @@ package com.ih.m2.domain
 
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCase
 import com.ih.m2.domain.usecase.card.GetCardDetailUseCaseImpl
+
+import com.ih.m2.domain.usecase.card.GetCardsLevelMachineUseCase
+import com.ih.m2.domain.usecase.card.GetCardsLevelMachineUseCaseImpl
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.GetCardsUseCaseImpl
 import com.ih.m2.domain.usecase.card.GetCardsZoneUseCase
@@ -138,4 +141,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindUpdateTokenUseCase(updateTokenUseCaseImpl: UpdateTokenUseCaseImpl): UpdateTokenUseCase
+
+    @Binds
+    fun bindGetCardsLevelMachine(getCardsLevelMachineImpl: GetCardsLevelMachineUseCaseImpl): GetCardsLevelMachineUseCase
 }

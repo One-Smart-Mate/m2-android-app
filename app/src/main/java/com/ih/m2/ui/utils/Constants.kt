@@ -32,6 +32,7 @@ const val SAFE = "safe"
 const val UNSAFE = "unsafe"
 
 const val CARD_MAINTENANCE = "Mantenimiento"
+const val CARD_BEHAIVIOR = "Comportamiento"
 const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"
 

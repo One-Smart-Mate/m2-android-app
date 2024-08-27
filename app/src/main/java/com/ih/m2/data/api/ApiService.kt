@@ -111,5 +111,11 @@ interface ApiService {
         @Body body: UpdateTokenRequest
     ): Call<Any>
 
+    @GET("card/all/level-machine/{siteId}/{levelMachine}")
+    fun getCardsLevelMachine(
+        @Path("siteId") siteId: String,
+        @Path("levelMachine") levelMachine: String
+    ): Call<GetCardsResponse>
+
 }
 

@@ -4,7 +4,9 @@ import com.google.gson.annotations.SerializedName
 import com.ih.m2.data.database.entities.cardtype.CardTypeEntity
 import com.ih.m2.data.database.entities.cardtype.toDomain
 import com.ih.m2.ui.extensions.defaultIfNull
+import com.ih.m2.ui.utils.CARD_BEHAIVIOR
 import com.ih.m2.ui.utils.CARD_MAINTENANCE
+import com.ih.m2.ui.utils.CARD_TYPE_METHODOLOGY_C
 
 data class CardType(
     val id: String,
@@ -78,19 +80,15 @@ fun CardType.toEntity(): CardTypeEntity {
 }
 
 
-
 fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     return this.map {
-        NodeCardItem(id = it.id, name = it.methodology, description = it.cardTypeMethodology.orEmpty())
+        NodeCardItem(id = it.id, name = it.methodology, description = it.name)
     }
 }
 
-fun CardType.isBehavior() = this.cardTypeMethodology?.lowercase() == "c" ||
-        this.name.lowercase() == "comportamiento" ||
-        this.methodology.lowercase() == "comportamiento" ||
-        this.name.lowercase() == "c"
+fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
+        this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()
 
 fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
-fun NodeCardItem?.isBehaviorCardType(): Boolean =
-        this?.description?.lowercase() == "c" || this?.description?.lowercase() == "comportamiento"
+fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()

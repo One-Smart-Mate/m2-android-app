@@ -58,7 +58,7 @@
     <string name="card">Tarjeta</string>
     <string name="loading_card_details">Cargando detalle de tarjeta…</string>
     <string name="sync_remote_catalogs">Sincronizar catalogos remotos</string>
-    <string name="sync_catalogs">Sincronizando catalogos…</string>
+    <string name="sync_catalogs">Sincronizando catálogos…</string>
     <string name="safe">Segura</string>
     <string name="unsafe">Insegura</string>
 

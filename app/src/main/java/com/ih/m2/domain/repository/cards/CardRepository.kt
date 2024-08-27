@@ -21,4 +21,5 @@ interface CardRepository {
 
     suspend fun saveProvisionalSolution(createProvisionalSolutionRequest: CreateProvisionalSolutionRequest): Card
 
+    suspend fun getCardsLevelMachine(levelMachine: String, siteId: String): List<Card>
 }

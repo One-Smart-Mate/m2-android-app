@@ -16,6 +16,7 @@ import com.ih.m2.domain.model.isAnomalies
 import com.ih.m2.domain.model.isBehavior
 import com.ih.m2.domain.model.toAnomaliesList
 import com.ih.m2.domain.model.toBehaviorList
+import com.ih.m2.domain.usecase.card.GetCardsLevelMachineUseCase
 import com.ih.m2.domain.usecase.card.GetCardsUseCase
 import com.ih.m2.domain.usecase.card.GetCardsZoneUseCase
 import com.ih.m2.domain.usecase.user.GetUserUseCase
@@ -38,7 +39,7 @@ class CardListViewModel @AssistedInject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     @ApplicationContext private val context: Context,
     private val getUserUseCase: GetUserUseCase,
-    private val getCardsZoneUseCase: GetCardsZoneUseCase
+    private val getCardsLevelMachineUseCase: GetCardsLevelMachineUseCase
 ) : MavericksViewModel<CardListViewModel.UiState>(initialState) {
 
     data class UiState(
@@ -73,8 +74,8 @@ class CardListViewModel @AssistedInject constructor(
     private fun validateFilter(filter: String) {
         val isFromQr = filter.contains(":")
         if (isFromQr) {
-            val superiorId = filter.substringAfter(":")
-            handleGetCardsZone(superiorId)
+            val levelMachine = filter.substringAfter(":")
+            handleGetCardsLevelMachine(levelMachine)
         } else {
             handleGetCards(filter)
         }
@@ -138,11 +139,11 @@ class CardListViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleGetCardsZone(superiorId: String) {
+    private fun handleGetCardsLevelMachine(levelMachine: String) {
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardsZoneUseCase(superiorId)
+                getCardsLevelMachineUseCase(levelMachine)
             }.onSuccess {
                 setState {
                     val isBehavior = it.firstOrNull()?.isBehavior().defaultIfNull(false)

@@ -71,5 +71,14 @@ class CardRepositoryImpl @Inject constructor(
             error(response.getErrorMessage())
         }
     }
+
+    override suspend fun getCardsLevelMachine(levelMachine: String, siteId: String): List<Card> {
+        val response = apiService.getCardsLevelMachine(siteId, levelMachine).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
 }
 
