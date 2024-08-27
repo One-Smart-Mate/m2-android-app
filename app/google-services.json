@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "854906353691",
-    "project_id": "android-m2-app",
-    "storage_bucket": "android-m2-app.appspot.com"
+    "project_number": "783003138627",
+    "project_id": "osm-android-app",
+    "storage_bucket": "osm-android-app.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:854906353691:android:621e7465f62fa8b9f560be",
+        "mobilesdk_app_id": "1:783003138627:android:2d52c2277357905191b2f6",
         "android_client_info": {
-          "package_name": "com.ih.m2"
+          "package_name": "com.osm"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC8h1kPSdyd8OPMkZJBRzMWzxjMYSCxq5w"
+          "current_key": "AIzaSyBfp1BocE9m4E6DCjmnGv4yGbz4s5FItNU"
         }
       ],
       "services": {

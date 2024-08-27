@@ -9,15 +9,15 @@ plugins {
 
 android {
 
-    namespace = "com.ih.m2"
+    namespace = "com.osm"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.ih.m2"
+        applicationId = "com.osm"
         minSdk = 24
         targetSdk = 34
         versionCode = 1
-        versionName = "2.3"
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -130,7 +130,7 @@ dependencies {
     implementation(libs.text.recognition)
     implementation(libs.core)
 
-    implementation("com.journeyapps:zxing-android-embedded:4.3.0")
-    implementation("com.google.zxing:core:3.4.1")
+    implementation(libs.zxing.android.embedded)
+    implementation(libs.core)
 
 }
