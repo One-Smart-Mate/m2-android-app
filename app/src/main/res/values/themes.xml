@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.M2androidapp.SplashScreen" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">?colorPrimary</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+    <style name="Theme.OsmApp.SplashScreen" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/primary_app</item>
+        <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.M2androidapp</item>
         <item name="windowActionBar">false</item>
         <item name="android:windowActionBar">false</item>

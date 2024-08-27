@@ -146,7 +146,7 @@ class NotificationManager @Inject constructor(private val context: Context) {
     ) {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "m2_create_card"
+            val name = "osm_create_card"
             val descriptionText = "Create card notification"
 
             val importance = NotificationManager.IMPORTANCE_HIGH

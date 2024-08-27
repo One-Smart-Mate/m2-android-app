@@ -15,7 +15,7 @@ class SharedPreferences @Inject constructor(
     private var sharedPreferences: SharedPreferences? = null
 
     companion object {
-        private const val M2_APP_PREFERENCES = "m2_app_preferences"
+        private const val OSM_APP_PREFERENCES = "osm_app_preferences"
         private const val NETWORK_PREFERENCES = "network_preference"
         private const val LOG_FILE_PREFERENCES = "path_log_file"
         private const val LAST_SYNC_PREFERENCES = "last_sync_date"
@@ -24,7 +24,7 @@ class SharedPreferences @Inject constructor(
     }
 
     init {
-        sharedPreferences = context.getSharedPreferences(M2_APP_PREFERENCES, Context.MODE_PRIVATE)
+        sharedPreferences = context.getSharedPreferences(OSM_APP_PREFERENCES, Context.MODE_PRIVATE)
     }
 
     fun clearPreferences() {

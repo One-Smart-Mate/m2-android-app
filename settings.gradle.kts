@@ -25,6 +25,6 @@ dependencyResolutionManagement {
 //       // classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1")
 //    }
 //}
-rootProject.name = "m2-android-app"
+rootProject.name = "osm-android-app"
 include(":app")
  

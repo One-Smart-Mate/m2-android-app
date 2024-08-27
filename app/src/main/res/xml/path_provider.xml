@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
-    <external-cache-path name="m2_data" path="/"/>
+    <external-cache-path name="osm_data" path="/"/>
 </paths>

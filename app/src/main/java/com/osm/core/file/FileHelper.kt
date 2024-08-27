@@ -23,7 +23,7 @@ class FileHelper @Inject constructor(
     private val sharedPreferences: SharedPreferences
 ) {
 
-    private val fileName = "m2_logs_file"
+    private val fileName = "osm_logs_file"
     private var path = EMPTY
 
     init {

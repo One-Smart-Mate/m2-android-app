@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -38,12 +39,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.osm.R
 import com.osm.ui.components.CustomSpacer
 import com.osm.ui.components.CustomTextField
@@ -58,7 +62,11 @@ import com.osm.ui.pages.home.HomeViewModelV2
 import com.osm.ui.theme.OsmAppTheme
 import com.osm.ui.theme.PaddingNormal
 import com.osm.ui.theme.PaddingToolbar
+import com.osm.ui.theme.PaddingToolbarVertical
 import com.osm.ui.theme.Size150
+import com.osm.ui.theme.Size170
+import com.osm.ui.theme.Size200
+import com.osm.ui.utils.EMPTY
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -197,19 +205,32 @@ fun LoginForm(
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun LoginTitle() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(Size150),
+            .height(Size200),
         contentAlignment = Alignment.Center,
 
         ) {
-        Text(
-            text = stringResource(R.string.app_simple_name), style = MaterialTheme.typography.displayMedium
-                .copy(color = getColor())
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.padding(top = PaddingToolbarVertical, bottom = PaddingNormal)
+        ) {
+            GlideImage(model = R.mipmap.ic_launcher, contentDescription = EMPTY)
+            Text(
+                text = stringResource(R.string.app_simple_name), style = MaterialTheme.typography.displaySmall
+                    .copy(color = getColor())
+
+            )
+            Text(
+                text = stringResource(R.string.app_simple_name_desc), style = MaterialTheme.typography.bodySmall
+                    .copy(color = getColor())
+            )
+        }
     }
 }
 
