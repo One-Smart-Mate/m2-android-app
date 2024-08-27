@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">M2 App</string>
+    <string name="app_name" translatable="false">OSM</string>
     <string name="account">Account</string>
     <string name="settings">Settings</string>
     <string name="notifications">Notifications</string>
