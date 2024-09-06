@@ -4,7 +4,7 @@ data class CreateCardRequest(
     val siteId: Int,
     val cardUUID: String,
     val cardCreationDate: String,
-    val areaId: Int,
+    val nodeId: Int,
     val priorityId: Int,
     val cardTypeValue: String,
     val cardTypeId: Int,

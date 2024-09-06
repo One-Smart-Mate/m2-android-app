@@ -48,7 +48,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.components.CustomSpacer
 import com.osm.ui.components.CustomTextField
 import com.osm.ui.components.SpacerSize

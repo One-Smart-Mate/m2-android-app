@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.components.buttons.CustomButton
 import com.osm.ui.theme.PaddingNormal
 import com.osm.ui.utils.EMPTY

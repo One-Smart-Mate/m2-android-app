@@ -8,7 +8,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.LCE
 import com.osm.domain.model.Card
 import com.osm.domain.model.User

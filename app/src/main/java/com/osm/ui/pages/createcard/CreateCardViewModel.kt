@@ -8,7 +8,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.file.FileHelper
 import com.osm.core.firebase.FirebaseNotificationType
 import com.osm.data.repository.firebase.FirebaseAnalyticsHelper
@@ -20,9 +20,7 @@ import com.osm.domain.model.NodeCardItem
 import com.osm.domain.model.hasAudios
 import com.osm.domain.model.hasImages
 import com.osm.domain.model.hasVideos
-import com.osm.domain.model.isBehavior
-import com.osm.domain.model.isBehaviorCardType
-import com.osm.domain.model.isMaintenanceCardType
+import com.osm.domain.model.isAnomaliesCardType
 import com.osm.domain.model.toAudios
 import com.osm.domain.model.toImages
 import com.osm.domain.model.toNodeItemCard
@@ -38,12 +36,8 @@ import com.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.osm.ui.extensions.defaultIfNull
 import com.osm.ui.utils.CARD_ANOMALIES
-import com.osm.ui.utils.CARD_BEHAVIOR
-import com.osm.ui.utils.CARD_TYPE_METHODOLOGY_C
-import com.osm.ui.utils.CARD_TYPE_METHODOLOGY_M
+import com.osm.ui.utils.CARD_TYPE_ANOMALIES_A
 import com.osm.ui.utils.EMPTY
-import com.osm.ui.utils.SAFE
-import com.osm.ui.utils.UNSAFE
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -205,11 +199,8 @@ class CreateCardViewModel @AssistedInject constructor(
             handleGetCardType(id)
             val state = stateFlow.first()
             val cardType = state.cardTypeList.find { it.id == id }
-
-            if (cardType.isBehaviorCardType()) {
-                setState { copy(isSecureCard = true) }
-            }
-            if (cardType.isMaintenanceCardType().defaultIfNull(false)) {
+            Log.e("test","CardType -> $cardType -- ${cardType.isAnomaliesCardType()}")
+            if (cardType.isAnomaliesCardType().defaultIfNull(false)) {
                 handleGetPriorities()
             } else {
                 val levelList = getLevelById("0", 0)
@@ -284,10 +275,7 @@ class CreateCardViewModel @AssistedInject constructor(
         viewModelScope.launch(coroutineContext) {
             val cardType = when (filter) {
                 CARD_ANOMALIES -> {
-                    CARD_TYPE_METHODOLOGY_M
-                }
-                CARD_BEHAVIOR -> {
-                    CARD_TYPE_METHODOLOGY_C
+                    CARD_TYPE_ANOMALIES_A
                 }
                 else -> {
                     EMPTY
@@ -335,29 +323,23 @@ class CreateCardViewModel @AssistedInject constructor(
         setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
-            val isBehavior = state.cardType?.isBehavior().defaultIfNull(false)
-            if (isBehavior && state.selectedSecureOption.isEmpty()) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = "Select if the card is Safe or UnSafe"
-                    )
-                }
-                return@launch
-            }
-
-            val cardTypeValue = when (state.selectedSecureOption) {
-                context.getString(R.string.safe) -> SAFE
-                context.getString(R.string.unsafe) -> UNSAFE
-                else -> EMPTY
-            }
+//            val isBehavior = state.cardType?.isBehavior().defaultIfNull(false)
+//            if (isBehavior && state.selectedSecureOption.isEmpty()) {
+//                setState {
+//                    copy(
+//                        isLoading = false,
+//                        message = "Select if the card is Safe or UnSafe"
+//                    )
+//                }
+//                return@launch
+//            }
 
             val card = Card.fromCreateCard(
                 cardId = state.cardId,
                 areaId = state.lastSelectedLevel.toLong(),
                 level = state.selectedLevelList.keys.last().toLong(),
                 priorityId = state.selectedPriority,
-                cardTypeValue = cardTypeValue,
+                cardTypeValue = EMPTY,
                 cardTypeId = state.selectedCardType,
                 preclassifierId = state.selectedPreclassifier,
                 comment = state.comment,

@@ -54,7 +54,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import com.osm.R
+import com.ih.osm.R
 import com.osm.domain.model.Card
 import com.osm.domain.model.Evidence
 import com.osm.domain.model.EvidenceType
@@ -283,30 +283,30 @@ fun CreateCardContent(
                         onCommentChange(it)
                     }
                     CustomSpacer()
-                    if (isSecureCard) {
-                        CustomSpacer()
-                        Text(
-                            text = stringResource(R.string.card_type),
-                            style = MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold)
-                        )
-                        RadioGroup(
-                            modifier = Modifier.fillParentMaxWidth(),
-                            items = listOf(
-                                stringResource(R.string.safe),
-                                stringResource(R.string.unsafe)
-                            ),
-                            selection = selectedSecureOption
-                        ) {
-                            if (onSecureOptionChange != null) {
-                                onSecureOptionChange(it)
-                            }
-                        }
-                        CustomSpacer()
-                    }
+//                    if (isSecureCard) {
+//                        CustomSpacer()
+//                        Text(
+//                            text = stringResource(R.string.card_type),
+//                            style = MaterialTheme.typography.titleLarge
+//                                .copy(fontWeight = FontWeight.Bold)
+//                        )
+//                        RadioGroup(
+//                            modifier = Modifier.fillParentMaxWidth(),
+//                            items = listOf(
+//                                stringResource(R.string.safe),
+//                                stringResource(R.string.unsafe)
+//                            ),
+//                            selection = selectedSecureOption
+//                        ) {
+//                            if (onSecureOptionChange != null) {
+//                                onSecureOptionChange(it)
+//                            }
+//                        }
+//                        CustomSpacer()
+//                    }
 
                     AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
-                        ExpandableCard(title = "Existing Cards Zone") {
+                        ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
                             cardsZone.map {
                                 CardSectionItemList(card = it)
                             }

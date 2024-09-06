@@ -11,7 +11,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import com.osm.R
+import com.ih.osm.R
 import com.osm.domain.model.EvidenceType
 import com.osm.ui.components.launchers.CameraLauncher
 import com.osm.ui.components.launchers.VideoLauncher

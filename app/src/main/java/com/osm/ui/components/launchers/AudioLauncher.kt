@@ -30,7 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.functions.FileType
 import com.osm.core.ui.functions.getUriForFile
 import com.osm.core.ui.functions.openAppSettings

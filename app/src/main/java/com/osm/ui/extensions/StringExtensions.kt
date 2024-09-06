@@ -3,8 +3,7 @@ package com.osm.ui.extensions
 import android.content.Context
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
-import com.osm.R
-
+import com.ih.osm.R
 import com.osm.ui.utils.ALL_OPEN_CARDS
 import com.osm.ui.utils.ASSIGNED_CARDS
 import com.osm.ui.utils.CLEAN_FILTERS

@@ -2,29 +2,28 @@ package com.osm.ui.pages.cardlist
 
 import android.content.Context
 import android.util.Log
+import androidx.lifecycle.SavedStateHandle
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.network.NetworkConnection
 import com.osm.domain.model.Card
 import com.osm.domain.model.NetworkStatus
 import com.osm.domain.model.filterByStatus
 import com.osm.domain.model.isAnomalies
-import com.osm.domain.model.isBehavior
 import com.osm.domain.model.toAnomaliesList
-import com.osm.domain.model.toBehaviorList
 import com.osm.domain.usecase.card.GetCardsLevelMachineUseCase
 import com.osm.domain.usecase.card.GetCardsUseCase
 import com.osm.domain.usecase.card.GetCardsZoneUseCase
 import com.osm.domain.usecase.user.GetUserUseCase
 import com.osm.ui.extensions.defaultIfNull
 import com.osm.ui.extensions.toFilterStatus
+import com.osm.ui.navigation.ARG_CARD_ID
 import com.osm.ui.utils.CARD_ANOMALIES
-import com.osm.ui.utils.CARD_BEHAVIOR
-import com.osm.ui.utils.EMPTY
+ import com.osm.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
@@ -39,7 +38,7 @@ class CardListViewModel @AssistedInject constructor(
     private val getCardsUseCase: GetCardsUseCase,
     @ApplicationContext private val context: Context,
     private val getUserUseCase: GetUserUseCase,
-    private val getCardsLevelMachineUseCase: GetCardsLevelMachineUseCase
+    private val getCardsLevelMachineUseCase: GetCardsLevelMachineUseCase,
 ) : MavericksViewModel<CardListViewModel.UiState>(initialState) {
 
     data class UiState(
@@ -93,10 +92,6 @@ class CardListViewModel @AssistedInject constructor(
                         it.toAnomaliesList()
                     }
 
-                    CARD_BEHAVIOR -> {
-                        it.toBehaviorList()
-                    }
-
                     else -> it
                 }.sortedByDescending { item -> item.siteCardId }
                 setState {
@@ -134,7 +129,6 @@ class CardListViewModel @AssistedInject constructor(
     private fun getTitle(filter: String): String {
         return when (filter) {
             CARD_ANOMALIES -> context.getString(R.string.anomalies_cards)
-            CARD_BEHAVIOR -> context.getString(R.string.behaviour_cards)
             else -> context.getString(R.string.cards)
         }
     }
@@ -146,16 +140,12 @@ class CardListViewModel @AssistedInject constructor(
                 getCardsLevelMachineUseCase(levelMachine)
             }.onSuccess {
                 setState {
-                    val isBehavior = it.firstOrNull()?.isBehavior().defaultIfNull(false)
                     val isAnomalies = it.firstOrNull()?.isAnomalies().defaultIfNull(false)
-                    val result = if (isBehavior) {
-                        Pair(it.toBehaviorList(), CARD_BEHAVIOR)
-                    } else if (isAnomalies) {
+                    val result = if (isAnomalies) {
                         Pair(it.toAnomaliesList(), CARD_ANOMALIES)
                     } else {
                         Pair(it, EMPTY)
                     }
-                    Log.e("test", "Cards zones $it -- $isBehavior ?? $isAnomalies")
                     copy(
                         cards = result.first,
                         isLoading = false,

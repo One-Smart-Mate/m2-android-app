@@ -57,13 +57,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.LCE
 import com.osm.domain.model.Card
 import com.osm.domain.model.NetworkStatus
 import com.osm.domain.model.User
 import com.osm.domain.model.toAnomaliesList
-import com.osm.domain.model.toBehaviorList
 import com.osm.domain.model.toLocalCards
 import com.osm.ui.components.CustomSpacer
 import com.osm.ui.components.CustomTag
@@ -85,7 +84,6 @@ import com.osm.ui.theme.PaddingNormal
 import com.osm.ui.theme.PaddingToolbar
 import com.osm.ui.theme.Size2
 import com.osm.ui.utils.CARD_ANOMALIES
-import com.osm.ui.utils.CARD_BEHAVIOR
 import com.osm.ui.utils.EMPTY
 import com.osm.ui.utils.LOAD_CATALOGS
 import kotlinx.coroutines.launch
@@ -242,16 +240,16 @@ private fun HomeContentV2(
                 ) {
                     onCardClick(CARD_ANOMALIES)
                 }
-                HomeSectionCardItem(
-                    title = stringResource(R.string.behaviour_cards),
-                    icon = Icons.Outlined.Person,
-                    description = if (cards.isNotEmpty()) stringResource(
-                        R.string.total_cards,
-                        cards.toBehaviorList().size
-                    ) else EMPTY
-                ) {
-                    onCardClick(CARD_BEHAVIOR)
-                }
+//                HomeSectionCardItem(
+//                    title = stringResource(R.string.behaviour_cards),
+//                    icon = Icons.Outlined.Person,
+//                    description = if (cards.isNotEmpty()) stringResource(
+//                        R.string.total_cards,
+//                        cards.toBehaviorList().size
+//                    ) else EMPTY
+//                ) {
+//                    onCardClick(CARD_BEHAVIOR)
+//                }
             }
         }
     }

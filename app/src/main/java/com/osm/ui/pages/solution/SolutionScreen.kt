@@ -3,6 +3,7 @@ package com.osm.ui.pages.solution
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -34,16 +35,16 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import com.osm.R
+import com.ih.osm.R
 import com.osm.domain.model.Employee
 import com.osm.domain.model.Evidence
 import com.osm.domain.model.EvidenceType
@@ -133,18 +134,19 @@ fun SolutionScreen(
         )
     }
 
-    LaunchedEffect(viewModel) {
-        viewModel.process(SolutionViewModel.Action.SetSolutionInfo(solutionType, cardId))
-    }
     LaunchedEffect(viewModel, lifecycle) {
-        snapshotFlow { state.isSolutionSuccess }
+        snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
-                if (it) {
+                if (it.isSolutionSuccess) {
                     navController.popBackStack()
+                }
+                if (it.isFetching.not()) {
+                    viewModel.process(SolutionViewModel.Action.SetSolutionInfo(solutionType, cardId))
                 }
             }
     }
+
 }
 
 @Composable

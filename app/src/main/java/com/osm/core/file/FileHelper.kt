@@ -5,7 +5,7 @@ import android.net.Uri
 import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.Gson
-import com.osm.BuildConfig
+import com.ih.osm.BuildConfig
 import com.osm.core.preferences.SharedPreferences
 import com.osm.data.model.CreateCardRequest
 import com.osm.data.model.CreateDefinitiveSolutionRequest

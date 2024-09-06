@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.components.CustomSpacer
 import com.osm.ui.components.buttons.ButtonType
 import com.osm.ui.components.buttons.CustomButton

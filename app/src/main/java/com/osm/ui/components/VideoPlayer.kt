@@ -13,7 +13,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.pages.createcard.CardItemIcon
 
 

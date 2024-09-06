@@ -1,11 +1,9 @@
 package com.osm.domain.model
 
-import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import com.google.gson.annotations.SerializedName
-import com.osm.R
-
+import com.ih.osm.R
 import com.osm.data.database.entities.card.CardEntity
 import com.osm.data.model.CreateCardRequest
 import com.osm.data.model.CreateEvidenceRequest
@@ -13,11 +11,12 @@ import com.osm.ui.extensions.ISO_FORMAT
 import com.osm.ui.extensions.NORMAL_FORMAT
 import com.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.osm.ui.extensions.defaultIfNull
-import com.osm.ui.extensions.toDate
 import com.osm.ui.extensions.toFormatDate
 import com.osm.ui.utils.ALL_OPEN_CARDS
 import com.osm.ui.utils.ASSIGNED_CARDS
-import com.osm.ui.utils.CARD_MAINTENANCE
+import com.osm.ui.utils.CARD_ANOMALIES
+import com.osm.ui.utils.CARD_ANOMALIES_NAME
+import com.osm.ui.utils.CARD_TYPE_ANOMALIES_A
 import com.osm.ui.utils.CLOSED_CARDS
 import com.osm.ui.utils.EMPTY
 import com.osm.ui.utils.EXPIRED_CARDS
@@ -401,18 +400,18 @@ fun Card.toEntity(): CardEntity {
 }
 
 fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL }
-fun List<Card>.toBehaviorList() = this.filter { it.isBehavior() }
+//fun List<Card>.toBehaviorList() = this.filter { it.isBehavior() }
 fun List<Card>.toAnomaliesList() = this.filter { it.isAnomalies() }
 
-fun Card.isBehavior() = this.cardTypeMethodology == "C" || this.cardTypeMethodologyName == "Comportamiento"
-fun Card.isAnomalies() = this.cardTypeMethodology == "M" || this.cardTypeMethodologyName == "Mantenimiento"
+//fun Card.isBehavior() = this.cardTypeMethodology == "C" || this.cardTypeMethodologyName == "Comportamiento"
+fun Card.isAnomalies() = this.cardTypeMethodology?.lowercase() == CARD_TYPE_ANOMALIES_A.lowercase() || this.cardTypeMethodologyName?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
 
 fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
     return CreateCardRequest(
         siteId = this.siteId?.toInt().defaultIfNull(0),
         cardUUID = this.uuid,
         cardCreationDate = this.creationDate,
-        areaId = this.areaId.toInt(),
+        nodeId = this.areaId.toInt(),
         priorityId = if (this.priorityId.isNullOrBlank().not()) this.priorityId?.toInt()
             .defaultIfNull(0) else 0,
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
@@ -429,8 +428,6 @@ fun Card.getCreationDate(): String {
        creationDate
    )
 }
-
-
 
 fun Card.validateProvisionalDate(): String {
     return if (this.stored == STORED_REMOTE) {

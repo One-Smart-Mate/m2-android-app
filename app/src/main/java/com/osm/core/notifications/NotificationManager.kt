@@ -10,7 +10,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.utils.EMPTY
 import javax.inject.Inject
 import kotlin.random.Random

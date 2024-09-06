@@ -25,7 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.LCE
 import com.osm.domain.model.User
 import com.osm.ui.components.CustomAppBar

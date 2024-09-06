@@ -25,7 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.extensions.getPrimaryColor
 import com.osm.ui.theme.OsmAppTheme
 import com.osm.ui.theme.PaddingToolbar

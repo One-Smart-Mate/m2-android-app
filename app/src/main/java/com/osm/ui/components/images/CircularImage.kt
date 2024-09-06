@@ -11,7 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import com.osm.R
+import com.ih.osm.R
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable

@@ -34,7 +34,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.LCE
 import com.osm.domain.model.Card
 import com.osm.domain.model.Evidence
@@ -43,8 +43,17 @@ import com.osm.domain.model.getStatus
 import com.osm.domain.model.preclassifierValue
 import com.osm.domain.model.priorityValue
 import com.osm.domain.model.toAudios
+import com.osm.domain.model.toAudiosAtCreation
+import com.osm.domain.model.toAudiosAtDefinitiveSolution
+import com.osm.domain.model.toAudiosAtProvisionalSolution
 import com.osm.domain.model.toImages
+import com.osm.domain.model.toImagesAtCreation
+import com.osm.domain.model.toImagesAtDefinitiveSolution
+import com.osm.domain.model.toImagesAtProvisionalSolution
 import com.osm.domain.model.toVideos
+import com.osm.domain.model.toVideosAtCreation
+import com.osm.domain.model.toVideosAtDefinitiveSolution
+import com.osm.domain.model.toVideosAtProvisionalSolution
 import com.osm.domain.model.validateCloseDate
 import com.osm.domain.model.validateProvisionalDate
 import com.osm.ui.components.CustomAppBar
@@ -180,31 +189,32 @@ fun CardInformationContent(
     CardInformationEvidence(card = card)
 
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
+
         SectionTag(
-            title = stringResource(R.string.provisional_user),
-            value = card.userProvisionalSolutionName.orDefault(),
-        )
-        SectionTag(
-            title = stringResource(R.string.provisional_date),
+            title = stringResource(R.string.date),
             value = card.validateProvisionalDate().orDefault(),
         )
         SectionTag(
-            title = stringResource(R.string.provisional_comments),
+            title = stringResource(R.string.user),
+            value = card.userProvisionalSolutionName.orDefault(),
+        )
+        SectionTag(
+            title = stringResource(R.string.comments),
             value = card.commentsAtCardProvisionalSolution.orDefault(),
         )
     }
 
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
         SectionTag(
-            title = stringResource(R.string.definitive_date),
+            title = stringResource(R.string.date),
             value = card.validateCloseDate().orDefault(),
         )
         SectionTag(
-            title = stringResource(R.string.definitive_user),
+            title = stringResource(R.string.user),
             value = card.userDefinitiveSolutionName.orDefault(),
         )
         SectionTag(
-            title = stringResource(R.string.definitive_comments),
+            title = stringResource(R.string.comments),
             value = card.commentsAtCardDefinitiveSolution.orDefault(),
         )
     }
@@ -217,25 +227,67 @@ fun CardInformationEvidence(
     if (card.evidences.isNullOrEmpty().not()) {
         val evidences = card.evidences.orEmpty()
         ExpandableCard(title = stringResource(R.string.evidences)) {
-            val imagesList = evidences.toImages()
-            if (imagesList.isNotEmpty()) {
+            val imagesAtCreation = evidences.toImagesAtCreation()
+            if (imagesAtCreation.isNotEmpty()) {
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images),
-                    evidences = imagesList,
+                    evidences = imagesAtCreation,
                 )
             }
-            val videoList = evidences.toVideos()
-            if (videoList.isNotEmpty()) {
+            val imagesAtProvisionalSolution = evidences.toImagesAtProvisionalSolution()
+            if (imagesAtProvisionalSolution.isNotEmpty()) {
+                EvidenceImagesCardSection(
+                    title = stringResource(R.string.images_provisional_solution),
+                    evidences = imagesAtProvisionalSolution,
+                )
+            }
+            val imagesAtDefinitiveSolution = evidences.toImagesAtDefinitiveSolution()
+            if (imagesAtDefinitiveSolution.isNotEmpty()) {
+                EvidenceImagesCardSection(
+                    title = stringResource(R.string.images_definitive_solution),
+                    evidences = imagesAtDefinitiveSolution,
+                )
+            }
+            val videosAtCreation = evidences.toVideosAtCreation()
+            if (videosAtCreation.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos),
-                    evidences = videoList
+                    evidences = videosAtCreation
                 )
             }
-            val audioList = evidences.toAudios()
-            if (audioList.isNotEmpty()) {
+            val videosAtProvisionalSolution = evidences.toVideosAtProvisionalSolution()
+            if (videosAtProvisionalSolution.isNotEmpty()) {
+                EvidenceVideoCardSection(
+                    title = stringResource(R.string.videos_provisional_solution),
+                    evidences = videosAtProvisionalSolution
+                )
+            }
+            val videosAtDefinitiveSolution = evidences.toVideosAtDefinitiveSolution()
+            if (videosAtDefinitiveSolution.isNotEmpty()) {
+                EvidenceVideoCardSection(
+                    title = stringResource(R.string.videos_definitive_solution),
+                    evidences = videosAtDefinitiveSolution
+                )
+            }
+            val audiosAtCreation = evidences.toAudiosAtCreation()
+            if (audiosAtCreation.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios),
-                    evidences = audioList
+                    evidences = audiosAtCreation
+                )
+            }
+            val audiosAtProvisionalSolution = evidences.toAudiosAtProvisionalSolution()
+            if (audiosAtProvisionalSolution.isNotEmpty()) {
+                EvidenceAudioCardSection(
+                    title = stringResource(R.string.audios_provisional_solution),
+                    evidences = audiosAtProvisionalSolution
+                )
+            }
+            val audiosAtDefinitiveSolution = evidences.toAudiosAtDefinitiveSolution()
+            if (audiosAtDefinitiveSolution.isNotEmpty()) {
+                EvidenceAudioCardSection(
+                    title = stringResource(R.string.audios_definitive_solution),
+                    evidences = audiosAtDefinitiveSolution
                 )
             }
         }

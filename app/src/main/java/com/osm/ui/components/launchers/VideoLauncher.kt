@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.ui.functions.FileType
 import com.osm.core.ui.functions.getUriForFile
 import com.osm.core.ui.functions.openAppSettings

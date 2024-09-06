@@ -59,15 +59,67 @@ fun List<Evidence>.toImages(): List<Evidence> {
     }
 }
 
+fun List<Evidence>.toImagesAtCreation(): List<Evidence> {
+    return this.filter {
+        it.type == IMG_CREATION
+    }
+}
+
+fun List<Evidence>.toImagesAtProvisionalSolution(): List<Evidence> {
+    return this.filter {
+        it.type == IMG_PS
+    }
+}
+
+fun List<Evidence>.toImagesAtDefinitiveSolution(): List<Evidence> {
+    return this.filter {
+        it.type == IMG_CLOSE
+    }
+}
+
 fun List<Evidence>.toVideos(): List<Evidence> {
     return this.filter {
-        it.type == VIDEO_CLOSE || it.type == VIDEO_CREATION || it.type == VIDEO_PS
+        it.type == VIDEO_CREATION || it.type == VIDEO_PS || it.type == VIDEO_CLOSE
+    }
+}
+
+fun List<Evidence>.toVideosAtCreation(): List<Evidence> {
+    return this.filter {
+       it.type == VIDEO_CREATION
+    }
+}
+
+fun List<Evidence>.toVideosAtProvisionalSolution(): List<Evidence> {
+    return this.filter {
+        it.type == VIDEO_PS
+    }
+}
+
+fun List<Evidence>.toVideosAtDefinitiveSolution(): List<Evidence> {
+    return this.filter {
+        it.type == VIDEO_CLOSE
     }
 }
 
 fun List<Evidence>.toAudios(): List<Evidence> {
     return this.filter {
         it.type == AUDIO_CREATION || it.type == AUDIO_CLOSE || it.type == AUDIO_PS
+    }
+}
+
+fun List<Evidence>.toAudiosAtCreation(): List<Evidence> {
+    return this.filter {
+        it.type == AUDIO_CREATION
+    }
+}
+fun List<Evidence>.toAudiosAtProvisionalSolution(): List<Evidence> {
+    return this.filter {
+        it.type == AUDIO_PS
+    }
+}
+fun List<Evidence>.toAudiosAtDefinitiveSolution(): List<Evidence> {
+    return this.filter {
+        it.type == AUDIO_CLOSE
     }
 }
 

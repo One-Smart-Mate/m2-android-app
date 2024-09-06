@@ -24,7 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import com.osm.R
+import com.ih.osm.R
 import com.osm.domain.model.Card
 import com.osm.domain.model.cardTitle
 import com.osm.domain.model.enableDefinitiveSolution

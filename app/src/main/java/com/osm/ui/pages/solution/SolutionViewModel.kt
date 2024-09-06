@@ -3,12 +3,14 @@ package com.osm.ui.pages.solution
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.lifecycle.SavedStateHandle
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.file.FileHelper
 import com.osm.core.network.NetworkConnection
 import com.osm.core.notifications.NotificationManager
@@ -25,6 +27,7 @@ import com.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.osm.domain.usecase.cardtype.GetCardTypeUseCase
 import com.osm.domain.usecase.employee.GetEmployeesUseCase
 import com.osm.ui.extensions.defaultIfNull
+import com.osm.ui.navigation.ARG_CARD_ID
 import com.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.osm.ui.utils.EMPTY
 import com.osm.ui.utils.PROVISIONAL_SOLUTION
@@ -45,7 +48,7 @@ class SolutionViewModel @AssistedInject constructor(
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
     @ApplicationContext private val context: Context,
     private val fileHelper: FileHelper,
-    private val notificationManager: NotificationManager
+    private val notificationManager: NotificationManager,
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
 
 
@@ -63,7 +66,8 @@ class SolutionViewModel @AssistedInject constructor(
         val evidences: List<Evidence> = emptyList(),
         val card: Card? = null,
         val cardType: CardType? = null,
-        val isSolutionSuccess: Boolean = false
+        val isSolutionSuccess: Boolean = false,
+        val isFetching: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -93,7 +97,6 @@ class SolutionViewModel @AssistedInject constructor(
             is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
             is Action.GetCardType -> handleGetCardType(action.id)
             is Action.ClearMessage -> setState { copy(message = EMPTY) }
-            else -> {}
         }
     }
 
@@ -247,9 +250,10 @@ class SolutionViewModel @AssistedInject constructor(
         setState {
             copy(
                 solutionType = solutionType,
+                isFetching = true
             )
         }
-        process(Action.GetCardDetail(cardId))
+        handleGetCardDetail(cardId)
     }
 
     private fun handleGetCardDetail(cardId: String) {
@@ -259,8 +263,7 @@ class SolutionViewModel @AssistedInject constructor(
                 getCardDetailUseCase(cardId, false)
             }.onSuccess {
                 setState { copy(card = it) }
-                process(Action.GetEmployees)
-                process(Action.GetCardType(it.cardTypeId.orEmpty()))
+                handleGetCardType(it.cardTypeId.orEmpty())
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
@@ -268,7 +271,6 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardType(cardTypeId: String) {
-        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getCardTypeUseCase(cardTypeId)
@@ -285,15 +287,14 @@ class SolutionViewModel @AssistedInject constructor(
                         audioDuration = audioDuration,
                     )
                 }
-                cleanScreenStates()
+                handleGetEmployees()
             }.onFailure {
-                cleanScreenStates(it.localizedMessage.orEmpty())
+               cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
 
     private fun handleGetEmployees() {
-        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getEmployeesUseCase()

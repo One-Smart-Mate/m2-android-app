@@ -21,10 +21,21 @@
     <string name="filters">Filtros</string>
     <string name="apply">Aplicar</string>
     <string name="clean_filters">Limpiar filtros</string>
+
     <string name="images">Imágenes</string>
+    <string name="images_provisional_solution">Imágenes solución provisional</string>
+    <string name="images_definitive_solution">Imágenes solución definitiva</string>
+
+
     <string name="videos">Videos</string>
-    <string name="comments">Descripción del problema</string>
+    <string name="videos_provisional_solution">Videos solución provisional</string>
+    <string name="videos_definitive_solution">Videos solución definitiva</string>
+
     <string name="audios">Audios</string>
+    <string name="audios_provisional_solution">Audios solución provisional</string>
+    <string name="audios_definitive_solution">Audios solución definitiva</string>
+
+    <string name="comments">Descripción del problema</string>
     <string name="welcome_back">Bienvenido de regreso! %1$s</string>
     <string name="open">Abierto</string>
     <string name="closed">Cerrado</string>
@@ -142,4 +153,5 @@
     <string name="syncing_remote_cards">Sincronizando tarjetas remotas</string>
     <string name="important">Importante!</string>
     <string name="update_catalogs_action_message">Tus catálogos están desactualizados, actualiza primero para crear nuevas tarjetas</string>
+    <string name="existing_cards_zone">Tarjetas existentes en Zona</string>
 </resources>

@@ -7,7 +7,8 @@ import android.provider.Settings
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
-import com.osm.BuildConfig
+import com.ih.osm.BuildConfig
+
 
 import java.io.File
 import java.text.SimpleDateFormat

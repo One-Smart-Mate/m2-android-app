@@ -20,7 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.extensions.getTextColor
 import com.osm.ui.theme.OsmAppTheme
 import com.osm.ui.theme.PaddingLarge

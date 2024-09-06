@@ -31,7 +31,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.components.CustomAppBar
 import com.osm.ui.components.LoadingScreen
 import com.osm.ui.components.QrCamera

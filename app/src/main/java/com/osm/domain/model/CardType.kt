@@ -2,11 +2,9 @@ package com.osm.domain.model
 
 import com.google.gson.annotations.SerializedName
 import com.osm.data.database.entities.cardtype.CardTypeEntity
-import com.osm.data.database.entities.cardtype.toDomain
 import com.osm.ui.extensions.defaultIfNull
-import com.osm.ui.utils.CARD_BEHAIVIOR
-import com.osm.ui.utils.CARD_MAINTENANCE
-import com.osm.ui.utils.CARD_TYPE_METHODOLOGY_C
+import com.osm.ui.utils.CARD_ANOMALIES
+import com.osm.ui.utils.CARD_ANOMALIES_NAME
 
 data class CardType(
     val id: String,
@@ -86,9 +84,11 @@ fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     }
 }
 
-fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
-        this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()
+//fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
+      //  this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()
 
-fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
+//fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
-fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()
+fun NodeCardItem?.isAnomaliesCardType(): Boolean = this?.name?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
+
+//fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()

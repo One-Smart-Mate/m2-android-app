@@ -6,7 +6,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
-import com.osm.R
+import com.ih.osm.R
 import com.osm.core.notifications.NotificationManager
 import com.osm.data.model.RestorePasswordRequest
 import com.osm.domain.usecase.password.ResetPasswordUseCase

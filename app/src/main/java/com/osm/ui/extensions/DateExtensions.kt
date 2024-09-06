@@ -3,7 +3,7 @@ package com.osm.ui.extensions
 import android.content.Context
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.osm.R
+import com.ih.osm.R
 import com.osm.ui.utils.EMPTY
 import java.text.SimpleDateFormat
 import java.util.Calendar

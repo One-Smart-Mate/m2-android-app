@@ -11,8 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import com.osm.R
-
+import com.ih.osm.R
 import com.osm.domain.model.Evidence
 import com.osm.ui.components.VideoPlayer
 import com.osm.ui.theme.Size120
