@@ -8,7 +8,6 @@ plugins {
 }
 
 android {
-
     namespace = "com.ih.osm"
     compileSdk = 34
 
