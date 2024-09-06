@@ -1,7 +1,10 @@
 package com.osm.domain.model
 
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.annotations.SerializedName
 import com.ih.osm.R
 import com.osm.data.database.entities.card.CardEntity
@@ -11,6 +14,7 @@ import com.osm.ui.extensions.ISO_FORMAT
 import com.osm.ui.extensions.NORMAL_FORMAT
 import com.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.osm.ui.extensions.defaultIfNull
+import com.osm.ui.extensions.getPrimaryColor
 import com.osm.ui.extensions.toFormatDate
 import com.osm.ui.utils.ALL_OPEN_CARDS
 import com.osm.ui.utils.ASSIGNED_CARDS
@@ -30,6 +34,7 @@ import com.osm.ui.utils.STORED_LOCAL
 import com.osm.ui.utils.STORED_REMOTE
 import com.osm.ui.utils.UNASSIGNED_CARDS
 import java.util.Date
+import android.graphics.Color as ColorParser
 
 data class Card(
     val id: String,
@@ -300,6 +305,16 @@ fun Card.getStatus(): String {
     }
 }
 
+
+@Composable
+fun Card.getBorderColor(): Color {
+    return try {
+        return Color(ColorParser.parseColor(this.cardTypeColor))
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        MaterialTheme.colorScheme.secondary
+    }
+}
 
 fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
     return when (filter) {

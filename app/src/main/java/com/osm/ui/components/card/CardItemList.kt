@@ -1,6 +1,7 @@
 package com.osm.ui.components.card
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -19,16 +20,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import com.ih.osm.R
 import com.osm.domain.model.Card
 import com.osm.domain.model.cardTitle
 import com.osm.domain.model.enableDefinitiveSolution
 import com.osm.domain.model.enableProvisionalSolution
+import com.osm.domain.model.getBorderColor
 import com.osm.domain.model.getCreationDate
 import com.osm.domain.model.getStatus
 import com.osm.domain.model.isClosed
@@ -54,8 +58,9 @@ import com.osm.ui.utils.STORED_LOCAL
 @Composable
 fun CardItemList(
     card: Card,
+    isActionsEnabled: Boolean = true,
     onClick: () -> Unit,
-    onSolutionClick: (String) -> Unit
+    onSolutionClick: (String) -> Unit,
 ) {
     var showSolutionBottomSheet by remember {
         mutableStateOf(false)
@@ -66,7 +71,8 @@ fun CardItemList(
             .padding(PaddingNormal),
         onClick = {
             onClick()
-        }
+        },
+        border = BorderStroke(1.dp, card.getBorderColor())
     ) {
         Column(
             modifier = Modifier.padding(PaddingSmall)
@@ -127,7 +133,7 @@ fun CardItemList(
             )
 
             CustomSpacer()
-            AnimatedVisibility(visible = card.isClosed().not()) {
+            AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
                 CustomButton(
                     text = stringResource(R.string.actions),
                     buttonType = ButtonType.OUTLINE,
@@ -142,7 +148,7 @@ fun CardItemList(
             onSolutionClick = {
                 showSolutionBottomSheet = false
                 onSolutionClick(it)
-                              },
+            },
             onDismissRequest = {
                 showSolutionBottomSheet = false
             },
@@ -215,7 +221,7 @@ fun HomeCardItemListPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             Column {
-                CardItemList(Card.mock(), {}) {}
+                CardItemList(Card.mock(), true,{}) {}
                 CustomSpacer()
 
             }

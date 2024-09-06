@@ -70,6 +70,7 @@ import com.osm.ui.components.RadioGroup
 import com.osm.ui.components.LoadingScreen
 import com.osm.ui.components.SpacerSize
 import com.osm.ui.components.buttons.CustomButton
+import com.osm.ui.components.card.CardItemList
 import com.osm.ui.components.card.SectionCardEvidence
 import com.osm.ui.components.evidence.SectionAudiosEvidence
 import com.osm.ui.components.evidence.SectionImagesEvidence
@@ -224,7 +225,10 @@ fun CreateCardContent(
             state = lazyColumState
         ) {
             stickyHeader {
-                CustomAppBar(navController = navController, title = stringResource(R.string.create_card))
+                CustomAppBar(
+                    navController = navController,
+                    title = stringResource(R.string.create_card)
+                )
             }
             item {
                 CustomSpacer()
@@ -308,7 +312,11 @@ fun CreateCardContent(
                     AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
                         ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
                             cardsZone.map {
-                                CardSectionItemList(card = it)
+                                CardItemList(
+                                    card = it,
+                                    isActionsEnabled = false,
+                                    onClick = {},
+                                    onSolutionClick = {})
                             }
                         }
                     }
@@ -413,7 +421,7 @@ fun CardTypeContent(
     onCardTypeClick: (NodeCardItem) -> Unit,
     selectedCardType: String,
 
-) {
+    ) {
     Text(
         text = stringResource(R.string.card_types),
         style = MaterialTheme.typography.titleLarge
@@ -431,9 +439,6 @@ fun CardTypeContent(
         }
     }
 }
-
-
-
 
 
 @OptIn(ExperimentalGlideComposeApi::class)
