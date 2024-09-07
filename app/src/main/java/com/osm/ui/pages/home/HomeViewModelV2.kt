@@ -269,12 +269,22 @@ class HomeViewModelV2 @AssistedInject constructor(
                 WorkManager.getInstance(appContext)
                     .getWorkInfoByIdFlow(uuid)
                     .collect {
+                        Log.e("test", "State ${it.state}")
                         when (it.state) {
-                            WorkInfo.State.FAILED,
-                            WorkInfo.State.BLOCKED,
-                            WorkInfo.State.CANCELLED,
                             WorkInfo.State.SUCCEEDED -> {
                                 handleGetCards()
+                            }
+
+                            WorkInfo.State.CANCELLED,
+                            WorkInfo.State.FAILED,
+                            WorkInfo.State.BLOCKED -> {
+                                setState {
+                                    copy(
+                                        isLoading = false,
+                                        isSyncing = false,
+                                        message = context.getString(R.string.work_failed)
+                                    )
+                                }
                             }
 
                             else -> {

@@ -309,7 +309,7 @@ fun Card.getStatus(): String {
 @Composable
 fun Card.getBorderColor(): Color {
     return try {
-        return Color(ColorParser.parseColor(this.cardTypeColor))
+        return Color(ColorParser.parseColor("#$cardTypeColor"))
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
         MaterialTheme.colorScheme.secondary

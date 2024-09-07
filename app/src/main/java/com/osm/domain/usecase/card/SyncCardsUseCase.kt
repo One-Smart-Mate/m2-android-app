@@ -37,6 +37,13 @@ class SyncCardsUseCaseImpl @Inject constructor(
 
         try {
             cardList.forEach { card ->
+                if (handleNotification) {
+                    currentProgress += progressByCard
+                    notificationManager.updateNotificationProgress(
+                        notificationId = id,
+                        currentProgress = currentProgress.toInt(),
+                    )
+                }
                 val evidences = mutableListOf<CreateEvidenceRequest>()
                 Log.e("test", "Current card.. $card")
                 card.evidences?.forEach { evidence ->
@@ -55,13 +62,6 @@ class SyncCardsUseCaseImpl @Inject constructor(
                 Log.e("test", "Current card remote.. $remoteCard")
                 localRepository.deleteCard(card.uuid)
                 localRepository.saveCard(remoteCard)
-                if (handleNotification) {
-                    currentProgress += progressByCard
-                    notificationManager.updateNotificationProgress(
-                        notificationId = id,
-                        currentProgress = currentProgress.toInt(),
-                    )
-                }
                 fileHelper.logCreateCardRequestSuccess(remoteCard)
                 firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
                 Log.e("test", "saving card.. $remoteCard")

@@ -3,6 +3,7 @@ package com.osm.ui.pages.createcard
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -154,15 +155,7 @@ fun CreateCardScreen(
             lazyColumState = lazyState
         )
     }
-    if (state.message.isNotEmpty() && state.isLoading.not()) {
-        scope.launch {
-            snackBarHostState.showSnackbar(
-                message = state.message,
-            )
-            viewModel.process(CreateCardViewModel.Action.ClearMessage)
-        }
 
-    }
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
             snackbarData = it,
@@ -174,14 +167,22 @@ fun CreateCardScreen(
 
 
     LaunchedEffect(viewModel, lifecycle) {
-        snapshotFlow { state.isCardSuccess }
+        snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (filter.isNotEmpty()) {
                     viewModel.process(CreateCardViewModel.Action.GetCardTypes(filter))
                 }
-                if (it) {
+                if (state.isCardSuccess) {
                     navController.popBackStack()
+                }
+                if (state.message.isNotEmpty() && state.isLoading.not()) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message,
+                        )
+                        viewModel.process(CreateCardViewModel.Action.ClearMessage)
+                    }
                 }
             }
     }

@@ -133,21 +133,35 @@ class CreateCardViewModel @AssistedInject constructor(
         viewModelScope.launch {
             val state = stateFlow.first()
             val cardType = state.cardType
-            val maxImages = cardType?.quantityImagesCreate.defaultIfNull(0)
-            if (state.evidences.toImages().size == maxImages) {
-                setState { copy(message = context.getString(R.string.limit_images)) }
+            val errorMessage = when (type) {
+                EvidenceType.IMCR -> {
+                    val maxImages = cardType?.quantityImagesCreate.defaultIfNull(0)
+                    if ((state.evidences.toImages().size) == maxImages) {
+                        context.getString(R.string.limit_images)
+                    } else EMPTY
+                }
+
+                EvidenceType.VICR -> {
+                    val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
+                    if (state.evidences.toVideos().size == maxVideos) {
+                        context.getString(R.string.limit_videos)
+                    } else EMPTY
+                }
+
+                EvidenceType.AUCR -> {
+                    val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
+                    if (state.evidences.toAudios().size == maxAudios) {
+                        context.getString(R.string.limit_audios)
+                    } else EMPTY
+                }
+
+                else -> EMPTY
+            }
+            if (errorMessage.isNotEmpty()) {
+                setState { copy(message = errorMessage, isLoading = false) }
                 return@launch
             }
-            val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
-            if (state.evidences.toVideos().size == maxVideos) {
-                setState { copy(message = context.getString(R.string.limit_videos)) }
-                return@launch
-            }
-            val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
-            if (state.evidences.toAudios().size == maxAudios) {
-                setState { copy(message = context.getString(R.string.limit_audios)) }
-                return@launch
-            }
+
             val list = state.evidences.toMutableList()
             list.add(
                 Evidence.fromCreateEvidence(
@@ -199,7 +213,7 @@ class CreateCardViewModel @AssistedInject constructor(
             handleGetCardType(id)
             val state = stateFlow.first()
             val cardType = state.cardTypeList.find { it.id == id }
-            Log.e("test","CardType -> $cardType -- ${cardType.isAnomaliesCardType()}")
+            Log.e("test", "CardType -> $cardType -- ${cardType.isAnomaliesCardType()}")
             if (cardType.isAnomaliesCardType().defaultIfNull(false)) {
                 handleGetPriorities()
             } else {
@@ -277,6 +291,7 @@ class CreateCardViewModel @AssistedInject constructor(
                 CARD_ANOMALIES -> {
                     CARD_TYPE_ANOMALIES_A
                 }
+
                 else -> {
                     EMPTY
                 }
@@ -410,6 +425,7 @@ class CreateCardViewModel @AssistedInject constructor(
                     FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
                         cleanScreenStates(context.getString(R.string.update_catalogs_action_message))
                     }
+
                     else -> {}
                 }
             }

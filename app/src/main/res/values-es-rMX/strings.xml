@@ -154,4 +154,5 @@
     <string name="important">Importante!</string>
     <string name="update_catalogs_action_message">Tus catálogos están desactualizados, actualiza primero para crear nuevas tarjetas</string>
     <string name="existing_cards_zone">Tarjetas existentes en Zona</string>
+    <string name="work_failed">Carga, cancelada, intente nuevamente</string>
 </resources>

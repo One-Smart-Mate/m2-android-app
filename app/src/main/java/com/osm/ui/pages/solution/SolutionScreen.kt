@@ -116,14 +116,6 @@ fun SolutionScreen(
             solutionType = state.solutionType
         )
     }
-    if (state.isLoading.not() && state.message.isNotEmpty()) {
-        scope.launch {
-            snackBarHostState.showSnackbar(
-                message = state.message,
-            )
-            viewModel.process(SolutionViewModel.Action.ClearMessage)
-        }
-    }
 
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
@@ -142,7 +134,20 @@ fun SolutionScreen(
                     navController.popBackStack()
                 }
                 if (it.isFetching.not()) {
-                    viewModel.process(SolutionViewModel.Action.SetSolutionInfo(solutionType, cardId))
+                    viewModel.process(
+                        SolutionViewModel.Action.SetSolutionInfo(
+                            solutionType,
+                            cardId
+                        )
+                    )
+                }
+                if (state.isLoading.not() && state.message.isNotEmpty()) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message,
+                        )
+                        viewModel.process(SolutionViewModel.Action.ClearMessage)
+                    }
                 }
             }
     }

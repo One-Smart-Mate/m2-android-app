@@ -73,10 +73,9 @@ class MainActivity : ComponentActivity() {
         uuid?.let {
             val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
                 .setId(uuid)
-                .setInitialDelay(Duration.ofSeconds(5))
                 .setBackoffCriteria(
                     backoffPolicy = BackoffPolicy.LINEAR,
-                    duration = Duration.ofSeconds(60 * 5)
+                    duration = Duration.ofSeconds(5)
                 ).build()
             WorkManager.getInstance(context).enqueue(workRequest)
         }

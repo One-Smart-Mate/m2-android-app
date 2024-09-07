@@ -105,21 +105,36 @@ class SolutionViewModel @AssistedInject constructor(
             val state = stateFlow.first()
             val cardType =
                 state.cardType.defaultIfNull(getCardTypeUseCase(state.card?.cardTypeId.orEmpty()))
-            val maxImages = imagesQuantity(state.solutionType, cardType)
-            if (state.evidences.toImages().size == maxImages) {
-                setState { copy(message = context.getString(R.string.limit_images)) }
+            val errorMessage = when (type) {
+                EvidenceType.IMCL, EvidenceType.IMPS -> {
+                    val maxImages = imagesQuantity(state.solutionType, cardType)
+                    if ((state.evidences.toImages().size) == maxImages) {
+                        context.getString(R.string.limit_images)
+                    } else EMPTY
+                }
+
+                EvidenceType.VICL, EvidenceType.VIPS -> {
+                    val maxVideos = videoQuantity(state.solutionType, cardType)
+                    if (state.evidences.toVideos().size == maxVideos) {
+                        context.getString(R.string.limit_videos)
+                    } else EMPTY
+                }
+
+                EvidenceType.AUCL, EvidenceType.AUPS -> {
+                    val maxAudios = audiosQuantity(state.solutionType, cardType)
+                    if (state.evidences.toAudios().size == maxAudios) {
+                        context.getString(R.string.limit_audios)
+                    } else EMPTY
+                }
+
+                else -> EMPTY
+            }
+            if (errorMessage.isNotEmpty()) {
+                setState { copy(message = errorMessage, isLoading = false) }
                 return@launch
             }
-            val maxVideos = videoQuantity(state.solutionType, cardType)
-            if (state.evidences.toVideos().size == maxVideos) {
-                setState { copy(message = context.getString(R.string.limit_videos)) }
-                return@launch
-            }
-            val maxAudios = audiosQuantity(state.solutionType, cardType)
-            if (state.evidences.toAudios().size == maxAudios) {
-                setState { copy(message = context.getString(R.string.limit_audios)) }
-                return@launch
-            }
+
+
             val list = state.evidences.toMutableList()
             list.add(
                 Evidence.fromCreateEvidence(
@@ -289,7 +304,7 @@ class SolutionViewModel @AssistedInject constructor(
                 }
                 handleGetEmployees()
             }.onFailure {
-               cleanScreenStates(it.localizedMessage.orEmpty())
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
