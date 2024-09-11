@@ -15,7 +15,6 @@ import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
-import com.ih.osm.ui.pages.home.HomeScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
@@ -40,13 +39,6 @@ fun AppNavigation(
     ) {
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
-        }
-        composable(
-            Screen.Home.route,
-            arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType })
-        ) {
-            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-            HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
         }
         composable(
             Screen.HomeV2.route,
