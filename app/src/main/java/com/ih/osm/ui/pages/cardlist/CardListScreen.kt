@@ -131,15 +131,13 @@ fun CardListContent(
             },
             header = {
                 CustomAppBar(navController = navController, title = title)
-                AnimatedVisibility(visible = cards.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        FiltersBottomSheet(
-                            onFilterChange
-                        )
-                    }
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.CenterEnd
+                ) {
+                    FiltersBottomSheet(
+                        onFilterChange
+                    )
                 }
                 CustomSpacer(space = SpacerSize.SMALL)
             },
@@ -147,40 +145,6 @@ fun CardListContent(
             onRefresh = onRefresh,
             modifier = Modifier.defaultScreen(padding)
         )
-//        LazyColumn(
-//            modifier = Modifier.defaultScreen(padding),
-//        ) {
-//            stickyHeader {
-//                CustomAppBar(navController = navController, title = title)
-//                AnimatedVisibility(visible = cards.isNotEmpty()) {
-//                    Box(
-//                        modifier = Modifier.fillParentMaxWidth(),
-//                        contentAlignment = Alignment.CenterEnd
-//                    ) {
-//                        FiltersBottomSheetV2(
-//                            onFilterChange = onFilterChange,
-//                            onClickApply = onClickApply
-//                        )
-//                    }
-//                }
-//                CustomSpacer(space = SpacerSize.SMALL)
-//            }
-//            items(cards) { card ->
-//                CardItemList(
-//                    card = card,
-//                    onClick = {
-//                        navController.navigateToCardDetail(card.id)
-//                    },
-//                    onSolutionClick = { solution ->
-//                        onSolutionClick(card, solution)
-//                    })
-//            }
-//            item {
-//                AnimatedVisibility(visible = cards.isEmpty()) {
-//                    EmptyData(modifier = Modifier.fillMaxSize())
-//                }
-//            }
-//        }
     }
 }
 

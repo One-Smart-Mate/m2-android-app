@@ -35,7 +35,9 @@ import com.ih.osm.ui.utils.EMPTY
 fun FiltersBottomSheet(
     onFilterChange: (String) -> Unit,
 ) {
-
+    var selection by remember {
+        mutableStateOf(EMPTY)
+    }
     var showFiltersBottomSheet by remember {
         mutableStateOf(false)
     }
@@ -48,9 +50,10 @@ fun FiltersBottomSheet(
         ModalBottomSheet(onDismissRequest = {
             showFiltersBottomSheet = false
         }) {
-            FiltersBottomSheetContent{
+            FiltersBottomSheetContent(selection = selection) {
                 onFilterChange(it)
                 showFiltersBottomSheet = false
+                selection = it
             }
         }
     }
@@ -58,11 +61,9 @@ fun FiltersBottomSheet(
 
 @Composable
 fun FiltersBottomSheetContent(
+    selection: String,
     onFilterChange: (String) -> Unit,
 ) {
-    var selection by remember {
-        mutableStateOf(EMPTY)
-    }
     Column(
         modifier = Modifier.padding(PaddingNormal),
     ) {
@@ -82,7 +83,6 @@ fun FiltersBottomSheetContent(
             ),
             selection = selection,
         ) {
-            selection = it
             onFilterChange(it)
         }
         CustomSpacer()
