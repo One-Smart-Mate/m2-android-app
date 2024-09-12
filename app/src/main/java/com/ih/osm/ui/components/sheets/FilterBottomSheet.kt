@@ -29,25 +29,11 @@ import com.ih.osm.ui.components.buttons.CustomIconButton
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.utils.EMPTY
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun FiltersBottomSheet(
-    selection: String,
-    onFilterChange: (String) -> Unit,
-    onApply: () -> Unit,
-    onDismissRequest: () -> Unit,
-    onCleanFilers: () -> Unit
-) {
-    ModalBottomSheet(onDismissRequest = onDismissRequest) {
-        FiltersBottomSheetContent(selection, onFilterChange, onApply, onCleanFilers)
-    }
-}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FiltersBottomSheetV2(
+fun FiltersBottomSheet(
     onFilterChange: (String) -> Unit,
-    onClickApply: () -> Unit,
 ) {
 
     var showFiltersBottomSheet by remember {
@@ -62,20 +48,17 @@ fun FiltersBottomSheetV2(
         ModalBottomSheet(onDismissRequest = {
             showFiltersBottomSheet = false
         }) {
-            FiltersBottomSheetContentV2(
-                onFilterChange
-            ) {
+            FiltersBottomSheetContent{
+                onFilterChange(it)
                 showFiltersBottomSheet = false
-                onClickApply()
             }
         }
     }
 }
 
 @Composable
-fun FiltersBottomSheetContentV2(
+fun FiltersBottomSheetContent(
     onFilterChange: (String) -> Unit,
-    onClickApply: () -> Unit,
 ) {
     var selection by remember {
         mutableStateOf(EMPTY)
@@ -103,58 +86,11 @@ fun FiltersBottomSheetContentV2(
             onFilterChange(it)
         }
         CustomSpacer()
-        CustomButton(text = stringResource(R.string.apply)) {
-            onClickApply()
-        }
-        CustomSpacer()
         CustomButton(
             text = stringResource(R.string.clean_filters),
             buttonType = ButtonType.OUTLINE
         ) {
             onFilterChange(EMPTY)
-        }
-        CustomSpacer(space = SpacerSize.LARGE)
-    }
-}
-
-@Composable
-fun FiltersBottomSheetContent(
-    selection: String,
-    onFilterChange: (String) -> Unit,
-    onApply: () -> Unit,
-    onCleanFilers: () -> Unit
-) {
-    Column(
-        modifier = Modifier.padding(PaddingNormal),
-    ) {
-        Text(
-            text = stringResource(R.string.filters), style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
-        )
-        RadioGroup(
-            modifier = Modifier.fillMaxWidth(),
-            items = listOf(
-                stringResource(R.string.all_open_cards),
-                stringResource(R.string.my_open_cards),
-                stringResource(R.string.assigned_cards),
-                stringResource(R.string.unassigned_cards),
-                stringResource(R.string.expired_cards),
-                stringResource(R.string.closed_cards)
-            ),
-            selection = selection,
-        ) {
-            onFilterChange(it)
-        }
-        CustomSpacer()
-        CustomButton(text = stringResource(R.string.apply)) {
-            onApply()
-        }
-        CustomSpacer()
-        CustomButton(
-            text = stringResource(R.string.clean_filters),
-            buttonType = ButtonType.OUTLINE
-        ) {
-            onCleanFilers()
         }
         CustomSpacer(space = SpacerSize.LARGE)
     }

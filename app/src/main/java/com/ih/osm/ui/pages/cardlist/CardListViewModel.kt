@@ -56,7 +56,6 @@ class CardListViewModel @AssistedInject constructor(
         data class GetCards(val filter: String) : Action()
         data object OnRefreshCards : Action()
         data class OnFilterChange(val filter: String) : Action()
-        data object OnApplyFilterClick : Action()
         data object OnRefreshCardList: Action()
     }
 
@@ -64,8 +63,7 @@ class CardListViewModel @AssistedInject constructor(
         when (action) {
             is Action.GetCards -> validateFilter(action.filter)
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
-            is Action.OnFilterChange -> setState { copy(filter = action.filter) }
-            is Action.OnApplyFilterClick -> handleOnApplyFilterClick()
+            is Action.OnFilterChange -> handleOnApplyFilterClick(action.filter)
             is Action.OnRefreshCardList -> handleOnRefreshCardList()
         }
     }
@@ -111,9 +109,9 @@ class CardListViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleOnApplyFilterClick() {
+    private fun handleOnApplyFilterClick(filter: String) {
+        setState { copy(filter = filter) }
         viewModelScope.launch(coroutineContext) {
-            val filter = stateFlow.first().filter
             if (filter.isEmpty()) {
                 handleGetCards(stateFlow.first().cardTypes)
             } else {

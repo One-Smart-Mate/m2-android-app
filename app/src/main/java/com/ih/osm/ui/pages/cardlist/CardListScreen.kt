@@ -41,14 +41,11 @@ import com.ih.osm.ui.components.EmptyData
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.PullToRefreshLazyColumn
 import com.ih.osm.ui.components.SpacerSize
-import com.ih.osm.ui.components.sheets.SolutionBottomSheet
-import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
 import com.ih.osm.ui.components.card.CardItemList
 import com.ih.osm.ui.components.sheets.FiltersBottomSheet
-import com.ih.osm.ui.components.sheets.FiltersBottomSheetV2
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.utils.EMPTY
@@ -80,9 +77,6 @@ fun CardListScreen(
             onFilterChange = {
                 viewModel.process(CardListViewModel.Action.OnFilterChange(it))
             },
-            onClickApply = {
-                viewModel.process(CardListViewModel.Action.OnApplyFilterClick)
-            },
             isRefreshing = state.isRefreshing,
             onRefresh = {
                 viewModel.process(CardListViewModel.Action.OnRefreshCardList)
@@ -110,7 +104,6 @@ fun CardListContent(
     onSolutionClick: (Card, String) -> Unit,
     onCreateCardClick: () -> Unit,
     onFilterChange: (String) -> Unit,
-    onClickApply: () -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit
 ) {
@@ -143,9 +136,8 @@ fun CardListContent(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.CenterEnd
                     ) {
-                        FiltersBottomSheetV2(
-                            onFilterChange = onFilterChange,
-                            onClickApply = onClickApply
+                        FiltersBottomSheet(
+                            onFilterChange
                         )
                     }
                 }
@@ -206,7 +198,6 @@ private fun CardListScreenScreenPreview() {
                 onSolutionClick = { _, _ -> },
                 onCreateCardClick = {},
                 onFilterChange = {},
-                onClickApply = {},
                 isRefreshing = false,
                 {}
             )
