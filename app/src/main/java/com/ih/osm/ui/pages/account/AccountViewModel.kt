@@ -67,7 +67,6 @@ class AccountViewModel
                 is Action.SyncCatalogs -> handleSyncCatalogs()
                 is Action.ShowNotification -> handleShowNotification()
                 is Action.OnSwitchChange -> handleOnSwitchChange(action.checked)
-                else -> {}
             }
         }
 

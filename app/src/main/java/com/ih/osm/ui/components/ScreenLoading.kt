@@ -2,11 +2,6 @@ package com.ih.osm.ui.components
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,14 +25,6 @@ import com.ih.osm.ui.utils.EMPTY
 
 @Composable
 fun LoadingScreen(text: String = EMPTY) {
-    val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
-    val scale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.2f,
-        animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
-        label = "scale",
-    )
-
     Box(
         modifier =
             Modifier

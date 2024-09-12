@@ -36,7 +36,6 @@ class ProfileViewModel
         fun process(action: Action) {
             when (action) {
                 is Action.GetUser -> handleGetUser()
-                else -> {}
             }
         }
 

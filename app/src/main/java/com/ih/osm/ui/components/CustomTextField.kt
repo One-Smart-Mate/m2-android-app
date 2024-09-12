@@ -67,7 +67,7 @@ fun CustomTextField(
         leadingIcon = leadingIcon,
         keyboardOptions =
             KeyboardOptions(
-                autoCorrect = false,
+                autoCorrectEnabled = false,
                 keyboardType = KeyboardType.Text,
             ),
         visualTransformation = if (passwordVisible || isPassword.not()) VisualTransformation.None else PasswordVisualTransformation(),
