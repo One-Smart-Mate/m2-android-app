@@ -20,6 +20,7 @@ const val EEE_MMM_DD_HH_MM_A = "EEE, MMM dd HH:mm a"
 
 const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.ss'Z'"
 const val NORMAL_FORMAT = "yyyy-MM-dd HH:mm:ss"
+const val SIMPLE_DATE_FORMAT = "yyyy-MM-dd"
 const val TIME_STAMP_FORMAT = "yyyyMMdd_HHmmss"
 
 val Date.YYYY_MM_DD_HH_MM_SS: String
@@ -103,4 +104,10 @@ fun String.lastSyncDate(context: Context): String {
         FirebaseCrashlytics.getInstance().recordException(e)
     }
     return  EMPTY
+}
+
+fun String.isExpired(): Boolean {
+    val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
+    val todayDate = Calendar.getInstance().time
+    return dueDate?.before(todayDate).defaultIfNull(false)
 }

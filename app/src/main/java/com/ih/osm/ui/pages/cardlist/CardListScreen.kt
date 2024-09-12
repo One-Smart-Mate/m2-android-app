@@ -45,6 +45,7 @@ import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
 import com.ih.osm.ui.components.card.CardItemList
+import com.ih.osm.ui.components.card.CardItemListV2
 import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -120,7 +121,7 @@ fun CardListContent(
         PullToRefreshLazyColumn(
             items = cards,
             content = { card ->
-                CardItemList(
+                CardItemListV2(
                     card = card,
                     onClick = {
                         navController.navigateToCardDetail(card.id)

@@ -12,6 +12,8 @@ val PaddingToolbarVertical = 45.dp
 
 val Size1 = 1.dp
 val Size2 = 2.dp
+val Size5 = 5.dp
+val Size20 = 20.dp
 val Size38 = 38.dp
 val Size40 = 40.dp
 val Size50 = 50.dp

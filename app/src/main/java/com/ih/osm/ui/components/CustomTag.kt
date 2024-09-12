@@ -31,7 +31,8 @@ fun CustomTag(
     tagType: TagType = TagType.DEFAULT,
     invertedColors: Boolean = false,
     textAlign: TextAlign = TextAlign.Start,
-    ) {
+    isErrorEnabled: Boolean = false
+) {
 
     val color = if (tagType == TagType.DEFAULT || invertedColors) {
         getColor()
@@ -55,11 +56,17 @@ fun CustomTag(
         }
     }
 
+
     val tagTypeModifier = when (tagType) {
         TagType.DEFAULT -> {
+            val containerColor = if (isErrorEnabled) {
+                MaterialTheme.colorScheme.error
+            } else {
+                MaterialTheme.colorScheme.primary
+            }
             modifier
                 .background(
-                    color = MaterialTheme.colorScheme.primary,
+                    color = containerColor,
                     shape = CircleShape,
                 )
                 .padding(vertical = 6.dp, horizontal = 10.dp)
@@ -69,7 +76,9 @@ fun CustomTag(
             modifier
                 .border(
                     width = 1.dp,
-                    color = if (invertedColors) {
+                    color = if (isErrorEnabled) {
+                        MaterialTheme.colorScheme.error
+                    } else if (invertedColors) {
                         getColor()
                     } else {
                         MaterialTheme.colorScheme.primary
@@ -111,6 +120,8 @@ fun CustomTagPreview() {
                 CustomTag(title = "Custom Tag Small", tagSize = TagSize.SMALL)
                 CustomSpacer()
                 CustomTag(title = "Custom Tag outline", tagType = TagType.OUTLINE)
+                CustomSpacer()
+                CustomTag(title = "Custom Tag outline", isErrorEnabled = true)
                 CustomSpacer()
             }
         }

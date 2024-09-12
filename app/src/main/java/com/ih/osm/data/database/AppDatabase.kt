@@ -1,5 +1,6 @@
 package com.ih.osm.data.database
 
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.ih.osm.data.database.dao.UserDao
@@ -31,7 +32,7 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
         EvidenceEntity::class,
         EmployeeEntity::class
     ],
-    version = 1
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
 

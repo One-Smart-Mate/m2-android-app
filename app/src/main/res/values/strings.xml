@@ -157,5 +157,7 @@
     <string name="update_catalogs_action_message">You need to update your catalogs before to create new cards!</string>
     <string name="existing_cards_zone">Existing Cards Zone</string>
     <string name="work_failed">Work cancelled, try it again</string>
-
+    <string name="expired">Expired</string>
+    <string name="card_location">Location</string>
+    <string name="responsable">Responsible</string>
 </resources>

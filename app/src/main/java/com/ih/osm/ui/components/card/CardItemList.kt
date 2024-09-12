@@ -1,6 +1,7 @@
 package com.ih.osm.ui.components.card
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
@@ -54,12 +55,16 @@ import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.sheets.SolutionBottomSheet
 import com.ih.osm.ui.extensions.getInvertedColor
+import com.ih.osm.ui.extensions.isExpired
+import com.ih.osm.ui.extensions.orDefault
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
 import com.ih.osm.ui.theme.PaddingTinySmall
 import com.ih.osm.ui.theme.Size1
+import com.ih.osm.ui.theme.Size20
+import com.ih.osm.ui.theme.Size5
 import com.ih.osm.ui.utils.STORED_LOCAL
 
 @Composable
@@ -234,15 +239,135 @@ fun CardSectionItemList(
     }
 }
 
+@Composable
+fun CardItemListV2(
+    card: Card,
+    isActionsEnabled: Boolean = true,
+    onClick: () -> Unit,
+    onSolutionClick: (String) -> Unit,
+) {
+    var showSolutionBottomSheet by remember {
+        mutableStateOf(false)
+    }
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(PaddingNormal),
+        onClick = {
+            onClick()
+        }
+    ) {
+        Column(
+            modifier = Modifier.padding(PaddingSmall)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(text = "#${card.id}", style = MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold))
+                Text(
+                    text = card.cardTitle(),
+                    style = MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
+                )
+                Box(
+                    modifier = Modifier
+                        .size(Size20)
+                        .background(
+                            color = card.getBorderColor(),
+                            shape = CircleShape
+                        )
+                )
+            }
+
+            CardItemEvidence(
+                showCamera = card.evidenceImageCreation > 0,
+                showVideo = card.evidenceVideoCreation > 0,
+                showVoice = card.evidenceAudioCreation > 0
+            )
+
+            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
+                CustomTag(
+                    title = stringResource(R.string.local_card),
+                    tagSize = TagSize.SMALL,
+                    tagType = TagType.OUTLINE,
+                )
+            }
+
+            SectionTag(
+                title = stringResource(id = R.string.status),
+                value = card.getStatus(),
+            )
+            SectionTag(
+                title = stringResource(id = R.string.date),
+                value = card.getCreationDate(),
+            )
+            SectionTag(
+                title = stringResource(id = R.string.due_date),
+                value = if (card.dueDate.isExpired()) {
+                    stringResource(id = R.string.expired)
+                } else {
+                    card.dueDate
+                },
+                isErrorEnabled = card.dueDate.isExpired()
+            )
+            SectionTag(
+                title = stringResource(R.string.priority),
+                value = card.priorityValue(),
+            )
+            SectionTag(
+                title = stringResource(R.string.card_location),
+                value = card.cardLocation,
+            )
+            SectionTag(
+                title = stringResource(id = R.string.created_by),
+                value = card.creatorName.orDefault(),
+            )
+            SectionTag(
+                title = stringResource(id = R.string.responsable),
+                value = card.responsableName.orDefault(),
+            )
+            CustomSpacer()
+            AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
+                CustomButton(
+                    text = stringResource(R.string.actions),
+                    buttonType = ButtonType.OUTLINE,
+                ) {
+                    showSolutionBottomSheet = true
+                }
+            }
+        }
+    }
+    if (showSolutionBottomSheet) {
+        SolutionBottomSheet(
+            onSolutionClick = {
+                showSolutionBottomSheet = false
+                onSolutionClick(it)
+            },
+            onDismissRequest = {
+                showSolutionBottomSheet = false
+            },
+            showProvisionalSolution = card.enableProvisionalSolution(),
+            showDefinitiveSolution = card.enableDefinitiveSolution()
+        )
+    }
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
 @Composable
 fun HomeCardItemListPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             Column {
-                CardItemList(Card.mock(), true, {}) {}
+                CardItemListV2(Card.mock(), true, {}) {}
+                CustomSpacer()
+                CardItemListV2(Card.mock().copy(
+                    dueDate = "2024-12-12"
+                ), true, {}) {}
                 CustomSpacer()
 
             }

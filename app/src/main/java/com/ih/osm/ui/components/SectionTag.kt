@@ -26,7 +26,8 @@ import com.ih.osm.ui.theme.Size115
 fun SectionTag(
     title: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isErrorEnabled: Boolean = false
 ) {
     if (value.isNotEmpty()) {
         Row(
@@ -43,7 +44,7 @@ fun SectionTag(
                 direction = SpacerDirection.HORIZONTAL,
                 space = SpacerSize.TINY
             )
-            CustomTag(title = value, tagSize = TagSize.SMALL)
+            CustomTag(title = value, tagSize = TagSize.SMALL, isErrorEnabled = isErrorEnabled)
         }
     }
 }

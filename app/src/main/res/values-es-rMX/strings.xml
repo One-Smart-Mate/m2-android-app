@@ -155,4 +155,7 @@
     <string name="update_catalogs_action_message">Tus catálogos están desactualizados, actualiza primero para crear nuevas tarjetas</string>
     <string name="existing_cards_zone">Tarjetas existentes en Zona</string>
     <string name="work_failed">Carga, cancelada, intente nuevamente</string>
+    <string name="expired">Vencida</string>
+    <string name="card_location">Ubicación</string>
+    <string name="responsable">Responsable</string>
 </resources>

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -51,6 +52,32 @@ fun CustomAppBar(navController: NavController, title: String) {
                 .copy(color = getTextColor()),
             modifier = Modifier.padding(horizontal = PaddingLarge)
         )
+        CustomSpacer()
+    }
+}
+
+@Composable
+fun CustomAppBar(
+    navController: NavController,
+    content: @Composable () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.background
+            )
+    ) {
+        Icon(
+            Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+            contentDescription = stringResource(R.string.empty),
+            modifier = Modifier
+                .size(Size38)
+                .clickable {
+                    navController.popBackStack()
+                },
+        )
+        content()
         CustomSpacer()
     }
 }

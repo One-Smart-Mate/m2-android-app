@@ -9,6 +9,7 @@ import com.ih.osm.domain.model.Evidence
 import com.ih.osm.ui.extensions.ISO_FORMAT
 import com.ih.osm.ui.extensions.NORMAL_FORMAT
 import com.ih.osm.ui.extensions.toFormatDate
+import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.STORED_REMOTE
 
 
@@ -140,7 +141,9 @@ data class CardEntity(
     @ColumnInfo(name = "deleted_at")
     val deletedAt: String?,
     @ColumnInfo(name = "stored")
-    val stored: String?
+    val stored: String?,
+    @ColumnInfo(name = "card_location", defaultValue = EMPTY)
+    val cardLocation: String
 )
 
 fun CardEntity.validateDate(): String {
@@ -214,6 +217,7 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
         deletedAt = this.deletedAt,
         stored = this.stored ?: STORED_REMOTE,
         evidences = evidences,
-        creationDateFormatted = validateDate()
+        creationDateFormatted = validateDate(),
+        cardLocation = this.cardLocation
     )
 }

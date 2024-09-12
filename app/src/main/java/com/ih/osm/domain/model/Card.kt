@@ -120,7 +120,8 @@ data class Card(
     val deletedAt: String?,
     val evidences: List<Evidence>? = emptyList(),
     val stored: String? = STORED_REMOTE,
-    val creationDateFormatted: String? = null
+    val creationDateFormatted: String? = null,
+    val cardLocation: String
 ) {
     companion object {
         fun mock(): Card {
@@ -175,17 +176,18 @@ data class Card(
                 "",
                 "",
                 "",
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                1,
                 "2021-10-29T03:31:35.000Z",
                 "2021-11-08T04:38:21.000Z",
                 "",
                 emptyList(),
-                STORED_LOCAL
+                STORED_LOCAL,
+                cardLocation = "Procesos/Mixer 1 /Bomba 1"
             )
         }
 
@@ -264,7 +266,8 @@ data class Card(
                 updatedAt = EMPTY,
                 deletedAt = EMPTY,
                 evidences = evidences,
-                stored = STORED_LOCAL
+                stored = STORED_LOCAL,
+                cardLocation = EMPTY
             )
         }
     }
@@ -410,7 +413,8 @@ fun Card.toEntity(): CardEntity {
         createdAt = this.createdAt,
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
-        stored = this.stored ?: STORED_REMOTE
+        stored = this.stored ?: STORED_REMOTE,
+        cardLocation = this.cardLocation
     )
 }
 

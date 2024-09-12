@@ -3,9 +3,14 @@ package com.ih.osm.ui.pages.carddetail
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -13,6 +18,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,6 +29,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +45,8 @@ import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.cardTitle
+import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
 import com.ih.osm.domain.model.preclassifierValue
@@ -64,12 +73,14 @@ import com.ih.osm.ui.components.VideoPlayer
 import com.ih.osm.ui.components.evidence.PreviewVideo
 import com.ih.osm.ui.components.images.PreviewImage
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.extensions.isExpired
 import com.ih.osm.ui.extensions.orDefault
 import com.ih.osm.ui.pages.createcard.PhotoCardItem
 import com.ih.osm.ui.pages.error.ErrorScreen
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.Size120
+import com.ih.osm.ui.theme.Size20
 import com.ih.osm.ui.theme.Size200
 import com.ih.osm.ui.theme.Size250
 import com.ih.osm.ui.utils.EMPTY
@@ -129,7 +140,7 @@ fun CardDetailContent(
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = "${stringResource(R.string.card)} ${card.siteCardId}"
+                    content = { CardDetailHeader(card) }
                 )
             }
 
@@ -141,47 +152,77 @@ fun CardDetailContent(
         }
     }
 }
+@Composable
+fun CardDetailHeader(card: Card) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = "#${card.id}", style = MaterialTheme.typography.titleLarge
+            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            text = card.cardTitle(),
+            style = MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
+        )
+        Box(
+            modifier = Modifier
+                .size(Size20)
+                .background(
+                    color = card.getBorderColor(),
+                    shape = CircleShape
+                )
+        )
+    }
+}
 
 @Composable
 fun CardInformationContent(
     card: Card
 ) {
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
-        SectionTag(
-            title = stringResource(R.string.created_date),
-            value = card.getCreationDate(),
-        )
-        SectionTag(
-            title = stringResource(R.string.due_date),
-            value = card.dueDate,
-        )
+
         SectionTag(
             title = stringResource(R.string.status),
             value = card.getStatus(),
         )
 
         SectionTag(
-            title = stringResource(R.string.card_types),
-            value = card.cardTypeName.orEmpty(),
+            title = stringResource(R.string.created_date),
+            value = card.getCreationDate(),
         )
+
         SectionTag(
-            title = stringResource(R.string.type_of_problem),
-            value = card.preclassifierValue(),
+            title = stringResource(id = R.string.due_date),
+            value = if (card.dueDate.isExpired()) {
+                stringResource(id = R.string.expired)
+            } else {
+                card.dueDate
+            },
+            isErrorEnabled = card.dueDate.isExpired()
         )
         SectionTag(
             title = stringResource(R.string.priority),
             value = card.priorityValue(),
         )
         SectionTag(
-            title = stringResource(R.string.mechanic),
-            value = card.mechanicName.orDefault(),
+            title = stringResource(R.string.card_location),
+            value = card.cardLocation,
         )
         SectionTag(
-            title = stringResource(R.string.creator),
+            title = stringResource(id = R.string.created_by),
             value = card.creatorName.orDefault(),
         )
         SectionTag(
-            title = stringResource(R.string.comments),
+            title = stringResource(id = R.string.responsable),
+            value = card.responsableName.orDefault(),
+        )
+    }
+
+    ExpandableCard(title = stringResource(id = R.string.comments)) {
+        SectionTag(
+            title = stringResource(id = R.string.comments),
             value = card.commentsAtCardCreation.orDefault(),
         )
     }
