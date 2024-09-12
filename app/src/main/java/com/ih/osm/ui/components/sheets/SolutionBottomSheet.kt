@@ -29,7 +29,7 @@ fun SolutionBottomSheet(
     onSolutionClick: (String) -> Unit,
     onDismissRequest: () -> Unit,
     showProvisionalSolution: Boolean,
-    showDefinitiveSolution: Boolean
+    showDefinitiveSolution: Boolean,
 ) {
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         SolutionBottomSheetContent(showProvisionalSolution, showDefinitiveSolution) {
@@ -42,14 +42,16 @@ fun SolutionBottomSheet(
 fun SolutionBottomSheetContent(
     showProvisionalSolution: Boolean,
     showDefinitiveSolution: Boolean,
-    onSolutionClick: (String) -> Unit
+    onSolutionClick: (String) -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(PaddingNormal)
+        modifier = Modifier.padding(PaddingNormal),
     ) {
         Text(
-            text = stringResource(R.string.actions), style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            text = stringResource(R.string.actions),
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
         AnimatedVisibility(visible = showProvisionalSolution) {
@@ -61,7 +63,7 @@ fun SolutionBottomSheetContent(
         AnimatedVisibility(visible = showDefinitiveSolution) {
             CustomButton(
                 text = stringResource(R.string.definitive_solution),
-                buttonType = ButtonType.OUTLINE
+                buttonType = ButtonType.OUTLINE,
             ) {
                 onSolutionClick(DEFINITIVE_SOLUTION)
             }
@@ -75,7 +77,6 @@ fun SolutionBottomSheetPreview() {
     OsmAppTheme {
         Surface {
             SolutionBottomSheetContent(true, true) {
-
             }
         }
     }

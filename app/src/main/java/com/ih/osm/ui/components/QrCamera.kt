@@ -28,7 +28,7 @@ import com.journeyapps.barcodescanner.ScanOptions
 @Composable
 fun QrCamera(
     onCameraError: (String) -> Unit,
-    onClick: (String) -> Unit
+    onClick: (String) -> Unit,
 ) {
     var code by remember {
         mutableStateOf(EMPTY)
@@ -36,30 +36,34 @@ fun QrCamera(
     val context = LocalContext.current
 
     Column(
-        modifier = Modifier.fillMaxSize()
+        modifier = Modifier.fillMaxSize(),
     ) {
-        val scanQrLauncher = rememberLauncherForActivityResult(contract = ScanContract(),
-            onResult = { result ->
-                if (result.contents != null) {
-                    onClick(result.contents)
-                } else {
-                    onCameraError(context.getString(R.string.unable_to_read_the_qr_code))
-                }
-            })
+        val scanQrLauncher =
+            rememberLauncherForActivityResult(
+                contract = ScanContract(),
+                onResult = { result ->
+                    if (result.contents != null) {
+                        onClick(result.contents)
+                    } else {
+                        onCameraError(context.getString(R.string.unable_to_read_the_qr_code))
+                    }
+                },
+            )
         LaunchedEffect(Unit) {
             scanQrLauncher.launch(getScannerOptions())
         }
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(PaddingNormal),
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(PaddingNormal),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomTextField(
                 label = stringResource(R.string.enter_the_qr_code),
                 icon = Icons.Rounded.Create,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
             ) {
                 code = it
             }
@@ -73,7 +77,6 @@ fun QrCamera(
             CustomSpacer()
         }
     }
-
 }
 
 private fun getScannerOptions(): ScanOptions {
@@ -121,4 +124,4 @@ private fun getScannerOptions(): ScanOptions {
 //            previewView
 //        }
 //    )
-//}
+// }

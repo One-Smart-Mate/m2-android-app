@@ -26,10 +26,14 @@ data class Evidence(
     val status: String,
     val createdAt: String?,
     val updatedAt: String?,
-    val deletedAt: String?
+    val deletedAt: String?,
 ) {
     companion object {
-        fun fromCreateEvidence(cardId: String, url: String, type: String): Evidence {
+        fun fromCreateEvidence(
+            cardId: String,
+            url: String,
+            type: String,
+        ): Evidence {
             return Evidence(
                 id = UUID.randomUUID().toString(),
                 cardId = cardId,
@@ -39,7 +43,7 @@ data class Evidence(
                 status = STATUS_A,
                 createdAt = null,
                 updatedAt = null,
-                deletedAt = null
+                deletedAt = null,
             )
         }
     }
@@ -49,7 +53,7 @@ fun Evidence.toEntity(): EvidenceEntity {
     return EvidenceEntity(
         cardId = this.cardId,
         url = this.url,
-        type = this.type
+        type = this.type,
     )
 }
 
@@ -85,7 +89,7 @@ fun List<Evidence>.toVideos(): List<Evidence> {
 
 fun List<Evidence>.toVideosAtCreation(): List<Evidence> {
     return this.filter {
-       it.type == VIDEO_CREATION
+        it.type == VIDEO_CREATION
     }
 }
 
@@ -112,11 +116,13 @@ fun List<Evidence>.toAudiosAtCreation(): List<Evidence> {
         it.type == AUDIO_CREATION
     }
 }
+
 fun List<Evidence>.toAudiosAtProvisionalSolution(): List<Evidence> {
     return this.filter {
         it.type == AUDIO_PS
     }
 }
+
 fun List<Evidence>.toAudiosAtDefinitiveSolution(): List<Evidence> {
     return this.filter {
         it.type == AUDIO_CLOSE
@@ -124,24 +130,25 @@ fun List<Evidence>.toAudiosAtDefinitiveSolution(): List<Evidence> {
 }
 
 fun List<Evidence>.hasAudios(): Int {
-    val result = this.any {
-        it.type == AUDIO_CREATION
-    }
+    val result =
+        this.any {
+            it.type == AUDIO_CREATION
+        }
     return if (result) 1 else 0
 }
 
 fun List<Evidence>.hasImages(): Int {
-    val result = this.any {
-        it.type == IMG_CREATION
-    }
+    val result =
+        this.any {
+            it.type == IMG_CREATION
+        }
     return if (result) 1 else 0
 }
 
 fun List<Evidence>.hasVideos(): Int {
-    val result = this.any {
-        it.type == VIDEO_CREATION
-    }
+    val result =
+        this.any {
+            it.type == VIDEO_CREATION
+        }
     return if (result) 1 else 0
 }
-
-

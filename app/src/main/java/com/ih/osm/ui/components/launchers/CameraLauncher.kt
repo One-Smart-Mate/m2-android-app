@@ -3,7 +3,6 @@ package com.ih.osm.ui.components.launchers
 import android.Manifest
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -21,31 +20,31 @@ import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 
 @Composable
-fun CameraLauncher(
-    onComplete: (uri: Uri) -> Unit
-) {
+fun CameraLauncher(onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
     val uri = context.getUriForFile(fileType = FileType.IMAGE).first
     var capturedImageUri by remember {
         mutableStateOf<Uri>(Uri.EMPTY)
     }
 
-    val cameraLauncher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
-        if (it) {
-            capturedImageUri = uri
-            onComplete(capturedImageUri)
+    val cameraLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
+            if (it) {
+                capturedImageUri = uri
+                onComplete(capturedImageUri)
+            }
         }
-    }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        if (it) {
-            cameraLauncher.launch(uri)
-        } else {
-            openAppSettings(context)
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) {
+            if (it) {
+                cameraLauncher.launch(uri)
+            } else {
+                openAppSettings(context)
+            }
         }
-    }
 
     CardItemIcon(icon = painterResource(id = R.drawable.ic_photo_camera)) {
         val permissionCheckResult =

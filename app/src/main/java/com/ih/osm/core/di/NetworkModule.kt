@@ -13,21 +13,22 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
-
     @Provides
     fun provideBaseUrl(): String = "https://service-m2-development.up.railway.app/"
 
     @Provides
     @Singleton
-    fun provideRetrofit(baseUrl: String): Retrofit = Retrofit.Builder()
-        .baseUrl(baseUrl)
-        .addConverterFactory(GsonConverterFactory.create(
-            GsonBuilder().create()
-        ))
-        .build()
+    fun provideRetrofit(baseUrl: String): Retrofit =
+        Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(
+                GsonConverterFactory.create(
+                    GsonBuilder().create(),
+                ),
+            )
+            .build()
 
     @Provides
     @Singleton
     fun provideApiService(retrofit: Retrofit): ApiService = retrofit.create(ApiService::class.java)
-
 }

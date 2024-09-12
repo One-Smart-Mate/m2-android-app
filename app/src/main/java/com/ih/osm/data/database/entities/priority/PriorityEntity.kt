@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ih.osm.domain.model.Priority
 
-
 @Entity(tableName = "priority_table")
 data class PriorityEntity(
     @PrimaryKey(autoGenerate = false)
@@ -18,7 +17,7 @@ data class PriorityEntity(
     @ColumnInfo(name = "days")
     val days: Int,
     @ColumnInfo(name = "status")
-    val status: String
+    val status: String,
 )
 
 fun PriorityEntity.toDomain(): Priority {
@@ -27,6 +26,6 @@ fun PriorityEntity.toDomain(): Priority {
         code = this.code,
         description = this.description,
         days = this.days,
-        status = this.status
+        status = this.status,
     )
 }

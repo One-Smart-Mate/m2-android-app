@@ -11,9 +11,8 @@ data class Priority(
     val description: String,
     @SerializedName("priorityDays")
     val days: Int,
-    val status: String
+    val status: String,
 )
-
 
 fun Priority.toEntity(): PriorityEntity {
     return PriorityEntity(
@@ -21,7 +20,7 @@ fun Priority.toEntity(): PriorityEntity {
         code = this.code,
         description = this.description,
         days = this.days,
-        status = this.status
+        status = this.status,
     )
 }
 

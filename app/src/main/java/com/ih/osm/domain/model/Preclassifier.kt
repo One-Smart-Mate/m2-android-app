@@ -3,7 +3,7 @@ package com.ih.osm.domain.model
 import com.google.gson.annotations.SerializedName
 import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 
-data class Preclassifier (
+data class Preclassifier(
     val id: String,
     @SerializedName("preclassifierCode")
     val code: String,
@@ -14,11 +14,12 @@ data class Preclassifier (
 
 fun Preclassifier.toEntity(): PreclassifierEntity {
     return PreclassifierEntity(
-        id = this.id, code = this.code, description = this.description, cardTypeId = this.cardTypeId
+        id = this.id,
+        code = this.code,
+        description = this.description,
+        cardTypeId = this.cardTypeId,
     )
 }
-
-
 
 fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {
     return this.map {
@@ -26,7 +27,7 @@ fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {
             id = it.id,
             name = it.code,
             description = it.description,
-            superiorId = it.cardTypeId
+            superiorId = it.cardTypeId,
         )
     }
 }

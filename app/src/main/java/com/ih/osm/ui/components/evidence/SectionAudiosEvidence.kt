@@ -20,23 +20,25 @@ import com.ih.osm.ui.theme.Size160
 @Composable
 fun SectionAudiosEvidence(
     audioEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit
+    onDeleteEvidence: (Evidence) -> Unit,
 ) {
     if (audioEvidences.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.audios),
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                style =
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
             LazyRow {
                 items(audioEvidences) {
                     VideoPlayer(
-                        modifier = Modifier
-                            .width(Size120)
-                            .height(Size160),
+                        modifier =
+                            Modifier
+                                .width(Size120)
+                                .height(Size160),
                         url = it.url,
-                        showIcon = true
+                        showIcon = true,
                     ) {
                         onDeleteEvidence(it)
                     }

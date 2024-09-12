@@ -9,14 +9,16 @@ interface LogoutUseCase {
     suspend operator fun invoke(): Int
 }
 
-class LogoutUseCaseImpl @Inject constructor(
-    private val localRepository: LocalRepository,
-    private val cleanCatalogsUseCase: CleanCatalogsUseCase,
-    private val sharedPreferences: SharedPreferences
-) : LogoutUseCase {
-    override suspend fun invoke(): Int {
-        cleanCatalogsUseCase()
-        sharedPreferences.clearPreferences()
-        return localRepository.logout()
+class LogoutUseCaseImpl
+    @Inject
+    constructor(
+        private val localRepository: LocalRepository,
+        private val cleanCatalogsUseCase: CleanCatalogsUseCase,
+        private val sharedPreferences: SharedPreferences,
+    ) : LogoutUseCase {
+        override suspend fun invoke(): Int {
+            cleanCatalogsUseCase()
+            sharedPreferences.clearPreferences()
+            return localRepository.logout()
+        }
     }
-}

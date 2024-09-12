@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-
 import com.google.firebase.storage.FirebaseStorage
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.ui.extensions.defaultScreen
@@ -32,11 +31,9 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun DevScreen() {
-
     var showButton by remember {
         mutableStateOf(false)
     }
@@ -44,19 +41,19 @@ fun DevScreen() {
     val notificationManager = NotificationManager(context)
     Scaffold { padding ->
         LazyRow(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             item {
-
                 PhotoCardItem(
                     model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTABbXr4i-QODqhy7tofHYmTYh05rYPktzacw&s",
                     showIcon = false,
-                    modifier = Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            showButton = true
-                        }
+                    modifier =
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
+                            .clickable {
+                                showButton = true
+                            },
                 )
 
                 if (showButton) {
@@ -64,24 +61,22 @@ fun DevScreen() {
                         onDismissRequest = {
                             showButton = false
                         },
-                        properties = DialogProperties(
-                            dismissOnBackPress = true,
-                            dismissOnClickOutside = false,
-                            usePlatformDefaultWidth = false
-                        )
+                        properties =
+                            DialogProperties(
+                                dismissOnBackPress = true,
+                                dismissOnClickOutside = false,
+                                usePlatformDefaultWidth = false,
+                            ),
                     ) {
-
                     }
                 }
 
                 Column {
-
                     Button(onClick = {
-                        notificationManager.buildNotification("test","test")
+                        notificationManager.buildNotification("test", "test")
                     }) {
-                        Text( "Test Push")
+                        Text("Test Push")
                     }
-
                 }
 
 //               PreviewImage(openImage = showButton,
@@ -126,9 +121,8 @@ suspend fun uploadEvidence(uri: Uri) {
     val ref = store.reference.child("evidence/created/images/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test", "Result image ${url}")
+    Log.e("test", "Result image $url")
 }
-
 
 suspend fun uploadEvidenceVideo(uri: Uri) {
     val store = FirebaseStorage.getInstance()
@@ -136,7 +130,7 @@ suspend fun uploadEvidenceVideo(uri: Uri) {
     val ref = store.reference.child("evidence/created/videos/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test", "Result video ${url}")
+    Log.e("test", "Result video $url")
 }
 
 suspend fun uploadEvidenceAudio(uri: Uri) {
@@ -145,20 +139,20 @@ suspend fun uploadEvidenceAudio(uri: Uri) {
     val ref = store.reference.child("evidence/created/audios/1/$name")
     ref.putFile(uri).await()
     val url = ref.downloadUrl.await()
-    Log.e("test", "Result audio ${url}")
+    Log.e("test", "Result audio $url")
 }
 
 fun getImageFile(): String {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    return "IMAGE_${timeStamp}.jpg"
+    return "IMAGE_$timeStamp.jpg"
 }
 
 fun getVideoFile(): String {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    return "VIDEO_${timeStamp}.mp4"
+    return "VIDEO_$timeStamp.mp4"
 }
 
 fun getAudioFile(): String {
     val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-    return "AUDIO_${timeStamp}.mp3"
+    return "AUDIO_$timeStamp.mp3"
 }

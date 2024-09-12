@@ -12,10 +12,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object CoreModule {
-
     @Provides
     @Singleton
     fun provideNotificationManager(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
     ): NotificationManager = NotificationManager(context)
 }

@@ -6,10 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 
-
 @Dao
 interface PreclassifierDao {
-
     @Query("SELECT * FROM preclassifier_table")
     suspend fun getPreclassifiers(): List<PreclassifierEntity>
 
@@ -18,7 +16,6 @@ interface PreclassifierDao {
 
     @Query("DELETE FROM preclassifier_table")
     suspend fun deletePreclassifiers()
-
 
     @Query("SELECT * FROM preclassifier_table WHERE id=:id")
     suspend fun getPreclassifier(id: String?): PreclassifierEntity?

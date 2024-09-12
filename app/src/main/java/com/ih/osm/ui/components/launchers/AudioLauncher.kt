@@ -3,11 +3,7 @@ package com.ih.osm.ui.components.launchers
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
-import android.media.MediaRecorder
 import android.net.Uri
-import android.os.Build
-import android.os.CountDownTimer
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -48,15 +44,16 @@ fun AudioLauncher(
     val file = context.getUriForFile(FileType.AUDIO)
     val androidAudioPlayer = AndroidAudioRecorder(context)
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {
-        if (it) {
-            androidAudioPlayer.start(file.second)
-        } else {
-            openAppSettings(context)
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestPermission(),
+        ) {
+            if (it) {
+                androidAudioPlayer.start(file.second)
+            } else {
+                openAppSettings(context)
+            }
         }
-    }
 
     AudioContent(
         onStart = {
@@ -72,7 +69,7 @@ fun AudioLauncher(
             androidAudioPlayer.stop()
             onComplete(file.first)
         },
-        maxRecordTime = maxRecordTime
+        maxRecordTime = maxRecordTime,
     )
 }
 
@@ -80,7 +77,7 @@ fun AudioLauncher(
 fun AudioContent(
     maxRecordTime: Int,
     onStart: () -> Unit,
-    onStop: () -> Unit
+    onStop: () -> Unit,
 ) {
     var timeLeft by remember { mutableIntStateOf(maxRecordTime) }
     var start by remember { mutableStateOf(false) }
@@ -98,14 +95,13 @@ fun AudioContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
-
         Text(text = stringResource(R.string.recording_time, timeLeft), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             CardItemIcon(icon = painterResource(id = R.drawable.ic_smart_display)) {
                 start = true
@@ -121,18 +117,13 @@ fun AudioContent(
     }
 }
 
-
-
-
-
-
 @Composable
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
 fun AudioContentPreview() {
     OsmAppTheme {
         Surface {
-            AudioContent(maxRecordTime = 10,onStart = {}, onStop = {})
+            AudioContent(maxRecordTime = 10, onStart = {}, onStop = {})
         }
     }
 }

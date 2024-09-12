@@ -16,36 +16,38 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
-class CoreApplication: Application(), Configuration.Provider {
-
+class CoreApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: CustomWorkerFactory
 
     override val workManagerConfiguration: Configuration
-        get() = Configuration.Builder()
-            .setMinimumLoggingLevel(Log.DEBUG)
-            .setWorkerFactory(workerFactory)
-            .build()
+        get() =
+            Configuration.Builder()
+                .setMinimumLoggingLevel(Log.DEBUG)
+                .setWorkerFactory(workerFactory)
+                .build()
 }
 
-class CustomWorkerFactory @Inject constructor(
-    private val getCardsUseCase: GetCardsUseCase,
-    private val syncCardsUseCase: SyncCardsUseCase,
-    private val coroutineContext: CoroutineContext,
-    private val sharedPreferences: SharedPreferences
-    ): WorkerFactory() {
-    override fun createWorker(
-        appContext: Context,
-        workerClassName: String,
-        workerParameters: WorkerParameters
-    ): ListenableWorker {
-        return CardWorker(
-            appContext,
-            workerParameters,
-            getCardsUseCase,
-            syncCardsUseCase,
-            coroutineContext,
-            sharedPreferences
-        )
+class CustomWorkerFactory
+    @Inject
+    constructor(
+        private val getCardsUseCase: GetCardsUseCase,
+        private val syncCardsUseCase: SyncCardsUseCase,
+        private val coroutineContext: CoroutineContext,
+        private val sharedPreferences: SharedPreferences,
+    ) : WorkerFactory() {
+        override fun createWorker(
+            appContext: Context,
+            workerClassName: String,
+            workerParameters: WorkerParameters,
+        ): ListenableWorker {
+            return CardWorker(
+                appContext,
+                workerParameters,
+                getCardsUseCase,
+                syncCardsUseCase,
+                coroutineContext,
+                sharedPreferences,
+            )
+        }
     }
-}

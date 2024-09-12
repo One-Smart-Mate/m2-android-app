@@ -46,16 +46,14 @@ fun CustomTextField(
     isPassword: Boolean = false,
     onChange: (String) -> Unit,
 ) {
-
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     var text by rememberSaveable { mutableStateOf(EMPTY) }
-
 
     val leadingIcon = @Composable {
         Icon(
             icon,
             contentDescription = EMPTY,
-            tint = getColor()
+            tint = getColor(),
         )
     }
 
@@ -67,33 +65,38 @@ fun CustomTextField(
         },
         modifier = modifier,
         leadingIcon = leadingIcon,
-        keyboardOptions = KeyboardOptions(
-            autoCorrect = false,
-            keyboardType = KeyboardType.Text,
-        ),
+        keyboardOptions =
+            KeyboardOptions(
+                autoCorrect = false,
+                keyboardType = KeyboardType.Text,
+            ),
         visualTransformation = if (passwordVisible || isPassword.not()) VisualTransformation.None else PasswordVisualTransformation(),
         placeholder = { Text(placeholder) },
         label = { Text(label) },
         shape = RoundedCornerShape(25),
-        colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent,
-            focusedContainerColor = MaterialTheme.colorScheme.primary,
-            unfocusedContainerColor = MaterialTheme.colorScheme.primary,
-            focusedTextColor = getColor(),
-            unfocusedTextColor = getColor(),
-            focusedLabelColor = getColor(),
-            unfocusedLabelColor = getColor(),
-            focusedPlaceholderColor = getColor(),
-            unfocusedPlaceholderColor = getColor(),
-            disabledTextColor = getColor()
-        ),
+        colors =
+            TextFieldDefaults.colors(
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                focusedContainerColor = MaterialTheme.colorScheme.primary,
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary,
+                focusedTextColor = getColor(),
+                unfocusedTextColor = getColor(),
+                focusedLabelColor = getColor(),
+                unfocusedLabelColor = getColor(),
+                focusedPlaceholderColor = getColor(),
+                unfocusedPlaceholderColor = getColor(),
+                disabledTextColor = getColor(),
+            ),
         maxLines = maxLines,
         trailingIcon = {
             if (isPassword) {
-                val image = if (passwordVisible)
-                    painterResource(id = R.drawable.ic_visibility)
-                else painterResource(id = R.drawable.ic_visibility_off)
+                val image =
+                    if (passwordVisible) {
+                        painterResource(id = R.drawable.ic_visibility)
+                    } else {
+                        painterResource(id = R.drawable.ic_visibility_off)
+                    }
 
                 // Please provide localized description for accessibility services
                 val description = if (passwordVisible) "Hide password" else "Show password"
@@ -102,10 +105,9 @@ fun CustomTextField(
                     Icon(painter = image, description, tint = getColor())
                 }
             }
-        }
+        },
     )
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -119,7 +121,7 @@ private fun LoginPreview() {
                     modifier = Modifier.fillMaxWidth(),
                     label = stringResource(R.string.email),
                     placeholder = stringResource(R.string.enter_your_email),
-                    icon = Icons.Outlined.Email
+                    icon = Icons.Outlined.Email,
                 ) {}
                 CustomSpacer()
                 CustomTextField(
@@ -127,7 +129,7 @@ private fun LoginPreview() {
                     label = stringResource(R.string.password),
                     placeholder = stringResource(R.string.enter_your_password),
                     icon = Icons.Outlined.Lock,
-                    isPassword = true
+                    isPassword = true,
                 ) {}
             }
         }

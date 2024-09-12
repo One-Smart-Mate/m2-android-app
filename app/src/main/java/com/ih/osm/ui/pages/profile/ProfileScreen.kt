@@ -41,18 +41,17 @@ import com.ih.osm.ui.theme.Size120
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = mavericksViewModel()
+    viewModel: ProfileViewModel = mavericksViewModel(),
 ) {
-
     val state by viewModel.collectAsState()
-    when(val result = state.state) {
+    when (val result = state.state) {
         is LCE.Loading, LCE.Uninitialized -> {
             LoadingScreen(text = stringResource(id = R.string.loading_data))
         }
         is LCE.Success -> {
             ProfileContent(
                 navController = navController,
-                user = result.value
+                user = result.value,
             )
         }
         is LCE.Fail -> {
@@ -62,25 +61,25 @@ fun ProfileScreen(
         }
     }
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileContent(
     navController: NavController,
-    user: User
+    user: User,
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.profile)
+                    title = stringResource(R.string.profile),
                 )
             }
 
             item {
-
                 Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                     CircularImage(image = user.logo, size = Size120)
                 }
@@ -98,7 +97,7 @@ fun ProfileContent(
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.name)
-                    }
+                    },
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.company)) },
@@ -111,7 +110,7 @@ fun ProfileContent(
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.companyName)
-                    }
+                    },
                 )
 
                 ListItem(
@@ -125,7 +124,7 @@ fun ProfileContent(
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.siteName)
-                    }
+                    },
                 )
 
                 ListItem(
@@ -139,13 +138,12 @@ fun ProfileContent(
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.email)
-                    }
+                    },
                 )
             }
         }
     }
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")

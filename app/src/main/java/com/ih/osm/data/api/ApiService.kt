@@ -1,6 +1,5 @@
 package com.ih.osm.data.api
 
-
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -25,97 +24,90 @@ import retrofit2.http.PUT
 import retrofit2.http.Path
 
 interface ApiService {
-
     @POST("auth/login")
     fun login(
-        @Body body: LoginRequest
+        @Body body: LoginRequest,
     ): Call<LoginResponse>
 
     @GET("card/all/{siteId}")
     fun getCards(
-        @Path("siteId") sitId: String
+        @Path("siteId") sitId: String,
     ): Call<GetCardsResponse>
-
 
     @GET("card-types/all/{siteId}")
     fun getCardTypes(
-        @Path("siteId") sitId: String
+        @Path("siteId") sitId: String,
     ): Call<GetCardTypesResponse>
 
     @GET("preclassifier/site/{siteId}")
     fun getPreclassifiers(
-        @Path("siteId") siteId: String
+        @Path("siteId") siteId: String,
     ): Call<GetPreclassifiersResponse>
 
     @GET("priority/all/{siteId}")
     fun getPriorities(
-        @Path("siteId") siteId: String
+        @Path("siteId") siteId: String,
     ): Call<GetPrioritiesResponse>
-
 
     @GET("card/{cardId}")
     fun getCardDetail(
-        @Path("cardId") cardId: String
+        @Path("cardId") cardId: String,
     ): Call<GetCardDetailResponse>
-
 
     @POST("card/create")
     fun createCard(
-        @Body body: CreateCardRequest
+        @Body body: CreateCardRequest,
     ): Call<CreateCardResponse>
-
 
     @GET("level/all/{siteId}")
     fun getLevels(
-        @Path("siteId") siteId: String
+        @Path("siteId") siteId: String,
     ): Call<GetLevelsResponse>
 
     @GET("users/all/{siteId}")
     fun getEmployees(
-        @Path("siteId") siteId: String
+        @Path("siteId") siteId: String,
     ): Call<GetEmployeesResponse>
 
     @GET("card/all/zone/{superiorId}/{siteId}")
     fun getCardsZone(
         @Path("superiorId") superiorId: String,
-        @Path("siteId") sitId: String
+        @Path("siteId") sitId: String,
     ): Call<GetCardsResponse>
 
     @PUT("card/update/definitive-solution")
     fun saveDefinitiveSolution(
-        @Body body: CreateDefinitiveSolutionRequest
+        @Body body: CreateDefinitiveSolutionRequest,
     ): Call<SolutionResponse>
 
     @PUT("card/update/provisional-solution")
     fun saveProvisionalSolution(
-        @Body body: CreateProvisionalSolutionRequest
+        @Body body: CreateProvisionalSolutionRequest,
     ): Call<SolutionResponse>
 
     @POST("users/send-code")
     fun sendRestorePasswordCode(
-        @Body body: RestorePasswordRequest
+        @Body body: RestorePasswordRequest,
     ): Call<Any>
 
     @POST("users/verify-code")
     fun verifyPasswordCode(
-        @Body body: RestorePasswordRequest
+        @Body body: RestorePasswordRequest,
     ): Call<Any>
 
     @POST("users/reset-password")
     fun resetPassword(
-        @Body body: RestorePasswordRequest
+        @Body body: RestorePasswordRequest,
     ): Call<Any>
 
     @POST("users/app-token")
     fun updateToken(
-        @Body body: UpdateTokenRequest
+        @Body body: UpdateTokenRequest,
     ): Call<Any>
 
     @GET("card/all/level-machine/{siteId}/{levelMachine}")
     fun getCardsLevelMachine(
         @Path("siteId") siteId: String,
-        @Path("levelMachine") levelMachine: String
+        @Path("levelMachine") levelMachine: String,
     ): Call<GetCardsResponse>
-
 }
-

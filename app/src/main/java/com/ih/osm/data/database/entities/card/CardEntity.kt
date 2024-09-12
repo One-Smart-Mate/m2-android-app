@@ -12,7 +12,6 @@ import com.ih.osm.ui.extensions.toFormatDate
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.STORED_REMOTE
 
-
 @Entity(tableName = "card_table")
 data class CardEntity(
     @PrimaryKey(autoGenerate = false)
@@ -143,7 +142,7 @@ data class CardEntity(
     @ColumnInfo(name = "stored")
     val stored: String?,
     @ColumnInfo(name = "card_location", defaultValue = EMPTY)
-    val cardLocation: String
+    val cardLocation: String,
 )
 
 fun CardEntity.validateDate(): String {
@@ -218,6 +217,6 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
         stored = this.stored ?: STORED_REMOTE,
         evidences = evidences,
         creationDateFormatted = validateDate(),
-        cardLocation = this.cardLocation
+        cardLocation = this.cardLocation,
     )
 }

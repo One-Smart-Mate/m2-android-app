@@ -30,52 +30,52 @@ fun CustomButton(
     buttonType: ButtonType = ButtonType.DEFAULT,
     onClick: () -> Unit,
 ) {
+    val colors =
+        when (buttonType) {
+            ButtonType.DEFAULT -> {
+                ButtonDefaults.buttonColors()
+            }
 
-
-    val colors = when (buttonType) {
-        ButtonType.DEFAULT -> {
-            ButtonDefaults.buttonColors()
-        }
-
-        ButtonType.ERROR -> {
-            ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onPrimary,
-            )
-        }
-
-        else -> {
-            ButtonDefaults.buttonColors(
-                containerColor = Color.Transparent,
-                contentColor = MaterialTheme.colorScheme.primary,
-            )
-        }
-    }
-
-    val buttonModifier = when (buttonType) {
-        ButtonType.DEFAULT, ButtonType.ERROR, ButtonType.TEXT -> {
-            modifier
-                .fillMaxWidth()
-                .height(54.dp)
-        }
-
-        else -> {
-            modifier
-                .fillMaxWidth()
-                .height(54.dp)
-                .border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = CircleShape
+            ButtonType.ERROR -> {
+                ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 )
+            }
+
+            else -> {
+                ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.primary,
+                )
+            }
         }
-    }
+
+    val buttonModifier =
+        when (buttonType) {
+            ButtonType.DEFAULT, ButtonType.ERROR, ButtonType.TEXT -> {
+                modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+            }
+
+            else -> {
+                modifier
+                    .fillMaxWidth()
+                    .height(54.dp)
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape,
+                    )
+            }
+        }
 
     Button(
         modifier = buttonModifier,
         onClick = onClick,
         colors = colors,
-        enabled = isLoading.not()
+        enabled = isLoading.not(),
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
@@ -86,7 +86,10 @@ fun CustomButton(
 }
 
 enum class ButtonType {
-    DEFAULT, OUTLINE, ERROR, TEXT
+    DEFAULT,
+    OUTLINE,
+    ERROR,
+    TEXT,
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -99,22 +102,17 @@ fun CustomButtonPreview() {
             Column {
                 CustomSpacer()
                 CustomButton(text = "Default") {
-
                 }
                 CustomSpacer()
                 CustomButton(text = "Outline", buttonType = ButtonType.OUTLINE) {
-
                 }
                 CustomSpacer()
                 CustomButton(text = "Error", buttonType = ButtonType.ERROR) {
-
                 }
 
                 CustomButton(text = "Text", buttonType = ButtonType.TEXT) {
-
                 }
             }
-
         }
     }
 }

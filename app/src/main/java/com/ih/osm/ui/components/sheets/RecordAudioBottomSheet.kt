@@ -11,11 +11,11 @@ import com.ih.osm.ui.components.launchers.AudioLauncher
 fun RecordAudioBottomSheet(
     onComplete: (Uri) -> Unit,
     onDismissRequest: () -> Unit,
-    maxRecord: Int =  60
+    maxRecord: Int = 60,
 ) {
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         AudioLauncher(
-            maxRecord
+            maxRecord,
         ) {
             onComplete(it)
         }

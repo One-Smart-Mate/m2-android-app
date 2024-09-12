@@ -3,7 +3,6 @@ package com.ih.osm.domain.model
 import com.google.gson.annotations.SerializedName
 import com.ih.osm.data.database.entities.cardtype.CardTypeEntity
 import com.ih.osm.ui.extensions.defaultIfNull
-import com.ih.osm.ui.utils.CARD_ANOMALIES
 import com.ih.osm.ui.utils.CARD_ANOMALIES_NAME
 
 data class CardType(
@@ -45,9 +44,8 @@ data class CardType(
     val audiosDurationPs: Int?,
     @SerializedName("videosDurationPs")
     val videosDurationPs: Int?,
-    val cardTypeMethodology: String?
+    val cardTypeMethodology: String?,
 )
-
 
 fun CardType.toEntity(): CardTypeEntity {
     return CardTypeEntity(
@@ -73,10 +71,9 @@ fun CardType.toEntity(): CardTypeEntity {
         quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
         audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
         videosDurationPs = this.videosDurationPs.defaultIfNull(0),
-        cardTypeMethodology = this.cardTypeMethodology
+        cardTypeMethodology = this.cardTypeMethodology,
     )
 }
-
 
 fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     return this.map {
@@ -84,11 +81,11 @@ fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
     }
 }
 
-//fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
-      //  this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()
+// fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
+//  this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()
 
-//fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
+// fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
 fun NodeCardItem?.isAnomaliesCardType(): Boolean = this?.name?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
 
-//fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()
+// fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()

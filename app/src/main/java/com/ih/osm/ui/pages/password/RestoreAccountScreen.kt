@@ -47,7 +47,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RestoreAccountScreen(
     navController: NavController,
-    viewModel: RestoreAccountViewModel = mavericksViewModel()
+    viewModel: RestoreAccountViewModel = mavericksViewModel(),
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -73,7 +73,7 @@ fun RestoreAccountScreen(
         onConfirmPasswordChange = {
             viewModel.process(RestoreAccountViewModel.Action.OnConfirmPasswordChange(it))
         },
-        canResend = state.canResend
+        canResend = state.canResend,
     )
 
     if (state.message.isNotEmpty() && state.isLoading.not()) {
@@ -83,7 +83,6 @@ fun RestoreAccountScreen(
             )
             viewModel.process(RestoreAccountViewModel.Action.ClearMessage)
         }
-
     }
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
@@ -116,12 +115,11 @@ private fun RestoreAccountContent(
     onCodeChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    canResend: Boolean
+    canResend: Boolean,
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
-
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(navController = navController, title = "Restore account")
@@ -129,13 +127,13 @@ private fun RestoreAccountContent(
 
             item {
                 Column(
-                    modifier = Modifier.padding(PaddingNormal)
+                    modifier = Modifier.padding(PaddingNormal),
                 ) {
                     AnimatedVisibility(visible = currentStep == 1) {
                         VerifyEmailContent(
                             isLoading = isLoading,
                             onEmailChange = onEmailChange,
-                            onActionClick = onActionClick
+                            onActionClick = onActionClick,
                         )
                     }
 
@@ -144,7 +142,7 @@ private fun RestoreAccountContent(
                             isLoading = isLoading,
                             onActionClick = onActionClick,
                             onCodeChange = onCodeChange,
-                            canResend = canResend
+                            canResend = canResend,
                         )
                     }
 
@@ -153,10 +151,9 @@ private fun RestoreAccountContent(
                             isLoading = isLoading,
                             onActionClick = onActionClick,
                             onPasswordChange = onPasswordChange,
-                            onConfirmPasswordChange = onConfirmPasswordChange
+                            onConfirmPasswordChange = onConfirmPasswordChange,
                         )
                     }
-
                 }
             }
         }
@@ -167,7 +164,7 @@ private fun RestoreAccountContent(
 private fun VerifyEmailContent(
     isLoading: Boolean,
     onEmailChange: (String) -> Unit,
-    onActionClick: (String) -> Unit
+    onActionClick: (String) -> Unit,
 ) {
     Column {
         Text(text = "Enter your email to reset your password, we'll send you a code to reset your password.")
@@ -175,7 +172,7 @@ private fun VerifyEmailContent(
         CustomTextField(
             label = "Email",
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onEmailChange(it)
         }
@@ -191,7 +188,7 @@ private fun VerifyCodeContent(
     isLoading: Boolean,
     onActionClick: (String) -> Unit,
     onCodeChange: (String) -> Unit,
-    canResend: Boolean
+    canResend: Boolean,
 ) {
     Column {
         Text(text = "Enter the verification code from your email")
@@ -199,7 +196,7 @@ private fun VerifyCodeContent(
         CustomTextField(
             label = "Code",
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onCodeChange(it)
         }
@@ -221,7 +218,7 @@ private fun ChangePasswordContent(
     isLoading: Boolean,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    onActionClick: (String) -> Unit
+    onActionClick: (String) -> Unit,
 ) {
     Column {
         Text(text = "Enter your new password")
@@ -229,7 +226,7 @@ private fun ChangePasswordContent(
         CustomTextField(
             label = "New Password",
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onPasswordChange(it)
         }
@@ -237,7 +234,7 @@ private fun ChangePasswordContent(
         CustomTextField(
             label = "Confirm password",
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onConfirmPasswordChange(it)
         }
@@ -247,7 +244,6 @@ private fun ChangePasswordContent(
         }
     }
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -265,7 +261,7 @@ fun LoginPreview() {
                 onCodeChange = {},
                 onPasswordChange = {},
                 onConfirmPasswordChange = {},
-                canResend = true
+                canResend = true,
             )
         }
     }

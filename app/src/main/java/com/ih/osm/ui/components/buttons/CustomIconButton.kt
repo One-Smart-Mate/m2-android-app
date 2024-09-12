@@ -12,30 +12,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.ih.osm.ui.utils.EMPTY
 
-
 @Composable
 fun CustomIconButton(
     text: String,
     icon: ImageVector,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
-    val color = if (isSystemInDarkTheme()) {
-        MaterialTheme.colorScheme.onSecondary
-    } else {
-        MaterialTheme.colorScheme.onPrimary
-    }
+    val color =
+        if (isSystemInDarkTheme()) {
+            MaterialTheme.colorScheme.onSecondary
+        } else {
+            MaterialTheme.colorScheme.onPrimary
+        }
     Button(
         onClick = onClick,
-        colors = ButtonDefaults.outlinedButtonColors(
-            containerColor = color,
-        )
+        colors =
+            ButtonDefaults.outlinedButtonColors(
+                containerColor = color,
+            ),
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             Icon(icon, contentDescription = EMPTY)
             Text(text = text)
         }
     }
 }
-

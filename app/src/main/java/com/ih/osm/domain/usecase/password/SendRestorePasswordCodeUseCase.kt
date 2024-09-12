@@ -8,10 +8,12 @@ interface SendRestorePasswordCodeUseCase {
     suspend operator fun invoke(request: RestorePasswordRequest)
 }
 
-class SendRestorePasswordCodeUseCaseImpl @Inject constructor(
-    private val authRepository: AuthRepository
-): SendRestorePasswordCodeUseCase {
-    override suspend fun invoke(request: RestorePasswordRequest) {
-        authRepository.sendRestorePasswordCode(request)
+class SendRestorePasswordCodeUseCaseImpl
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : SendRestorePasswordCodeUseCase {
+        override suspend fun invoke(request: RestorePasswordRequest) {
+            authRepository.sendRestorePasswordCode(request)
+        }
     }
-}

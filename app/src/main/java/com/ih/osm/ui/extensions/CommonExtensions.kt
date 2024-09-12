@@ -8,7 +8,6 @@ import com.ih.osm.MainActivity
 
 fun <T> T?.defaultIfNull(default: T): T = this ?: default
 
-
 inline fun <reified Activity : ComponentActivity> Context.getActivity(): Activity? {
     return when (this) {
         is Activity -> this

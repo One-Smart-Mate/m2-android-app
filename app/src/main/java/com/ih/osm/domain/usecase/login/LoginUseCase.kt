@@ -9,10 +9,12 @@ interface LoginUseCase {
     suspend operator fun invoke(data: LoginRequest): User
 }
 
-class LoginUseCaseImpl @Inject constructor(
-    private val authRepository: AuthRepository
-): LoginUseCase {
-    override suspend fun invoke(data: LoginRequest): User {
-        return authRepository.login(data)
+class LoginUseCaseImpl
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : LoginUseCase {
+        override suspend fun invoke(data: LoginRequest): User {
+            return authRepository.login(data)
+        }
     }
-}

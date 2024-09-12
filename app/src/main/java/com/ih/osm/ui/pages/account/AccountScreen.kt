@@ -14,7 +14,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
@@ -61,9 +60,8 @@ import com.ih.osm.ui.theme.PaddingNormal
 @Composable
 fun AccountScreen(
     navController: NavController,
-    viewModel: AccountViewModel = mavericksViewModel()
+    viewModel: AccountViewModel = mavericksViewModel(),
 ) {
-
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
@@ -87,7 +85,7 @@ fun AccountScreen(
             onSwitchChange = {
                 viewModel.process(AccountViewModel.Action.OnSwitchChange(it))
             },
-            uri = state.uri
+            uri = state.uri,
         )
     }
     if (state.message.isNotEmpty()) {
@@ -114,16 +112,16 @@ fun AccountContent(
     onDevClick: () -> Unit,
     checked: Boolean,
     onSwitchChange: (Boolean) -> Unit,
-    uri: Uri? = null
+    uri: Uri? = null,
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.account)
+                    title = stringResource(R.string.account),
                 )
             }
 
@@ -137,9 +135,10 @@ fun AccountContent(
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        navController.navigateToProfile()
-                    }
+                    modifier =
+                        Modifier.clickable {
+                            navController.navigateToProfile()
+                        },
                 )
 
                 ListItem(
@@ -151,9 +150,10 @@ fun AccountContent(
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        openAppSettings(context)
-                    }
+                    modifier =
+                        Modifier.clickable {
+                            openAppSettings(context)
+                        },
                 )
 
                 ListItem(
@@ -165,9 +165,10 @@ fun AccountContent(
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        onSyncCatalogs()
-                    }
+                    modifier =
+                        Modifier.clickable {
+                            onSyncCatalogs()
+                        },
                 )
 
                 ListItem(
@@ -180,21 +181,24 @@ fun AccountContent(
                     },
                     trailingContent = {
                         Switch(
-                            checked = checked, onCheckedChange = {
+                            checked = checked,
+                            onCheckedChange = {
                                 onSwitchChange(it)
                             },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-                            )
+                            colors =
+                                SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                                ),
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        onSyncCatalogs()
-                    }
+                    modifier =
+                        Modifier.clickable {
+                            onSyncCatalogs()
+                        },
                 )
 
 //                ListItem(
@@ -216,8 +220,8 @@ fun AccountContent(
                         Text(
                             stringResource(
                                 R.string.app_version,
-                                BuildConfig.VERSION_NAME
-                            )
+                                BuildConfig.VERSION_NAME,
+                            ),
                         )
                     },
                     leadingContent = {
@@ -226,7 +230,7 @@ fun AccountContent(
                             contentDescription = stringResource(R.string.empty),
                         )
                     },
-                    tonalElevation = PaddingNormal
+                    tonalElevation = PaddingNormal,
                 )
                 AnimatedVisibility(visible = uri != null) {
                     ListItem(
@@ -238,9 +242,10 @@ fun AccountContent(
                             )
                         },
                         tonalElevation = PaddingNormal,
-                        modifier = Modifier.clickable {
-                            shareUri(context, uri)
-                        }
+                        modifier =
+                            Modifier.clickable {
+                                shareUri(context, uri)
+                            },
                     )
                 }
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
@@ -254,32 +259,35 @@ fun AccountContent(
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier = Modifier.clickable {
-                        onLogout()
-                    }
+                    modifier =
+                        Modifier.clickable {
+                            onLogout()
+                        },
                 )
             }
         }
     }
 }
 
-private fun shareUri(context: Context, uri: Uri?) {
+private fun shareUri(
+    context: Context,
+    uri: Uri?,
+) {
     try {
         val intent = Intent(Intent.ACTION_SEND)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.setType("*/*")
         intent.putExtra(Intent.EXTRA_STREAM, uri)
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     } catch (e: Exception) {
         Toast.makeText(
             context,
             "Can't share the data $uri",
-            Toast.LENGTH_SHORT
+            Toast.LENGTH_SHORT,
         ).show()
     }
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -295,7 +303,8 @@ fun AccountPreview() {
                 onSyncCatalogs = {},
                 context,
                 onDevClick = {},
-                onSwitchChange = {}, checked = true
+                onSwitchChange = {},
+                checked = true,
             )
         }
     }

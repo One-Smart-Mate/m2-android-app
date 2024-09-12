@@ -8,10 +8,12 @@ interface GetCardTypeUseCase {
     suspend operator fun invoke(id: String): CardType?
 }
 
-class GetCardTypeUseCaseImpl @Inject constructor(
-    private val localRepository: LocalRepository
-) : GetCardTypeUseCase {
-    override suspend fun invoke(id: String): CardType? {
-        return localRepository.getCardType(id)
+class GetCardTypeUseCaseImpl
+    @Inject
+    constructor(
+        private val localRepository: LocalRepository,
+    ) : GetCardTypeUseCase {
+        override suspend fun invoke(id: String): CardType? {
+            return localRepository.getCardType(id)
+        }
     }
-}

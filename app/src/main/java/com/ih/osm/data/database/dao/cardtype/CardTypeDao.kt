@@ -8,7 +8,6 @@ import com.ih.osm.data.database.entities.cardtype.CardTypeEntity
 
 @Dao
 interface CardTypeDao {
-
     @Query("SELECT * FROM card_type_table")
     suspend fun getCardTypes(): List<CardTypeEntity>
 

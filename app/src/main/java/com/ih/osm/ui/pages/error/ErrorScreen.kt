@@ -40,53 +40,57 @@ import com.ih.osm.ui.utils.EMPTY
 fun ErrorScreen(
     navController: NavController,
     errorMessage: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.error
-            )
-            .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal)
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.error,
+                )
+                .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal),
     ) {
         item {
             Icon(
                 Icons.Filled.KeyboardArrowLeft,
                 contentDescription = stringResource(R.string.empty),
-                modifier = Modifier
-                    .size(Size38)
-                    .clickable {
-                        navController.popBackStack()
-                    },
-                tint = Color.White
+                modifier =
+                    Modifier
+                        .size(Size38)
+                        .clickable {
+                            navController.popBackStack()
+                        },
+                tint = Color.White,
             )
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-
                 Icon(
-                    Icons.Filled.Close, contentDescription = EMPTY,
+                    Icons.Filled.Close,
+                    contentDescription = EMPTY,
                     modifier = Modifier.size(100.dp),
-                    tint = Color.White
+                    tint = Color.White,
                 )
                 CustomSpacer()
                 Text(
                     text = "Ups! Something went wrong!",
-                    style = MaterialTheme.typography.titleLarge
-                        .copy(
-                            fontWeight = FontWeight.Bold,
-                            color = Color.White
-                        )
+                    style =
+                        MaterialTheme.typography.titleLarge
+                            .copy(
+                                fontWeight = FontWeight.Bold,
+                                color = Color.White,
+                            ),
                 )
                 CustomSpacer()
                 Text(
                     text = errorMessage,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = Color.White
-                    )
+                    style =
+                        MaterialTheme.typography.bodyLarge.copy(
+                            color = Color.White,
+                        ),
                 )
                 CustomSpacer()
                 CustomButton(text = "Reload data", buttonType = ButtonType.ERROR) {
@@ -97,7 +101,6 @@ fun ErrorScreen(
     }
 }
 
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
@@ -106,7 +109,6 @@ fun PreviewErrorScreen() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             ErrorScreen(rememberNavController(), "Unable to load the dat") {
-
             }
         }
     }

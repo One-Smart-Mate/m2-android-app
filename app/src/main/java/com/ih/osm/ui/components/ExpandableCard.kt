@@ -24,45 +24,46 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 
-
 @Composable
 fun ExpandableCard(
     title: String,
     expanded: Boolean = false,
     content: @Composable ColumnScope.() -> Unit,
 ) {
+    val isExpanded =
+        remember {
+            mutableStateOf(expanded)
+        }
 
-    val isExpanded = remember {
-        mutableStateOf(expanded)
-    }
-
-    val arrowIcon = if (isExpanded.value) {
-        Icons.Filled.KeyboardArrowUp
-    } else {
-        Icons.Filled.KeyboardArrowDown
-    }
+    val arrowIcon =
+        if (isExpanded.value) {
+            Icons.Filled.KeyboardArrowUp
+        } else {
+            Icons.Filled.KeyboardArrowDown
+        }
 
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(PaddingNormal)
-
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(PaddingNormal),
     ) {
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .clickable {
-                    isExpanded.value = isExpanded.value.not()
-                }
-                .padding(PaddingNormal),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        isExpanded.value = isExpanded.value.not()
+                    }
+                    .padding(PaddingNormal),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(text = title)
             Icon(arrowIcon, contentDescription = title)
         }
         AnimatedVisibility(visible = isExpanded.value) {
             Column(
-                modifier = Modifier.padding(PaddingNormal)
+                modifier = Modifier.padding(PaddingNormal),
             ) {
                 content()
             }
@@ -82,7 +83,6 @@ private fun PreviewListSection() {
                 }
                 CustomSpacer()
                 ExpandableCard("Information2 ") {
-
                 }
             }
         }

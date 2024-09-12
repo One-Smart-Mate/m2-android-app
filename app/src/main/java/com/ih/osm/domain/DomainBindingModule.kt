@@ -2,7 +2,6 @@ package com.ih.osm.domain
 
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCaseImpl
-
 import com.ih.osm.domain.usecase.card.GetCardsLevelMachineUseCase
 import com.ih.osm.domain.usecase.card.GetCardsLevelMachineUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
@@ -63,7 +62,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 interface DomainBindingModule {
-
     @Binds
     fun bindLoginUseCase(loginUseCaseImpl: LoginUseCaseImpl): LoginUseCase
 
@@ -125,13 +123,17 @@ interface DomainBindingModule {
     fun bindFirebaseTokenUseCase(getFirebaseTokenUseCaseImpl: GetFirebaseTokenUseCaseImpl): GetFirebaseTokenUseCase
 
     @Binds
-    fun bindSyncFirebaseTokenUseCase(syncFirebaseTokenUseCaseImpl: SyncFirebaseTokenUseCaseImpl):SyncFirebaseTokenUseCase
+    fun bindSyncFirebaseTokenUseCase(syncFirebaseTokenUseCaseImpl: SyncFirebaseTokenUseCaseImpl): SyncFirebaseTokenUseCase
 
     @Binds
-    fun bindGetFirebaseNotificationUseCase(getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl): GetFirebaseNotificationUseCase
+    fun bindGetFirebaseNotificationUseCase(
+        getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl,
+    ): GetFirebaseNotificationUseCase
 
     @Binds
-    fun bindSendRestorePasswordUseCase(sendRestorePasswordCodeUseCaseImpl: SendRestorePasswordCodeUseCaseImpl): SendRestorePasswordCodeUseCase
+    fun bindSendRestorePasswordUseCase(
+        sendRestorePasswordCodeUseCaseImpl: SendRestorePasswordCodeUseCaseImpl,
+    ): SendRestorePasswordCodeUseCase
 
     @Binds
     fun bindResetPasswordUseCase(resetPasswordUseCaseImpl: ResetPasswordUseCaseImpl): ResetPasswordUseCase

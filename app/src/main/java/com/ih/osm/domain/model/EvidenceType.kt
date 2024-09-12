@@ -19,5 +19,5 @@ enum class EvidenceType(type: String) {
     AUCL(AUDIO_CLOSE),
     IMPS(IMG_PS),
     AUPS(AUDIO_PS),
-    VIPS(VIDEO_PS)
+    VIPS(VIDEO_PS),
 }

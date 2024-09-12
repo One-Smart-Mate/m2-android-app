@@ -6,10 +6,8 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ih.osm.data.database.entities.level.LevelEntity
 
-
 @Dao
 interface LevelDao {
-
     @Query("SELECT * FROM level_table")
     suspend fun getLevels(): List<LevelEntity>
 
@@ -21,6 +19,4 @@ interface LevelDao {
 
     @Query("SELECT * FROM level_table WHERE id=:id")
     suspend fun getLevel(id: String?): LevelEntity?
-
-
 }

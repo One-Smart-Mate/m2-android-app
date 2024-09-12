@@ -7,7 +7,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -31,81 +30,88 @@ fun CustomTag(
     tagType: TagType = TagType.DEFAULT,
     invertedColors: Boolean = false,
     textAlign: TextAlign = TextAlign.Start,
-    isErrorEnabled: Boolean = false
+    isErrorEnabled: Boolean = false,
 ) {
-
-    val color = if (tagType == TagType.DEFAULT || invertedColors) {
-        getColor()
-    } else {
-        getTextColor()
-    }
-
-    val tagTextStyle = when (tagSize) {
-        TagSize.DEFAULT -> {
-            MaterialTheme.typography.bodyMedium
-                .copy(
-                    color = color
-                )
+    val color =
+        if (tagType == TagType.DEFAULT || invertedColors) {
+            getColor()
+        } else {
+            getTextColor()
         }
 
-        TagSize.SMALL -> {
-            MaterialTheme.typography.bodySmall
-                .copy(
-                    color = color
-                )
-        }
-    }
-
-
-    val tagTypeModifier = when (tagType) {
-        TagType.DEFAULT -> {
-            val containerColor = if (isErrorEnabled) {
-                MaterialTheme.colorScheme.error
-            } else {
-                MaterialTheme.colorScheme.primary
+    val tagTextStyle =
+        when (tagSize) {
+            TagSize.DEFAULT -> {
+                MaterialTheme.typography.bodyMedium
+                    .copy(
+                        color = color,
+                    )
             }
-            modifier
-                .background(
-                    color = containerColor,
-                    shape = CircleShape,
-                )
-                .padding(vertical = 6.dp, horizontal = 10.dp)
+
+            TagSize.SMALL -> {
+                MaterialTheme.typography.bodySmall
+                    .copy(
+                        color = color,
+                    )
+            }
         }
 
-        TagType.OUTLINE -> {
-            modifier
-                .border(
-                    width = 1.dp,
-                    color = if (isErrorEnabled) {
+    val tagTypeModifier =
+        when (tagType) {
+            TagType.DEFAULT -> {
+                val containerColor =
+                    if (isErrorEnabled) {
                         MaterialTheme.colorScheme.error
-                    } else if (invertedColors) {
-                        getColor()
                     } else {
                         MaterialTheme.colorScheme.primary
-                    },
-                    shape = CircleShape
-                )
-                .padding(vertical = 2.dp, horizontal = 12.dp)
+                    }
+                modifier
+                    .background(
+                        color = containerColor,
+                        shape = CircleShape,
+                    )
+                    .padding(vertical = 6.dp, horizontal = 10.dp)
+            }
+
+            TagType.OUTLINE -> {
+                modifier
+                    .border(
+                        width = 1.dp,
+                        color =
+                            if (isErrorEnabled) {
+                                MaterialTheme.colorScheme.error
+                            } else if (invertedColors) {
+                                getColor()
+                            } else {
+                                MaterialTheme.colorScheme.primary
+                            },
+                        shape = CircleShape,
+                    )
+                    .padding(vertical = 2.dp, horizontal = 12.dp)
+            }
         }
-    }
 
     Box(
-        modifier = tagTypeModifier
+        modifier = tagTypeModifier,
     ) {
         Text(
-            text = title, style = tagTextStyle, modifier = textModifier, textAlign = textAlign
+            text = title,
+            style = tagTextStyle,
+            modifier = textModifier,
+            textAlign = textAlign,
         )
     }
 }
 
 enum class TagSize {
-    DEFAULT, SMALL
+    DEFAULT,
+    SMALL,
 }
 
 enum class TagType {
-    DEFAULT, OUTLINE
+    DEFAULT,
+    OUTLINE,
 }
-
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")

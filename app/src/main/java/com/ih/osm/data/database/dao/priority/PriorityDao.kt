@@ -8,7 +8,6 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
 
 @Dao
 interface PriorityDao {
-
     @Query("SELECT * FROM priority_table")
     suspend fun getPriorities(): List<PriorityEntity>
 

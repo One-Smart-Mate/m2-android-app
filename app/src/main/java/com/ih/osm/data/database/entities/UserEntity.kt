@@ -29,7 +29,7 @@ data class UserEntity(
     @ColumnInfo("company_name")
     val companyName: String,
     @ColumnInfo("site_name")
-    val siteName: String
+    val siteName: String,
 )
 
 fun com.ih.osm.data.database.entities.UserEntity?.toDomain(): User? {
@@ -44,7 +44,7 @@ fun com.ih.osm.data.database.entities.UserEntity?.toDomain(): User? {
             companyId = this.companyId,
             siteId = this.siteId,
             companyName = this.companyName,
-            siteName = this.siteName
+            siteName = this.siteName,
         )
     }
     return null

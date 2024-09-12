@@ -5,7 +5,6 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.ih.osm.domain.model.Level
 
-
 @Entity(tableName = "level_table")
 data class LevelEntity(
     @PrimaryKey(autoGenerate = false)
@@ -22,7 +21,7 @@ data class LevelEntity(
     @ColumnInfo(name = "description")
     val description: String,
     @ColumnInfo(name = "status")
-    val status: String
+    val status: String,
 )
 
 fun LevelEntity.toDomain(): Level {
@@ -33,6 +32,6 @@ fun LevelEntity.toDomain(): Level {
         superiorId = this.superiorId,
         name = this.name,
         description = this.description,
-        status = this.status
+        status = this.status,
     )
 }

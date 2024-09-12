@@ -10,9 +10,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,38 +26,35 @@ import androidx.compose.ui.tooling.preview.Preview
 import com.ih.osm.R
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.theme.OsmAppTheme
-import com.ih.osm.ui.theme.PaddingToolbar
 import com.ih.osm.ui.theme.Size100
-import com.ih.osm.ui.theme.Size120
-import com.ih.osm.ui.theme.Size150
 import com.ih.osm.ui.utils.EMPTY
 
-
 @Composable
-fun EmptyData(
-    modifier: Modifier = Modifier
-) {
+fun EmptyData(modifier: Modifier = Modifier) {
     val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
     val animatedColor by infiniteTransition.animateColor(
         initialValue = MaterialTheme.colorScheme.primary,
         targetValue = Color.Gray,
         animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
-        label = "color"
+        label = "color",
     )
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_cloud),
             contentDescription = EMPTY,
             tint = getPrimaryColor(),
-            modifier = Modifier.size(Size100)
+            modifier = Modifier.size(Size100),
         )
-        Text(text = stringResource(R.string.empty_data), style = MaterialTheme.typography.titleLarge
-            .copy(color = animatedColor))
-
+        Text(
+            text = stringResource(R.string.empty_data),
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(color = animatedColor),
+        )
     }
 }
 

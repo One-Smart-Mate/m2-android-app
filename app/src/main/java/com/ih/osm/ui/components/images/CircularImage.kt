@@ -17,14 +17,15 @@ import com.ih.osm.R
 @Composable
 fun CircularImage(
     image: String,
-    size: Dp = 54.dp
+    size: Dp = 54.dp,
 ) {
     GlideImage(
         model = image,
         contentDescription = stringResource(id = R.string.empty),
-        modifier = Modifier
-            .size(size)
-            .clip(CircleShape),
+        modifier =
+            Modifier
+                .size(size)
+                .clip(CircleShape),
         failure = placeholder(R.drawable.loading_image),
         loading = placeholder(R.drawable.loading_image),
     )

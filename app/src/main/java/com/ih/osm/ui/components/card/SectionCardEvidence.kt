@@ -24,16 +24,14 @@ fun SectionCardEvidence(
     onAddEvidence: (Uri, EvidenceType) -> Unit,
     imageType: EvidenceType,
     audioType: EvidenceType,
-    videoType: EvidenceType
+    videoType: EvidenceType,
 ) {
-
     var audioBottomSheet by remember { mutableStateOf(false) }
 
     Row(
         modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+        horizontalArrangement = Arrangement.Center,
     ) {
-
         CameraLauncher {
             onAddEvidence(it, imageType)
         }
@@ -55,7 +53,7 @@ fun SectionCardEvidence(
                 onDismissRequest = {
                     audioBottomSheet = false
                 },
-                maxRecord = audioDuration
+                maxRecord = audioDuration,
             )
         }
     }

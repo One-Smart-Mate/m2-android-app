@@ -10,18 +10,17 @@ interface GetFirebaseTokenUseCase {
     suspend operator fun invoke(): String
 }
 
-class GetFirebaseTokenUseCaseImpl @Inject constructor(
-    private val firebaseMessaging: FirebaseMessaging
-): GetFirebaseTokenUseCase {
-
-
-    override suspend fun invoke(): String {
-        return try {
-            firebaseMessaging.token.await()
-        }catch (e: Exception){
-            Log.e("test","Exception ${e.localizedMessage}")
-            EMPTY
+class GetFirebaseTokenUseCaseImpl
+    @Inject
+    constructor(
+        private val firebaseMessaging: FirebaseMessaging,
+    ) : GetFirebaseTokenUseCase {
+        override suspend fun invoke(): String {
+            return try {
+                firebaseMessaging.token.await()
+            } catch (e: Exception) {
+                Log.e("test", "Exception ${e.localizedMessage}")
+                EMPTY
+            }
         }
     }
-}
-

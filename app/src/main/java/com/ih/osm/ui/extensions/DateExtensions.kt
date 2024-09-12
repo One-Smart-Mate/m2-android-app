@@ -17,7 +17,6 @@ const val EEE_MMM_DD_YYYY = "EEE, MMM dd, yyyy, HH:mm a z"
 
 const val EEE_MMM_DD_HH_MM_A = "EEE, MMM dd HH:mm a"
 
-
 const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.ss'Z'"
 const val NORMAL_FORMAT = "yyyy-MM-dd HH:mm:ss"
 const val SIMPLE_DATE_FORMAT = "yyyy-MM-dd"
@@ -28,7 +27,6 @@ val Date.YYYY_MM_DD_HH_MM_SS: String
 
 val Date.DayMonthWithTimeZone: String
     get() = SimpleDateFormat(EEE_MMM_DD_HH_MM_A, Locale.getDefault()).format(this)
-
 
 fun String.toDate(format: String): Date? {
     return SimpleDateFormat(format, Locale.getDefault())
@@ -49,7 +47,6 @@ val Date.dayOfWeek: String get() = SimpleDateFormat(EEEE, Locale.getDefault()).f
 val Date.dayOfMonth: String get() = SimpleDateFormat(DD, Locale.getDefault()).format(this)
 val Date.nameOfMonth: String get() = SimpleDateFormat(MMM, Locale.getDefault()).format(this)
 
-
 fun String?.toFormatDate(format: String): String {
     return try {
         if (this.isNullOrEmpty() || this.isBlank() || this.isEmpty()) return EMPTY
@@ -63,7 +60,6 @@ fun String?.toFormatDate(format: String): String {
 
 fun Date.timeStamp(): String = SimpleDateFormat(TIME_STAMP_FORMAT, Locale.getDefault()).format(this)
 
-
 fun String.lastSyncDate(context: Context): String {
     try {
         val lastSync = this.toDate(NORMAL_FORMAT)
@@ -75,35 +71,38 @@ fun String.lastSyncDate(context: Context): String {
         val days = hours / 24
 
         if (days != 0L) {
-            val dayLabel = if (days <= 1) {
-                context.getString(R.string.day)
-            } else {
-                context.getString(R.string.days)
-            }
+            val dayLabel =
+                if (days <= 1) {
+                    context.getString(R.string.day)
+                } else {
+                    context.getString(R.string.days)
+                }
             return "$days $dayLabel"
         }
         if (hours != 0L) {
-            val hourLabel = if (hours <= 1) {
-                context.getString(R.string.hour)
-            } else {
-                context.getString(R.string.hours)
-            }
+            val hourLabel =
+                if (hours <= 1) {
+                    context.getString(R.string.hour)
+                } else {
+                    context.getString(R.string.hours)
+                }
 
             return "$hours $hourLabel"
         }
         if (minutes != 0L) {
-            val minutesValue = if (minutes <= 1) {
-                context.getString(R.string.minute)
-            } else {
-                context.getString(R.string.minutes)
-            }
+            val minutesValue =
+                if (minutes <= 1) {
+                    context.getString(R.string.minute)
+                } else {
+                    context.getString(R.string.minutes)
+                }
             return "$minutes $minutesValue"
         }
         return context.getString(R.string.right_now)
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
     }
-    return  EMPTY
+    return EMPTY
 }
 
 fun String.isExpired(): Boolean {

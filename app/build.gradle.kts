@@ -1,3 +1,5 @@
+import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -5,6 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("org.jlleitschuh.gradle.ktlint")
 }
 
 android {
@@ -34,7 +37,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
         }
     }
@@ -63,6 +66,21 @@ android {
     hilt {
         enableAggregatingTask = true
     }
+
+    ktlint {
+        val editorConfig =
+            mapOf("ktlint_standard_no-wildcard-imports" to "disabled", "ktlint_function_naming_ignore_when_annotated_with" to "Composable")
+        android = true
+        ignoreFailures = false
+        additionalEditorconfig = editorConfig
+        reporters {
+            reporter(ReporterType.HTML)
+        }
+    }
+
+    kotlin {
+        tasks.getByPath("preBuild").dependsOn("ktlintFormat")
+    }
 }
 
 dependencies {
@@ -86,13 +104,13 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
 
     implementation(libs.hilt)
-    kapt (libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
     implementation(libs.retrofit.adapter)
     implementation(libs.timber)
-    implementation (libs.mavericks)
+    implementation(libs.mavericks)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.mavericks.compose)
     implementation(libs.mavericks.hilt)
@@ -102,8 +120,7 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.androidx.lifecycle.livedata.ktx)
-    kapt (libs.androidx.lifecycle.compiler)
-
+    kapt(libs.androidx.lifecycle.compiler)
 
     implementation(libs.androidx.room.runtime)
     kapt(libs.androidx.room.compiler)
@@ -131,5 +148,4 @@ dependencies {
 
     implementation(libs.zxing.android.embedded)
     implementation(libs.core)
-
 }

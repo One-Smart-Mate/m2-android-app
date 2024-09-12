@@ -9,7 +9,6 @@ import com.ih.osm.data.database.entities.UserEntity
 
 @Dao
 interface UserDao {
-
     @Query("SELECT * FROM USER_TABLE LIMIT 1")
     suspend fun getUser(): UserEntity?
 

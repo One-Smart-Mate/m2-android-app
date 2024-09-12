@@ -8,7 +8,6 @@ import com.ih.osm.data.database.entities.card.CardEntity
 
 @Dao
 interface CardDao {
-
     @Query("SELECT * FROM card_table")
     suspend fun getCards(): List<CardEntity>
 
@@ -24,13 +23,11 @@ interface CardDao {
     @Query("SELECT site_card_id FROM card_table ORDER BY site_card_id DESC LIMIT 1")
     suspend fun getLastSiteCardId(): Long?
 
-
     @Query("SELECT id FROM card_table ORDER BY id DESC LIMIT 1")
     suspend fun getLastCardId(): String?
 
     @Query("SELECT * FROM card_table WHERE stored=:stored")
     suspend fun getLocalCards(stored: String): List<CardEntity>
-
 
     @Query("DELETE FROM card_table WHERE card_uuid=:id")
     suspend fun deleteCard(id: String)
@@ -39,6 +36,8 @@ interface CardDao {
     suspend fun getCard(cardId: String): CardEntity
 
     @Query("SELECT * FROM card_table  WHERE superior_id=:id AND site_id=:siteId")
-    suspend fun getCardsZone(siteId: String,id: String): List<CardEntity>
+    suspend fun getCardsZone(
+        siteId: String,
+        id: String,
+    ): List<CardEntity>
 }
-

@@ -13,16 +13,10 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import com.ih.osm.ui.theme.PaddingToolbar
-
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
@@ -33,20 +27,23 @@ fun <T> PullToRefreshLazyColumn(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState()
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
-    val pullToRefreshState = rememberPullRefreshState(
-        onRefresh = onRefresh,
-        refreshing = isRefreshing
-    )
+    val pullToRefreshState =
+        rememberPullRefreshState(
+            onRefresh = onRefresh,
+            refreshing = isRefreshing,
+        )
     Box(
-        modifier = modifier
-            .pullRefresh(pullToRefreshState)
+        modifier =
+            modifier
+                .pullRefresh(pullToRefreshState),
     ) {
         LazyColumn(
             state = lazyListState,
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
         ) {
             stickyHeader {
                 header()
@@ -60,11 +57,12 @@ fun <T> PullToRefreshLazyColumn(
                 content(it)
             }
         }
-        
+
         PullRefreshIndicator(
             state = pullToRefreshState,
-            modifier = Modifier
-                .align(Alignment.TopCenter),
+            modifier =
+                Modifier
+                    .align(Alignment.TopCenter),
             refreshing = isRefreshing,
         )
     }

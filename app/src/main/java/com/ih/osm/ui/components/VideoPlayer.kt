@@ -16,13 +16,12 @@ import androidx.media3.ui.PlayerView
 import com.ih.osm.R
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 
-
 @Composable
 fun VideoPlayer(
     modifier: Modifier,
     url: String,
     showIcon: Boolean = false,
-    onClick: (() -> Unit?)? = null
+    onClick: (() -> Unit?)? = null,
 ) {
     // Get the current context
     val context = LocalContext.current
@@ -31,9 +30,10 @@ fun VideoPlayer(
     val exoPlayer = ExoPlayer.Builder(context).build()
 
     // Create a MediaSource
-    val mediaSource = remember(url) {
-        MediaItem.fromUri(url)
-    }
+    val mediaSource =
+        remember(url) {
+            MediaItem.fromUri(url)
+        }
 
     // Set MediaSource to ExoPlayer
     LaunchedEffect(mediaSource) {
@@ -50,7 +50,7 @@ fun VideoPlayer(
 
     // Use AndroidView to embed an Android View (PlayerView) into Compose
     Box(
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         AndroidView(
             factory = { ctx ->
@@ -58,7 +58,7 @@ fun VideoPlayer(
                     player = exoPlayer
                 }
             },
-            modifier = modifier
+            modifier = modifier,
         )
         if (showIcon) {
             Box {
@@ -70,5 +70,4 @@ fun VideoPlayer(
             }
         }
     }
-
 }

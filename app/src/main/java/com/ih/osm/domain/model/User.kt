@@ -12,24 +12,24 @@ data class User(
     val companyId: String,
     val siteId: String,
     val companyName: String,
-    val siteName: String
+    val siteName: String,
 ) {
     companion object {
-        fun mockUser() = User(
-            userId = "",
-            name = "testName",
-            email = "test@gmail.com",
-            token = "",
-            roles = listOf("Admin","mechanic"),
-            logo = "",
-            companyId = "",
-            siteId = "",
-            companyName = "Company name",
-            siteName = "site name"
-        )
+        fun mockUser() =
+            User(
+                userId = "",
+                name = "testName",
+                email = "test@gmail.com",
+                token = "",
+                roles = listOf("Admin", "mechanic"),
+                logo = "",
+                companyId = "",
+                siteId = "",
+                companyName = "Company name",
+                siteName = "site name",
+            )
     }
 }
-
 
 fun User.toEntity(): UserEntity {
     return UserEntity(
@@ -42,6 +42,6 @@ fun User.toEntity(): UserEntity {
         companyId = this.companyId,
         siteId = this.siteId,
         companyName = this.companyName,
-        siteName = this.siteName
+        siteName = this.siteName,
     )
 }

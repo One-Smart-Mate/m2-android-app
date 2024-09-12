@@ -7,15 +7,16 @@ import java.io.File
 import java.io.FileOutputStream
 
 class AndroidAudioRecorder(
-    private val context: Context
-): AudioRecorder {
-
+    private val context: Context,
+) : AudioRecorder {
     private var recorder: MediaRecorder? = null
 
     private fun createRecorder(): MediaRecorder {
-        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(context)
-        } else MediaRecorder()
+        } else {
+            MediaRecorder()
+        }
     }
 
     override fun start(outputFile: File) {
@@ -40,5 +41,6 @@ class AndroidAudioRecorder(
 
 interface AudioRecorder {
     fun start(outputFile: File)
+
     fun stop()
 }

@@ -7,7 +7,6 @@ import com.ih.osm.domain.model.Evidence
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.STATUS_A
 
-
 @Entity(tableName = "evidence_table")
 data class EvidenceEntity(
     @PrimaryKey(autoGenerate = true)
@@ -18,7 +17,7 @@ data class EvidenceEntity(
     @ColumnInfo(name = "url")
     val url: String,
     @ColumnInfo(name = "type")
-    val type: String
+    val type: String,
 )
 
 fun EvidenceEntity.toDomain(): Evidence {
@@ -31,6 +30,6 @@ fun EvidenceEntity.toDomain(): Evidence {
         updatedAt = EMPTY,
         deletedAt = EMPTY,
         status = STATUS_A,
-        siteId = EMPTY
+        siteId = EMPTY,
     )
 }

@@ -34,7 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
@@ -49,17 +48,13 @@ import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
-import com.ih.osm.domain.model.preclassifierValue
 import com.ih.osm.domain.model.priorityValue
-import com.ih.osm.domain.model.toAudios
 import com.ih.osm.domain.model.toAudiosAtCreation
 import com.ih.osm.domain.model.toAudiosAtDefinitiveSolution
 import com.ih.osm.domain.model.toAudiosAtProvisionalSolution
-import com.ih.osm.domain.model.toImages
 import com.ih.osm.domain.model.toImagesAtCreation
 import com.ih.osm.domain.model.toImagesAtDefinitiveSolution
 import com.ih.osm.domain.model.toImagesAtProvisionalSolution
-import com.ih.osm.domain.model.toVideos
 import com.ih.osm.domain.model.toVideosAtCreation
 import com.ih.osm.domain.model.toVideosAtDefinitiveSolution
 import com.ih.osm.domain.model.toVideosAtProvisionalSolution
@@ -85,12 +80,11 @@ import com.ih.osm.ui.theme.Size200
 import com.ih.osm.ui.theme.Size250
 import com.ih.osm.ui.utils.EMPTY
 
-
 @Composable
 fun CardDetailScreen(
     navController: NavController,
     cardId: String,
-    viewModel: CardDetailViewModel = mavericksViewModel()
+    viewModel: CardDetailViewModel = mavericksViewModel(),
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -99,7 +93,7 @@ fun CardDetailScreen(
         is LCE.Fail -> {
             ErrorScreen(
                 navController = navController,
-                errorMessage = screenState.error
+                errorMessage = screenState.error,
             ) {
                 viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
             }
@@ -112,18 +106,18 @@ fun CardDetailScreen(
         is LCE.Success -> {
             CardDetailContent(
                 navController = navController,
-                card = screenState.value
+                card = screenState.value,
             )
         }
     }
     LaunchedEffect(viewModel, lifecycle) {
-       snapshotFlow { state }
-           .flowWithLifecycle(lifecycle)
-           .collect {
-               if (it.card !is LCE.Success) {
-                   viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
-               }
-           }
+        snapshotFlow { state }
+            .flowWithLifecycle(lifecycle)
+            .collect {
+                if (it.card !is LCE.Success) {
+                    viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+                }
+            }
     }
 }
 
@@ -131,58 +125,62 @@ fun CardDetailScreen(
 @Composable
 fun CardDetailContent(
     navController: NavController,
-    card: Card
+    card: Card,
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    content = { CardDetailHeader(card) }
+                    content = { CardDetailHeader(card) },
                 )
             }
 
             item {
                 CardInformationContent(
-                    card = card
+                    card = card,
                 )
             }
         }
     }
 }
+
 @Composable
 fun CardDetailHeader(card: Card) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Text(text = "#${card.id}", style = MaterialTheme.typography.titleLarge
-            .copy(fontWeight = FontWeight.Bold))
+        Text(
+            text = "#${card.id}",
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
+        )
         Text(
             text = card.cardTitle(),
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         Box(
-            modifier = Modifier
-                .size(Size20)
-                .background(
-                    color = card.getBorderColor(),
-                    shape = CircleShape
-                )
+            modifier =
+                Modifier
+                    .size(Size20)
+                    .background(
+                        color = card.getBorderColor(),
+                        shape = CircleShape,
+                    ),
         )
     }
 }
 
 @Composable
-fun CardInformationContent(
-    card: Card
-) {
+fun CardInformationContent(card: Card) {
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
-
         SectionTag(
             title = stringResource(R.string.status),
             value = card.getStatus(),
@@ -195,12 +193,13 @@ fun CardInformationContent(
 
         SectionTag(
             title = stringResource(id = R.string.due_date),
-            value = if (card.dueDate.isExpired()) {
-                stringResource(id = R.string.expired)
-            } else {
-                card.dueDate
-            },
-            isErrorEnabled = card.dueDate.isExpired()
+            value =
+                if (card.dueDate.isExpired()) {
+                    stringResource(id = R.string.expired)
+                } else {
+                    card.dueDate
+                },
+            isErrorEnabled = card.dueDate.isExpired(),
         )
         SectionTag(
             title = stringResource(R.string.priority),
@@ -230,7 +229,6 @@ fun CardInformationContent(
     CardInformationEvidence(card = card)
 
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
-
         SectionTag(
             title = stringResource(R.string.date),
             value = card.validateProvisionalDate().orDefault(),
@@ -262,9 +260,7 @@ fun CardInformationContent(
 }
 
 @Composable
-fun CardInformationEvidence(
-    card: Card
-) {
+fun CardInformationEvidence(card: Card) {
     if (card.evidences.isNullOrEmpty().not()) {
         val evidences = card.evidences.orEmpty()
         ExpandableCard(title = stringResource(R.string.evidences)) {
@@ -293,42 +289,42 @@ fun CardInformationEvidence(
             if (videosAtCreation.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos),
-                    evidences = videosAtCreation
+                    evidences = videosAtCreation,
                 )
             }
             val videosAtProvisionalSolution = evidences.toVideosAtProvisionalSolution()
             if (videosAtProvisionalSolution.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos_provisional_solution),
-                    evidences = videosAtProvisionalSolution
+                    evidences = videosAtProvisionalSolution,
                 )
             }
             val videosAtDefinitiveSolution = evidences.toVideosAtDefinitiveSolution()
             if (videosAtDefinitiveSolution.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos_definitive_solution),
-                    evidences = videosAtDefinitiveSolution
+                    evidences = videosAtDefinitiveSolution,
                 )
             }
             val audiosAtCreation = evidences.toAudiosAtCreation()
             if (audiosAtCreation.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios),
-                    evidences = audiosAtCreation
+                    evidences = audiosAtCreation,
                 )
             }
             val audiosAtProvisionalSolution = evidences.toAudiosAtProvisionalSolution()
             if (audiosAtProvisionalSolution.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios_provisional_solution),
-                    evidences = audiosAtProvisionalSolution
+                    evidences = audiosAtProvisionalSolution,
                 )
             }
             val audiosAtDefinitiveSolution = evidences.toAudiosAtDefinitiveSolution()
             if (audiosAtDefinitiveSolution.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios_definitive_solution),
-                    evidences = audiosAtDefinitiveSolution
+                    evidences = audiosAtDefinitiveSolution,
                 )
             }
         }
@@ -338,7 +334,8 @@ fun CardInformationEvidence(
 @Composable
 fun EvidenceImagesCardSection(
     title: String,
-    evidences: List<Evidence>) {
+    evidences: List<Evidence>,
+) {
     var imageUrl by remember {
         mutableStateOf(EMPTY)
     }
@@ -348,21 +345,23 @@ fun EvidenceImagesCardSection(
     Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         LazyRow {
             items(evidences) {
                 PhotoCardItem(
                     model = it.url,
                     showIcon = false,
-                    modifier = Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            imageUrl = it.url
-                            openImage = true
-                        }
+                    modifier =
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
+                            .clickable {
+                                imageUrl = it.url
+                                openImage = true
+                            },
                 )
             }
         }
@@ -376,7 +375,7 @@ fun EvidenceImagesCardSection(
 @Composable
 fun EvidenceVideoCardSection(
     title: String,
-    evidences: List<Evidence>
+    evidences: List<Evidence>,
 ) {
     var videoUrl by remember {
         mutableStateOf(EMPTY)
@@ -387,21 +386,23 @@ fun EvidenceVideoCardSection(
     Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         LazyRow {
             items(evidences) {
                 PhotoCardItem(
                     model = it.url,
                     showIcon = false,
-                    modifier = Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            videoUrl = it.url
-                            openVideo = true
-                        }
+                    modifier =
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
+                            .clickable {
+                                videoUrl = it.url
+                                openVideo = true
+                            },
                 )
             }
         }
@@ -415,21 +416,23 @@ fun EvidenceVideoCardSection(
 @Composable
 fun EvidenceAudioCardSection(
     title: String,
-    evidences: List<Evidence>
+    evidences: List<Evidence>,
 ) {
     Column {
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         LazyRow {
             items(evidences) {
                 VideoPlayer(
-                    modifier = Modifier
-                        .size(Size120)
-                        .padding(PaddingTiny),
-                    url = it.url
+                    modifier =
+                        Modifier
+                            .size(Size120)
+                            .padding(PaddingTiny),
+                    url = it.url,
                 )
             }
         }
@@ -445,7 +448,7 @@ private fun CardDetailScreenPreview() {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             CardDetailContent(
                 navController = rememberNavController(),
-                card = Card.mock()
+                card = Card.mock(),
             )
         }
     }

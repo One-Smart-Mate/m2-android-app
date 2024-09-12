@@ -29,12 +29,9 @@ import com.ih.osm.ui.components.buttons.CustomIconButton
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.utils.EMPTY
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FiltersBottomSheet(
-    onFilterChange: (String) -> Unit,
-) {
+fun FiltersBottomSheet(onFilterChange: (String) -> Unit) {
     var selection by remember {
         mutableStateOf(EMPTY)
     }
@@ -68,19 +65,22 @@ fun FiltersBottomSheetContent(
         modifier = Modifier.padding(PaddingNormal),
     ) {
         Text(
-            text = stringResource(R.string.filters), style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            text = stringResource(R.string.filters),
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         RadioGroup(
             modifier = Modifier.fillMaxWidth(),
-            items = listOf(
-                stringResource(R.string.all_open_cards),
-                stringResource(R.string.my_open_cards),
-                stringResource(R.string.assigned_cards),
-                stringResource(R.string.unassigned_cards),
-                stringResource(R.string.expired_cards),
-                stringResource(R.string.closed_cards)
-            ),
+            items =
+                listOf(
+                    stringResource(R.string.all_open_cards),
+                    stringResource(R.string.my_open_cards),
+                    stringResource(R.string.assigned_cards),
+                    stringResource(R.string.unassigned_cards),
+                    stringResource(R.string.expired_cards),
+                    stringResource(R.string.closed_cards),
+                ),
             selection = selection,
         ) {
             onFilterChange(it)
@@ -88,7 +88,7 @@ fun FiltersBottomSheetContent(
         CustomSpacer()
         CustomButton(
             text = stringResource(R.string.clean_filters),
-            buttonType = ButtonType.OUTLINE
+            buttonType = ButtonType.OUTLINE,
         ) {
             onFilterChange(EMPTY)
         }

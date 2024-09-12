@@ -17,22 +17,18 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.multibindings.IntoMap
 
-
 @Module
 @InstallIn(MavericksViewModelComponent::class)
 interface ViewModelModule {
-    
     @Binds
     @IntoMap
     @ViewModelKey(LoginViewModel::class)
     fun bindLoginViewModel(factory: LoginViewModel.Factory): AssistedViewModelFactory<*, *>
 
-
     @Binds
     @IntoMap
     @ViewModelKey(AccountViewModel::class)
     fun bindAccountViewModel(factory: AccountViewModel.Factory): AssistedViewModelFactory<*, *>
-
 
     @Binds
     @IntoMap
@@ -68,6 +64,4 @@ interface ViewModelModule {
     @IntoMap
     @ViewModelKey(RestoreAccountViewModel::class)
     fun bindRestoreAccountViewModel(factory: RestoreAccountViewModel.Factory): AssistedViewModelFactory<*, *>
-
-
 }

@@ -20,23 +20,25 @@ import com.ih.osm.ui.theme.Size250
 @Composable
 fun SectionImagesEvidence(
     imageEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit
+    onDeleteEvidence: (Evidence) -> Unit,
 ) {
     if (imageEvidences.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.images),
-                style = MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                style =
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
             LazyRow {
                 items(imageEvidences) {
                     PhotoCardItem(
                         model = it.url,
                         showIcon = true,
-                        modifier = Modifier
-                            .width(Size200)
-                            .height(Size250)
+                        modifier =
+                            Modifier
+                                .width(Size200)
+                                .height(Size250),
                     ) {
                         onDeleteEvidence(it)
                     }

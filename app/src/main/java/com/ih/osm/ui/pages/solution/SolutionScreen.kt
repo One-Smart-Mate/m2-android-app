@@ -3,8 +3,6 @@ package com.ih.osm.ui.pages.solution
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -34,14 +32,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.osm.R
@@ -71,14 +67,13 @@ import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 import kotlinx.coroutines.launch
 
-
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun SolutionScreen(
     navController: NavController,
     solutionType: String,
     cardId: String,
-    viewModel: SolutionViewModel = mavericksViewModel()
+    viewModel: SolutionViewModel = mavericksViewModel(),
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -113,7 +108,7 @@ fun SolutionScreen(
             },
             evidences = state.evidences,
             audioDuration = state.audioDuration,
-            solutionType = state.solutionType
+            solutionType = state.solutionType,
         )
     }
 
@@ -122,7 +117,7 @@ fun SolutionScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
 
@@ -137,8 +132,8 @@ fun SolutionScreen(
                     viewModel.process(
                         SolutionViewModel.Action.SetSolutionInfo(
                             solutionType,
-                            cardId
-                        )
+                            cardId,
+                        ),
                     )
                 }
                 if (state.isLoading.not() && state.message.isNotEmpty()) {
@@ -151,7 +146,6 @@ fun SolutionScreen(
                 }
             }
     }
-
 }
 
 @Composable
@@ -168,7 +162,6 @@ fun getSolutionScreenTitle(solutionType: String): String {
         else -> stringResource(R.string.empty)
     }
 }
-
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -189,28 +182,29 @@ fun SolutionScreenContent(
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = title
+                    title = title,
                 )
             }
             item {
                 CustomTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingNormal),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingNormal),
                     label = stringResource(R.string.search_for_a_user),
-                    icon = Icons.Filled.Search
+                    icon = Icons.Filled.Search,
                 ) {
                     onSearch(it)
                 }
             }
             items(employeeList) {
                 UserCardItem(
-                    title = it.name
+                    title = it.name,
                 ) {
                     onSelectEmployee(it)
                 }
@@ -222,7 +216,7 @@ fun SolutionScreenContent(
                     SectionTag(
                         title = stringResource(R.string.selected_user),
                         value = selectedEmployee?.name.orEmpty(),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
                 CustomSpacer()
@@ -236,7 +230,7 @@ fun SolutionScreenContent(
                     onAddEvidence = onAddEvidence,
                     imageType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.IMCL else EvidenceType.IMPS,
                     audioType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.AUCL else EvidenceType.AUPS,
-                    videoType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.VICL else EvidenceType.VIPS
+                    videoType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.VICL else EvidenceType.VIPS,
                 )
                 SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                     onDeleteEvidence(it)
@@ -254,11 +248,12 @@ fun SolutionScreenContent(
                 HorizontalDivider()
                 CustomSpacer()
                 CustomTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingNormal),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingNormal),
                     label = stringResource(R.string.comment_solution),
-                    icon = Icons.Filled.Create
+                    icon = Icons.Filled.Create,
                 ) {
                     onCommentChange(it)
                 }
@@ -274,25 +269,27 @@ fun SolutionScreenContent(
 @Composable
 fun UserCardItem(
     title: String,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = PaddingLarge, vertical = 1.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable {
-                onClick()
-            }
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PaddingLarge, vertical = 1.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(12.dp),
+                )
+                .clickable {
+                    onClick()
+                },
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.bodyLarge
-                .copy(color = getTextColor()),
-            modifier = Modifier.padding(PaddingNormal)
+            style =
+                MaterialTheme.typography.bodyLarge
+                    .copy(color = getTextColor()),
+            modifier = Modifier.padding(PaddingNormal),
         )
     }
 }
@@ -304,7 +301,6 @@ fun UserCardItem(
 fun SolutionScreenPreview() {
     OsmAppTheme {
         Surface {
-
         }
     }
 }

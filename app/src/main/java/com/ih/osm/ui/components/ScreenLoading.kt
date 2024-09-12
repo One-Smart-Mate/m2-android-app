@@ -29,54 +29,52 @@ import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun LoadingScreen(
-    text: String = EMPTY
-) {
-
+fun LoadingScreen(text: String = EMPTY) {
     val infiniteTransition = rememberInfiniteTransition(label = "infinite transition")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
         targetValue = 1.2f,
         animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
-        label = "scale"
+        label = "scale",
     )
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.primary
-            ),
-        contentAlignment = Alignment.Center
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                ),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CircularProgressIndicator(
-                color = getColor()
+                color = getColor(),
             )
             CustomSpacer()
             Box {
                 Text(
                     text = text,
-                    modifier = Modifier
-                        .align(Alignment.Center),
+                    modifier =
+                        Modifier
+                            .align(Alignment.Center),
                     // Text composable does not take TextMotion as a parameter.
                     // Provide it via style argument but make sure that we are copying from current theme
-                    style = LocalTextStyle.current.copy(
-                        textMotion = TextMotion.Animated,
-                        fontSize = 18.sp,
-                        color = getColor()
-                    )
+                    style =
+                        LocalTextStyle.current.copy(
+                            textMotion = TextMotion.Animated,
+                            fontSize = 18.sp,
+                            color = getColor(),
+                        ),
                 )
             }
         }
-
     }
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")

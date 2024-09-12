@@ -28,20 +28,20 @@ const val VIDEO_PS = "VIPS"
 
 const val STORED_REMOTE = "stored_network"
 const val STORED_LOCAL = "stored_local"
-//const val SAFE = "safe"
-//const val UNSAFE = "unsafe"
+// const val SAFE = "safe"
+// const val UNSAFE = "unsafe"
 
-//const val CARD_MAINTENANCE = "Mantenimiento"
-//const val CARD_BEHAIVIOR = "Comportamiento"
+// const val CARD_MAINTENANCE = "Mantenimiento"
+// const val CARD_BEHAIVIOR = "Comportamiento"
 const val PROVISIONAL_SOLUTION = "provisional_solution"
 const val DEFINITIVE_SOLUTION = "definitive_solution"
 
 const val CARD_ANOMALIES = "anomalies"
-//const val CARD_BEHAVIOR = "behavior"
+
+// const val CARD_BEHAVIOR = "behavior"
 const val CARD_ANOMALIES_NAME = "Anomalia"
 const val CARD_TYPE_ANOMALIES_A = "A"
-//const val CARD_TYPE_METHODOLOGY_M = "M"
-
+// const val CARD_TYPE_METHODOLOGY_M = "M"
 
 const val NETWORK_WIFI = "network_wifi"
 const val NETWORK_DATA_MOBILE = "network_data_mobile"

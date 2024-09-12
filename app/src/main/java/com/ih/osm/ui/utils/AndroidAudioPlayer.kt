@@ -6,9 +6,8 @@ import androidx.core.net.toUri
 import java.io.File
 
 class AndroidAudioPlayer(
-    private val context: Context
-): AudioPlayer {
-
+    private val context: Context,
+) : AudioPlayer {
     private var player: MediaPlayer? = null
 
     override fun playFile(file: File) {
@@ -27,5 +26,6 @@ class AndroidAudioPlayer(
 
 interface AudioPlayer {
     fun playFile(file: File)
+
     fun stop()
 }

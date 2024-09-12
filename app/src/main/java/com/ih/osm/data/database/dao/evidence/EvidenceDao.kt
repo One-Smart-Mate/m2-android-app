@@ -8,7 +8,6 @@ import com.ih.osm.data.database.entities.evidence.EvidenceEntity
 
 @Dao
 interface EvidenceDao {
-
     @Query("SELECT * FROM evidence_table WHERE card_id=:id")
     suspend fun getEvidencesByCard(id: String): List<EvidenceEntity>
 
@@ -20,7 +19,6 @@ interface EvidenceDao {
 
     @Query("DELETE FROM evidence_table WHERE card_id=:id")
     suspend fun deleteEvidenceByCard(id: String)
-
 
     @Query("DELETE FROM evidence_table WHERE id=:id")
     suspend fun deleteEvidence(id: String)

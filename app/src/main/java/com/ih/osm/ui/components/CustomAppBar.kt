@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -29,28 +28,34 @@ import com.ih.osm.ui.theme.PaddingLarge
 import com.ih.osm.ui.theme.Size38
 
 @Composable
-fun CustomAppBar(navController: NavController, title: String) {
+fun CustomAppBar(
+    navController: NavController,
+    title: String,
+) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                ),
     ) {
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(R.string.empty),
-            modifier = Modifier
-                .size(Size38)
-                .clickable {
-                    navController.popBackStack()
-                },
+            modifier =
+                Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
         )
         Text(
             text = title,
-            style = MaterialTheme.typography.displaySmall
-                .copy(color = getTextColor()),
-            modifier = Modifier.padding(horizontal = PaddingLarge)
+            style =
+                MaterialTheme.typography.displaySmall
+                    .copy(color = getTextColor()),
+            modifier = Modifier.padding(horizontal = PaddingLarge),
         )
         CustomSpacer()
     }
@@ -59,23 +64,25 @@ fun CustomAppBar(navController: NavController, title: String) {
 @Composable
 fun CustomAppBar(
     navController: NavController,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                ),
     ) {
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(R.string.empty),
-            modifier = Modifier
-                .size(Size38)
-                .clickable {
-                    navController.popBackStack()
-                },
+            modifier =
+                Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
         )
         content()
         CustomSpacer()
@@ -89,7 +96,7 @@ fun CustomAppBar(
 private fun CustomAppBarPreview() {
     OsmAppTheme {
         Surface {
-            CustomAppBar(rememberNavController(),"Account")
+            CustomAppBar(rememberNavController(), "Account")
         }
     }
 }

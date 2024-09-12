@@ -1,6 +1,5 @@
 package com.ih.osm.data.database
 
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.ih.osm.data.database.dao.UserDao
@@ -20,7 +19,6 @@ import com.ih.osm.data.database.entities.level.LevelEntity
 import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 import com.ih.osm.data.database.entities.priority.PriorityEntity
 
-
 @Database(
     entities = [
         UserEntity::class,
@@ -30,12 +28,11 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
         PriorityEntity::class,
         LevelEntity::class,
         EvidenceEntity::class,
-        EmployeeEntity::class
+        EmployeeEntity::class,
     ],
-    version = 2
+    version = 2,
 )
 abstract class AppDatabase : RoomDatabase() {
-
     abstract fun getUserDao(): UserDao
 
     abstract fun getCardDao(): CardDao
@@ -51,5 +48,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getEvidenceDao(): EvidenceDao
 
     abstract fun getEmployeeDao(): EmployeeDao
-
 }

@@ -3,7 +3,6 @@ package com.ih.osm.ui.pages.createcard
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.net.Uri
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -67,7 +66,6 @@ import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.ExpandableCard
-import com.ih.osm.ui.components.RadioGroup
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.CustomButton
@@ -80,7 +78,6 @@ import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.extensions.getIconColor
 import com.ih.osm.ui.extensions.getPrimaryColor
-import com.ih.osm.ui.components.card.CardSectionItemList
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
@@ -96,14 +93,13 @@ import kotlinx.coroutines.launch
 fun CreateCardScreen(
     navController: NavController,
     viewModel: CreateCardViewModel = mavericksViewModel(),
-    filter: String = EMPTY
+    filter: String = EMPTY,
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
-
 
     if (state.isLoading) {
         LoadingScreen(state.message)
@@ -152,7 +148,7 @@ fun CreateCardScreen(
             audioDuration = state.audioDuration,
             cardsZone = state.cardsZone,
             coroutineScope = scope,
-            lazyColumState = lazyState
+            lazyColumState = lazyState,
         )
     }
 
@@ -161,10 +157,9 @@ fun CreateCardScreen(
             snackbarData = it,
             containerColor = Color.Red,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
-
 
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }
@@ -216,19 +211,17 @@ fun CreateCardContent(
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
-    lazyColumState: LazyListState
+    lazyColumState: LazyListState,
 ) {
-
-
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
-            state = lazyColumState
+            state = lazyColumState,
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.create_card)
+                    title = stringResource(R.string.create_card),
                 )
             }
             item {
@@ -254,7 +247,7 @@ fun CreateCardContent(
                         onAddEvidence = onAddEvidence,
                         imageType = EvidenceType.IMCR,
                         audioType = EvidenceType.AUCR,
-                        videoType = EvidenceType.VICR
+                        videoType = EvidenceType.VICR,
                     )
                     SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                         onDeleteEvidence(it)
@@ -275,15 +268,16 @@ fun CreateCardContent(
                 if (lastLevelCompleted) {
                     Text(
                         text = stringResource(R.string.comments),
-                        style = MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold)
+                        style =
+                            MaterialTheme.typography.titleLarge
+                                .copy(fontWeight = FontWeight.Bold),
                     )
                     CustomSpacer()
                     CustomTextField(
                         label = stringResource(R.string.comments),
                         icon = Icons.Filled.Create,
                         modifier = Modifier.fillParentMaxWidth(),
-                        maxLines = 5
+                        maxLines = 5,
                     ) {
                         onCommentChange(it)
                     }
@@ -317,7 +311,8 @@ fun CreateCardContent(
                                     card = it,
                                     isActionsEnabled = false,
                                     onClick = {},
-                                    onSolutionClick = {})
+                                    onSolutionClick = {},
+                                )
                             }
                         }
                     }
@@ -331,7 +326,6 @@ fun CreateCardContent(
     }
 }
 
-
 @Composable
 fun LevelContent(
     levelList: Map<Int, List<NodeCardItem>>,
@@ -343,8 +337,9 @@ fun LevelContent(
             if (level.value.isNotEmpty()) {
                 Text(
                     text = "${stringResource(R.string.level)} ${level.key}",
-                    style = MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold)
+                    style =
+                        MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold),
                 )
             }
             LazyRow {
@@ -352,7 +347,7 @@ fun LevelContent(
                     SectionItemCard(
                         title = item.name,
                         description = item.description,
-                        selected = item.id == selectedLevelList[level.key]
+                        selected = item.id == selectedLevelList[level.key],
                     ) {
                         onLevelClick(item, level.key)
                     }
@@ -361,7 +356,6 @@ fun LevelContent(
         }
     }
 }
-
 
 @Composable
 fun PriorityContent(
@@ -372,15 +366,16 @@ fun PriorityContent(
     if (priorityList.isNotEmpty()) {
         Text(
             text = stringResource(R.string.priority),
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         LazyRow {
             items(priorityList) {
                 SectionItemCard(
                     title = it.name,
                     description = it.description,
-                    selected = it.id == selectedPriority
+                    selected = it.id == selectedPriority,
                 ) {
                     onPriorityClick(it)
                 }
@@ -398,15 +393,16 @@ fun PreclassifierContent(
     if (preclassifierList.isNotEmpty()) {
         Text(
             text = stringResource(R.string.type_of_problem),
-            style = MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         LazyRow {
             items(preclassifierList) {
                 SectionItemCard(
                     title = it.name,
                     description = it.description,
-                    selected = it.id == selectedPreclassifier
+                    selected = it.id == selectedPreclassifier,
                 ) {
                     onPreclassifierClick(it)
                 }
@@ -415,25 +411,24 @@ fun PreclassifierContent(
     }
 }
 
-
 @Composable
 fun CardTypeContent(
     cardTypeList: List<NodeCardItem>,
     onCardTypeClick: (NodeCardItem) -> Unit,
     selectedCardType: String,
-
-    ) {
+) {
     Text(
         text = stringResource(R.string.card_types),
-        style = MaterialTheme.typography.titleLarge
-            .copy(fontWeight = FontWeight.Bold)
+        style =
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold),
     )
     LazyRow {
         items(cardTypeList) {
             SectionItemCard(
                 title = it.name,
                 description = it.description,
-                selected = it.id == selectedCardType
+                selected = it.id == selectedCardType,
             ) {
                 onCardTypeClick(it)
             }
@@ -441,20 +436,20 @@ fun CardTypeContent(
     }
 }
 
-
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun PhotoCardItem(
     modifier: Modifier = Modifier,
     model: Any,
     showIcon: Boolean = true,
-    onClick: (() -> Unit?)? = null
+    onClick: (() -> Unit?)? = null,
 ) {
     Box(
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         GlideImage(
-            model = model, contentDescription = stringResource(id = R.string.empty),
+            model = model,
+            contentDescription = stringResource(id = R.string.empty),
             failure = placeholder(R.drawable.loading_image),
             loading = placeholder(R.drawable.loading_image),
             modifier = modifier.padding(PaddingTiny),
@@ -476,58 +471,61 @@ fun CardItemIcon(
     icon: Painter,
     modifier: Modifier = Modifier,
     color: Color = getIconColor(),
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
         modifier = modifier.padding(8.dp),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Icon(
             painter = icon,
             contentDescription = stringResource(id = R.string.empty),
             tint = color,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
         )
     }
 }
-
 
 @Composable
 fun SectionItemCard(
     title: String,
     description: String,
     selected: Boolean = false,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
 ) {
-    val color = if (selected) {
-        CardDefaults.cardColors(
-            contentColor = getColor(),
-            containerColor = getPrimaryColor()
-        )
-    } else {
-        CardDefaults.cardColors()
-    }
+    val color =
+        if (selected) {
+            CardDefaults.cardColors(
+                contentColor = getColor(),
+                containerColor = getPrimaryColor(),
+            )
+        } else {
+            CardDefaults.cardColors()
+        }
     Card(
-        modifier = Modifier
-            .padding(PaddingTiny)
-            .width(Size180)
-            .height(Size100),
+        modifier =
+            Modifier
+                .padding(PaddingTiny)
+                .width(Size180)
+                .height(Size100),
         colors = color,
         onClick = {
             onItemClick()
-        }
+        },
     ) {
         Column(
-            modifier = Modifier
-                .padding(PaddingNormal)
-                .fillMaxWidth()
+            modifier =
+                Modifier
+                    .padding(PaddingNormal)
+                    .fillMaxWidth(),
         ) {
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodyMedium
-                    .copy(fontWeight = FontWeight.W700)
+                style =
+                    MaterialTheme.typography.bodyMedium
+                        .copy(fontWeight = FontWeight.W700),
             )
             CustomSpacer(space = SpacerSize.TINY)
             Text(
@@ -539,7 +537,6 @@ fun SectionItemCard(
         }
     }
 }
-
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -571,7 +568,7 @@ fun CreateCardPreview() {
                 audioDuration = 60,
                 cardsZone = emptyList(),
                 coroutineScope = rememberCoroutineScope(),
-                lazyColumState = rememberLazyListState()
+                lazyColumState = rememberLazyListState(),
             )
         }
     }

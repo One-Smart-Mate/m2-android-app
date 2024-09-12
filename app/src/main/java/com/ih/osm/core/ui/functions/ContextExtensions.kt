@@ -8,8 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
 import com.ih.osm.BuildConfig
-
-
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -17,10 +15,11 @@ import java.util.Locale
 import java.util.Objects
 
 fun openAppSettings(context: Context) {
-    val intent = Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", context.packageName, null)
-    )
+    val intent =
+        Intent(
+            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+            Uri.fromParts("package", context.packageName, null),
+        )
     context.startActivity(intent)
 }
 
@@ -29,24 +28,22 @@ fun getContext(): Context {
     return LocalContext.current
 }
 
-
 fun Context.createImageFile(): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     val imageFileName = "JPEG_" + timeStamp + "_"
     return File.createTempFile(
         imageFileName,
         ".jpg",
-        externalCacheDir
+        externalCacheDir,
     )
 }
-
 
 fun Context.createVideoFile(): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
     return File.createTempFile(
         "VIDEO_${timeStamp}_",
         ".mp4",
-        externalCacheDir
+        externalCacheDir,
     )
 }
 
@@ -55,24 +52,28 @@ fun Context.createAudioFile(): File {
     return File.createTempFile(
         "AUDIO_${timeStamp}_",
         ".mp3",
-        externalCacheDir
+        externalCacheDir,
     )
 }
 
-
 fun Context.getUriForFile(fileType: FileType): Pair<Uri, File> {
-    val file = when(fileType) {
-        FileType.IMAGE -> this.createImageFile()
-        FileType.VIDEO -> this.createVideoFile()
-        FileType.AUDIO -> this.createAudioFile()
-    }
-    val uri = FileProvider.getUriForFile(
-        Objects.requireNonNull(this),
-        BuildConfig.APPLICATION_ID + ".provider", file
-    )
+    val file =
+        when (fileType) {
+            FileType.IMAGE -> this.createImageFile()
+            FileType.VIDEO -> this.createVideoFile()
+            FileType.AUDIO -> this.createAudioFile()
+        }
+    val uri =
+        FileProvider.getUriForFile(
+            Objects.requireNonNull(this),
+            BuildConfig.APPLICATION_ID + ".provider",
+            file,
+        )
     return Pair(uri, file)
 }
 
 enum class FileType {
-    IMAGE, VIDEO, AUDIO
+    IMAGE,
+    VIDEO,
+    AUDIO,
 }

@@ -19,7 +19,7 @@ fun RadioGroup(
     modifier: Modifier,
     items: List<String>,
     selection: String,
-    onItemClick: ((String) -> Unit)
+    onItemClick: ((String) -> Unit),
 ) {
     Column(modifier = modifier) {
         items.forEach { item ->
@@ -29,7 +29,7 @@ fun RadioGroup(
                 selected = item == selection,
                 onClick = {
                     onItemClick(item)
-                }
+                },
             )
         }
     }
@@ -42,25 +42,25 @@ fun LabelledRadioButton(
     selected: Boolean,
     onClick: (() -> Unit)?,
     enabled: Boolean = true,
-    colors: RadioButtonColors = RadioButtonDefaults.colors()
+    colors: RadioButtonColors = RadioButtonDefaults.colors(),
 ) {
-
     Row(
-        modifier = modifier
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         RadioButton(
             selected = selected,
             onClick = onClick,
             enabled = enabled,
-            colors = colors
+            colors = colors,
         )
 
         Text(
             text = label,
             style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.padding(start = 4.dp)
+            modifier = Modifier.padding(start = 4.dp),
         )
     }
 }

@@ -7,22 +7,21 @@ import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
 interface GetCardsLevelMachineUseCase {
-    suspend operator fun invoke(
-        levelMachine: String,
-    ): List<Card>
+    suspend operator fun invoke(levelMachine: String): List<Card>
 }
 
-class GetCardsLevelMachineUseCaseImpl @Inject constructor(
-    private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository
-) : GetCardsLevelMachineUseCase {
-
-    override suspend fun invoke(levelMachine: String): List<Card> {
-        val siteId = localRepository.getSiteId()
-        return if (NetworkConnection.isConnected()) {
-            cardRepository.getCardsLevelMachine(levelMachine = levelMachine, siteId = siteId)
-        } else {
-            emptyList()
+class GetCardsLevelMachineUseCaseImpl
+    @Inject
+    constructor(
+        private val cardRepository: CardRepository,
+        private val localRepository: LocalRepository,
+    ) : GetCardsLevelMachineUseCase {
+        override suspend fun invoke(levelMachine: String): List<Card> {
+            val siteId = localRepository.getSiteId()
+            return if (NetworkConnection.isConnected()) {
+                cardRepository.getCardsLevelMachine(levelMachine = levelMachine, siteId = siteId)
+            } else {
+                emptyList()
+            }
         }
     }
-}

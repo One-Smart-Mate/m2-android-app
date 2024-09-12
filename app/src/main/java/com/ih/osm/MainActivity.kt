@@ -31,8 +31,8 @@ import java.time.Duration
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
     private val splashViewModel: SplashViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -56,11 +56,12 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun observeNetworkChanges() {
-        val networkRequest = NetworkRequest.Builder()
-            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
-            .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
-            .build()
+        val networkRequest =
+            NetworkRequest.Builder()
+                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+                .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                .build()
 
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
@@ -71,12 +72,13 @@ class MainActivity : ComponentActivity() {
     fun workRequest() {
         val uuid = WorkManagerUUID.get()
         uuid?.let {
-            val workRequest = OneTimeWorkRequestBuilder<CardWorker>()
-                .setId(uuid)
-                .setBackoffCriteria(
-                    backoffPolicy = BackoffPolicy.LINEAR,
-                    duration = Duration.ofSeconds(5)
-                ).build()
+            val workRequest =
+                OneTimeWorkRequestBuilder<CardWorker>()
+                    .setId(uuid)
+                    .setBackoffCriteria(
+                        backoffPolicy = BackoffPolicy.LINEAR,
+                        duration = Duration.ofSeconds(5),
+                    ).build()
             WorkManager.getInstance(this@MainActivity).enqueue(workRequest)
         }
     }
@@ -88,12 +90,12 @@ class MainActivity : ComponentActivity() {
 
     private fun checkNetworkPermissions() {
         ActivityCompat.requestPermissions(
-            this, arrayOf(
+            this,
+            arrayOf(
                 Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.CHANGE_NETWORK_STATE
-            ), 2
+                Manifest.permission.CHANGE_NETWORK_STATE,
+            ),
+            2,
         )
     }
 }
-
-

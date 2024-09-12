@@ -12,7 +12,6 @@ import com.ih.osm.ui.utils.EXPIRED_CARDS
 import com.ih.osm.ui.utils.MY_OPEN_CARDS
 import com.ih.osm.ui.utils.UNASSIGNED_CARDS
 
-
 fun String.toFilterStatus(context: Context): String {
     return when (this) {
         context.getString(R.string.all_open_cards) -> ALL_OPEN_CARDS
@@ -28,7 +27,7 @@ fun String.toFilterStatus(context: Context): String {
 
 @Composable
 fun String?.orDefault(): String {
-    return if(!this.isNullOrEmpty() && this.isNotBlank() && this != "null" && this != "NULL") {
+    return if (!this.isNullOrEmpty() && this.isNotBlank() && this != "null" && this != "NULL") {
         this
     } else {
         stringResource(R.string.no_apply)
