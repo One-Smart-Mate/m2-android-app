@@ -40,11 +40,10 @@ class CardListViewModel
         data class UiState(
             val cards: List<Card> = emptyList(),
             val title: String = EMPTY,
-            val isLoading: Boolean = false,
+            val isLoading: Boolean = true,
             val message: String = EMPTY,
             val refreshCards: Boolean = true,
             val filter: String = EMPTY,
-            val cardTypes: String = EMPTY,
             val isRefreshing: Boolean = false,
         ) : MavericksState
 
@@ -80,10 +79,12 @@ class CardListViewModel
         private fun handleGetCards(
             filter: String,
             message: String = context.getString(R.string.loading_data),
+            isRefreshing: Boolean = false,
         ) {
-            setState { copy(isLoading = true, message = message) }
+            if (isRefreshing.not()) {
+                setState { copy(isLoading = true, message = message) }
+            }
             viewModelScope.launch(coroutineContext) {
-                Log.e("Test", "Refresh ${stateFlow.first().isRefreshing}")
                 kotlin.runCatching {
                     getCardsUseCase(syncRemote = stateFlow.first().isRefreshing)
                 }.onSuccess {
@@ -96,13 +97,14 @@ class CardListViewModel
                             else -> it
                         }.sortedByDescending { item -> item.siteCardId }
                     setState {
+                        Log.e("test", "Filter $filter - $isRefreshing")
                         copy(
                             cards = filterCards,
                             isLoading = false,
                             message = EMPTY,
                             title = getTitle(filter),
                             refreshCards = false,
-                            cardTypes = filter,
+                            filter = filter,
                             isRefreshing = false,
                         )
                     }
@@ -113,16 +115,16 @@ class CardListViewModel
         }
 
         private fun handleOnApplyFilterClick(filter: String) {
-            setState { copy(filter = filter) }
+            setState { copy(filter = filter, isRefreshing = true) }
             viewModelScope.launch(coroutineContext) {
                 if (filter.isEmpty()) {
-                    handleGetCards(stateFlow.first().cardTypes)
+                    handleGetCards(stateFlow.first().filter)
                 } else {
                     val cards = getCardsUseCase()
                     val user = getUserUseCase()
                     val filteredList =
                         cards.filterByStatus(filter.toFilterStatus(context), user?.userId.orEmpty())
-                    setState { copy(cards = filteredList) }
+                    setState { copy(cards = filteredList, isRefreshing = false) }
                 }
             }
         }
@@ -154,7 +156,7 @@ class CardListViewModel
                             message = EMPTY,
                             title = getTitle(result.second),
                             refreshCards = false,
-                            cardTypes = result.second,
+                            filter = result.second,
                         )
                     }
                 }.onFailure {
@@ -177,7 +179,7 @@ class CardListViewModel
             setState { copy(isRefreshing = true) }
             viewModelScope.launch {
                 val state = stateFlow.first()
-                handleGetCards(state.filter, context.getString(R.string.syncing_remote_cards))
+                handleGetCards(state.filter, context.getString(R.string.syncing_remote_cards), true)
             }
         }
 
