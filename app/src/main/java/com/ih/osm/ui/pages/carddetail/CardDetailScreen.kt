@@ -54,6 +54,7 @@ import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
+import com.ih.osm.domain.model.preclassifierValue
 import com.ih.osm.domain.model.priorityValue
 import com.ih.osm.domain.model.toAudiosAtCreation
 import com.ih.osm.domain.model.toAudiosAtDefinitiveSolution
@@ -267,6 +268,10 @@ fun CardInformationContent(
                     card.dueDate
                 },
             isErrorEnabled = card.dueDate.isExpired(),
+        )
+        SectionTag(
+            title = stringResource(R.string.preclassifier),
+            value = card.preclassifierValue(),
         )
         SectionTag(
             title = stringResource(R.string.priority),

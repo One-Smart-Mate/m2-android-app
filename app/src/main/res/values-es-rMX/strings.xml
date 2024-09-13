@@ -159,5 +159,6 @@
     <string name="card_location">Ubicación</string>
     <string name="responsible">Responsable</string>
     <string name="confirm">Confirmar</string>
-
+    <string name="preclassifier">Preclassificador</string>
+    <string name="forgot_password">Olvidaste tu contraseña?</string>
 </resources>

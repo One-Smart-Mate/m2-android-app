@@ -161,4 +161,6 @@
     <string name="card_location">Location</string>
     <string name="responsible">Responsible</string>
     <string name="confirm">Confirm</string>
+    <string name="preclassifier">Preclassifier</string>
+    <string name="forgot_password">Forgot password?</string>
 </resources>

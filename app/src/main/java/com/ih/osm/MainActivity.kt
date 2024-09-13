@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +20,9 @@ import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.workmanager.CardWorker
 import com.ih.osm.core.workmanager.WorkManagerUUID
@@ -47,6 +51,7 @@ class MainActivity : ComponentActivity() {
             splashViewModel.isAuthenticated.value.not()
         }
         observeNetworkChanges()
+        // handleAppUpdates()
         setContent {
             OsmAppTheme {
                 val state = splashViewModel.startRoute.collectAsState()
@@ -66,6 +71,25 @@ class MainActivity : ComponentActivity() {
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         connectivityManager?.requestNetwork(networkRequest, NetworkConnection.networkCallback)
+    }
+
+    private fun handleAppUpdates() {
+        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
+                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.IMMEDIATE,
+                    this@MainActivity,
+                    1,
+                )
+            }
+        }.addOnFailureListener {
+            Log.e("test", "Available fail ${it.message}")
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -145,6 +145,7 @@ dependencies {
     implementation(libs.barcode.scanning)
     implementation(libs.text.recognition)
     implementation(libs.core)
+    implementation(libs.app.update.ktx)
 
     implementation(libs.zxing.android.embedded)
     implementation(libs.core)

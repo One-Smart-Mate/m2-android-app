@@ -320,6 +320,10 @@ fun CardItemListV2(
                 isErrorEnabled = card.dueDate.isExpired(),
             )
             SectionTag(
+                title = stringResource(R.string.preclassifier),
+                value = card.preclassifierValue(),
+            )
+            SectionTag(
                 title = stringResource(R.string.priority),
                 value = card.priorityValue(),
             )

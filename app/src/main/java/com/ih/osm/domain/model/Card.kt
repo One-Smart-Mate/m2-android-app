@@ -320,20 +320,46 @@ fun List<Card>.filterByStatus(
 ): List<Card> {
     return when (filter) {
         ALL_OPEN_CARDS -> {
-            this.filter { it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V }
+            this.filter {
+                it.status == STATUS_A ||
+                    it.status == STATUS_P ||
+                    it.status == STATUS_V
+            }
         }
 
         MY_OPEN_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.creatorId == userId }
+            this.filter {
+                (
+                    it.status == STATUS_A ||
+                        it.status == STATUS_P ||
+                        it.status == STATUS_V
+                ) &&
+                    it.creatorId == userId
+            }
         }
 
         ASSIGNED_CARDS -> {
-            this.filter { (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && it.mechanicId == userId }
+            this.filter {
+                (
+                    it.status == STATUS_A ||
+                        it.status == STATUS_P ||
+                        it.status == STATUS_V
+                ) &&
+                    it.mechanicId == userId
+            }
         }
 
         UNASSIGNED_CARDS -> {
             this.filter {
-                (it.status == STATUS_A || it.status == STATUS_P || it.status == STATUS_V) && (it.mechanicId == null || it.mechanicId == EMPTY)
+                (
+                    it.status == STATUS_A ||
+                        it.status == STATUS_P ||
+                        it.status == STATUS_V
+                ) &&
+                    (
+                        it.mechanicId == null ||
+                            it.mechanicId == EMPTY
+                    )
             }
         }
 
@@ -419,12 +445,11 @@ fun Card.toEntity(): CardEntity {
 
 fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL }
 
-// fun List<Card>.toBehaviorList() = this.filter { it.isBehavior() }
 fun List<Card>.toAnomaliesList() = this.filter { it.isAnomalies() }
 
-// fun Card.isBehavior() = this.cardTypeMethodology == "C" || this.cardTypeMethodologyName == "Comportamiento"
 fun Card.isAnomalies() =
-    this.cardTypeMethodology?.lowercase() == CARD_TYPE_ANOMALIES_A.lowercase() || this.cardTypeMethodologyName?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
+    this.cardTypeMethodology?.lowercase() == CARD_TYPE_ANOMALIES_A.lowercase() ||
+        this.cardTypeMethodologyName?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
 
 fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
     return CreateCardRequest(

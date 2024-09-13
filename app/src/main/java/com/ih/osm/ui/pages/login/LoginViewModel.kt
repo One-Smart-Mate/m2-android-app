@@ -1,6 +1,5 @@
 package com.ih.osm.ui.pages.login
 
-import androidx.lifecycle.viewModelScope
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -65,7 +64,12 @@ class LoginViewModel
                 }.onSuccess {
                     handleSaveUser(it)
                 }.onFailure {
-                    setState { copy(isLoading = false, message = it.localizedMessage.orEmpty(), email = EMPTY, password = EMPTY) }
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
+                        )
+                    }
                 }
             }
         }

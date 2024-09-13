@@ -80,7 +80,7 @@ fun LoginScreen(
             viewModel.process(LoginViewModel.Action.SetPassword(it))
         },
         isButtonLoading = state.isLoading,
-        onLogin = {
+        onClick = {
             viewModel.process(
                 LoginViewModel.Action.Login(
                     state.email,
@@ -88,19 +88,11 @@ fun LoginScreen(
                 ),
             )
         },
-        onNavigateToPassword = {
+        onNavigate = {
             navController.navigateToRestoreAccount()
         },
     )
 
-    if (state.message.isNotEmpty() && state.isLoading.not()) {
-        scope.launch {
-            snackBarHostState.showSnackbar(
-                message = state.message,
-            )
-            viewModel.process(LoginViewModel.Action.ClearMessage)
-        }
-    }
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
             snackbarData = it,
@@ -116,6 +108,14 @@ fun LoginScreen(
                 if (it.isAuthenticated) {
                     navController.navigateToHomeV2()
                 }
+                if (state.message.isNotEmpty() && state.isLoading.not()) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message,
+                        )
+                        viewModel.process(LoginViewModel.Action.ClearMessage)
+                    }
+                }
             }
     }
 }
@@ -126,8 +126,8 @@ fun LoginContent(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
-    onLogin: () -> Unit,
-    onNavigateToPassword: () -> Unit,
+    onClick: () -> Unit,
+    onNavigate: () -> Unit,
 ) {
     LazyColumn(
         modifier = modifier.background(color = MaterialTheme.colorScheme.primary),
@@ -140,8 +140,8 @@ fun LoginContent(
                 onEmailChange = onEmailChange,
                 onPasswordChange = onPasswordChange,
                 isButtonLoading = isButtonLoading,
-                onLogin = onLogin,
-                onNavigateToPassword = onNavigateToPassword,
+                onClick = onClick,
+                onNavigate = onNavigate,
             )
         }
     }
@@ -153,8 +153,8 @@ fun LoginForm(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
-    onLogin: () -> Unit,
-    onNavigateToPassword: () -> Unit,
+    onClick: () -> Unit,
+    onNavigate: () -> Unit,
 ) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
@@ -184,11 +184,11 @@ fun LoginForm(
             }
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomButton(text = stringResource(R.string.login), isLoading = isButtonLoading) {
-                onLogin()
+                onClick()
             }
             CustomSpacer()
-            CustomButton(text = "Forgot password?", buttonType = ButtonType.TEXT) {
-                onNavigateToPassword()
+            CustomButton(text = stringResource(R.string.forgot_password), buttonType = ButtonType.TEXT) {
+                onNavigate()
             }
         }
     }
@@ -237,8 +237,8 @@ fun LoginPreview() {
                 onEmailChange = {},
                 onPasswordChange = {},
                 isButtonLoading = false,
-                onLogin = {},
-                onNavigateToPassword = {},
+                onClick = {},
+                onNavigate = {},
             )
         }
     }
