@@ -332,7 +332,7 @@ fun CardItemListV2(
                 value = card.creatorName.orDefault(),
             )
             SectionTag(
-                title = stringResource(id = R.string.responsable),
+                title = stringResource(id = R.string.responsible),
                 value = card.responsableName.orDefault(),
             )
             CustomSpacer()

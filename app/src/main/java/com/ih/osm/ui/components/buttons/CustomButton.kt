@@ -58,6 +58,14 @@ fun CustomButton(
                     .fillMaxWidth()
                     .height(54.dp)
             }
+            ButtonType.SMALL -> {
+                modifier
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colorScheme.primary,
+                        shape = CircleShape,
+                    )
+            }
 
             else -> {
                 modifier
@@ -90,6 +98,7 @@ enum class ButtonType {
     OUTLINE,
     ERROR,
     TEXT,
+    SMALL,
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
@@ -111,6 +120,8 @@ fun CustomButtonPreview() {
                 }
 
                 CustomButton(text = "Text", buttonType = ButtonType.TEXT) {
+                }
+                CustomButton(text = "Small", buttonType = ButtonType.SMALL) {
                 }
             }
         }

@@ -232,7 +232,7 @@ class CreateCardViewModel
                         comment = EMPTY,
                     )
                 }
-                process(Action.GetPreclassifiers(id))
+                handleGetPreclassifiers(id)
                 handleGetCardType(id)
                 val state = stateFlow.first()
                 val cardType = state.cardTypeList.find { it.id == id }

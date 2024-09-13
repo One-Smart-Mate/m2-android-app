@@ -159,5 +159,6 @@
     <string name="work_failed">Work cancelled, try it again</string>
     <string name="expired">Expired</string>
     <string name="card_location">Location</string>
-    <string name="responsable">Responsible</string>
+    <string name="responsible">Responsible</string>
+    <string name="confirm">Confirm</string>
 </resources>

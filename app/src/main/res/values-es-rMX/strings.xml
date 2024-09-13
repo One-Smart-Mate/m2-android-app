@@ -157,5 +157,7 @@
     <string name="work_failed">Carga, cancelada, intente nuevamente</string>
     <string name="expired">Vencida</string>
     <string name="card_location">Ubicación</string>
-    <string name="responsable">Responsable</string>
+    <string name="responsible">Responsable</string>
+    <string name="confirm">Confirmar</string>
+
 </resources>

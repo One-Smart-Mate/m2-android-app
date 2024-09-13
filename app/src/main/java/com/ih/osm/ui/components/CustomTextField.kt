@@ -89,6 +89,7 @@ fun CustomTextField(
                 disabledTextColor = getColor(),
             ),
         maxLines = maxLines,
+        singleLine = maxLines == 1,
         trailingIcon = {
             if (isPassword) {
                 val image =

@@ -21,16 +21,21 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +48,7 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
+import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.getBorderColor
@@ -74,11 +80,13 @@ import com.ih.osm.ui.pages.createcard.PhotoCardItem
 import com.ih.osm.ui.pages.error.ErrorScreen
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingTiny
+import com.ih.osm.ui.theme.PaddingToolbar
 import com.ih.osm.ui.theme.Size120
 import com.ih.osm.ui.theme.Size20
 import com.ih.osm.ui.theme.Size200
 import com.ih.osm.ui.theme.Size250
 import com.ih.osm.ui.utils.EMPTY
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardDetailScreen(
@@ -88,6 +96,8 @@ fun CardDetailScreen(
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val snackBarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
 
     when (val screenState = state.card) {
         is LCE.Fail -> {
@@ -107,15 +117,37 @@ fun CardDetailScreen(
             CardDetailContent(
                 navController = navController,
                 card = screenState.value,
-            )
+                employeeList = state.employees,
+            ) {
+                viewModel.process(CardDetailViewModel.Action.AssignCardToEmployee(it))
+            }
         }
     }
+
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = Color.Green,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar),
+        )
+    }
+
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.card !is LCE.Success) {
                     viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+                }
+
+                if (state.message.isNotEmpty()) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message,
+                        )
+                        viewModel.process(CardDetailViewModel.Action.ClearMessage)
+                    }
                 }
             }
     }
@@ -126,6 +158,8 @@ fun CardDetailScreen(
 fun CardDetailContent(
     navController: NavController,
     card: Card,
+    employeeList: List<Employee>,
+    onAssignedClick: (Employee) -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -141,6 +175,8 @@ fun CardDetailContent(
             item {
                 CardInformationContent(
                     card = card,
+                    onAssignedClick = onAssignedClick,
+                    employeeList = employeeList,
                 )
             }
         }
@@ -179,7 +215,38 @@ fun CardDetailHeader(card: Card) {
 }
 
 @Composable
-fun CardInformationContent(card: Card) {
+fun CardInformationContent(
+    card: Card,
+    employeeList: List<Employee>,
+    onAssignedClick: (Employee) -> Unit,
+) {
+    val showBottomSheet =
+        remember {
+            mutableStateOf(false)
+        }
+//    Box(
+//        modifier =
+//            Modifier
+//                .fillMaxWidth()
+//                .padding(end = Size20),
+//        contentAlignment = Alignment.TopEnd,
+//    ) {
+//        CustomButton(text = "Asignar card") {
+//            showBottomSheet.value = true
+//        }
+//        AssignCardBottomSheet(
+//            employeeList = employeeList,
+//            onConfirmClick = {
+//                onAssignedClick(it)
+//                showBottomSheet.value = false
+//            },
+//            showBottomSheet = showBottomSheet.value,
+//            onDismissRequest = {
+//                showBottomSheet.value = false
+//            },
+//        )
+//    }
+
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.status),
@@ -214,7 +281,7 @@ fun CardInformationContent(card: Card) {
             value = card.creatorName.orDefault(),
         )
         SectionTag(
-            title = stringResource(id = R.string.responsable),
+            title = stringResource(id = R.string.responsible),
             value = card.responsableName.orDefault(),
         )
     }
@@ -449,6 +516,8 @@ private fun CardDetailScreenPreview() {
             CardDetailContent(
                 navController = rememberNavController(),
                 card = Card.mock(),
+                employeeList = emptyList(),
+                onAssignedClick = {},
             )
         }
     }
