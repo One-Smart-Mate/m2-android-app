@@ -7,7 +7,7 @@ import com.ih.osm.ui.pages.account.AccountViewModel
 import com.ih.osm.ui.pages.carddetail.CardDetailViewModel
 import com.ih.osm.ui.pages.cardlist.CardListViewModel
 import com.ih.osm.ui.pages.createcard.CreateCardViewModel
-import com.ih.osm.ui.pages.home.HomeViewModelV2
+import com.ih.osm.ui.pages.home.HomeViewModel
 import com.ih.osm.ui.pages.login.LoginViewModel
 import com.ih.osm.ui.pages.password.RestoreAccountViewModel
 import com.ih.osm.ui.pages.profile.ProfileViewModel
@@ -32,8 +32,8 @@ interface ViewModelModule {
 
     @Binds
     @IntoMap
-    @ViewModelKey(HomeViewModelV2::class)
-    fun bindHomeViewModelV2(factory: HomeViewModelV2.Factory): AssistedViewModelFactory<*, *>
+    @ViewModelKey(HomeViewModel::class)
+    fun bindHomeViewModelV2(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

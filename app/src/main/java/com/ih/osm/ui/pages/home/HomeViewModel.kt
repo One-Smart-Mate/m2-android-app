@@ -37,7 +37,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class HomeViewModelV2
+class HomeViewModel
     @AssistedInject
     constructor(
         @Assisted initialState: UiState,
@@ -49,7 +49,7 @@ class HomeViewModelV2
         @ApplicationContext private val context: Context,
         private val fileHelper: FileHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
-    ) : MavericksViewModel<HomeViewModelV2.UiState>(initialState) {
+    ) : MavericksViewModel<HomeViewModel.UiState>(initialState) {
         data class UiState(
             val state: LCE<User> = LCE.Uninitialized,
             val message: String = EMPTY,
@@ -138,7 +138,6 @@ class HomeViewModelV2
                 kotlin.runCatching {
                     getCardsUseCase(syncRemote = syncRemote)
                 }.onSuccess { cards ->
-                    Log.e("test", "Cards $syncRemote-> $cards")
                     val showCards = cards.toLocalCards().isNotEmpty()
                     setState {
                         copy(
@@ -367,10 +366,10 @@ class HomeViewModelV2
         }
 
         @AssistedFactory
-        interface Factory : AssistedViewModelFactory<HomeViewModelV2, UiState> {
-            override fun create(state: UiState): HomeViewModelV2
+        interface Factory : AssistedViewModelFactory<HomeViewModel, UiState> {
+            override fun create(state: UiState): HomeViewModel
         }
 
         companion object :
-            MavericksViewModelFactory<HomeViewModelV2, UiState> by hiltMavericksViewModelFactory()
+            MavericksViewModelFactory<HomeViewModel, UiState> by hiltMavericksViewModelFactory()
     }

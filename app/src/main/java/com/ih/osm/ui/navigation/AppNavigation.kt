@@ -14,7 +14,7 @@ import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
-import com.ih.osm.ui.pages.home.HomeScreenV2
+import com.ih.osm.ui.pages.home.HomeScreen
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
@@ -42,7 +42,7 @@ fun AppNavigation(startDestination: String) {
             arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType }),
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-            HomeScreenV2(navController = navController, syncCatalogs = syncCatalogs)
+            HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
         }
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)

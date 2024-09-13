@@ -85,9 +85,9 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun HomeScreenV2(
+fun HomeScreen(
     navController: NavController,
-    viewModel: HomeViewModelV2 = mavericksViewModel(),
+    viewModel: HomeViewModel = mavericksViewModel(),
     syncCatalogs: String = EMPTY,
 ) {
     val state by viewModel.collectAsState()
@@ -99,12 +99,12 @@ fun HomeScreenV2(
     if (state.isLoading) {
         LoadingScreen(text = state.message)
     } else {
-        HomeContentV2(
+        HomeContent(
             navController = navController,
             user = (state.state as? LCE.Success)?.value,
-            cards = state.cards,
+            cardList = state.cards,
             onSyncCardsClick = {
-                viewModel.process(HomeViewModelV2.Action.SyncCards(context))
+                viewModel.process(HomeViewModel.Action.SyncCards(context))
             },
             onCardClick = {
                 navController.navigateToCardList(it)
@@ -114,23 +114,15 @@ fun HomeScreenV2(
             showSyncCards = state.showSyncCards,
             showSyncCatalogs = state.showSyncCatalogsCard,
             onSyncCatalogsClick = {
-                viewModel.process(HomeViewModelV2.Action.SyncCatalogs(LOAD_CATALOGS))
+                viewModel.process(HomeViewModel.Action.SyncCatalogs(LOAD_CATALOGS))
             },
             showSyncRemoteCards = state.showSyncRemoteCards,
             onSyncRemoteCardsClick = {
-                viewModel.process(HomeViewModelV2.Action.SyncRemoteCards)
+                viewModel.process(HomeViewModel.Action.SyncRemoteCards)
             },
         )
     }
 
-    if (state.message.isNotEmpty() && state.isLoading.not()) {
-        scope.launch {
-            snackBarHostState.showSnackbar(
-                message = state.message,
-            )
-            viewModel.process(HomeViewModelV2.Action.ClearMessage)
-        }
-    }
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
             snackbarData = it,
@@ -145,9 +137,17 @@ fun HomeScreenV2(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (state.syncCatalogs && state.syncCompleted.not()) {
-                    viewModel.process(HomeViewModelV2.Action.SyncCatalogs(syncCatalogs))
+                    viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
                 } else if (state.isSyncing.not()) {
-                    viewModel.process(HomeViewModelV2.Action.GetCards)
+                    viewModel.process(HomeViewModel.Action.GetCards)
+                }
+                if (state.message.isNotEmpty() && state.isLoading.not()) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message,
+                        )
+                        viewModel.process(HomeViewModel.Action.ClearMessage)
+                    }
                 }
             }
     }
@@ -155,10 +155,10 @@ fun HomeScreenV2(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun HomeContentV2(
+private fun HomeContent(
     navController: NavController,
     user: User?,
-    cards: List<Card>,
+    cardList: List<Card>,
     onSyncCardsClick: () -> Unit,
     onCardClick: (String) -> Unit,
     networkStatus: NetworkStatus,
@@ -175,7 +175,7 @@ private fun HomeContentV2(
         ) {
             stickyHeader {
                 user?.let {
-                    HomeAppBarV2(
+                    HomeAppBar(
                         navController = navController,
                         user = it,
                         padding = padding.calculateTopPadding(),
@@ -209,7 +209,7 @@ private fun HomeContentV2(
                         description =
                             stringResource(
                                 R.string.local_cards,
-                                cards.toLocalCards().size,
+                                cardList.toLocalCards().size,
                             ),
                     ) {
                         onSyncCardsClick()
@@ -230,10 +230,10 @@ private fun HomeContentV2(
                     title = stringResource(R.string.anomalies_cards),
                     icon = Icons.Outlined.Build,
                     description =
-                        if (cards.isNotEmpty()) {
+                        if (cardList.isNotEmpty()) {
                             stringResource(
                                 R.string.total_cards,
-                                cards.toAnomaliesList().size,
+                                cardList.toAnomaliesList().size,
                             )
                         } else {
                             EMPTY
@@ -241,16 +241,6 @@ private fun HomeContentV2(
                 ) {
                     onCardClick(CARD_ANOMALIES)
                 }
-//                HomeSectionCardItem(
-//                    title = stringResource(R.string.behaviour_cards),
-//                    icon = Icons.Outlined.Person,
-//                    description = if (cards.isNotEmpty()) stringResource(
-//                        R.string.total_cards,
-//                        cards.toBehaviorList().size
-//                    ) else EMPTY
-//                ) {
-//                    onCardClick(CARD_BEHAVIOR)
-//                }
             }
         }
     }
@@ -314,7 +304,7 @@ private fun HomeSectionCardItem(
 }
 
 @Composable
-private fun HomeAppBarV2(
+private fun HomeAppBar(
     navController: NavController,
     user: User,
     padding: Dp,
@@ -397,10 +387,10 @@ private fun HomeAppBarV2(
 private fun HomeScreenPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            HomeContentV2(
+            HomeContent(
                 navController = rememberNavController(),
                 user = User.mockUser(),
-                cards = emptyList(),
+                cardList = emptyList(),
                 onSyncCardsClick = {},
                 onCardClick = {},
                 networkStatus = NetworkStatus.WIFI_CONNECTED,

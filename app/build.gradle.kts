@@ -73,6 +73,7 @@ android {
         android = true
         ignoreFailures = false
         additionalEditorconfig = editorConfig
+        android = true
         reporters {
             reporter(ReporterType.HTML)
         }
