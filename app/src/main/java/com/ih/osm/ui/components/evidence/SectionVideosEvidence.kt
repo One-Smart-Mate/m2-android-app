@@ -1,5 +1,6 @@
 package com.ih.osm.ui.components.evidence
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -22,7 +23,7 @@ fun SectionVideosEvidence(
     videoEvidences: List<Evidence>,
     onDeleteEvidence: (Evidence) -> Unit,
 ) {
-    if (videoEvidences.isNotEmpty()) {
+    AnimatedVisibility(visible = videoEvidences.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.videos),

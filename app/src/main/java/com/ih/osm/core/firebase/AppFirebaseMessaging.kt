@@ -31,13 +31,11 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
         try {
             if (this::sharedPreferences.isInitialized) {
                 val notificationType = message.getType()
-                Log.e("test", "Notification $notificationType")
                 if (notificationType.isNotEmpty()) {
                     sharedPreferences.saveNotificationType(notificationType)
                 }
             }
         } catch (e: Exception) {
-            Log.e("AppFirebaseMessaging", "saveNotificationType $e")
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }
@@ -51,7 +49,6 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
                 )
             }
         } catch (e: Exception) {
-            Log.e("AppFirebaseMessaging", "handleNotification $e")
             FirebaseCrashlytics.getInstance().recordException(e)
         }
     }

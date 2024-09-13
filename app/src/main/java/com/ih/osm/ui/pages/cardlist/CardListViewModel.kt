@@ -67,6 +67,7 @@ class CardListViewModel
         }
 
         private fun validateFilter(filter: String) {
+            setState { copy(refreshCards = false) }
             val isFromQr = filter.contains(":")
             if (isFromQr) {
                 val levelMachine = filter.substringAfter(":")

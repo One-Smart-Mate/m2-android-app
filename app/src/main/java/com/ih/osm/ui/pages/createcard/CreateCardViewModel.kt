@@ -78,8 +78,6 @@ class CreateCardViewModel
             val lastSelectedLevel: String = EMPTY,
             val lastLevelCompleted: Boolean = false,
             val comment: String = EMPTY,
-            val isSecureCard: Boolean = false,
-            val selectedSecureOption: String = EMPTY,
             val message: String = EMPTY,
             val evidences: List<Evidence> = emptyList(),
             val cardId: String = UUID.randomUUID().toString(),
@@ -107,8 +105,6 @@ class CreateCardViewModel
 
             data class OnCommentChange(val comment: String) : Action()
 
-            data class OnSecureOptionChange(val option: String) : Action()
-
             data object OnSaveCard : Action()
 
             data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
@@ -132,7 +128,6 @@ class CreateCardViewModel
                 is Action.SetPriority -> handleSetPriority(action.id)
                 is Action.SetLevel -> handleSetLevel(action.id, action.key)
                 is Action.OnCommentChange -> handleOnCommentChange(action.comment)
-                is Action.OnSecureOptionChange -> handleOnSecureOptionChange(action.option)
                 is Action.OnSaveCard -> handleOnSaveCard()
                 is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
                 is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
@@ -209,10 +204,6 @@ class CreateCardViewModel
             setState { copy(comment = comment) }
         }
 
-        private fun handleOnSecureOptionChange(option: String) {
-            setState { copy(selectedSecureOption = option) }
-        }
-
         private fun handleSetCardType(id: String) {
             viewModelScope.launch {
                 setState {
@@ -225,8 +216,6 @@ class CreateCardViewModel
                         nodeLevelList = emptyMap(),
                         selectedLevelList = emptyMap(),
                         lastSelectedLevel = EMPTY,
-                        isSecureCard = false,
-                        selectedSecureOption = EMPTY,
                         evidences = emptyList(),
                         lastLevelCompleted = false,
                         comment = EMPTY,
@@ -367,17 +356,6 @@ class CreateCardViewModel
             setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
             viewModelScope.launch(coroutineContext) {
                 val state = stateFlow.first()
-//            val isBehavior = state.cardType?.isBehavior().defaultIfNull(false)
-//            if (isBehavior && state.selectedSecureOption.isEmpty()) {
-//                setState {
-//                    copy(
-//                        isLoading = false,
-//                        message = "Select if the card is Safe or UnSafe"
-//                    )
-//                }
-//                return@launch
-//            }
-
                 val card =
                     Card.fromCreateCard(
                         cardId = state.cardId,

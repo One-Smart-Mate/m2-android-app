@@ -69,7 +69,7 @@ import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.CustomButton
-import com.ih.osm.ui.components.card.CardItemList
+import com.ih.osm.ui.components.card.CardItemListV2
 import com.ih.osm.ui.components.card.SectionCardEvidence
 import com.ih.osm.ui.components.evidence.SectionAudiosEvidence
 import com.ih.osm.ui.components.evidence.SectionImagesEvidence
@@ -130,11 +130,6 @@ fun CreateCardScreen(
             onCommentChange = {
                 viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
             },
-            isSecureCard = state.isSecureCard,
-            selectedSecureOption = state.selectedSecureOption,
-            onSecureOptionChange = {
-                viewModel.process(CreateCardViewModel.Action.OnSecureOptionChange(it))
-            },
             evidences = state.evidences,
             onAddEvidence = { uri, type ->
                 viewModel.process(CreateCardViewModel.Action.OnAddEvidence(uri, type))
@@ -142,7 +137,7 @@ fun CreateCardScreen(
             onDeleteEvidence = {
                 viewModel.process(CreateCardViewModel.Action.OnDeleteEvidence(it))
             },
-            onSaveCard = {
+            onSaveClick = {
                 viewModel.process(CreateCardViewModel.Action.OnSaveCard)
             },
             audioDuration = state.audioDuration,
@@ -201,13 +196,10 @@ fun CreateCardContent(
     selectedLevelList: Map<Int, String>,
     lastLevelCompleted: Boolean,
     onCommentChange: (String) -> Unit,
-    isSecureCard: Boolean = false,
-    selectedSecureOption: String = EMPTY,
-    onSecureOptionChange: ((String) -> Unit)? = null,
     evidences: List<Evidence>,
     onAddEvidence: (Uri, EvidenceType) -> Unit,
     onDeleteEvidence: (Evidence) -> Unit,
-    onSaveCard: () -> Unit,
+    onSaveClick: () -> Unit,
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
@@ -239,86 +231,68 @@ fun CreateCardContent(
             }
 
             item {
-                if (lastLevelCompleted) {
-                    CustomSpacer()
-                    HorizontalDivider()
-                    SectionCardEvidence(
-                        audioDuration = audioDuration,
-                        onAddEvidence = onAddEvidence,
-                        imageType = EvidenceType.IMCR,
-                        audioType = EvidenceType.AUCR,
-                        videoType = EvidenceType.VICR,
-                    )
-                    SectionImagesEvidence(imageEvidences = evidences.toImages()) {
-                        onDeleteEvidence(it)
+                AnimatedVisibility(visible = lastLevelCompleted) {
+                    Column {
+                        CustomSpacer()
+                        HorizontalDivider()
+                        SectionCardEvidence(
+                            audioDuration = audioDuration,
+                            onAddEvidence = onAddEvidence,
+                            imageType = EvidenceType.IMCR,
+                            audioType = EvidenceType.AUCR,
+                            videoType = EvidenceType.VICR,
+                        )
+                        SectionImagesEvidence(imageEvidences = evidences.toImages()) {
+                            onDeleteEvidence(it)
+                        }
+                        SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
+                            onDeleteEvidence(it)
+                        }
+                        SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
+                            onDeleteEvidence(it)
+                        }
+                        CustomSpacer()
                     }
-                    SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
-                        onDeleteEvidence(it)
-                    }
-                    SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
-                        onDeleteEvidence(it)
-                    }
-                    CustomSpacer()
                 }
             }
 
             item {
-                HorizontalDivider()
-                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
-                if (lastLevelCompleted) {
-                    Text(
-                        text = stringResource(R.string.comments),
-                        style =
-                            MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    CustomSpacer()
-                    CustomTextField(
-                        label = stringResource(R.string.comments),
-                        icon = Icons.Filled.Create,
-                        modifier = Modifier.fillParentMaxWidth(),
-                        maxLines = 5,
-                    ) {
-                        onCommentChange(it)
-                    }
-                    CustomSpacer()
-//                    if (isSecureCard) {
-//                        CustomSpacer()
-//                        Text(
-//                            text = stringResource(R.string.card_type),
-//                            style = MaterialTheme.typography.titleLarge
-//                                .copy(fontWeight = FontWeight.Bold)
-//                        )
-//                        RadioGroup(
-//                            modifier = Modifier.fillParentMaxWidth(),
-//                            items = listOf(
-//                                stringResource(R.string.safe),
-//                                stringResource(R.string.unsafe)
-//                            ),
-//                            selection = selectedSecureOption
-//                        ) {
-//                            if (onSecureOptionChange != null) {
-//                                onSecureOptionChange(it)
-//                            }
-//                        }
-//                        CustomSpacer()
-//                    }
-
-                    AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
-                        ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
-                            cardsZone.map {
-                                CardItemList(
-                                    card = it,
-                                    isActionsEnabled = false,
-                                    onClick = {},
-                                    onSolutionClick = {},
-                                )
+                AnimatedVisibility(visible = lastLevelCompleted) {
+                    Column {
+                        HorizontalDivider()
+                        CustomSpacer(space = SpacerSize.EXTRA_LARGE)
+                        Text(
+                            text = stringResource(R.string.comments),
+                            style =
+                                MaterialTheme.typography.titleLarge
+                                    .copy(fontWeight = FontWeight.Bold),
+                        )
+                        CustomSpacer()
+                        CustomTextField(
+                            label = stringResource(R.string.comments),
+                            icon = Icons.Filled.Create,
+                            modifier = Modifier.fillParentMaxWidth(),
+                            maxLines = 5,
+                        ) {
+                            onCommentChange(it)
+                        }
+                        CustomSpacer()
+                        AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
+                            ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
+                                cardsZone.map {
+                                    CardItemListV2(
+                                        card = it,
+                                        isActionsEnabled = false,
+                                        onClick = {},
+                                        onSolutionClick = {},
+                                    )
+                                }
                             }
                         }
-                    }
-                    CustomSpacer()
-                    CustomButton(text = stringResource(R.string.save)) {
-                        onSaveCard()
+                        CustomSpacer()
+                        CustomButton(text = stringResource(R.string.save)) {
+                            onSaveClick()
+                        }
                     }
                 }
             }
@@ -332,24 +306,26 @@ fun LevelContent(
     onLevelClick: (NodeCardItem, key: Int) -> Unit,
     selectedLevelList: Map<Int, String>,
 ) {
-    if (levelList.isNotEmpty()) {
-        levelList.map { level ->
-            if (level.value.isNotEmpty()) {
-                Text(
-                    text = "${stringResource(R.string.level)} ${level.key}",
-                    style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold),
-                )
-            }
-            LazyRow {
-                items(level.value) { item ->
-                    SectionItemCard(
-                        title = item.name,
-                        description = item.description,
-                        selected = item.id == selectedLevelList[level.key],
-                    ) {
-                        onLevelClick(item, level.key)
+    AnimatedVisibility(visible = levelList.isNotEmpty()) {
+        Column {
+            levelList.map { level ->
+                if (level.value.isNotEmpty()) {
+                    Text(
+                        text = "${stringResource(R.string.level)} ${level.key}",
+                        style =
+                            MaterialTheme.typography.titleLarge
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+                LazyRow {
+                    items(level.value) { item ->
+                        SectionItemCard(
+                            title = item.name,
+                            description = item.description,
+                            selected = item.id == selectedLevelList[level.key],
+                        ) {
+                            onLevelClick(item, level.key)
+                        }
                     }
                 }
             }
@@ -363,21 +339,23 @@ fun PriorityContent(
     onPriorityClick: (NodeCardItem) -> Unit,
     selectedPriority: String,
 ) {
-    if (priorityList.isNotEmpty()) {
-        Text(
-            text = stringResource(R.string.priority),
-            style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
-        )
-        LazyRow {
-            items(priorityList) {
-                SectionItemCard(
-                    title = it.name,
-                    description = it.description,
-                    selected = it.id == selectedPriority,
-                ) {
-                    onPriorityClick(it)
+    AnimatedVisibility(visible = priorityList.isNotEmpty()) {
+        Column {
+            Text(
+                text = stringResource(R.string.priority),
+                style =
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
+            )
+            LazyRow {
+                items(priorityList) {
+                    SectionItemCard(
+                        title = it.name,
+                        description = it.description,
+                        selected = it.id == selectedPriority,
+                    ) {
+                        onPriorityClick(it)
+                    }
                 }
             }
         }
@@ -390,21 +368,23 @@ fun PreclassifierContent(
     onPreclassifierClick: (NodeCardItem) -> Unit,
     selectedPreclassifier: String,
 ) {
-    if (preclassifierList.isNotEmpty()) {
-        Text(
-            text = stringResource(R.string.type_of_problem),
-            style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
-        )
-        LazyRow {
-            items(preclassifierList) {
-                SectionItemCard(
-                    title = it.name,
-                    description = it.description,
-                    selected = it.id == selectedPreclassifier,
-                ) {
-                    onPreclassifierClick(it)
+    AnimatedVisibility(visible = preclassifierList.isNotEmpty()) {
+        Column {
+            Text(
+                text = stringResource(R.string.type_of_problem),
+                style =
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
+            )
+            LazyRow {
+                items(preclassifierList) {
+                    SectionItemCard(
+                        title = it.name,
+                        description = it.description,
+                        selected = it.id == selectedPreclassifier,
+                    ) {
+                        onPreclassifierClick(it)
+                    }
                 }
             }
         }
@@ -564,7 +544,7 @@ fun CreateCardPreview() {
                 evidences = emptyList(),
                 onAddEvidence = { _, _ -> },
                 onDeleteEvidence = {},
-                onSaveCard = {},
+                onSaveClick = {},
                 audioDuration = 60,
                 cardsZone = emptyList(),
                 coroutineScope = rememberCoroutineScope(),

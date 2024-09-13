@@ -106,6 +106,7 @@ fun String.lastSyncDate(context: Context): String {
 }
 
 fun String.isExpired(): Boolean {
+    if (this.isEmpty() || this.isBlank()) return false
     val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
     val todayDate = Calendar.getInstance().time
     return dueDate?.before(todayDate).defaultIfNull(false)

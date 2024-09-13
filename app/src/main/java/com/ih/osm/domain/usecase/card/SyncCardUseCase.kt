@@ -16,7 +16,7 @@ import javax.inject.Inject
 interface SyncCardUseCase {
     suspend operator fun invoke(
         card: Card,
-        handleNotification: Boolean = true,
+        handleNotification: Boolean = false,
     ): Card?
 }
 
@@ -54,7 +54,9 @@ class SyncCardUseCaseImpl
                 localRepository.saveCard(remoteCard)
                 firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
                 Log.e("test", "saving card.. $remoteCard")
-                notificationManager.buildNotificationSuccessCard()
+                if (handleNotification) {
+                    notificationManager.buildNotificationSuccessCard()
+                }
                 fileHelper.logCreateCardRequestSuccess(remoteCard)
                 remoteCard
             } catch (e: Exception) {

@@ -5,6 +5,7 @@ import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -21,6 +22,7 @@ class FirebaseStorageRepositoryImpl
     constructor(
         private val firebaseStorage: FirebaseStorage,
         private val getUserUseCase: GetUserUseCase,
+        private val fileHelper: FileHelper,
     ) : FirebaseStorageRepository {
         override suspend fun uploadEvidence(evidence: Evidence): String {
             return try {
@@ -34,7 +36,8 @@ class FirebaseStorageRepositoryImpl
                 Log.e("test", "Result image $url")
                 url.toString()
             } catch (e: Exception) {
-                FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
+                fileHelper.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
                 EMPTY
             }
         }
@@ -78,6 +81,34 @@ class FirebaseStorageRepositoryImpl
                     firebaseStorage.reference.child(
                         prefixAudios,
                     )
+            }
+        }
+
+        override suspend fun deleteEvidence(cardUUID: String): Boolean {
+            return try {
+                val siteId = getUserUseCase()?.siteId.defaultIfNull("0")
+
+                val imagesReference =
+                    firebaseStorage.getReference("site-$siteId/$cardUUID/images/")
+                imagesReference.listAll().await().items.forEach { image ->
+                    image.delete()
+                }
+                val videosReference =
+                    firebaseStorage.getReference("site-$siteId/$cardUUID/videos/")
+                videosReference.listAll().await().items.forEach { image ->
+                    image.delete()
+                }
+
+                val audiosReference =
+                    firebaseStorage.getReference("site-$siteId/$cardUUID/audios/")
+                audiosReference.listAll().await().items.forEach { image ->
+                    image.delete()
+                }
+                true
+            } catch (e: Exception) {
+                fileHelper.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
+                false
             }
         }
     }

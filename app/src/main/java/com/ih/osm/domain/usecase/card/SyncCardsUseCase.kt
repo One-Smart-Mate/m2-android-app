@@ -42,9 +42,10 @@ class SyncCardsUseCaseImpl
                     0
                 }
             val progressByCard: Float = 100f / cardList.size
-
+            var selectedCard: Card? = null
             try {
                 cardList.forEach { card ->
+                    selectedCard = card
                     if (handleNotification) {
                         currentProgress += progressByCard
                         notificationManager.updateNotificationProgress(
@@ -76,12 +77,20 @@ class SyncCardsUseCaseImpl
                 }
             } catch (e: Exception) {
                 Log.e("test", "saving card exception.. ${e.localizedMessage}")
+                restoreEvidences(selectedCard)
                 firebaseAnalyticsHelper.logSyncCardException(e)
                 FirebaseCrashlytics.getInstance().recordException(e)
                 fileHelper.logException(e)
                 if (cardList.isNotEmpty()) {
                     notificationManager.buildErrorNotification(id, e.localizedMessage.orEmpty())
                 }
+            }
+        }
+
+        private suspend fun restoreEvidences(selectedCard: Card?) {
+            firebaseStorageRepository.deleteEvidence(selectedCard?.uuid.orEmpty())
+            selectedCard?.evidences?.forEach { evidence ->
+                localRepository.saveEvidence(evidence)
             }
         }
     }

@@ -4,4 +4,6 @@ import com.ih.osm.domain.model.Evidence
 
 interface FirebaseStorageRepository {
     suspend fun uploadEvidence(evidence: Evidence): String
+
+    suspend fun deleteEvidence(cardUUID: String): Boolean
 }
