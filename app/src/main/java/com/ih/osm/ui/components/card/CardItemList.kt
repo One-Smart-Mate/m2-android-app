@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.cardTitle
+import com.ih.osm.domain.model.enableAssignMechanic
 import com.ih.osm.domain.model.enableDefinitiveSolution
 import com.ih.osm.domain.model.enableProvisionalSolution
 import com.ih.osm.domain.model.getBorderColor
@@ -67,100 +68,100 @@ fun CardItemList(
     card: Card,
     isActionsEnabled: Boolean = true,
     onClick: () -> Unit,
-    onSolutionClick: (String) -> Unit,
+    onSolutionClick: (String) -> Unit
 ) {
     var showSolutionBottomSheet by remember {
         mutableStateOf(false)
     }
     Card(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(PaddingNormal),
+        Modifier
+            .fillMaxWidth()
+            .padding(PaddingNormal),
         onClick = {
             onClick()
-        },
+        }
     ) {
         Column(
-            modifier = Modifier.padding(PaddingSmall),
+            modifier = Modifier.padding(PaddingSmall)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = card.cardTitle(),
                     style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center
                 )
 
                 Box(
                     modifier =
-                        Modifier
-                            .padding(start = 5.dp)
-                            .size(20.dp)
-                            .background(
-                                color = card.getBorderColor(),
-                                shape = CircleShape,
-                            ),
+                    Modifier
+                        .padding(start = 5.dp)
+                        .size(20.dp)
+                        .background(
+                            color = card.getBorderColor(),
+                            shape = CircleShape
+                        )
                 )
             }
 
             CardItemEvidence(
                 showCamera = card.evidenceImageCreation > 0,
                 showVideo = card.evidenceVideoCreation > 0,
-                showVoice = card.evidenceAudioCreation > 0,
+                showVoice = card.evidenceAudioCreation > 0
             )
 
             AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
                 CustomTag(
                     title = stringResource(R.string.local_card),
                     tagSize = TagSize.SMALL,
-                    tagType = TagType.OUTLINE,
+                    tagType = TagType.OUTLINE
                 )
             }
 
             SectionTag(
                 title = stringResource(id = R.string.status),
-                value = card.getStatus(),
+                value = card.getStatus()
             )
             SectionTag(
                 title = stringResource(id = R.string.type_card),
-                value = card.cardTypeName.orEmpty(),
+                value = card.cardTypeName.orEmpty()
             )
             SectionTag(
                 title = stringResource(id = R.string.type_of_problem),
-                value = card.preclassifierValue(),
+                value = card.preclassifierValue()
             )
             SectionTag(
                 title = stringResource(R.string.priority),
-                value = card.priorityValue(),
+                value = card.priorityValue()
             )
             SectionTag(
                 title = stringResource(id = R.string.area),
-                value = card.areaName,
+                value = card.areaName
             )
             SectionTag(
                 title = stringResource(id = R.string.created_by),
-                value = card.creatorName,
+                value = card.creatorName
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.getCreationDate(),
+                value = card.getCreationDate()
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
-                value = card.dueDate,
+                value = card.dueDate
             )
 
             CustomSpacer()
             AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
                 CustomButton(
                     text = stringResource(R.string.actions),
-                    buttonType = ButtonType.OUTLINE,
+                    buttonType = ButtonType.OUTLINE
                 ) {
                     showSolutionBottomSheet = true
                 }
@@ -178,35 +179,32 @@ fun CardItemList(
             },
             showProvisionalSolution = card.enableProvisionalSolution(),
             showDefinitiveSolution = card.enableDefinitiveSolution(),
+            showAssignCard = card.enableAssignMechanic()
         )
     }
 }
 
 @Composable
-fun CardItemEvidence(
-    showCamera: Boolean,
-    showVideo: Boolean,
-    showVoice: Boolean,
-) {
+fun CardItemEvidence(showCamera: Boolean, showVideo: Boolean, showVoice: Boolean) {
     Row(
         modifier =
-            Modifier
-                .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
+        Modifier
+            .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center
     ) {
         if (showCamera) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_photo_camera),
+                icon = painterResource(id = R.drawable.ic_photo_camera)
             ) {}
         }
         if (showVoice) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_voice),
+                icon = painterResource(id = R.drawable.ic_voice)
             ) {}
         }
         if (showVideo) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_videocam),
+                icon = painterResource(id = R.drawable.ic_videocam)
             ) {}
         }
     }
@@ -216,22 +214,22 @@ fun CardItemEvidence(
 fun CardSectionItemList(card: Card) {
     Card(
         modifier = Modifier.padding(PaddingTinySmall),
-        border = BorderStroke(Size1, getInvertedColor()),
+        border = BorderStroke(Size1, getInvertedColor())
     ) {
         Column(
-            modifier = Modifier.padding(PaddingSmall),
+            modifier = Modifier.padding(PaddingSmall)
         ) {
             Text(
                 text = "${card.cardTypeName} ${card.siteCardId}",
                 style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold),
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth()
             )
             SectionTag(
                 title = stringResource(id = R.string.area),
-                value = card.areaName,
+                value = card.areaName
             )
         }
     }
@@ -242,108 +240,108 @@ fun CardItemListV2(
     card: Card,
     isActionsEnabled: Boolean = true,
     onClick: () -> Unit,
-    onSolutionClick: (String) -> Unit,
+    onSolutionClick: (String) -> Unit
 ) {
     var showSolutionBottomSheet by remember {
         mutableStateOf(false)
     }
     Card(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(PaddingNormal),
+        Modifier
+            .fillMaxWidth()
+            .padding(PaddingNormal),
         onClick = {
             onClick()
-        },
+        }
     ) {
         Column(
-            modifier = Modifier.padding(PaddingSmall),
+            modifier = Modifier.padding(PaddingSmall)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "#${card.id}",
+                    text = "#${card.siteCardId}",
                     style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold),
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
                 )
                 Text(
                     text = card.cardTitle(),
                     style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold),
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold)
                 )
                 Box(
                     modifier =
-                        Modifier
-                            .size(Size20)
-                            .background(
-                                color = card.getBorderColor(),
-                                shape = CircleShape,
-                            ),
+                    Modifier
+                        .size(Size20)
+                        .background(
+                            color = card.getBorderColor(),
+                            shape = CircleShape
+                        )
                 )
             }
 
             CardItemEvidence(
                 showCamera = card.evidenceImageCreation > 0,
                 showVideo = card.evidenceVideoCreation > 0,
-                showVoice = card.evidenceAudioCreation > 0,
+                showVoice = card.evidenceAudioCreation > 0
             )
 
             AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
                 CustomTag(
                     title = stringResource(R.string.local_card),
                     tagSize = TagSize.SMALL,
-                    tagType = TagType.OUTLINE,
+                    tagType = TagType.OUTLINE
                 )
             }
 
             SectionTag(
                 title = stringResource(id = R.string.status),
-                value = card.getStatus(),
+                value = card.getStatus()
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.getCreationDate(),
+                value = card.getCreationDate()
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
                 value =
-                    if (card.dueDate.isExpired()) {
-                        stringResource(id = R.string.expired)
-                    } else {
-                        card.dueDate
-                    },
-                isErrorEnabled = card.dueDate.isExpired(),
+                if (card.dueDate.isExpired()) {
+                    stringResource(id = R.string.expired)
+                } else {
+                    card.dueDate
+                },
+                isErrorEnabled = card.dueDate.isExpired()
             )
             SectionTag(
                 title = stringResource(R.string.preclassifier),
-                value = card.preclassifierValue(),
+                value = card.preclassifierValue()
             )
             SectionTag(
                 title = stringResource(R.string.priority),
-                value = card.priorityValue(),
+                value = card.priorityValue()
             )
             SectionTag(
                 title = stringResource(R.string.card_location),
-                value = card.cardLocation,
+                value = card.cardLocation
             )
             SectionTag(
                 title = stringResource(id = R.string.created_by),
-                value = card.creatorName.orDefault(),
+                value = card.creatorName.orDefault()
             )
             SectionTag(
-                title = stringResource(id = R.string.responsible),
-                value = card.responsableName.orDefault(),
+                title = stringResource(id = R.string.mechanic),
+                value = card.mechanicName.orDefault()
             )
             CustomSpacer()
             AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
                 CustomButton(
                     text = stringResource(R.string.actions),
-                    buttonType = ButtonType.OUTLINE,
+                    buttonType = ButtonType.OUTLINE
                 ) {
                     showSolutionBottomSheet = true
                 }
@@ -361,6 +359,7 @@ fun CardItemListV2(
             },
             showProvisionalSolution = card.enableProvisionalSolution(),
             showDefinitiveSolution = card.enableDefinitiveSolution(),
+            showAssignCard = card.enableAssignMechanic()
         )
     }
 }
@@ -377,10 +376,10 @@ fun HomeCardItemListPreview() {
                 CustomSpacer()
                 CardItemListV2(
                     Card.mock().copy(
-                        dueDate = "2024-12-12",
+                        dueDate = "2024-12-12"
                     ),
                     true,
-                    {},
+                    {}
                 ) {}
                 CustomSpacer()
             }

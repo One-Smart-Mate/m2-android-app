@@ -35,10 +35,7 @@ interface LocalRepository {
 
     suspend fun getCard(cardId: String): Card
 
-    suspend fun getCardsZone(
-        siteId: String,
-        superiorId: String,
-    ): List<Card>
+    suspend fun getCardsZone(siteId: String, superiorId: String): List<Card>
 
     suspend fun getCardTypes(filter: String = EMPTY): List<CardType>
 
@@ -85,4 +82,6 @@ interface LocalRepository {
     suspend fun deleteEmployees()
 
     suspend fun getEmployees(): List<Employee>
+
+    suspend fun getCardByUUID(uuid: String): Card?
 }

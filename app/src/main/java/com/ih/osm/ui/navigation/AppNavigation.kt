@@ -39,7 +39,14 @@ fun AppNavigation(startDestination: String) {
         }
         composable(
             Screen.HomeV2.route,
-            arguments = listOf(navArgument(ARG_SYNC_CATALOG) { type = NavType.StringType }),
+            arguments =
+                listOf(
+                    navArgument(ARG_SYNC_CATALOG) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = EMPTY
+                    },
+                ),
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
             HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
@@ -114,10 +121,6 @@ fun NavController.navigateAndClean(route: String) {
         popUpTo(graph.startDestinationId) { inclusive = true }
     }
     graph.setStartDestination(route)
-}
-
-fun NavController.navigateToHome() {
-    navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
 }
 
 fun NavController.navigateToHomeV2() {

@@ -163,4 +163,7 @@
     <string name="confirm">Confirm</string>
     <string name="preclassifier">Preclassifier</string>
     <string name="forgot_password">Forgot password?</string>
+    <string name="assigned_mechanic">Assigning mechanic</string>
+    <string name="assign_mechanic">Assign Mechanic</string>
+    <string name="assign_card">Assign Card</string>
 </resources>

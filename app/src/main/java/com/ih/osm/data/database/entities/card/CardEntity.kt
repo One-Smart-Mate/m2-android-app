@@ -16,15 +16,15 @@ import com.ih.osm.ui.utils.STORED_REMOTE
 data class CardEntity(
     @PrimaryKey(autoGenerate = false)
     @ColumnInfo(name = "id")
-    val id: String,
+    val uuid: String,
+    @ColumnInfo(name = "card_id")
+    val cardId: String,
     @ColumnInfo(name = "site_card_id")
     val siteCardId: Long,
     @ColumnInfo(name = "site_id")
     val siteId: String?,
     @ColumnInfo(name = "site_code")
     val siteCode: String?,
-    @ColumnInfo(name = "card_uuid")
-    val uuid: String,
     @ColumnInfo(name = "card_type_color")
     val cardTypeColor: String,
     @ColumnInfo(name = "feasibility")
@@ -142,7 +142,7 @@ data class CardEntity(
     @ColumnInfo(name = "stored")
     val stored: String?,
     @ColumnInfo(name = "card_location", defaultValue = EMPTY)
-    val cardLocation: String,
+    val cardLocation: String
 )
 
 fun CardEntity.validateDate(): String {
@@ -155,7 +155,7 @@ fun CardEntity.validateDate(): String {
 
 fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
     return Card(
-        id = this.id,
+        id = this.cardId,
         siteCardId = this.siteCardId,
         siteId = this.siteId,
         siteCode = this.siteCode,
@@ -217,6 +217,6 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
         stored = this.stored ?: STORED_REMOTE,
         evidences = evidences,
         creationDateFormatted = validateDate(),
-        cardLocation = this.cardLocation,
+        cardLocation = this.cardLocation
     )
 }

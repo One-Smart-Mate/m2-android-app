@@ -29,25 +29,25 @@ class CoreApplication : Application(), Configuration.Provider {
 }
 
 class CustomWorkerFactory
-    @Inject
-    constructor(
-        private val getCardsUseCase: GetCardsUseCase,
-        private val syncCardsUseCase: SyncCardsUseCase,
-        private val coroutineContext: CoroutineContext,
-        private val sharedPreferences: SharedPreferences,
-    ) : WorkerFactory() {
-        override fun createWorker(
-            appContext: Context,
-            workerClassName: String,
-            workerParameters: WorkerParameters,
-        ): ListenableWorker {
-            return CardWorker(
-                appContext,
-                workerParameters,
-                getCardsUseCase,
-                syncCardsUseCase,
-                coroutineContext,
-                sharedPreferences,
-            )
-        }
+@Inject
+constructor(
+    private val getCardsUseCase: GetCardsUseCase,
+    private val syncCardsUseCase: SyncCardsUseCase,
+    private val coroutineContext: CoroutineContext,
+    private val sharedPreferences: SharedPreferences
+) : WorkerFactory() {
+    override fun createWorker(
+        appContext: Context,
+        workerClassName: String,
+        workerParameters: WorkerParameters
+    ): ListenableWorker {
+        return CardWorker(
+            appContext,
+            workerParameters,
+            getCardsUseCase,
+            syncCardsUseCase,
+            coroutineContext,
+            sharedPreferences
+        )
     }
+}

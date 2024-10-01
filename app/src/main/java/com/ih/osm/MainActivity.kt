@@ -18,6 +18,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.work.BackoffPolicy
 import androidx.work.OneTimeWorkRequestBuilder
+import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -30,8 +31,8 @@ import com.ih.osm.ui.navigation.AppNavigation
 import com.ih.osm.ui.pages.splash.SplashViewModel
 import com.ih.osm.ui.theme.OsmAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import java.time.Duration
+import timber.log.Timber
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -51,7 +52,7 @@ class MainActivity : ComponentActivity() {
             splashViewModel.isAuthenticated.value.not()
         }
         observeNetworkChanges()
-        // handleAppUpdates()
+        handleAppUpdates()
         setContent {
             OsmAppTheme {
                 val state = splashViewModel.startRoute.collectAsState()
@@ -84,7 +85,7 @@ class MainActivity : ComponentActivity() {
                     appUpdateInfo,
                     AppUpdateType.IMMEDIATE,
                     this@MainActivity,
-                    1,
+                    1
                 )
             }
         }.addOnFailureListener {
@@ -96,13 +97,22 @@ class MainActivity : ComponentActivity() {
     fun workRequest() {
         val uuid = WorkManagerUUID.get()
         uuid?.let {
-            val workRequest =
+            val workRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                OneTimeWorkRequestBuilder<CardWorker>()
+                    .setId(uuid)
+                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                    .setBackoffCriteria(
+                        backoffPolicy = BackoffPolicy.LINEAR,
+                        duration = Duration.ofSeconds(5)
+                    ).build()
+            } else {
                 OneTimeWorkRequestBuilder<CardWorker>()
                     .setId(uuid)
                     .setBackoffCriteria(
                         backoffPolicy = BackoffPolicy.LINEAR,
-                        duration = Duration.ofSeconds(5),
+                        duration = Duration.ofSeconds(5)
                     ).build()
+            }
             WorkManager.getInstance(this@MainActivity).enqueue(workRequest)
         }
     }
@@ -117,9 +127,9 @@ class MainActivity : ComponentActivity() {
             this,
             arrayOf(
                 Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.CHANGE_NETWORK_STATE,
+                Manifest.permission.CHANGE_NETWORK_STATE
             ),
-            2,
+            2
         )
     }
 }

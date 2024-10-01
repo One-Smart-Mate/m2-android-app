@@ -23,21 +23,21 @@ interface CardDao {
     @Query("SELECT site_card_id FROM card_table ORDER BY site_card_id DESC LIMIT 1")
     suspend fun getLastSiteCardId(): Long?
 
-    @Query("SELECT id FROM card_table ORDER BY id DESC LIMIT 1")
+    @Query("SELECT card_id FROM card_table ORDER BY card_id DESC LIMIT 1")
     suspend fun getLastCardId(): String?
 
     @Query("SELECT * FROM card_table WHERE stored=:stored")
     suspend fun getLocalCards(stored: String): List<CardEntity>
 
-    @Query("DELETE FROM card_table WHERE card_uuid=:id")
+    @Query("DELETE FROM card_table WHERE id=:id")
     suspend fun deleteCard(id: String)
 
-    @Query("SELECT * FROM card_table WHERE id=:cardId")
+    @Query("SELECT * FROM card_table WHERE card_id=:cardId")
     suspend fun getCard(cardId: String): CardEntity
 
     @Query("SELECT * FROM card_table  WHERE superior_id=:id AND site_id=:siteId")
-    suspend fun getCardsZone(
-        siteId: String,
-        id: String,
-    ): List<CardEntity>
+    suspend fun getCardsZone(siteId: String, id: String): List<CardEntity>
+
+    @Query("SELECT * FROM card_table WHERE id=:uuid")
+    suspend fun getCardByUUID(uuid: String): CardEntity?
 }

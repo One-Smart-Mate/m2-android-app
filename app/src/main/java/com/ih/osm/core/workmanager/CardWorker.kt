@@ -11,35 +11,34 @@ import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.withContext
 import kotlin.coroutines.CoroutineContext
+import kotlinx.coroutines.withContext
 
 @HiltWorker
 class CardWorker
-    @AssistedInject
-    constructor(
-        @Assisted context: Context,
-        @Assisted workerParameters: WorkerParameters,
-        private val getCardsUseCase: GetCardsUseCase,
-        private val syncCardsUseCase: SyncCardsUseCase,
-        private val customCoroutineContext: CoroutineContext,
-        private val sharedPreferences: SharedPreferences,
-    ) : CoroutineWorker(context, workerParameters) {
-        override suspend fun doWork(): Result =
-            withContext(customCoroutineContext) {
-                try {
-                    val isConnected = NetworkConnection.isConnected()
-                    if (isConnected) {
-                        val localCardList = getCardsUseCase(localCards = true)
-                        syncCardsUseCase(localCardList)
-                        sharedPreferences.saveLastSyncDate()
-                        Result.success()
-                    } else {
-                        Result.failure()
-                    }
-                } catch (e: Exception) {
-                    FirebaseCrashlytics.getInstance().recordException(e)
-                    Result.failure()
-                }
+@AssistedInject
+constructor(
+    @Assisted context: Context,
+    @Assisted workerParameters: WorkerParameters,
+    private val getCardsUseCase: GetCardsUseCase,
+    private val syncCardsUseCase: SyncCardsUseCase,
+    private val customCoroutineContext: CoroutineContext,
+    private val sharedPreferences: SharedPreferences
+) : CoroutineWorker(context, workerParameters) {
+    override suspend fun doWork(): Result = withContext(customCoroutineContext) {
+        try {
+            val isConnected = NetworkConnection.isConnected()
+            if (isConnected) {
+                val localCardList = getCardsUseCase(localCards = true)
+                syncCardsUseCase(localCardList)
+                sharedPreferences.saveLastSyncDate()
+                Result.success()
+            } else {
+                Result.failure()
             }
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            Result.failure()
+        }
     }
+}

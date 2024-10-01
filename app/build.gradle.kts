@@ -18,8 +18,8 @@ android {
         applicationId = "com.ih.osm"
         minSdk = 24
         targetSdk = 34
-        versionCode = 3
-        versionName = "1.0.2"
+        versionCode = 4
+        versionName = "1.0.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -37,7 +37,7 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro",
+                "proguard-rules.pro"
             )
         }
     }
@@ -69,7 +69,11 @@ android {
 
     ktlint {
         val editorConfig =
-            mapOf("ktlint_standard_no-wildcard-imports" to "disabled", "ktlint_function_naming_ignore_when_annotated_with" to "Composable")
+            mapOf(
+                "ktlint_standard_no-wildcard-imports" to "disabled",
+                "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
+                "ktlint_code_style" to "android_studio"
+            )
         android = true
         ignoreFailures = false
         additionalEditorconfig = editorConfig

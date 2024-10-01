@@ -16,6 +16,8 @@ import com.ih.osm.domain.usecase.card.SyncCardUseCase
 import com.ih.osm.domain.usecase.card.SyncCardUseCaseImpl
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCaseImpl
+import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCase
+import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCaseImpl
 import com.ih.osm.domain.usecase.cardtype.GetCardTypeUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypeUseCaseImpl
 import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCase
@@ -145,5 +147,8 @@ interface DomainBindingModule {
     fun bindUpdateTokenUseCase(updateTokenUseCaseImpl: UpdateTokenUseCaseImpl): UpdateTokenUseCase
 
     @Binds
-    fun bindGetCardsLevelMachine(getCardsLevelMachineImpl: GetCardsLevelMachineUseCaseImpl): GetCardsLevelMachineUseCase
+    fun bindGetCardsLevelMachineUseCase(getCardsLevelMachineImpl: GetCardsLevelMachineUseCaseImpl): GetCardsLevelMachineUseCase
+
+    @Binds
+    fun bindUpdateCardMechanicUseCase(updateCardMechanicUseCaseImpl: UpdateCardMechanicUseCaseImpl): UpdateCardMechanicUseCase
 }

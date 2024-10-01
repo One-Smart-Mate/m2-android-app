@@ -161,4 +161,7 @@
     <string name="confirm">Confirmar</string>
     <string name="preclassifier">Preclassificador</string>
     <string name="forgot_password">Olvidaste tu contraseña?</string>
+    <string name="assigned_mechanic">Asignando mecánico</string>
+    <string name="assign_mechanic">Asignación de mecánico</string>
+    <string name="assign_card">Assignar tarjeta</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.ih.osm.domain.model
 
+import android.graphics.Color as ColorParser
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -32,7 +33,6 @@ import com.ih.osm.ui.utils.STORED_LOCAL
 import com.ih.osm.ui.utils.STORED_REMOTE
 import com.ih.osm.ui.utils.UNASSIGNED_CARDS
 import java.util.Date
-import android.graphics.Color as ColorParser
 
 data class Card(
     val id: String,
@@ -119,7 +119,7 @@ data class Card(
     val evidences: List<Evidence>? = emptyList(),
     val stored: String? = STORED_REMOTE,
     val creationDateFormatted: String? = null,
-    val cardLocation: String,
+    val cardLocation: String
 ) {
     companion object {
         fun mock(): Card {
@@ -185,12 +185,11 @@ data class Card(
                 "",
                 emptyList(),
                 STORED_LOCAL,
-                cardLocation = "Procesos/Mixer 1 /Bomba 1",
+                cardLocation = "Procesos/Mixer 1 /Bomba 1"
             )
         }
 
         fun fromCreateCard(
-            cardId: String,
             areaId: Long,
             level: Long,
             priorityId: String,
@@ -201,14 +200,14 @@ data class Card(
             hasImages: Int,
             hasVideos: Int,
             hasAudios: Int,
-            evidences: List<Evidence>,
+            evidences: List<Evidence>
         ): Card {
             return Card(
                 id = EMPTY,
                 siteCardId = 0,
                 siteId = EMPTY,
                 siteCode = EMPTY,
-                uuid = cardId,
+                uuid = EMPTY,
                 cardTypeColor = EMPTY,
                 feasibility = EMPTY,
                 effect = EMPTY,
@@ -265,7 +264,7 @@ data class Card(
                 deletedAt = EMPTY,
                 evidences = evidences,
                 stored = STORED_LOCAL,
-                cardLocation = EMPTY,
+                cardLocation = EMPTY
             )
         }
     }
@@ -314,10 +313,7 @@ fun Card.getBorderColor(): Color {
     }
 }
 
-fun List<Card>.filterByStatus(
-    filter: String,
-    userId: String,
-): List<Card> {
+fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
     return when (filter) {
         ALL_OPEN_CARDS -> {
             this.filter {
@@ -333,7 +329,7 @@ fun List<Card>.filterByStatus(
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                ) &&
+                    ) &&
                     it.creatorId == userId
             }
         }
@@ -344,7 +340,7 @@ fun List<Card>.filterByStatus(
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                ) &&
+                    ) &&
                     it.mechanicId == userId
             }
         }
@@ -355,11 +351,11 @@ fun List<Card>.filterByStatus(
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                ) &&
+                    ) &&
                     (
                         it.mechanicId == null ||
                             it.mechanicId == EMPTY
-                    )
+                        )
             }
         }
 
@@ -379,7 +375,7 @@ fun Card.isClosed() = this.status == STATUS_R || this.cardManagerCloseDate.isNul
 
 fun Card.toEntity(): CardEntity {
     return CardEntity(
-        id = this.id,
+        cardId = this.id,
         siteCardId = this.siteCardId,
         siteId = this.siteId,
         siteCode = this.siteCode,
@@ -439,7 +435,7 @@ fun Card.toEntity(): CardEntity {
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
         stored = this.stored ?: STORED_REMOTE,
-        cardLocation = this.cardLocation,
+        cardLocation = this.cardLocation
     )
 }
 
@@ -458,24 +454,24 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardCreationDate = this.creationDate,
         nodeId = this.areaId.toInt(),
         priorityId =
-            if (this.priorityId.isNullOrBlank().not()) {
-                this.priorityId?.toInt()
-                    .defaultIfNull(0)
-            } else {
-                0
-            },
+        if (this.priorityId.isNullOrBlank().not()) {
+            this.priorityId?.toInt()
+                .defaultIfNull(0)
+        } else {
+            0
+        },
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
         creatorId = this.creatorId?.toInt().defaultIfNull(0),
         comments = this.commentsAtCardCreation.orEmpty(),
-        evidences = evidences,
+        evidences = evidences
     )
 }
 
 fun Card.getCreationDate(): String {
     return this.creationDateFormatted.defaultIfNull(
-        creationDate,
+        creationDate
     )
 }
 
@@ -496,11 +492,7 @@ fun Card.validateCloseDate(): String {
 }
 
 fun Card.cardTitle(): String {
-    return if (stored == STORED_LOCAL) {
-        this.cardTypeName.orEmpty()
-    } else {
-        "${this.cardTypeName} ${this.siteCardId}"
-    }
+    return this.cardTypeName.orEmpty()
 }
 
 fun Card.enableProvisionalSolution(): Boolean {
@@ -515,4 +507,8 @@ fun Card.enableDefinitiveSolution(): Boolean {
         this.userDefinitiveSolutionName.isNullOrBlank() ||
         this.userAppDefinitiveSolutionId.isNullOrBlank() ||
         this.userAppDefinitiveSolutionName.isNullOrBlank()
+}
+
+fun Card.enableAssignMechanic(): Boolean {
+    return this.mechanicId.isNullOrEmpty() || this.mechanicName.isNullOrEmpty()
 }

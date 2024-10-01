@@ -28,9 +28,9 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
         PriorityEntity::class,
         LevelEntity::class,
         EvidenceEntity::class,
-        EmployeeEntity::class,
+        EmployeeEntity::class
     ],
-    version = 2,
+    version = 3
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao

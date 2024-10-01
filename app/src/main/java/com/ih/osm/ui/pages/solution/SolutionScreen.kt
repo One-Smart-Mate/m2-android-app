@@ -8,6 +8,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -63,6 +64,7 @@ import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingLarge
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingToolbar
+import com.ih.osm.ui.utils.ASSIGN_CARD_ACTION
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 import kotlinx.coroutines.launch
@@ -73,7 +75,7 @@ fun SolutionScreen(
     navController: NavController,
     solutionType: String,
     cardId: String,
-    viewModel: SolutionViewModel = mavericksViewModel(),
+    viewModel: SolutionViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -109,6 +111,8 @@ fun SolutionScreen(
             evidences = state.evidences,
             audioDuration = state.audioDuration,
             solutionType = state.solutionType,
+            isEvidenceEnabled = state.isEvidenceEnabled,
+            isCommentsEnabled = state.isCommentsEnabled
         )
     }
 
@@ -117,7 +121,7 @@ fun SolutionScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar),
+            modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
 
@@ -132,14 +136,14 @@ fun SolutionScreen(
                     viewModel.process(
                         SolutionViewModel.Action.SetSolutionInfo(
                             solutionType,
-                            cardId,
-                        ),
+                            cardId
+                        )
                     )
                 }
                 if (state.isLoading.not() && state.message.isNotEmpty()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message,
+                            message = state.message
                         )
                         viewModel.process(SolutionViewModel.Action.ClearMessage)
                     }
@@ -157,6 +161,10 @@ fun getSolutionScreenTitle(solutionType: String): String {
 
         PROVISIONAL_SOLUTION -> {
             stringResource(R.string.provisional_solution)
+        }
+
+        ASSIGN_CARD_ACTION -> {
+            stringResource(R.string.assign_mechanic)
         }
 
         else -> stringResource(R.string.empty)
@@ -179,32 +187,34 @@ fun SolutionScreenContent(
     onDeleteEvidence: (Evidence) -> Unit,
     audioDuration: Int,
     solutionType: String,
+    isEvidenceEnabled: Boolean,
+    isCommentsEnabled: Boolean
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = title,
+                    title = title
                 )
             }
             item {
                 CustomTextField(
                     modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingNormal),
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(PaddingNormal),
                     label = stringResource(R.string.search_for_a_user),
-                    icon = Icons.Filled.Search,
+                    icon = Icons.Filled.Search
                 ) {
                     onSearch(it)
                 }
             }
             items(employeeList) {
                 UserCardItem(
-                    title = it.name,
+                    title = it.name
                 ) {
                     onSelectEmployee(it)
                 }
@@ -216,48 +226,68 @@ fun SolutionScreenContent(
                     SectionTag(
                         title = stringResource(R.string.selected_user),
                         value = selectedEmployee?.name.orEmpty(),
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
                 CustomSpacer()
             }
 
             item {
-                CustomSpacer()
-                HorizontalDivider()
-                SectionCardEvidence(
-                    audioDuration = audioDuration,
-                    onAddEvidence = onAddEvidence,
-                    imageType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.IMCL else EvidenceType.IMPS,
-                    audioType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.AUCL else EvidenceType.AUPS,
-                    videoType = if (solutionType == DEFINITIVE_SOLUTION) EvidenceType.VICL else EvidenceType.VIPS,
-                )
-                SectionImagesEvidence(imageEvidences = evidences.toImages()) {
-                    onDeleteEvidence(it)
+                AnimatedVisibility(visible = isEvidenceEnabled) {
+                    Column {
+                        CustomSpacer()
+                        HorizontalDivider()
+                        SectionCardEvidence(
+                            audioDuration = audioDuration,
+                            onAddEvidence = onAddEvidence,
+                            imageType = if (solutionType == DEFINITIVE_SOLUTION) {
+                                EvidenceType.IMCL
+                            } else {
+                                EvidenceType.IMPS
+                            },
+                            audioType = if (solutionType == DEFINITIVE_SOLUTION) {
+                                EvidenceType.AUCL
+                            } else {
+                                EvidenceType.AUPS
+                            },
+                            videoType = if (solutionType == DEFINITIVE_SOLUTION) {
+                                EvidenceType.VICL
+                            } else {
+                                EvidenceType.VIPS
+                            }
+                        )
+                        SectionImagesEvidence(imageEvidences = evidences.toImages()) {
+                            onDeleteEvidence(it)
+                        }
+                        SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
+                            onDeleteEvidence(it)
+                        }
+                        SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
+                            onDeleteEvidence(it)
+                        }
+                        CustomSpacer()
+                    }
                 }
-                SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
-                    onDeleteEvidence(it)
-                }
-                SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
-                    onDeleteEvidence(it)
-                }
-                CustomSpacer()
             }
 
             item {
-                HorizontalDivider()
-                CustomSpacer()
-                CustomTextField(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(PaddingNormal),
-                    label = stringResource(R.string.comment_solution),
-                    icon = Icons.Filled.Create,
-                ) {
-                    onCommentChange(it)
+                AnimatedVisibility(visible = isCommentsEnabled) {
+                    Column {
+                        HorizontalDivider()
+                        CustomSpacer()
+                        CustomTextField(
+                            modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(PaddingNormal),
+                            label = stringResource(R.string.comment_solution),
+                            icon = Icons.Filled.Create
+                        ) {
+                            onCommentChange(it)
+                        }
+                        CustomSpacer()
+                    }
                 }
-                CustomSpacer()
                 CustomButton(text = stringResource(R.string.save)) {
                     onSave()
                 }
@@ -267,29 +297,26 @@ fun SolutionScreenContent(
 }
 
 @Composable
-fun UserCardItem(
-    title: String,
-    onClick: () -> Unit,
-) {
+fun UserCardItem(title: String, onClick: () -> Unit) {
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(horizontal = PaddingLarge, vertical = 1.dp)
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(12.dp),
-                )
-                .clickable {
-                    onClick()
-                },
+        Modifier
+            .fillMaxWidth()
+            .padding(horizontal = PaddingLarge, vertical = 1.dp)
+            .background(
+                color = MaterialTheme.colorScheme.primaryContainer,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable {
+                onClick()
+            }
     ) {
         Text(
             text = title,
             style =
-                MaterialTheme.typography.bodyLarge
-                    .copy(color = getTextColor()),
-            modifier = Modifier.padding(PaddingNormal),
+            MaterialTheme.typography.bodyLarge
+                .copy(color = getTextColor()),
+            modifier = Modifier.padding(PaddingNormal)
         )
     }
 }

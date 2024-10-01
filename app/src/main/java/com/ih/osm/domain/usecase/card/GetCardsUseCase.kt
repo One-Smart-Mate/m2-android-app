@@ -27,7 +27,6 @@ class GetCardsUseCaseImpl
             localCards: Boolean,
         ): List<Card> {
             if (syncRemote && NetworkConnection.isConnected()) {
-                Log.e("test", "Getting and Sync Remote Cards..")
                 val siteId = localRepository.getSiteId()
                 val remoteCards = cardRepository.getCardsByUser(siteId)
                 localRepository.saveCards(remoteCards)

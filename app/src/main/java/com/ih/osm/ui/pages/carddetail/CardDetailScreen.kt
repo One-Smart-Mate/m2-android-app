@@ -93,7 +93,7 @@ import kotlinx.coroutines.launch
 fun CardDetailScreen(
     navController: NavController,
     cardId: String,
-    viewModel: CardDetailViewModel = mavericksViewModel(),
+    viewModel: CardDetailViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -104,7 +104,7 @@ fun CardDetailScreen(
         is LCE.Fail -> {
             ErrorScreen(
                 navController = navController,
-                errorMessage = screenState.error,
+                errorMessage = screenState.error
             ) {
                 viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
             }
@@ -118,7 +118,7 @@ fun CardDetailScreen(
             CardDetailContent(
                 navController = navController,
                 card = screenState.value,
-                employeeList = state.employees,
+                employeeList = state.employees
             ) {
                 viewModel.process(CardDetailViewModel.Action.AssignCardToEmployee(it))
             }
@@ -130,7 +130,7 @@ fun CardDetailScreen(
             snackbarData = it,
             containerColor = Color.Green,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar),
+            modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
 
@@ -145,7 +145,7 @@ fun CardDetailScreen(
                 if (state.message.isNotEmpty()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message,
+                            message = state.message
                         )
                         viewModel.process(CardDetailViewModel.Action.ClearMessage)
                     }
@@ -160,16 +160,16 @@ fun CardDetailContent(
     navController: NavController,
     card: Card,
     employeeList: List<Employee>,
-    onAssignedClick: (Employee) -> Unit,
+    onAssignedClick: (Employee) -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    content = { CardDetailHeader(card) },
+                    content = { CardDetailHeader(card) }
                 )
             }
 
@@ -177,7 +177,7 @@ fun CardDetailContent(
                 CardInformationContent(
                     card = card,
                     onAssignedClick = onAssignedClick,
-                    employeeList = employeeList,
+                    employeeList = employeeList
                 )
             }
         }
@@ -189,28 +189,28 @@ fun CardDetailHeader(card: Card) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "#${card.id}",
+            text = "#${card.siteCardId}",
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
         )
         Text(
             text = card.cardTitle(),
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
         )
         Box(
             modifier =
-                Modifier
-                    .size(Size20)
-                    .background(
-                        color = card.getBorderColor(),
-                        shape = CircleShape,
-                    ),
+            Modifier
+                .size(Size20)
+                .background(
+                    color = card.getBorderColor(),
+                    shape = CircleShape
+                )
         )
     }
 }
@@ -219,7 +219,7 @@ fun CardDetailHeader(card: Card) {
 fun CardInformationContent(
     card: Card,
     employeeList: List<Employee>,
-    onAssignedClick: (Employee) -> Unit,
+    onAssignedClick: (Employee) -> Unit
 ) {
     val showBottomSheet =
         remember {
@@ -251,50 +251,54 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.status),
-            value = card.getStatus(),
+            value = card.getStatus()
         )
 
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.getCreationDate(),
+            value = card.getCreationDate()
         )
 
         SectionTag(
             title = stringResource(id = R.string.due_date),
             value =
-                if (card.dueDate.isExpired()) {
-                    stringResource(id = R.string.expired)
-                } else {
-                    card.dueDate
-                },
-            isErrorEnabled = card.dueDate.isExpired(),
+            if (card.dueDate.isExpired()) {
+                stringResource(id = R.string.expired)
+            } else {
+                card.dueDate
+            },
+            isErrorEnabled = card.dueDate.isExpired()
         )
         SectionTag(
             title = stringResource(R.string.preclassifier),
-            value = card.preclassifierValue(),
+            value = card.preclassifierValue()
         )
         SectionTag(
             title = stringResource(R.string.priority),
-            value = card.priorityValue(),
+            value = card.priorityValue()
         )
         SectionTag(
             title = stringResource(R.string.card_location),
-            value = card.cardLocation,
+            value = card.cardLocation
         )
         SectionTag(
             title = stringResource(id = R.string.created_by),
-            value = card.creatorName.orDefault(),
+            value = card.creatorName.orDefault()
         )
         SectionTag(
             title = stringResource(id = R.string.responsible),
-            value = card.responsableName.orDefault(),
+            value = card.responsableName.orDefault()
+        )
+        SectionTag(
+            title = stringResource(id = R.string.mechanic),
+            value = card.mechanicName.orDefault()
         )
     }
 
     ExpandableCard(title = stringResource(id = R.string.comments)) {
         SectionTag(
             title = stringResource(id = R.string.comments),
-            value = card.commentsAtCardCreation.orDefault(),
+            value = card.commentsAtCardCreation.orDefault()
         )
     }
 
@@ -303,30 +307,30 @@ fun CardInformationContent(
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
         SectionTag(
             title = stringResource(R.string.date),
-            value = card.validateProvisionalDate().orDefault(),
+            value = card.validateProvisionalDate().orDefault()
         )
         SectionTag(
             title = stringResource(R.string.user),
-            value = card.userProvisionalSolutionName.orDefault(),
+            value = card.userProvisionalSolutionName.orDefault()
         )
         SectionTag(
             title = stringResource(R.string.comments),
-            value = card.commentsAtCardProvisionalSolution.orDefault(),
+            value = card.commentsAtCardProvisionalSolution.orDefault()
         )
     }
 
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
         SectionTag(
             title = stringResource(R.string.date),
-            value = card.validateCloseDate().orDefault(),
+            value = card.validateCloseDate().orDefault()
         )
         SectionTag(
             title = stringResource(R.string.user),
-            value = card.userDefinitiveSolutionName.orDefault(),
+            value = card.userDefinitiveSolutionName.orDefault()
         )
         SectionTag(
             title = stringResource(R.string.comments),
-            value = card.commentsAtCardDefinitiveSolution.orDefault(),
+            value = card.commentsAtCardDefinitiveSolution.orDefault()
         )
     }
 }
@@ -340,63 +344,63 @@ fun CardInformationEvidence(card: Card) {
             if (imagesAtCreation.isNotEmpty()) {
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images),
-                    evidences = imagesAtCreation,
+                    evidences = imagesAtCreation
                 )
             }
             val imagesAtProvisionalSolution = evidences.toImagesAtProvisionalSolution()
             if (imagesAtProvisionalSolution.isNotEmpty()) {
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images_provisional_solution),
-                    evidences = imagesAtProvisionalSolution,
+                    evidences = imagesAtProvisionalSolution
                 )
             }
             val imagesAtDefinitiveSolution = evidences.toImagesAtDefinitiveSolution()
             if (imagesAtDefinitiveSolution.isNotEmpty()) {
                 EvidenceImagesCardSection(
                     title = stringResource(R.string.images_definitive_solution),
-                    evidences = imagesAtDefinitiveSolution,
+                    evidences = imagesAtDefinitiveSolution
                 )
             }
             val videosAtCreation = evidences.toVideosAtCreation()
             if (videosAtCreation.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos),
-                    evidences = videosAtCreation,
+                    evidences = videosAtCreation
                 )
             }
             val videosAtProvisionalSolution = evidences.toVideosAtProvisionalSolution()
             if (videosAtProvisionalSolution.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos_provisional_solution),
-                    evidences = videosAtProvisionalSolution,
+                    evidences = videosAtProvisionalSolution
                 )
             }
             val videosAtDefinitiveSolution = evidences.toVideosAtDefinitiveSolution()
             if (videosAtDefinitiveSolution.isNotEmpty()) {
                 EvidenceVideoCardSection(
                     title = stringResource(R.string.videos_definitive_solution),
-                    evidences = videosAtDefinitiveSolution,
+                    evidences = videosAtDefinitiveSolution
                 )
             }
             val audiosAtCreation = evidences.toAudiosAtCreation()
             if (audiosAtCreation.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios),
-                    evidences = audiosAtCreation,
+                    evidences = audiosAtCreation
                 )
             }
             val audiosAtProvisionalSolution = evidences.toAudiosAtProvisionalSolution()
             if (audiosAtProvisionalSolution.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios_provisional_solution),
-                    evidences = audiosAtProvisionalSolution,
+                    evidences = audiosAtProvisionalSolution
                 )
             }
             val audiosAtDefinitiveSolution = evidences.toAudiosAtDefinitiveSolution()
             if (audiosAtDefinitiveSolution.isNotEmpty()) {
                 EvidenceAudioCardSection(
                     title = stringResource(R.string.audios_definitive_solution),
-                    evidences = audiosAtDefinitiveSolution,
+                    evidences = audiosAtDefinitiveSolution
                 )
             }
         }
@@ -404,10 +408,7 @@ fun CardInformationEvidence(card: Card) {
 }
 
 @Composable
-fun EvidenceImagesCardSection(
-    title: String,
-    evidences: List<Evidence>,
-) {
+fun EvidenceImagesCardSection(title: String, evidences: List<Evidence>) {
     var imageUrl by remember {
         mutableStateOf(EMPTY)
     }
@@ -418,8 +419,8 @@ fun EvidenceImagesCardSection(
         Text(
             text = title,
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
         )
         LazyRow {
             items(evidences) {
@@ -427,13 +428,13 @@ fun EvidenceImagesCardSection(
                     model = it.url,
                     showIcon = false,
                     modifier =
-                        Modifier
-                            .width(Size200)
-                            .height(Size250)
-                            .clickable {
-                                imageUrl = it.url
-                                openImage = true
-                            },
+                    Modifier
+                        .width(Size200)
+                        .height(Size250)
+                        .clickable {
+                            imageUrl = it.url
+                            openImage = true
+                        }
                 )
             }
         }
@@ -445,10 +446,7 @@ fun EvidenceImagesCardSection(
 }
 
 @Composable
-fun EvidenceVideoCardSection(
-    title: String,
-    evidences: List<Evidence>,
-) {
+fun EvidenceVideoCardSection(title: String, evidences: List<Evidence>) {
     var videoUrl by remember {
         mutableStateOf(EMPTY)
     }
@@ -459,8 +457,8 @@ fun EvidenceVideoCardSection(
         Text(
             text = title,
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
         )
         LazyRow {
             items(evidences) {
@@ -468,13 +466,13 @@ fun EvidenceVideoCardSection(
                     model = it.url,
                     showIcon = false,
                     modifier =
-                        Modifier
-                            .width(Size200)
-                            .height(Size250)
-                            .clickable {
-                                videoUrl = it.url
-                                openVideo = true
-                            },
+                    Modifier
+                        .width(Size200)
+                        .height(Size250)
+                        .clickable {
+                            videoUrl = it.url
+                            openVideo = true
+                        }
                 )
             }
         }
@@ -486,25 +484,22 @@ fun EvidenceVideoCardSection(
 }
 
 @Composable
-fun EvidenceAudioCardSection(
-    title: String,
-    evidences: List<Evidence>,
-) {
+fun EvidenceAudioCardSection(title: String, evidences: List<Evidence>) {
     Column {
         Text(
             text = title,
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold)
         )
         LazyRow {
             items(evidences) {
                 VideoPlayer(
                     modifier =
-                        Modifier
-                            .size(Size120)
-                            .padding(PaddingTiny),
-                    url = it.url,
+                    Modifier
+                        .size(Size120)
+                        .padding(PaddingTiny),
+                    url = it.url
                 )
             }
         }
@@ -522,7 +517,7 @@ private fun CardDetailScreenPreview() {
                 navController = rememberNavController(),
                 card = Card.mock(),
                 employeeList = emptyList(),
-                onAssignedClick = {},
+                onAssignedClick = {}
             )
         }
     }
