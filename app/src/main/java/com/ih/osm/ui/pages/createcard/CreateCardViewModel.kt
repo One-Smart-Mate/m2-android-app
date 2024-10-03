@@ -80,7 +80,7 @@ constructor(
         val comment: String = EMPTY,
         val message: String = EMPTY,
         val evidences: List<Evidence> = emptyList(),
-        val cardId: String = UUID.randomUUID().toString(),
+        val uuid: String = UUID.randomUUID().toString(),
         val levelList: List<NodeCardItem> = emptyList(),
         val audioDuration: Int = 0,
         val isLoading: Boolean = false,
@@ -180,7 +180,7 @@ constructor(
             val list = state.evidences.toMutableList()
             list.add(
                 Evidence.fromCreateEvidence(
-                    cardId = state.cardId,
+                    cardId = state.uuid,
                     url = uri.toString(),
                     type = type.name
                 )
@@ -359,7 +359,8 @@ constructor(
                     hasImages = state.evidences.hasImages(),
                     hasVideos = state.evidences.hasVideos(),
                     hasAudios = state.evidences.hasAudios(),
-                    evidences = state.evidences
+                    evidences = state.evidences,
+                    uuid = state.uuid
                 )
             kotlin.runCatching {
                 saveCardUseCase(card)

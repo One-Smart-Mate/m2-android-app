@@ -26,14 +26,10 @@ data class Evidence(
     val status: String,
     val createdAt: String?,
     val updatedAt: String?,
-    val deletedAt: String?,
+    val deletedAt: String?
 ) {
     companion object {
-        fun fromCreateEvidence(
-            cardId: String,
-            url: String,
-            type: String,
-        ): Evidence {
+        fun fromCreateEvidence(cardId: String, url: String, type: String): Evidence {
             return Evidence(
                 id = UUID.randomUUID().toString(),
                 cardId = cardId,
@@ -43,7 +39,7 @@ data class Evidence(
                 status = STATUS_A,
                 createdAt = null,
                 updatedAt = null,
-                deletedAt = null,
+                deletedAt = null
             )
         }
     }
@@ -53,7 +49,7 @@ fun Evidence.toEntity(): EvidenceEntity {
     return EvidenceEntity(
         cardId = this.cardId,
         url = this.url,
-        type = this.type,
+        type = this.type
     )
 }
 

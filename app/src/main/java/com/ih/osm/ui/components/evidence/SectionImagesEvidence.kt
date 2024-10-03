@@ -19,17 +19,14 @@ import com.ih.osm.ui.theme.Size200
 import com.ih.osm.ui.theme.Size250
 
 @Composable
-fun SectionImagesEvidence(
-    imageEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit,
-) {
+fun SectionImagesEvidence(imageEvidences: List<Evidence>, onDeleteEvidence: (Evidence) -> Unit) {
     AnimatedVisibility(visible = imageEvidences.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.images),
                 style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold),
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
             )
             LazyRow {
                 items(imageEvidences) {
@@ -37,9 +34,9 @@ fun SectionImagesEvidence(
                         model = it.url,
                         showIcon = true,
                         modifier =
-                            Modifier
-                                .width(Size200)
-                                .height(Size250),
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
                     ) {
                         onDeleteEvidence(it)
                     }

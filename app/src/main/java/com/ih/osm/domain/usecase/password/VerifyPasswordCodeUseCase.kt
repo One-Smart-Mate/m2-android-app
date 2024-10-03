@@ -9,11 +9,11 @@ interface VerifyPasswordCodeUseCase {
 }
 
 class VerifyPasswordCodeUseCaseImpl
-    @Inject
-    constructor(
-        private val authRepository: AuthRepository,
-    ) : VerifyPasswordCodeUseCase {
-        override suspend fun invoke(request: RestorePasswordRequest) {
-            authRepository.verifyPasswordCode(request)
-        }
+@Inject
+constructor(
+    private val authRepository: AuthRepository
+) : VerifyPasswordCodeUseCase {
+    override suspend fun invoke(request: RestorePasswordRequest) {
+        authRepository.verifyPasswordCode(request)
     }
+}

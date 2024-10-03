@@ -17,11 +17,10 @@ object DatabaseModule {
 
     @Singleton
     @Provides
-    fun providesDatabase(
-        @ApplicationContext context: Context,
-    ) = Room.databaseBuilder(context, AppDatabase::class.java, APP_DATABASE_NAME)
-        .fallbackToDestructiveMigration()
-        .build()
+    fun providesDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, AppDatabase::class.java, APP_DATABASE_NAME)
+            .fallbackToDestructiveMigration()
+            .build()
 
     @Singleton
     @Provides

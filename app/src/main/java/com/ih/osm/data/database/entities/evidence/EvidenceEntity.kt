@@ -17,7 +17,7 @@ data class EvidenceEntity(
     @ColumnInfo(name = "url")
     val url: String,
     @ColumnInfo(name = "type")
-    val type: String,
+    val type: String
 )
 
 fun EvidenceEntity.toDomain(): Evidence {
@@ -30,6 +30,6 @@ fun EvidenceEntity.toDomain(): Evidence {
         updatedAt = EMPTY,
         deletedAt = EMPTY,
         status = STATUS_A,
-        siteId = EMPTY,
+        siteId = EMPTY
     )
 }

@@ -10,14 +10,16 @@ interface UpdateTokenUseCase {
 }
 
 class UpdateTokenUseCaseImpl
-    @Inject
-    constructor(
-        private val localRepository: LocalRepository,
-        private val authRepository: AuthRepository,
-    ) : UpdateTokenUseCase {
-        override suspend fun invoke(token: String) {
-            localRepository.getUser()?.let {
-                authRepository.updateToken(UpdateTokenRequest(userId = it.userId.toInt(), appToken = token))
-            }
+@Inject
+constructor(
+    private val localRepository: LocalRepository,
+    private val authRepository: AuthRepository
+) : UpdateTokenUseCase {
+    override suspend fun invoke(token: String) {
+        localRepository.getUser()?.let {
+            authRepository.updateToken(
+                UpdateTokenRequest(userId = it.userId.toInt(), appToken = token)
+            )
         }
     }
+}

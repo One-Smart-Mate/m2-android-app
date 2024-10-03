@@ -19,27 +19,24 @@ import com.ih.osm.ui.theme.Size200
 import com.ih.osm.ui.theme.Size250
 
 @Composable
-fun SectionVideosEvidence(
-    videoEvidences: List<Evidence>,
-    onDeleteEvidence: (Evidence) -> Unit,
-) {
+fun SectionVideosEvidence(videoEvidences: List<Evidence>, onDeleteEvidence: (Evidence) -> Unit) {
     AnimatedVisibility(visible = videoEvidences.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.videos),
                 style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold),
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
             )
             LazyRow {
                 items(videoEvidences) {
                     VideoPlayer(
                         modifier =
-                            Modifier
-                                .width(Size200)
-                                .height(Size250),
+                        Modifier
+                            .width(Size200)
+                            .height(Size250),
                         url = it.url,
-                        showIcon = true,
+                        showIcon = true
                     ) {
                         onDeleteEvidence(it)
                     }

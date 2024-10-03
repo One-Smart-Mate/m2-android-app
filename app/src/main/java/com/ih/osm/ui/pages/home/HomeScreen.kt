@@ -88,7 +88,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = mavericksViewModel(),
-    syncCatalogs: String = EMPTY,
+    syncCatalogs: String = EMPTY
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -119,7 +119,7 @@ fun HomeScreen(
             showSyncRemoteCards = state.showSyncRemoteCards,
             onSyncRemoteCardsClick = {
                 viewModel.process(HomeViewModel.Action.SyncRemoteCards)
-            },
+            }
         )
     }
 
@@ -128,7 +128,7 @@ fun HomeScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar),
+            modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
 
@@ -144,7 +144,7 @@ fun HomeScreen(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message,
+                            message = state.message
                         )
                         viewModel.process(HomeViewModel.Action.ClearMessage)
                     }
@@ -167,11 +167,11 @@ private fun HomeContent(
     showSyncCatalogs: Boolean,
     onSyncCatalogsClick: () -> Unit,
     showSyncRemoteCards: Boolean,
-    onSyncRemoteCardsClick: () -> Unit,
+    onSyncRemoteCardsClick: () -> Unit
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize()
         ) {
             stickyHeader {
                 user?.let {
@@ -179,7 +179,7 @@ private fun HomeContent(
                         navController = navController,
                         user = it,
                         padding = padding.calculateTopPadding(),
-                        networkStatus = networkStatus,
+                        networkStatus = networkStatus
                     )
                 }
             }
@@ -191,7 +191,7 @@ private fun HomeContent(
                         icon = Icons.Outlined.Refresh,
                         description = stringResource(R.string.sync_remote_cards_description),
                         subText = stringResource(R.string.important),
-                        subTextColor = MaterialTheme.colorScheme.error,
+                        subTextColor = MaterialTheme.colorScheme.error
                     ) {
                         onSyncRemoteCardsClick()
                     }
@@ -202,15 +202,15 @@ private fun HomeContent(
                         title = stringResource(R.string.sync_cards),
                         icon = Icons.Outlined.Refresh,
                         subText =
-                            stringResource(
-                                R.string.last_update,
-                                lastSyncUpdateDate,
-                            ),
+                        stringResource(
+                            R.string.last_update,
+                            lastSyncUpdateDate
+                        ),
                         description =
-                            stringResource(
-                                R.string.local_cards,
-                                cardList.toLocalCards().size,
-                            ),
+                        stringResource(
+                            R.string.local_cards,
+                            cardList.toLocalCards().size
+                        )
                     ) {
                         onSyncCardsClick()
                     }
@@ -221,7 +221,7 @@ private fun HomeContent(
                         icon = Icons.Outlined.Refresh,
                         description = stringResource(R.string.you_have_new_catalogs_to_sync),
                         subText = stringResource(R.string.important),
-                        subTextColor = MaterialTheme.colorScheme.error,
+                        subTextColor = MaterialTheme.colorScheme.error
                     ) {
                         onSyncCatalogsClick()
                     }
@@ -230,14 +230,14 @@ private fun HomeContent(
                     title = stringResource(R.string.anomalies_cards),
                     icon = Icons.Outlined.Build,
                     description =
-                        if (cardList.isNotEmpty()) {
-                            stringResource(
-                                R.string.total_cards,
-                                cardList.toAnomaliesList().size,
-                            )
-                        } else {
-                            EMPTY
-                        },
+                    if (cardList.isNotEmpty()) {
+                        stringResource(
+                            R.string.total_cards,
+                            cardList.toAnomaliesList().size
+                        )
+                    } else {
+                        EMPTY
+                    }
                 ) {
                     onCardClick(CARD_ANOMALIES)
                 }
@@ -253,47 +253,47 @@ private fun HomeSectionCardItem(
     description: String = EMPTY,
     subText: String = EMPTY,
     subTextColor: Color = Color.Unspecified,
-    onClick: () -> Unit,
+    onClick: () -> Unit
 ) {
     Card(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(PaddingNormal),
-        onClick = onClick,
+        Modifier
+            .fillMaxWidth()
+            .padding(PaddingNormal),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             CustomSpacer()
             Icon(icon, contentDescription = EMPTY, tint = getPrimaryColor())
             Text(
                 text = title,
                 style =
-                    MaterialTheme.typography.titleLarge.copy(
-                        color = getPrimaryColor(),
-                    ),
-                modifier = Modifier.padding(PaddingNormal),
+                MaterialTheme.typography.titleLarge.copy(
+                    color = getPrimaryColor()
+                ),
+                modifier = Modifier.padding(PaddingNormal)
             )
             AnimatedVisibility(visible = description.isNotEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = description,
                         style =
-                            MaterialTheme.typography.bodyMedium
-                                .copy(fontWeight = FontWeight.SemiBold),
-                        modifier = Modifier.padding(bottom = Size2),
+                        MaterialTheme.typography.bodyMedium
+                            .copy(fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier.padding(bottom = Size2)
                     )
                     AnimatedVisibility(visible = subText.isNotEmpty()) {
                         Text(
                             text = subText,
                             style =
-                                MaterialTheme.typography.bodySmall
-                                    .copy(color = subTextColor),
+                            MaterialTheme.typography.bodySmall
+                                .copy(color = subTextColor)
                         )
                     }
                     CustomSpacer()
@@ -308,24 +308,24 @@ private fun HomeAppBar(
     navController: NavController,
     user: User,
     padding: Dp,
-    networkStatus: NetworkStatus,
+    networkStatus: NetworkStatus
 ) {
     Column(
         modifier = Modifier.headerContent(padding),
-        horizontalAlignment = Alignment.End,
+        horizontalAlignment = Alignment.End
     ) {
         Icon(
             Icons.Outlined.Settings,
             contentDescription = stringResource(R.string.empty),
             tint = getColor(),
             modifier =
-                Modifier.clickable {
-                    navController.navigateToAccount()
-                },
+            Modifier.clickable {
+                navController.navigateToAccount()
+            }
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             CircularImage(image = user.logo)
             CustomSpacer(direction = SpacerDirection.HORIZONTAL)
@@ -333,17 +333,17 @@ private fun HomeAppBar(
                 Text(
                     text = stringResource(R.string.welcome_back, user.name),
                     style =
-                        MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = getColor(),
-                        ),
+                    MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = getColor()
+                    )
                 )
                 Text(
                     text = user.companyName,
                     style =
-                        MaterialTheme.typography.bodyMedium.copy(
-                            color = getColor(),
-                        ),
+                    MaterialTheme.typography.bodyMedium.copy(
+                        color = getColor()
+                    )
                 )
                 CustomSpacer(space = SpacerSize.TINY)
                 LazyRow {
@@ -353,7 +353,7 @@ private fun HomeAppBar(
                                 title = it,
                                 tagSize = TagSize.SMALL,
                                 tagType = TagType.OUTLINE,
-                                invertedColors = true,
+                                invertedColors = true
                             )
                         }
                     }
@@ -363,7 +363,7 @@ private fun HomeAppBar(
         CustomSpacer()
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
             NetworkCard(networkStatus = networkStatus)
             Icon(
@@ -371,9 +371,9 @@ private fun HomeAppBar(
                 contentDescription = EMPTY,
                 tint = getColor(),
                 modifier =
-                    Modifier.clickable {
-                        navController.navigateToQrScanner()
-                    },
+                Modifier.clickable {
+                    navController.navigateToQrScanner()
+                }
             )
         }
         CustomSpacer()
@@ -399,7 +399,7 @@ private fun HomeScreenPreview() {
                 showSyncCatalogs = true,
                 onSyncCatalogsClick = {},
                 showSyncRemoteCards = true,
-                onSyncRemoteCardsClick = {},
+                onSyncRemoteCardsClick = {}
             )
         }
     }

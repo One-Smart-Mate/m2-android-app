@@ -2,10 +2,7 @@ package com.ih.osm.ui.pages.dev
 
 import android.net.Uri
 import android.util.Log
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -23,13 +20,10 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.google.firebase.storage.FirebaseStorage
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.ui.extensions.defaultScreen
-import com.ih.osm.ui.pages.createcard.PhotoCardItem
-import com.ih.osm.ui.theme.Size200
-import com.ih.osm.ui.theme.Size250
-import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlinx.coroutines.tasks.await
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
@@ -41,20 +35,20 @@ fun DevScreen() {
     val notificationManager = NotificationManager(context)
     Scaffold { padding ->
         LazyRow(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             item {
-                PhotoCardItem(
-                    model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTABbXr4i-QODqhy7tofHYmTYh05rYPktzacw&s",
-                    showIcon = false,
-                    modifier =
-                        Modifier
-                            .width(Size200)
-                            .height(Size250)
-                            .clickable {
-                                showButton = true
-                            },
-                )
+//                PhotoCardItem(
+//                    model = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTABbXr4i-QODqhy7tofHYmTYh05rYPktzacw&s",
+//                    showIcon = false,
+//                    modifier =
+//                    Modifier
+//                        .width(Size200)
+//                        .height(Size250)
+//                        .clickable {
+//                            showButton = true
+//                        }
+//                )
 
                 if (showButton) {
                     Dialog(
@@ -62,11 +56,11 @@ fun DevScreen() {
                             showButton = false
                         },
                         properties =
-                            DialogProperties(
-                                dismissOnBackPress = true,
-                                dismissOnClickOutside = false,
-                                usePlatformDefaultWidth = false,
-                            ),
+                        DialogProperties(
+                            dismissOnBackPress = true,
+                            dismissOnClickOutside = false,
+                            usePlatformDefaultWidth = false
+                        )
                     ) {
                     }
                 }

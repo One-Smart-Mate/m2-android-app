@@ -26,11 +26,7 @@ import com.ih.osm.ui.utils.EMPTY
 
 @OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun PreviewImage(
-    openImage: Boolean,
-    model: String,
-    onDismissClick: () -> Unit,
-) {
+fun PreviewImage(openImage: Boolean, model: String, onDismissClick: () -> Unit) {
     var scale by remember { mutableFloatStateOf(1f) }
     var offset by remember { mutableStateOf(Offset(0f, 0f)) }
     if (openImage) {
@@ -39,33 +35,33 @@ fun PreviewImage(
                 onDismissClick()
             },
             properties =
-                DialogProperties(
-                    dismissOnBackPress = true,
-                    dismissOnClickOutside = false,
-                    usePlatformDefaultWidth = false,
-                ),
+            DialogProperties(
+                dismissOnBackPress = true,
+                dismissOnClickOutside = false,
+                usePlatformDefaultWidth = false
+            )
         ) {
             Box {
                 GlideImage(
                     model = model,
                     contentDescription = EMPTY,
                     modifier =
-                        Modifier
-                            .pointerInput(Unit) {
-                                detectTransformGestures { _, pan, zoom, _ ->
-                                    scale *= zoom
-                                    scale = scale.coerceIn(0.5f, 3f)
-                                    offset =
-                                        if (scale == 1f) Offset(0f, 0f) else offset + pan
-                                }
+                    Modifier
+                        .pointerInput(Unit) {
+                            detectTransformGestures { _, pan, zoom, _ ->
+                                scale *= zoom
+                                scale = scale.coerceIn(0.5f, 3f)
+                                offset =
+                                    if (scale == 1f) Offset(0f, 0f) else offset + pan
                             }
-                            .graphicsLayer(
-                                scaleX = scale,
-                                scaleY = scale,
-                                translationX = offset.x,
-                                translationY = offset.y,
-                            )
-                            .fillMaxSize(),
+                        }
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y
+                        )
+                        .fillMaxSize()
                 )
                 Box(modifier = Modifier.padding(horizontal = PaddingNormal)) {
                     CustomIconButton(text = EMPTY, icon = Icons.Outlined.Close) {

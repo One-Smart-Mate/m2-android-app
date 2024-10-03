@@ -13,13 +13,13 @@ data class EmployeeEntity(
     @ColumnInfo(name = "name")
     val name: String,
     @ColumnInfo(name = "email")
-    val email: String,
+    val email: String
 )
 
 fun EmployeeEntity.toDomain(): Employee {
     return Employee(
         id = this.id,
         name = this.name,
-        email = this.email,
+        email = this.email
     )
 }

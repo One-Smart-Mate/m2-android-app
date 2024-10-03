@@ -25,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -32,6 +33,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.osm.R
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
@@ -47,7 +49,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RestoreAccountScreen(
     navController: NavController,
-    viewModel: RestoreAccountViewModel = mavericksViewModel(),
+    viewModel: RestoreAccountViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -73,13 +75,13 @@ fun RestoreAccountScreen(
         onConfirmPasswordChange = {
             viewModel.process(RestoreAccountViewModel.Action.OnConfirmPasswordChange(it))
         },
-        canResend = state.canResend,
+        canResend = state.canResend
     )
 
     if (state.message.isNotEmpty() && state.isLoading.not()) {
         scope.launch {
             snackBarHostState.showSnackbar(
-                message = state.message,
+                message = state.message
             )
             viewModel.process(RestoreAccountViewModel.Action.ClearMessage)
         }
@@ -89,7 +91,7 @@ fun RestoreAccountScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar),
+            modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
 
@@ -115,25 +117,28 @@ private fun RestoreAccountContent(
     onCodeChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    canResend: Boolean,
+    canResend: Boolean
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
-                CustomAppBar(navController = navController, title = "Restore account")
+                CustomAppBar(
+                    navController = navController,
+                    title = stringResource(R.string.restore_account)
+                )
             }
 
             item {
                 Column(
-                    modifier = Modifier.padding(PaddingNormal),
+                    modifier = Modifier.padding(PaddingNormal)
                 ) {
                     AnimatedVisibility(visible = currentStep == 1) {
                         VerifyEmailContent(
                             isLoading = isLoading,
                             onEmailChange = onEmailChange,
-                            onActionClick = onActionClick,
+                            onActionClick = onActionClick
                         )
                     }
 
@@ -142,7 +147,7 @@ private fun RestoreAccountContent(
                             isLoading = isLoading,
                             onActionClick = onActionClick,
                             onCodeChange = onCodeChange,
-                            canResend = canResend,
+                            canResend = canResend
                         )
                     }
 
@@ -151,7 +156,7 @@ private fun RestoreAccountContent(
                             isLoading = isLoading,
                             onActionClick = onActionClick,
                             onPasswordChange = onPasswordChange,
-                            onConfirmPasswordChange = onConfirmPasswordChange,
+                            onConfirmPasswordChange = onConfirmPasswordChange
                         )
                     }
                 }
@@ -164,20 +169,22 @@ private fun RestoreAccountContent(
 private fun VerifyEmailContent(
     isLoading: Boolean,
     onEmailChange: (String) -> Unit,
-    onActionClick: (String) -> Unit,
+    onActionClick: (String) -> Unit
 ) {
     Column {
-        Text(text = "Enter your email to reset your password, we'll send you a code to reset your password.")
+        Text(
+            text = stringResource(R.string.restore_account_description)
+        )
         CustomSpacer()
         CustomTextField(
-            label = "Email",
+            label = stringResource(R.string.email),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             onEmailChange(it)
         }
         CustomSpacer()
-        CustomButton(text = "Verify email", isLoading = isLoading) {
+        CustomButton(text = stringResource(R.string.verify_email), isLoading = isLoading) {
             onActionClick("email_check")
         }
     }
@@ -188,25 +195,28 @@ private fun VerifyCodeContent(
     isLoading: Boolean,
     onActionClick: (String) -> Unit,
     onCodeChange: (String) -> Unit,
-    canResend: Boolean,
+    canResend: Boolean
 ) {
     Column {
-        Text(text = "Enter the verification code from your email")
+        Text(text = stringResource(R.string.enter_the_verification_code_from_your_email))
         CustomSpacer()
         CustomTextField(
-            label = "Code",
+            label = stringResource(R.string.code),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             onCodeChange(it)
         }
         CustomSpacer()
-        CustomButton(text = "Verify Code", isLoading = isLoading) {
+        CustomButton(text = stringResource(R.string.verify_code), isLoading = isLoading) {
             onActionClick("code_check")
         }
         CustomSpacer()
         AnimatedVisibility(visible = isLoading.not() && canResend) {
-            CustomButton(text = "Resend code", buttonType = ButtonType.OUTLINE) {
+            CustomButton(
+                text = stringResource(R.string.resend_code),
+                buttonType = ButtonType.OUTLINE
+            ) {
                 onActionClick("resend_check")
             }
         }
@@ -218,28 +228,28 @@ private fun ChangePasswordContent(
     isLoading: Boolean,
     onPasswordChange: (String) -> Unit,
     onConfirmPasswordChange: (String) -> Unit,
-    onActionClick: (String) -> Unit,
+    onActionClick: (String) -> Unit
 ) {
     Column {
-        Text(text = "Enter your new password")
+        Text(text = stringResource(R.string.enter_your_new_password))
         CustomSpacer()
         CustomTextField(
-            label = "New Password",
+            label = stringResource(R.string.new_password),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             onPasswordChange(it)
         }
         CustomSpacer()
         CustomTextField(
-            label = "Confirm password",
+            label = stringResource(R.string.confirm_password),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth()
         ) {
             onConfirmPasswordChange(it)
         }
         CustomSpacer()
-        CustomButton(text = "Confirm", isLoading = isLoading) {
+        CustomButton(text = stringResource(R.string.confirm), isLoading = isLoading) {
             onActionClick("password_check")
         }
     }
@@ -261,7 +271,7 @@ fun LoginPreview() {
                 onCodeChange = {},
                 onPasswordChange = {},
                 onConfirmPasswordChange = {},
-                canResend = true,
+                canResend = true
             )
         }
     }

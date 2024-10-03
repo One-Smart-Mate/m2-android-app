@@ -11,18 +11,18 @@ interface GetLevelsUseCase {
 }
 
 class GetLevelsUseCaseImpl
-    @Inject
-    constructor(
-        private val levelRepository: LevelRepository,
-        private val localRepository: LocalRepository,
-    ) : GetLevelsUseCase {
-        override suspend fun invoke(syncRemote: Boolean): List<Level> {
-            if (syncRemote) {
-                val siteId = localRepository.getSiteId()
-                val levelList = levelRepository.getLevels(siteId)
-                Log.e("test", "Level List $levelList")
-                localRepository.saveLevels(levelList)
-            }
-            return localRepository.getLevels()
+@Inject
+constructor(
+    private val levelRepository: LevelRepository,
+    private val localRepository: LocalRepository
+) : GetLevelsUseCase {
+    override suspend fun invoke(syncRemote: Boolean): List<Level> {
+        if (syncRemote) {
+            val siteId = localRepository.getSiteId()
+            val levelList = levelRepository.getLevels(siteId)
+            Log.e("test", "Level List $levelList")
+            localRepository.saveLevels(levelList)
         }
+        return localRepository.getLevels()
     }
+}

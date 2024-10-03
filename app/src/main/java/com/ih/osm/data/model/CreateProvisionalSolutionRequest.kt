@@ -5,5 +5,5 @@ data class CreateProvisionalSolutionRequest(
     val userProvisionalSolutionId: Int,
     val userAppProvisionalSolutionId: Int,
     val comments: String,
-    val evidences: List<CreateEvidenceRequest>,
+    val evidences: List<CreateEvidenceRequest>
 )

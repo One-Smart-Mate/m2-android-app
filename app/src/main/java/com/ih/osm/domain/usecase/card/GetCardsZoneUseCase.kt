@@ -11,19 +11,19 @@ interface GetCardsZoneUseCase {
 }
 
 class GetCardsZoneUseCaseImpl
-    @Inject
-    constructor(
-        private val cardRepository: CardRepository,
-        private val localRepository: LocalRepository,
-    ) : GetCardsZoneUseCase {
-        override suspend fun invoke(superiorId: String): List<Card> {
-            val siteId = localRepository.getSiteId()
-            val area = localRepository.getLevel(superiorId)
-            val id = area?.superiorId.orEmpty()
-            return if (NetworkConnection.isConnected()) {
-                cardRepository.getCardsZone(superiorId = id, siteId = siteId)
-            } else {
-                localRepository.getCardsZone(superiorId = id, siteId = siteId)
-            }
+@Inject
+constructor(
+    private val cardRepository: CardRepository,
+    private val localRepository: LocalRepository
+) : GetCardsZoneUseCase {
+    override suspend fun invoke(superiorId: String): List<Card> {
+        val siteId = localRepository.getSiteId()
+        val area = localRepository.getLevel(superiorId)
+        val id = area?.superiorId.orEmpty()
+        return if (NetworkConnection.isConnected()) {
+            cardRepository.getCardsZone(superiorId = id, siteId = siteId)
+        } else {
+            localRepository.getCardsZone(superiorId = id, siteId = siteId)
         }
     }
+}

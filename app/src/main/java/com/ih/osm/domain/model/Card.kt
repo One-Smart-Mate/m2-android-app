@@ -200,14 +200,15 @@ data class Card(
             hasImages: Int,
             hasVideos: Int,
             hasAudios: Int,
-            evidences: List<Evidence>
+            evidences: List<Evidence>,
+            uuid: String
         ): Card {
             return Card(
                 id = EMPTY,
                 siteCardId = 0,
                 siteId = EMPTY,
                 siteCode = EMPTY,
-                uuid = EMPTY,
+                uuid = uuid,
                 cardTypeColor = EMPTY,
                 feasibility = EMPTY,
                 effect = EMPTY,
@@ -512,3 +513,6 @@ fun Card.enableDefinitiveSolution(): Boolean {
 fun Card.enableAssignMechanic(): Boolean {
     return this.mechanicId.isNullOrEmpty() || this.mechanicName.isNullOrEmpty()
 }
+
+fun Card.isLocalCard() = stored == STORED_LOCAL
+fun Card.isRemoteCard() = stored == STORED_REMOTE

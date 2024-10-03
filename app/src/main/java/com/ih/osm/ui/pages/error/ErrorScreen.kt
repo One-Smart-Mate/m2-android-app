@@ -38,60 +38,56 @@ import com.ih.osm.ui.theme.Size38
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun ErrorScreen(
-    navController: NavController,
-    errorMessage: String,
-    onClick: () -> Unit,
-) {
+fun ErrorScreen(navController: NavController, errorMessage: String, onClick: () -> Unit) {
     LazyColumn(
         modifier =
-            Modifier
-                .fillMaxSize()
-                .background(
-                    color = MaterialTheme.colorScheme.error,
-                )
-                .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal),
+        Modifier
+            .fillMaxSize()
+            .background(
+                color = MaterialTheme.colorScheme.error
+            )
+            .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal)
     ) {
         item {
             Icon(
                 Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                 contentDescription = stringResource(R.string.empty),
                 modifier =
-                    Modifier
-                        .size(Size38)
-                        .clickable {
-                            navController.popBackStack()
-                        },
-                tint = Color.White,
+                Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
+                tint = Color.White
             )
             Column(
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
                     Icons.Filled.Close,
                     contentDescription = EMPTY,
                     modifier = Modifier.size(100.dp),
-                    tint = Color.White,
+                    tint = Color.White
                 )
                 CustomSpacer()
                 Text(
                     text = "Ups! Something went wrong!",
                     style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(
-                                fontWeight = FontWeight.Bold,
-                                color = Color.White,
-                            ),
+                    MaterialTheme.typography.titleLarge
+                        .copy(
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
                 )
                 CustomSpacer()
                 Text(
                     text = errorMessage,
                     style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            color = Color.White,
-                        ),
+                    MaterialTheme.typography.bodyLarge.copy(
+                        color = Color.White
+                    )
                 )
                 CustomSpacer()
                 CustomButton(text = "Reload data", buttonType = ButtonType.ERROR) {

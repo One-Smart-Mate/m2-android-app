@@ -25,7 +25,7 @@ private val DarkColorScheme =
         secondaryContainer = Color(0XFF3f4759),
         tertiaryContainer = Color(0XFF583e5b),
         onBackground = Color(0XFFe3e2e6),
-        onSurface = Color(0XFFe3e2e6),
+        onSurface = Color(0XFFe3e2e6)
     )
 
 private val LightColorScheme =
@@ -42,7 +42,7 @@ private val LightColorScheme =
         secondaryContainer = Color(0XFFdbe2f9),
         tertiaryContainer = Color(0XFFfbd7fc),
         onBackground = Color(0XFF1b1b1f),
-        onSurface = Color(0XFF1b1b1f),
+        onSurface = Color(0XFF1b1b1f)
     )
 
 @Composable
@@ -50,7 +50,7 @@ fun OsmAppTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
-    content: @Composable () -> Unit,
+    content: @Composable () -> Unit
 ) {
     val colorScheme =
         when {
@@ -66,6 +66,6 @@ fun OsmAppTheme(
     MaterialTheme(
         colorScheme = colorScheme,
         typography = Typography,
-        content = content,
+        content = content
     )
 }

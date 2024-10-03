@@ -9,11 +9,11 @@ interface GetUserUseCase {
 }
 
 class GetUserUseCaseImpl
-    @Inject
-    constructor(
-        private val localRepository: LocalRepository,
-    ) : GetUserUseCase {
-        override suspend fun invoke(): User? {
-            return localRepository.getUser()
-        }
+@Inject
+constructor(
+    private val localRepository: LocalRepository
+) : GetUserUseCase {
+    override suspend fun invoke(): User? {
+        return localRepository.getUser()
     }
+}

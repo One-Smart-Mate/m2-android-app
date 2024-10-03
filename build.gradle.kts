@@ -6,4 +6,6 @@ plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.firebase.crashlytics") version "3.0.2" apply false
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0" apply false
+    alias(libs.plugins.jetbrainsCompose) apply false
+    alias(libs.plugins.compose.compiler) apply false
 }

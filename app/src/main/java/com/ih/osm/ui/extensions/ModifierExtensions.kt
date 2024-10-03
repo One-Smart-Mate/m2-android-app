@@ -17,7 +17,7 @@ fun Modifier.headerContent(paddingTop: Dp): Modifier {
     return this
         .fillMaxWidth()
         .background(
-            color = MaterialTheme.colorScheme.primary,
+            color = MaterialTheme.colorScheme.primary
         )
         .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
 }

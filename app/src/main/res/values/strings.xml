@@ -166,4 +166,14 @@
     <string name="assigned_mechanic">Assigning mechanic</string>
     <string name="assign_mechanic">Assign Mechanic</string>
     <string name="assign_card">Assign Card</string>
+    <string name="restore_account">Restore account</string>
+    <string name="restore_account_description">Enter your email to reset your password, we\'ll send you a code to reset your password.</string>
+    <string name="verify_email">Verify email</string>
+    <string name="enter_the_verification_code_from_your_email">Enter the verification code from your email</string>
+    <string name="code">Code</string>
+    <string name="verify_code">Verify Code</string>
+    <string name="resend_code">Resend code</string>
+    <string name="enter_your_new_password">Enter your new password</string>
+    <string name="new_password">New Password</string>
+    <string name="confirm_password">Confirm password</string>
 </resources>

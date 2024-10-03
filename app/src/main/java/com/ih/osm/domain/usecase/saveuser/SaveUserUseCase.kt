@@ -9,11 +9,11 @@ interface SaveUserUseCase {
 }
 
 class SaveUserUseCaseImpl
-    @Inject
-    constructor(
-        private val localRepository: LocalRepository,
-    ) : SaveUserUseCase {
-        override suspend fun invoke(user: User): Long {
-            return localRepository.saveUser(user)
-        }
+@Inject
+constructor(
+    private val localRepository: LocalRepository
+) : SaveUserUseCase {
+    override suspend fun invoke(user: User): Long {
+        return localRepository.saveUser(user)
     }
+}

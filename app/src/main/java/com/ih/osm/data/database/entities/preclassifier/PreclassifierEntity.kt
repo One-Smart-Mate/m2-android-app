@@ -15,7 +15,7 @@ data class PreclassifierEntity(
     @ColumnInfo(name = "description")
     val description: String,
     @ColumnInfo(name = "card_type_id")
-    val cardTypeId: String,
+    val cardTypeId: String
 )
 
 fun PreclassifierEntity.toDomain(): Preclassifier {
@@ -23,6 +23,6 @@ fun PreclassifierEntity.toDomain(): Preclassifier {
         id = this.id,
         code = this.code,
         description = this.description,
-        cardTypeId = this.cardTypeId,
+        cardTypeId = this.cardTypeId
     )
 }

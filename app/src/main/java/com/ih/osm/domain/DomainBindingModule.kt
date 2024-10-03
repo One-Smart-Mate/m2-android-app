@@ -80,25 +80,39 @@ interface DomainBindingModule {
     fun bindGetCardsUseCase(getCardsUseCaseImpl: GetCardsUseCaseImpl): GetCardsUseCase
 
     @Binds
-    fun bindGetCardTypesUseCase(getCardTypesUseCaseImpl: GetCardTypesUseCaseImpl): GetCardTypesUseCase
+    fun bindGetCardTypesUseCase(
+        getCardTypesUseCaseImpl: GetCardTypesUseCaseImpl
+    ): GetCardTypesUseCase
 
     @Binds
-    fun bindGetPreclassifiersUseCase(getPreclassifiersUseCaseImpl: GetPreclassifiersUseCaseImpl): GetPreclassifiersUseCase
+    fun bindGetPreclassifiersUseCase(
+        getPreclassifiersUseCaseImpl: GetPreclassifiersUseCaseImpl
+    ): GetPreclassifiersUseCase
 
     @Binds
-    fun bindGetPrioritiesUseCase(getPrioritiesUseCaseImpl: GetPrioritiesUseCaseImpl): GetPrioritiesUseCase
+    fun bindGetPrioritiesUseCase(
+        getPrioritiesUseCaseImpl: GetPrioritiesUseCaseImpl
+    ): GetPrioritiesUseCase
 
     @Binds
-    fun bindSyncCatalogUseCase(syncCatalogsUseCaseImpl: SyncCatalogsUseCaseImpl): SyncCatalogsUseCase
+    fun bindSyncCatalogUseCase(
+        syncCatalogsUseCaseImpl: SyncCatalogsUseCaseImpl
+    ): SyncCatalogsUseCase
 
     @Binds
-    fun bindGetCardDetailUseCase(getCardDetailUseCaseImpl: GetCardDetailUseCaseImpl): GetCardDetailUseCase
+    fun bindGetCardDetailUseCase(
+        getCardDetailUseCaseImpl: GetCardDetailUseCaseImpl
+    ): GetCardDetailUseCase
 
     @Binds
-    fun bindCleanCatalogsUseCase(cleanCatalogsUseCaseImpl: CleanCatalogsUseCaseImpl): CleanCatalogsUseCase
+    fun bindCleanCatalogsUseCase(
+        cleanCatalogsUseCaseImpl: CleanCatalogsUseCaseImpl
+    ): CleanCatalogsUseCase
 
     @Binds
-    fun bindGetCardsZoneUseCase(getCardsZoneUseCaseImpl: GetCardsZoneUseCaseImpl): GetCardsZoneUseCase
+    fun bindGetCardsZoneUseCase(
+        getCardsZoneUseCaseImpl: GetCardsZoneUseCaseImpl
+    ): GetCardsZoneUseCase
 
     @Binds
     fun bindGetLevelsUseCase(getLevelsUseCaseImpl: GetLevelsUseCaseImpl): GetLevelsUseCase
@@ -116,39 +130,55 @@ interface DomainBindingModule {
     fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
 
     @Binds
-    fun bindGetEmployeesUseCase(getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl): GetEmployeesUseCase
+    fun bindGetEmployeesUseCase(
+        getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl
+    ): GetEmployeesUseCase
 
     @Binds
-    fun bindSaveCardSolutionUseCase(saveCardSolutionUseCaseImpl: SaveCardSolutionUseCaseImpl): SaveCardSolutionUseCase
+    fun bindSaveCardSolutionUseCase(
+        saveCardSolutionUseCaseImpl: SaveCardSolutionUseCaseImpl
+    ): SaveCardSolutionUseCase
 
     @Binds
-    fun bindFirebaseTokenUseCase(getFirebaseTokenUseCaseImpl: GetFirebaseTokenUseCaseImpl): GetFirebaseTokenUseCase
+    fun bindFirebaseTokenUseCase(
+        getFirebaseTokenUseCaseImpl: GetFirebaseTokenUseCaseImpl
+    ): GetFirebaseTokenUseCase
 
     @Binds
-    fun bindSyncFirebaseTokenUseCase(syncFirebaseTokenUseCaseImpl: SyncFirebaseTokenUseCaseImpl): SyncFirebaseTokenUseCase
+    fun bindSyncFirebaseTokenUseCase(
+        syncFirebaseTokenUseCaseImpl: SyncFirebaseTokenUseCaseImpl
+    ): SyncFirebaseTokenUseCase
 
     @Binds
     fun bindGetFirebaseNotificationUseCase(
-        getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl,
+        getFirebaseNotificationUseCaseImpl: GetFirebaseNotificationUseCaseImpl
     ): GetFirebaseNotificationUseCase
 
     @Binds
     fun bindSendRestorePasswordUseCase(
-        sendRestorePasswordCodeUseCaseImpl: SendRestorePasswordCodeUseCaseImpl,
+        sendRestorePasswordCodeUseCaseImpl: SendRestorePasswordCodeUseCaseImpl
     ): SendRestorePasswordCodeUseCase
 
     @Binds
-    fun bindResetPasswordUseCase(resetPasswordUseCaseImpl: ResetPasswordUseCaseImpl): ResetPasswordUseCase
+    fun bindResetPasswordUseCase(
+        resetPasswordUseCaseImpl: ResetPasswordUseCaseImpl
+    ): ResetPasswordUseCase
 
     @Binds
-    fun bindVerifyPasswordCodeUseCase(verifyPasswordCodeUseCaseImpl: VerifyPasswordCodeUseCaseImpl): VerifyPasswordCodeUseCase
+    fun bindVerifyPasswordCodeUseCase(
+        verifyPasswordCodeUseCaseImpl: VerifyPasswordCodeUseCaseImpl
+    ): VerifyPasswordCodeUseCase
 
     @Binds
     fun bindUpdateTokenUseCase(updateTokenUseCaseImpl: UpdateTokenUseCaseImpl): UpdateTokenUseCase
 
     @Binds
-    fun bindGetCardsLevelMachineUseCase(getCardsLevelMachineImpl: GetCardsLevelMachineUseCaseImpl): GetCardsLevelMachineUseCase
+    fun bindGetCardsLevelMachineUseCase(
+        getCardsLevelMachineImpl: GetCardsLevelMachineUseCaseImpl
+    ): GetCardsLevelMachineUseCase
 
     @Binds
-    fun bindUpdateCardMechanicUseCase(updateCardMechanicUseCaseImpl: UpdateCardMechanicUseCaseImpl): UpdateCardMechanicUseCase
+    fun bindUpdateCardMechanicUseCase(
+        updateCardMechanicUseCaseImpl: UpdateCardMechanicUseCaseImpl
+    ): UpdateCardMechanicUseCase
 }

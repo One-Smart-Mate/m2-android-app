@@ -13,11 +13,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun CustomIconButton(
-    text: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-) {
+fun CustomIconButton(text: String, icon: ImageVector, onClick: () -> Unit) {
     val color =
         if (isSystemInDarkTheme()) {
             MaterialTheme.colorScheme.onSecondary
@@ -27,12 +23,12 @@ fun CustomIconButton(
     Button(
         onClick = onClick,
         colors =
-            ButtonDefaults.outlinedButtonColors(
-                containerColor = color,
-            ),
+        ButtonDefaults.outlinedButtonColors(
+            containerColor = color
+        )
     ) {
         Row(
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(icon, contentDescription = EMPTY)
             Text(text = text)

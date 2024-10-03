@@ -45,7 +45,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
             if (this::notificationManager.isInitialized) {
                 notificationManager.buildNotification(
                     title = message.getTitle(),
-                    description = message.getDescription(),
+                    description = message.getDescription()
                 )
             }
         } catch (e: Exception) {
@@ -61,7 +61,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 enum class FirebaseNotificationType(val type: String) {
     SYNC_REMOTE_CATALOGS("SYNC_REMOTE_CATALOGS"),
     UNKNOWN(EMPTY),
-    SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS"),
+    SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS")
 }
 
 fun RemoteMessage.getType(): String {
@@ -70,13 +70,13 @@ fun RemoteMessage.getType(): String {
 
 fun RemoteMessage.getTitle(): String {
     return this.data[FirebaseMessage.TITLE].defaultIfNull(
-        this.notification?.title.orEmpty(),
+        this.notification?.title.orEmpty()
     )
 }
 
 fun RemoteMessage.getDescription(): String {
     return this.data[FirebaseMessage.DESCRIPTION].defaultIfNull(
-        this.notification?.body.orEmpty(),
+        this.notification?.body.orEmpty()
     )
 }
 

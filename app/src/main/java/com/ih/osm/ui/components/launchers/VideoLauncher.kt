@@ -21,10 +21,7 @@ import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 
 @Composable
-fun VideoLauncher(
-    videoLimitDuration: Int = 120,
-    onComplete: (uri: Uri) -> Unit,
-) {
+fun VideoLauncher(videoLimitDuration: Int = 120, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
     val uri = context.getUriForFile(fileType = FileType.VIDEO).first
     var capturedVideoUri by remember {
@@ -34,22 +31,22 @@ fun VideoLauncher(
     val recordVideoLauncher =
         rememberLauncherForActivityResult(
             contract =
-                ActivityResultContracts.CaptureVideo().apply {
-                    createIntent(context, uri).also {
-                        it.putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoLimitDuration)
-                    }
-                },
+            ActivityResultContracts.CaptureVideo().apply {
+                createIntent(context, uri).also {
+                    it.putExtra(MediaStore.EXTRA_DURATION_LIMIT, videoLimitDuration)
+                }
+            },
             onResult = {
                 if (it) {
                     capturedVideoUri = uri
                     onComplete(capturedVideoUri)
                 }
-            },
+            }
         )
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
+            ActivityResultContracts.RequestPermission()
         ) {
             if (it) {
                 recordVideoLauncher.launch(uri)

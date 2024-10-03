@@ -63,10 +63,7 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LoginScreen(
-    viewModel: LoginViewModel = mavericksViewModel(),
-    navController: NavController,
-) {
+fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController: NavController) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
@@ -84,13 +81,13 @@ fun LoginScreen(
             viewModel.process(
                 LoginViewModel.Action.Login(
                     state.email,
-                    state.password,
-                ),
+                    state.password
+                )
             )
         },
         onNavigate = {
             navController.navigateToRestoreAccount()
-        },
+        }
     )
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -98,7 +95,7 @@ fun LoginScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar),
+            modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
     LaunchedEffect(viewModel, lifecycle) {
@@ -111,7 +108,7 @@ fun LoginScreen(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message,
+                            message = state.message
                         )
                         viewModel.process(LoginViewModel.Action.ClearMessage)
                     }
@@ -127,10 +124,10 @@ fun LoginContent(
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
     onClick: () -> Unit,
-    onNavigate: () -> Unit,
+    onNavigate: () -> Unit
 ) {
     LazyColumn(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.primary),
+        modifier = modifier.background(color = MaterialTheme.colorScheme.primary)
     ) {
         item {
             LoginTitle()
@@ -141,7 +138,7 @@ fun LoginContent(
                 onPasswordChange = onPasswordChange,
                 isButtonLoading = isButtonLoading,
                 onClick = onClick,
-                onNavigate = onNavigate,
+                onNavigate = onNavigate
             )
         }
     }
@@ -154,21 +151,21 @@ fun LoginForm(
     onPasswordChange: (String) -> Unit,
     isButtonLoading: Boolean,
     onClick: () -> Unit,
-    onNavigate: () -> Unit,
+    onNavigate: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
-        modifier = modifier,
+        modifier = modifier
     ) {
         Column(
-            modifier = Modifier.padding(PaddingNormal),
+            modifier = Modifier.padding(PaddingNormal)
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.email),
                 placeholder = stringResource(R.string.enter_your_email),
-                icon = Icons.Outlined.Email,
+                icon = Icons.Outlined.Email
             ) {
                 onEmailChange(it)
             }
@@ -178,7 +175,7 @@ fun LoginForm(
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.enter_your_password),
                 icon = Icons.Outlined.Lock,
-                isPassword = true,
+                isPassword = true
             ) {
                 onPasswordChange(it)
             }
@@ -187,7 +184,10 @@ fun LoginForm(
                 onClick()
             }
             CustomSpacer()
-            CustomButton(text = stringResource(R.string.forgot_password), buttonType = ButtonType.TEXT) {
+            CustomButton(
+                text = stringResource(R.string.forgot_password),
+                buttonType = ButtonType.TEXT
+            ) {
                 onNavigate()
             }
         }
@@ -199,28 +199,28 @@ fun LoginForm(
 fun LoginTitle() {
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .height(Size200),
-        contentAlignment = Alignment.Center,
+        Modifier
+            .fillMaxWidth()
+            .height(Size200),
+        contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(top = PaddingToolbarVertical, bottom = PaddingNormal),
+            modifier = Modifier.padding(top = PaddingToolbarVertical, bottom = PaddingNormal)
         ) {
             GlideImage(model = R.mipmap.ic_launcher, contentDescription = EMPTY)
             Text(
                 text = stringResource(R.string.app_simple_name),
                 style =
-                    MaterialTheme.typography.displaySmall
-                        .copy(color = getColor()),
+                MaterialTheme.typography.displaySmall
+                    .copy(color = getColor())
             )
             Text(
                 text = stringResource(R.string.app_simple_name_desc),
                 style =
-                    MaterialTheme.typography.bodySmall
-                        .copy(color = getColor()),
+                MaterialTheme.typography.bodySmall
+                    .copy(color = getColor())
             )
         }
     }
@@ -238,7 +238,7 @@ fun LoginPreview() {
                 onPasswordChange = {},
                 isButtonLoading = false,
                 onClick = {},
-                onNavigate = {},
+                onNavigate = {}
             )
         }
     }

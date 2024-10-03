@@ -36,17 +36,14 @@ import com.ih.osm.ui.utils.AndroidAudioRecorder
 import kotlinx.coroutines.delay
 
 @Composable
-fun AudioLauncher(
-    maxRecordTime: Int,
-    onComplete: (uri: Uri) -> Unit,
-) {
+fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
     val file = context.getUriForFile(FileType.AUDIO)
     val androidAudioPlayer = AndroidAudioRecorder(context)
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
+            ActivityResultContracts.RequestPermission()
         ) {
             if (it) {
                 androidAudioPlayer.start(file.second)
@@ -69,16 +66,12 @@ fun AudioLauncher(
             androidAudioPlayer.stop()
             onComplete(file.first)
         },
-        maxRecordTime = maxRecordTime,
+        maxRecordTime = maxRecordTime
     )
 }
 
 @Composable
-fun AudioContent(
-    maxRecordTime: Int,
-    onStart: () -> Unit,
-    onStop: () -> Unit,
-) {
+fun AudioContent(maxRecordTime: Int, onStart: () -> Unit, onStop: () -> Unit) {
     var timeLeft by remember { mutableIntStateOf(maxRecordTime) }
     var start by remember { mutableStateOf(false) }
 
@@ -95,13 +88,17 @@ fun AudioContent(
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Text(text = stringResource(R.string.recording_time, timeLeft), textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth())
+        Text(
+            text = stringResource(R.string.recording_time, timeLeft),
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.Center
         ) {
             CardItemIcon(icon = painterResource(id = R.drawable.ic_smart_display)) {
                 start = true

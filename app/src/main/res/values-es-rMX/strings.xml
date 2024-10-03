@@ -164,4 +164,14 @@
     <string name="assigned_mechanic">Asignando mecánico</string>
     <string name="assign_mechanic">Asignación de mecánico</string>
     <string name="assign_card">Assignar tarjeta</string>
+    <string name="restore_account">Restaurar cuenta</string>
+    <string name="restore_account_description">Ingresa tu correo electrónico, Te enviaremos un código para restablecer tu cuenta.</string>
+    <string name="verify_email">Verificar correo electrónico</string>
+    <string name="enter_the_verification_code_from_your_email">Ingresa el códico de verificación de tu correo</string>
+    <string name="code">Código</string>
+    <string name="verify_code">Verificar código</string>
+    <string name="resend_code">Re-enviar código</string>
+    <string name="enter_your_new_password">Ingresa tu nueva contraseña</string>
+    <string name="new_password">Nueva contraseña</string>
+    <string name="confirm_password">Confirma tu contraseña</string>
 </resources>

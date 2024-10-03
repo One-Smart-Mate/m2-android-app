@@ -60,7 +60,7 @@ import com.ih.osm.ui.theme.PaddingNormal
 @Composable
 fun AccountScreen(
     navController: NavController,
-    viewModel: AccountViewModel = mavericksViewModel(),
+    viewModel: AccountViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -85,7 +85,7 @@ fun AccountScreen(
             onSwitchChange = {
                 viewModel.process(AccountViewModel.Action.OnSwitchChange(it))
             },
-            uri = state.uri,
+            uri = state.uri
         )
     }
     if (state.message.isNotEmpty()) {
@@ -112,16 +112,16 @@ fun AccountContent(
     onDevClick: () -> Unit,
     checked: Boolean,
     onSwitchChange: (Boolean) -> Unit,
-    uri: Uri? = null,
+    uri: Uri? = null
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.account),
+                    title = stringResource(R.string.account)
                 )
             }
 
@@ -131,14 +131,14 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.Filled.AccountCircle,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                        Modifier.clickable {
-                            navController.navigateToProfile()
-                        },
+                    Modifier.clickable {
+                        navController.navigateToProfile()
+                    }
                 )
 
                 ListItem(
@@ -146,29 +146,33 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.Filled.Notifications,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                        Modifier.clickable {
-                            openAppSettings(context)
-                        },
+                    Modifier.clickable {
+                        openAppSettings(context)
+                    }
                 )
 
                 ListItem(
-                    headlineContent = { Text(text = stringResource(R.string.sync_remote_catalogs)) },
+                    headlineContent = {
+                        Text(
+                            text = stringResource(R.string.sync_remote_catalogs)
+                        )
+                    },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Refresh,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                        Modifier.clickable {
-                            onSyncCatalogs()
-                        },
+                    Modifier.clickable {
+                        onSyncCatalogs()
+                    }
                 )
 
                 ListItem(
@@ -176,7 +180,7 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             painterResource(id = R.drawable.ic_wifi),
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     trailingContent = {
@@ -186,19 +190,19 @@ fun AccountContent(
                                 onSwitchChange(it)
                             },
                             colors =
-                                SwitchDefaults.colors(
-                                    checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                    uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-                                    uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
-                                ),
+                            SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
+                            )
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                        Modifier.clickable {
-                            onSyncCatalogs()
-                        },
+                    Modifier.clickable {
+                        onSyncCatalogs()
+                    }
                 )
 
 //                ListItem(
@@ -220,17 +224,17 @@ fun AccountContent(
                         Text(
                             stringResource(
                                 R.string.app_version,
-                                BuildConfig.VERSION_NAME,
-                            ),
+                                BuildConfig.VERSION_NAME
+                            )
                         )
                     },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Info,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
-                    tonalElevation = PaddingNormal,
+                    tonalElevation = PaddingNormal
                 )
                 AnimatedVisibility(visible = uri != null) {
                     ListItem(
@@ -238,14 +242,14 @@ fun AccountContent(
                         leadingContent = {
                             Icon(
                                 Icons.Filled.Share,
-                                contentDescription = stringResource(R.string.empty),
+                                contentDescription = stringResource(R.string.empty)
                             )
                         },
                         tonalElevation = PaddingNormal,
                         modifier =
-                            Modifier.clickable {
-                                shareUri(context, uri)
-                            },
+                        Modifier.clickable {
+                            shareUri(context, uri)
+                        }
                     )
                 }
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
@@ -255,24 +259,21 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.AutoMirrored.Outlined.ExitToApp,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                        Modifier.clickable {
-                            onLogout()
-                        },
+                    Modifier.clickable {
+                        onLogout()
+                    }
                 )
             }
         }
     }
 }
 
-private fun shareUri(
-    context: Context,
-    uri: Uri?,
-) {
+private fun shareUri(context: Context, uri: Uri?) {
     try {
         val intent = Intent(Intent.ACTION_SEND)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -284,7 +285,7 @@ private fun shareUri(
         Toast.makeText(
             context,
             "Can't share the data $uri",
-            Toast.LENGTH_SHORT,
+            Toast.LENGTH_SHORT
         ).show()
     }
 }
@@ -304,7 +305,7 @@ fun AccountPreview() {
                 context,
                 onDevClick = {},
                 onSwitchChange = {},
-                checked = true,
+                checked = true
             )
         }
     }

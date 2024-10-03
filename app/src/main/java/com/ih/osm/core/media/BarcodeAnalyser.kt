@@ -10,7 +10,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 
 class BarcodeAnalyser(
-    val callback: (Boolean) -> Unit,
+    val callback: (Boolean) -> Unit
 ) : ImageAnalysis.Analyzer {
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {

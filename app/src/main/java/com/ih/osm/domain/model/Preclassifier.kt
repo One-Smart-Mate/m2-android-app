@@ -9,7 +9,7 @@ data class Preclassifier(
     val code: String,
     @SerializedName("preclassifierDescription")
     val description: String,
-    val cardTypeId: String,
+    val cardTypeId: String
 )
 
 fun Preclassifier.toEntity(): PreclassifierEntity {
@@ -17,7 +17,7 @@ fun Preclassifier.toEntity(): PreclassifierEntity {
         id = this.id,
         code = this.code,
         description = this.description,
-        cardTypeId = this.cardTypeId,
+        cardTypeId = this.cardTypeId
     )
 }
 
@@ -27,7 +27,7 @@ fun List<Preclassifier>.toNodeItemCard(): List<NodeCardItem> {
             id = it.id,
             name = it.code,
             description = it.description,
-            superiorId = it.cardTypeId,
+            superiorId = it.cardTypeId
         )
     }
 }

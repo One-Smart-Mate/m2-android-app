@@ -33,7 +33,7 @@ constructor(
         val area = localRepository.getLevel(card.areaId.toString())
         val priority = localRepository.getPriority(card.priorityId)
         val preclassifier = localRepository.getPreclassifier(card.preclassifierId)
-        var uuid = UUID.randomUUID().toString()
+        var uuid = card.uuid
         val hasData = localRepository.getCardByUUID(uuid)
         if (hasData != null) {
             uuid = UUID.randomUUID().toString()
@@ -61,7 +61,7 @@ constructor(
         fileHelper.logCreateCard(updatedCard)
         val id = localRepository.saveCard(updatedCard)
         card.evidences?.forEach {
-            localRepository.saveEvidence(it)
+            localRepository.saveEvidence(it.copy(cardId = uuid))
         }
         firebaseAnalyticsHelper.logCreateCard(updatedCard)
         Log.e("Card", "Card $updatedCard")

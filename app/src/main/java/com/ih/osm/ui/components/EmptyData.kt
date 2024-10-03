@@ -36,24 +36,24 @@ fun EmptyData(modifier: Modifier = Modifier) {
         initialValue = MaterialTheme.colorScheme.primary,
         targetValue = Color.Gray,
         animationSpec = infiniteRepeatable(tween(1000), RepeatMode.Reverse),
-        label = "color",
+        label = "color"
     )
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             painter = painterResource(R.drawable.ic_cloud),
             contentDescription = EMPTY,
             tint = getPrimaryColor(),
-            modifier = Modifier.size(Size100),
+            modifier = Modifier.size(Size100)
         )
         Text(
             text = stringResource(R.string.empty_data),
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(color = animatedColor),
+            MaterialTheme.typography.titleLarge
+                .copy(color = animatedColor)
         )
     }
 }

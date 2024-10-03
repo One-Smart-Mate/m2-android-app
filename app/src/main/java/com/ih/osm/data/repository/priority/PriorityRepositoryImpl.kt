@@ -8,16 +8,16 @@ import com.ih.osm.domain.repository.priority.PriorityRepository
 import javax.inject.Inject
 
 class PriorityRepositoryImpl
-    @Inject
-    constructor(
-        private val apiService: ApiService,
-    ) : PriorityRepository {
-        override suspend fun getPriorities(siteId: String): List<Priority> {
-            val response = apiService.getPriorities(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
+@Inject
+constructor(
+    private val apiService: ApiService
+) : PriorityRepository {
+    override suspend fun getPriorities(siteId: String): List<Priority> {
+        val response = apiService.getPriorities(siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
         }
     }
+}

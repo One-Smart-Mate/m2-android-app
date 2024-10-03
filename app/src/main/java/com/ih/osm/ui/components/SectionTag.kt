@@ -24,24 +24,24 @@ fun SectionTag(
     title: String,
     value: String,
     modifier: Modifier = Modifier,
-    isErrorEnabled: Boolean = false,
+    isErrorEnabled: Boolean = false
 ) {
     if (value.isNotEmpty()) {
         Row(
             modifier = modifier.padding(vertical = 4.dp),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = title,
                 style =
-                    MaterialTheme.typography.bodyMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                    ),
-                modifier = Modifier.width(Size115),
+                MaterialTheme.typography.bodyMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                modifier = Modifier.width(Size115)
             )
             CustomSpacer(
                 direction = SpacerDirection.HORIZONTAL,
-                space = SpacerSize.TINY,
+                space = SpacerSize.TINY
             )
             CustomTag(title = value, tagSize = TagSize.SMALL, isErrorEnabled = isErrorEnabled)
         }

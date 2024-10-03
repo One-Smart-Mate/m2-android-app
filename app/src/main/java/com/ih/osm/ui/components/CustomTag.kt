@@ -30,7 +30,7 @@ fun CustomTag(
     tagType: TagType = TagType.DEFAULT,
     invertedColors: Boolean = false,
     textAlign: TextAlign = TextAlign.Start,
-    isErrorEnabled: Boolean = false,
+    isErrorEnabled: Boolean = false
 ) {
     val color =
         if (tagType == TagType.DEFAULT || invertedColors) {
@@ -44,14 +44,14 @@ fun CustomTag(
             TagSize.DEFAULT -> {
                 MaterialTheme.typography.bodyMedium
                     .copy(
-                        color = color,
+                        color = color
                     )
             }
 
             TagSize.SMALL -> {
                 MaterialTheme.typography.bodySmall
                     .copy(
-                        color = color,
+                        color = color
                     )
             }
         }
@@ -68,7 +68,7 @@ fun CustomTag(
                 modifier
                     .background(
                         color = containerColor,
-                        shape = CircleShape,
+                        shape = CircleShape
                     )
                     .padding(vertical = 6.dp, horizontal = 10.dp)
             }
@@ -78,39 +78,39 @@ fun CustomTag(
                     .border(
                         width = 1.dp,
                         color =
-                            if (isErrorEnabled) {
-                                MaterialTheme.colorScheme.error
-                            } else if (invertedColors) {
-                                getColor()
-                            } else {
-                                MaterialTheme.colorScheme.primary
-                            },
-                        shape = CircleShape,
+                        if (isErrorEnabled) {
+                            MaterialTheme.colorScheme.error
+                        } else if (invertedColors) {
+                            getColor()
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        },
+                        shape = CircleShape
                     )
                     .padding(vertical = 2.dp, horizontal = 12.dp)
             }
         }
 
     Box(
-        modifier = tagTypeModifier,
+        modifier = tagTypeModifier
     ) {
         Text(
             text = title,
             style = tagTextStyle,
             modifier = textModifier,
-            textAlign = textAlign,
+            textAlign = textAlign
         )
     }
 }
 
 enum class TagSize {
     DEFAULT,
-    SMALL,
+    SMALL
 }
 
 enum class TagType {
     DEFAULT,
-    OUTLINE,
+    OUTLINE
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")

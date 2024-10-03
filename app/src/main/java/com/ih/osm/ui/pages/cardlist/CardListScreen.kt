@@ -44,7 +44,7 @@ import com.ih.osm.ui.utils.EMPTY
 fun CardListScreen(
     navController: NavController,
     viewModel: CardListViewModel = mavericksViewModel(),
-    filter: String,
+    filter: String
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
@@ -70,7 +70,7 @@ fun CardListScreen(
             isRefreshing = state.isRefreshing,
             onRefresh = {
                 viewModel.process(CardListViewModel.Action.OnRefreshCardList)
-            },
+            }
         )
     }
 
@@ -94,7 +94,7 @@ fun CardListContent(
     onCreateCardClick: () -> Unit,
     onFilterChange: (String) -> Unit,
     isRefreshing: Boolean,
-    onRefresh: () -> Unit,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -103,7 +103,7 @@ fun CardListContent(
             }) {
                 Icon(Icons.Filled.Add, contentDescription = EMPTY)
             }
-        },
+        }
     ) { padding ->
         PullToRefreshLazyColumn(
             items = cards,
@@ -115,24 +115,24 @@ fun CardListContent(
                     },
                     onSolutionClick = { solution ->
                         onSolutionClick(card, solution)
-                    },
+                    }
                 )
             },
             header = {
                 CustomAppBar(navController = navController, title = title)
                 Box(
                     modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd,
+                    contentAlignment = Alignment.CenterEnd
                 ) {
                     FiltersBottomSheet(
-                        onFilterChange,
+                        onFilterChange
                     )
                 }
                 CustomSpacer(space = SpacerSize.SMALL)
             },
             isRefreshing = isRefreshing,
             onRefresh = onRefresh,
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         )
     }
 }
@@ -152,7 +152,7 @@ private fun CardListScreenScreenPreview() {
                 onCreateCardClick = {},
                 onFilterChange = {},
                 isRefreshing = false,
-                {},
+                {}
             )
         }
     }

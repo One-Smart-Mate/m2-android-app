@@ -41,7 +41,7 @@ import com.ih.osm.ui.theme.Size120
 @Composable
 fun ProfileScreen(
     navController: NavController,
-    viewModel: ProfileViewModel = mavericksViewModel(),
+    viewModel: ProfileViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
     when (val result = state.state) {
@@ -51,7 +51,7 @@ fun ProfileScreen(
         is LCE.Success -> {
             ProfileContent(
                 navController = navController,
-                user = result.value,
+                user = result.value
             )
         }
         is LCE.Fail -> {
@@ -64,18 +64,15 @@ fun ProfileScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProfileContent(
-    navController: NavController,
-    user: User,
-) {
+fun ProfileContent(navController: NavController, user: User) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier = Modifier.defaultScreen(padding)
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.profile),
+                    title = stringResource(R.string.profile)
                 )
             }
 
@@ -91,26 +88,26 @@ fun ProfileContent(
                     leadingContent = {
                         Icon(
                             Icons.Filled.AccountCircle,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.name)
-                    },
+                    }
                 )
                 ListItem(
                     headlineContent = { Text(stringResource(R.string.company)) },
                     leadingContent = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_account_balance),
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.companyName)
-                    },
+                    }
                 )
 
                 ListItem(
@@ -118,13 +115,13 @@ fun ProfileContent(
                     leadingContent = {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_business_center),
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.siteName)
-                    },
+                    }
                 )
 
                 ListItem(
@@ -132,13 +129,13 @@ fun ProfileContent(
                     leadingContent = {
                         Icon(
                             Icons.Outlined.Email,
-                            contentDescription = stringResource(R.string.empty),
+                            contentDescription = stringResource(R.string.empty)
                         )
                     },
                     tonalElevation = PaddingNormal,
                     trailingContent = {
                         Text(text = user.email)
-                    },
+                    }
                 )
             }
         }

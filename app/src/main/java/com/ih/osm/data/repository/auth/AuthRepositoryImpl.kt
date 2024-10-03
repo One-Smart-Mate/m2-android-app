@@ -8,52 +8,52 @@ import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.repository.auth.AuthRepository
+import javax.inject.Inject
 import org.json.JSONObject
 import retrofit2.Response
-import javax.inject.Inject
 
 class AuthRepositoryImpl
-    @Inject
-    constructor(
-        private val apiService: ApiService,
-    ) : AuthRepository {
-        override suspend fun login(data: LoginRequest): User {
-            val response = apiService.login(data).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun sendRestorePasswordCode(data: RestorePasswordRequest) {
-            val response = apiService.sendRestorePasswordCode(data).execute()
-            if (!response.isSuccessful || response.body() == null) {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun verifyPasswordCode(data: RestorePasswordRequest) {
-            val response = apiService.verifyPasswordCode(data).execute()
-            if (!response.isSuccessful || response.body() == null) {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun resetPassword(data: RestorePasswordRequest) {
-            val response = apiService.resetPassword(data).execute()
-            if (!response.isSuccessful || response.body() == null) {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun updateToken(data: UpdateTokenRequest) {
-            val response = apiService.updateToken(data).execute()
-            if (!response.isSuccessful || response.body() == null) {
-                error(response.getErrorMessage())
-            }
+@Inject
+constructor(
+    private val apiService: ApiService
+) : AuthRepository {
+    override suspend fun login(data: LoginRequest): User {
+        val response = apiService.login(data).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
         }
     }
+
+    override suspend fun sendRestorePasswordCode(data: RestorePasswordRequest) {
+        val response = apiService.sendRestorePasswordCode(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun verifyPasswordCode(data: RestorePasswordRequest) {
+        val response = apiService.verifyPasswordCode(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun resetPassword(data: RestorePasswordRequest) {
+        val response = apiService.resetPassword(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun updateToken(data: UpdateTokenRequest) {
+        val response = apiService.updateToken(data).execute()
+        if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+}
 
 fun <T> Response<T>.getErrorMessage(): String {
     val instance = FirebaseCrashlytics.getInstance()

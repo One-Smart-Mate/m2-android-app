@@ -37,7 +37,7 @@ fun CameraLauncher(onComplete: (uri: Uri) -> Unit) {
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission(),
+            ActivityResultContracts.RequestPermission()
         ) {
             if (it) {
                 cameraLauncher.launch(uri)

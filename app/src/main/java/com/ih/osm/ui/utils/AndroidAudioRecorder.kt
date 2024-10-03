@@ -7,7 +7,7 @@ import java.io.File
 import java.io.FileOutputStream
 
 class AndroidAudioRecorder(
-    private val context: Context,
+    private val context: Context
 ) : AudioRecorder {
     private var recorder: MediaRecorder? = null
 

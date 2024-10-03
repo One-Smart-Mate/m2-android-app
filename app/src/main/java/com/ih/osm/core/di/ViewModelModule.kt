@@ -43,12 +43,16 @@ interface ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(CreateCardViewModel::class)
-    fun bindCreateCardViewModel(factory: CreateCardViewModel.Factory): AssistedViewModelFactory<*, *>
+    fun bindCreateCardViewModel(
+        factory: CreateCardViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
     @ViewModelKey(CardDetailViewModel::class)
-    fun bindCardDetailViewModel(factory: CardDetailViewModel.Factory): AssistedViewModelFactory<*, *>
+    fun bindCardDetailViewModel(
+        factory: CardDetailViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
@@ -63,5 +67,7 @@ interface ViewModelModule {
     @Binds
     @IntoMap
     @ViewModelKey(RestoreAccountViewModel::class)
-    fun bindRestoreAccountViewModel(factory: RestoreAccountViewModel.Factory): AssistedViewModelFactory<*, *>
+    fun bindRestoreAccountViewModel(
+        factory: RestoreAccountViewModel.Factory
+    ): AssistedViewModelFactory<*, *>
 }
