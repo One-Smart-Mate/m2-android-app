@@ -496,6 +496,14 @@ fun Card.cardTitle(): String {
     return this.cardTypeName.orEmpty()
 }
 
+fun Card.cardSiteTitle(): String {
+    return if (this.isLocalCard()) {
+        EMPTY
+    } else {
+        "#${this.siteCardId}"
+    }
+}
+
 fun Card.enableProvisionalSolution(): Boolean {
     return this.userProvisionalSolutionId.isNullOrEmpty() ||
         this.userProvisionalSolutionName.isNullOrBlank() ||

@@ -33,6 +33,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
+import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.enableAssignMechanic
 import com.ih.osm.domain.model.enableDefinitiveSolution
@@ -263,7 +264,7 @@ fun CardItemListV2(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "#${card.siteCardId}",
+                    text = card.cardSiteTitle(),
                     style =
                     MaterialTheme.typography.titleLarge
                         .copy(fontWeight = FontWeight.Bold)

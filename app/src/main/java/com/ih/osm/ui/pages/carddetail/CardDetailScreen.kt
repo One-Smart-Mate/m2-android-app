@@ -50,6 +50,7 @@ import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
@@ -192,7 +193,7 @@ fun CardDetailHeader(card: Card) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "#${card.siteCardId}",
+            text = card.cardSiteTitle(),
             style =
             MaterialTheme.typography.titleLarge
                 .copy(fontWeight = FontWeight.Bold)

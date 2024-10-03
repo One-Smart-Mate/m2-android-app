@@ -7,10 +7,12 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
@@ -22,8 +24,11 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.common.IntentSenderForResultStarter
 import com.google.android.play.core.install.model.AppUpdateType
-import com.google.android.play.core.install.model.UpdateAvailability
+import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
+import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.workmanager.CardWorker
 import com.ih.osm.core.workmanager.WorkManagerUUID
@@ -74,25 +79,6 @@ class MainActivity : ComponentActivity() {
         connectivityManager?.requestNetwork(networkRequest, NetworkConnection.networkCallback)
     }
 
-    private fun handleAppUpdates() {
-        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
-        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE &&
-                appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.IMMEDIATE)
-            ) {
-                appUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo,
-                    AppUpdateType.IMMEDIATE,
-                    this@MainActivity,
-                    1
-                )
-            }
-        }.addOnFailureListener {
-            Log.e("test", "Available fail ${it.message}")
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun workRequest() {
         val uuid = WorkManagerUUID.get()
@@ -131,5 +117,36 @@ class MainActivity : ComponentActivity() {
             ),
             2
         )
+    }
+
+    private fun handleAppUpdates() {
+        val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
+        val appUpdateInfoTask = appUpdateManager.appUpdateInfo
+        val updateOptions = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+        val updateFlowResultLauncher = registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult()
+        ) { _ ->
+            Toast.makeText(this, "App Updated", Toast.LENGTH_SHORT).show()
+        }
+
+        val starter = IntentSenderForResultStarter { intent, _, fillInIntent,
+                                                     flagsMask, flagsValues, _, _ ->
+            val request = IntentSenderRequest.Builder(intent)
+                .setFillInIntent(fillInIntent).setFlags(flagsValues, flagsMask).build()
+            updateFlowResultLauncher.launch(request)
+        }
+
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
+                appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
+            ) {
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    starter,
+                    updateOptions,
+                    10
+                )
+            }
+        }
     }
 }
