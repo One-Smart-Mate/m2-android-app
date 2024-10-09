@@ -11,6 +11,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.domain.model.Card
+import com.ih.osm.domain.model.User
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -139,6 +140,19 @@ constructor(
                     "\n********************** Definitive Solution - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
                 )
                 it.appendText("${Gson().toJson(definitiveSolutionRequest)}\n")
+            }
+        } catch (e: Exception) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+        }
+    }
+
+    fun logUser(user: User) {
+        try {
+            getLocalFile()?.let {
+                it.appendText(
+                    "\n********************** User Logged at ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                )
+                it.appendText("${Gson().toJson(user)}\n")
             }
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)

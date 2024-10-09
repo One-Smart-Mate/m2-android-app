@@ -38,7 +38,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
-    val file = context.getUriForFile(FileType.AUDIO)
+    var file = context.getUriForFile(FileType.AUDIO)
     val androidAudioPlayer = AndroidAudioRecorder(context)
 
     val permissionLauncher =
@@ -65,6 +65,7 @@ fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
         onStop = {
             androidAudioPlayer.stop()
             onComplete(file.first)
+            file = context.getUriForFile(FileType.AUDIO)
         },
         maxRecordTime = maxRecordTime
     )

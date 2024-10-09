@@ -1,7 +1,6 @@
 package com.ih.osm.ui.pages.home
 
 import android.content.Context
-import android.util.Log
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.airbnb.mvrx.MavericksState
@@ -227,13 +226,17 @@ constructor(
     }
 
     private fun handleSyncCards(appContext: Context) {
-        setState {
-            copy(
-                isLoading = true,
-                message = context.getString(R.string.upload_cards),
-                showSyncCards = false,
-                isSyncing = true
-            )
+        viewModelScope.launch {
+            val state = stateFlow.first()
+            if (state.isSyncing) return@launch
+            setState {
+                copy(
+                    isLoading = true,
+                    message = context.getString(R.string.upload_cards),
+                    showSyncCards = false,
+                    isSyncing = true
+                )
+            }
         }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
@@ -271,7 +274,6 @@ constructor(
                 WorkManager.getInstance(appContext)
                     .getWorkInfoByIdFlow(uuid)
                     .collect {
-                        Log.e("test", "State ${it.state}")
                         when (it.state) {
                             WorkInfo.State.SUCCEEDED -> {
                                 handleGetCards()

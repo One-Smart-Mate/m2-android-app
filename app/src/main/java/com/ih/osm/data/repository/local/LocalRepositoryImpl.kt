@@ -79,6 +79,7 @@ constructor(
     }
 
     override suspend fun saveCardTypes(list: List<CardType>) {
+        cardTypeDao.deleteCardTypes()
         list.forEach {
             cardTypeDao.insertCardType(it.toEntity())
         }
@@ -89,6 +90,7 @@ constructor(
     }
 
     override suspend fun savePreclassifiers(list: List<Preclassifier>) {
+        preclassifierDao.deletePreclassifiers()
         list.forEach {
             preclassifierDao.insertPreclassifier(it.toEntity())
         }
@@ -99,6 +101,7 @@ constructor(
     }
 
     override suspend fun savePriorities(list: List<Priority>) {
+        priorityDao.deletePriorities()
         list.forEach {
             priorityDao.insertPriority(it.toEntity())
         }
@@ -121,6 +124,7 @@ constructor(
     }
 
     override suspend fun saveLevels(list: List<Level>) {
+        levelDao.deleteLevels()
         list.forEach {
             levelDao.insertLevel(it.toEntity())
         }

@@ -8,8 +8,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -23,10 +21,7 @@ import com.ih.osm.ui.pages.createcard.CardItemIcon
 @Composable
 fun VideoLauncher(videoLimitDuration: Int = 120, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
-    val uri = context.getUriForFile(fileType = FileType.VIDEO).first
-    var capturedVideoUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
+    var uri = context.getUriForFile(fileType = FileType.VIDEO).first
 
     val recordVideoLauncher =
         rememberLauncherForActivityResult(
@@ -38,8 +33,8 @@ fun VideoLauncher(videoLimitDuration: Int = 120, onComplete: (uri: Uri) -> Unit)
             },
             onResult = {
                 if (it) {
-                    capturedVideoUri = uri
-                    onComplete(capturedVideoUri)
+                    onComplete(uri)
+                    uri = context.getUriForFile(fileType = FileType.VIDEO).first
                 }
             }
         )

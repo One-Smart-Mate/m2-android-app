@@ -7,8 +7,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -22,16 +20,13 @@ import com.ih.osm.ui.pages.createcard.CardItemIcon
 @Composable
 fun CameraLauncher(onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
-    val uri = context.getUriForFile(fileType = FileType.IMAGE).first
-    var capturedImageUri by remember {
-        mutableStateOf<Uri>(Uri.EMPTY)
-    }
+    var uri = context.getUriForFile(fileType = FileType.IMAGE).first
 
     val cameraLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             if (it) {
-                capturedImageUri = uri
-                onComplete(capturedImageUri)
+                onComplete(uri)
+                uri = context.getUriForFile(fileType = FileType.IMAGE).first
             }
         }
 

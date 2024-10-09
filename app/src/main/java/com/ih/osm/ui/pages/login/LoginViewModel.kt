@@ -5,6 +5,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
@@ -24,7 +25,8 @@ constructor(
     private val coroutineContext: CoroutineContext,
     private val loginUseCase: LoginUseCase,
     private val saveUserUseCase: SaveUserUseCase,
-    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase
+    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+    private val fileHelper: FileHelper
 ) : MavericksViewModel<LoginViewModel.UiState>(initialState) {
     data class UiState(
         val isLoading: Boolean = false,
@@ -59,6 +61,7 @@ constructor(
             kotlin.runCatching {
                 loginUseCase(LoginRequest(email, password))
             }.onSuccess {
+                fileHelper.logUser(it)
                 handleSaveUser(it)
             }.onFailure {
                 setState {
