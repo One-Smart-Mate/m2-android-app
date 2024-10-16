@@ -18,6 +18,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -26,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.FileType
 import com.ih.osm.core.ui.functions.getUriForFile
@@ -33,14 +35,18 @@ import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.utils.AndroidAudioRecorder
+import com.ih.osm.ui.utils.COMPRESS_QUALITY
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.quality
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
     var file = context.getUriForFile(FileType.AUDIO)
     val androidAudioPlayer = AndroidAudioRecorder(context)
-
+    val scope = rememberCoroutineScope()
     val permissionLauncher =
         rememberLauncherForActivityResult(
             ActivityResultContracts.RequestPermission()
@@ -63,9 +69,14 @@ fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
             }
         },
         onStop = {
-            androidAudioPlayer.stop()
-            onComplete(file.first)
-            file = context.getUriForFile(FileType.AUDIO)
+            scope.launch {
+                androidAudioPlayer.stop()
+                val compressedImage = Compressor.compress(context, file.second) {
+                    quality(COMPRESS_QUALITY)
+                }
+                onComplete(compressedImage.toUri())
+                file = context.getUriForFile(FileType.AUDIO)
+            }
         },
         maxRecordTime = maxRecordTime
     )

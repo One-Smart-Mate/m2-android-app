@@ -38,3 +38,5 @@ const val CARD_ANOMALIES_NAME = "Anomalia"
 const val CARD_TYPE_ANOMALIES_A = "A"
 
 const val NETWORK_DATA_MOBILE = "network_data_mobile"
+const val ANDROID_SO = "Android"
+const val COMPRESS_QUALITY = 50

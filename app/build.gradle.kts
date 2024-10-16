@@ -13,6 +13,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        getByName("debug") {
+            storeFile = file("/Users/immanuel.diaz/Desktop/OSM_API_KEY/android-key")
+            storePassword = "osm20240827"
+            keyAlias = "android-key"
+            keyPassword = "osm20240827"
+        }
+    }
     namespace = "com.ih.osm"
     compileSdk = 34
 
@@ -40,6 +48,23 @@ android {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
+            )
+            buildConfigField(
+                "String",
+                "SERVICE_URL",
+                project.properties["API_URL_PROD"].toString()
+            )
+            signingConfig = signingConfigs.getByName("debug")
+        }
+        debug {
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            buildConfigField(
+                "String",
+                "SERVICE_URL",
+                project.properties["API_URL_DEV"].toString()
             )
         }
     }
@@ -156,4 +181,6 @@ dependencies {
 
     implementation(libs.zxing.android.embedded)
     implementation(libs.core)
+    implementation(libs.compressor)
+    implementation(libs.logging.interceptor)
 }

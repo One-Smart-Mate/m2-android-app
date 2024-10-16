@@ -28,6 +28,7 @@ constructor(
 ) {
     private val fileName = "osm_logs_file"
     private var path = EMPTY
+    private val appVersion = BuildConfig.VERSION_NAME
 
     init {
         initFilePath()
@@ -72,7 +73,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Create local card - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Create local card - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(card)}\n")
             }
@@ -85,7 +86,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Card request - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Card request - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(cardRequest)}\n")
             }
@@ -98,7 +99,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Card Success Sync - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Card Success Sync - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(card)}\n")
             }
@@ -111,7 +112,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Exception - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Exception - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(exception)}\n")
             }
@@ -124,7 +125,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Provisional Solution - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Provisional Solution - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(provisionalSolutionRequest)}\n")
             }
@@ -137,7 +138,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** Definitive Solution - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** Definitive Solution - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(definitiveSolutionRequest)}\n")
             }
@@ -150,7 +151,7 @@ constructor(
         try {
             getLocalFile()?.let {
                 it.appendText(
-                    "\n********************** User Logged at ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} **********************"
+                    "\n********************** User Logged at ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************"
                 )
                 it.appendText("${Gson().toJson(user)}\n")
             }

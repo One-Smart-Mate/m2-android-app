@@ -77,7 +77,7 @@ fun AppNavigation(startDestination: String) {
             CreateCardScreen(navController = navController, filter = filter)
         }
         composable(Screen.Dev.route) {
-            DevScreen()
+            DevScreen(navController)
         }
         composable(
             Screen.Solution.route,

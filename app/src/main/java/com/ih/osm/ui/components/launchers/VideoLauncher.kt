@@ -8,20 +8,29 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.FileType
 import com.ih.osm.core.ui.functions.getUriForFile
 import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.pages.createcard.CardItemIcon
+import com.ih.osm.ui.utils.COMPRESS_QUALITY
+import id.zelory.compressor.Compressor
+import id.zelory.compressor.constraint.quality
+import kotlinx.coroutines.launch
 
 @Composable
 fun VideoLauncher(videoLimitDuration: Int = 120, onComplete: (uri: Uri) -> Unit) {
     val context = LocalContext.current
-    var uri = context.getUriForFile(fileType = FileType.VIDEO).first
+    var fileInfo = context.getUriForFile(fileType = FileType.VIDEO)
+    var uri = fileInfo.first
+    var file = fileInfo.second
+    val scope = rememberCoroutineScope()
 
     val recordVideoLauncher =
         rememberLauncherForActivityResult(
@@ -33,8 +42,16 @@ fun VideoLauncher(videoLimitDuration: Int = 120, onComplete: (uri: Uri) -> Unit)
             },
             onResult = {
                 if (it) {
-                    onComplete(uri)
-                    uri = context.getUriForFile(fileType = FileType.VIDEO).first
+                    scope.launch {
+                        val compressedImage = Compressor.compress(context, file) {
+                            quality(COMPRESS_QUALITY)
+                        }
+                        val newUri = compressedImage.toUri()
+                        onComplete(newUri)
+                        fileInfo = context.getUriForFile(fileType = FileType.VIDEO)
+                        uri = fileInfo.first
+                        file = fileInfo.second
+                    }
                 }
             }
         )

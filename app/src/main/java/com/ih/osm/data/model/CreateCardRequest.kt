@@ -11,5 +11,7 @@ data class CreateCardRequest(
     val preclassifierId: Int,
     val creatorId: Int,
     val comments: String,
-    val evidences: List<CreateEvidenceRequest>
+    val evidences: List<CreateEvidenceRequest>,
+    val appSo: String,
+    val appVersion: String
 )

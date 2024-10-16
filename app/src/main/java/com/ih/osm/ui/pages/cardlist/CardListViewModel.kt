@@ -169,7 +169,7 @@ class CardListViewModel @AssistedInject constructor(
             copy(
                 isLoading = false,
                 message = message,
-                refreshCards = false,
+                refreshCards = false
             )
         }
     }

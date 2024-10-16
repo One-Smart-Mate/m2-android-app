@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1094755811484",
+    "project_id": "osm-android-app-dev",
+    "storage_bucket": "osm-android-app-dev.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1094755811484:android:24813339624becf1f12d59",
+        "android_client_info": {
+          "package_name": "com.ih.osm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5_zINEyXPkHKcCvhoFYreZJQGrJ1xTTQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

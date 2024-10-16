@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.Icon
@@ -79,7 +80,6 @@ fun AccountScreen(
             context = getContext(),
             onDevClick = {
                 navController.navigate(Screen.Dev.route)
-                //  viewModel.process(AccountViewModel.Action.ShowNotification)
             },
             checked = state.checked,
             onSwitchChange = {
@@ -205,19 +205,21 @@ fun AccountContent(
                     }
                 )
 
-//                ListItem(
-//                    headlineContent = { Text(text = "Dev") },
-//                    leadingContent = {
-//                        Icon(
-//                            Icons.Filled.FavoriteBorder,
-//                            contentDescription = stringResource(R.string.empty),
-//                        )
-//                    },
-//                    tonalElevation = PaddingNormal,
-//                    modifier = Modifier.clickable {
-//                        onDevClick()
-//                    }
-//                )
+                if (BuildConfig.DEBUG) {
+                    ListItem(
+                        headlineContent = { Text(text = "Developer screen") },
+                        leadingContent = {
+                            Icon(
+                                Icons.Filled.Settings,
+                                contentDescription = stringResource(R.string.empty)
+                            )
+                        },
+                        tonalElevation = PaddingNormal,
+                        modifier = Modifier.clickable {
+                            onDevClick()
+                        }
+                    )
+                }
 
                 ListItem(
                     headlineContent = {

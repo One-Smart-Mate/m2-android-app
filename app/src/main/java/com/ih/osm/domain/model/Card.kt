@@ -7,6 +7,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.annotations.SerializedName
+import com.ih.osm.BuildConfig
 import com.ih.osm.R
 import com.ih.osm.data.database.entities.card.CardEntity
 import com.ih.osm.data.model.CreateCardRequest
@@ -17,6 +18,7 @@ import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.extensions.toFormatDate
 import com.ih.osm.ui.utils.ALL_OPEN_CARDS
+import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.ASSIGNED_CARDS
 import com.ih.osm.ui.utils.CARD_ANOMALIES_NAME
 import com.ih.osm.ui.utils.CARD_TYPE_ANOMALIES_A
@@ -466,7 +468,9 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         preclassifierId = this.preclassifierId.toInt(),
         creatorId = this.creatorId?.toInt().defaultIfNull(0),
         comments = this.commentsAtCardCreation.orEmpty(),
-        evidences = evidences
+        evidences = evidences,
+        appSo = ANDROID_SO,
+        appVersion = BuildConfig.VERSION_NAME
     )
 }
 
