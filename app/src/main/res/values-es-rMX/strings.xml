@@ -106,7 +106,7 @@
     <string name="data_mobile_disconnected">Datos móviles desconectados</string>
     <string name="no_internet_access">Sin acceso a internet</string>
     <string name="use_data_mobile">Usar datos móviles</string>
-    <string name="network_preferences_allowed">Necesitas permitir el uso de datos móviles para subir tarjetas</string>
+    <string name="network_preferences_allowed">Necesitas permitir el uso de datos móviles para esta acción</string>
     <string name="company">Compañía</string>
     <string name="site">Sitio</string>
     <string name="profile">Perfil</string>
@@ -174,4 +174,5 @@
     <string name="enter_your_new_password">Ingresa tu nueva contraseña</string>
     <string name="new_password">Nueva contraseña</string>
     <string name="confirm_password">Confirma tu contraseña</string>
+    <string name="update_list">Actualizar lista</string>
 </resources>

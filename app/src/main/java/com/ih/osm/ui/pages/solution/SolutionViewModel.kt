@@ -12,11 +12,13 @@ import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.notifications.NotificationManager
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceType
+import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.toAudios
 import com.ih.osm.domain.model.toImages
 import com.ih.osm.domain.model.toVideos
@@ -48,7 +50,8 @@ class SolutionViewModel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val fileHelper: FileHelper,
     private val notificationManager: NotificationManager,
-    private val updateCardMechanicUseCase: UpdateCardMechanicUseCase
+    private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
+    private val sharedPreferences: SharedPreferences
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
     data class UiState(
         val solutionType: String = EMPTY,
@@ -197,7 +200,30 @@ class SolutionViewModel @AssistedInject constructor(
 
     private fun handleAction() {
         viewModelScope.launch {
+            setState { copy(isLoading = true) }
             val state = stateFlow.first()
+            if (NetworkConnection.isConnected().not()) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
+                return@launch
+            }
+            val networkStatus = NetworkConnection.networkStatus(context)
+            if (networkStatus == NetworkStatus.DATA_CONNECTED &&
+                sharedPreferences.getNetworkPreference().isEmpty()
+            ) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.network_preferences_allowed)
+                    )
+                }
+                return@launch
+            }
+            Log.e("test", "Aqui continue")
             if (state.solutionType == ASSIGN_CARD_ACTION) {
                 handleOnSaveMechanic()
             } else {

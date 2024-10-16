@@ -12,7 +12,7 @@ data class CardType(
     val description: String,
     val color: String,
     @SerializedName("responsableName")
-    val owner: String,
+    val owner: String?,
     val status: String,
     @SerializedName("quantityPicturesCreate")
     val quantityImagesCreate: Int?,
@@ -54,7 +54,7 @@ fun CardType.toEntity(): CardTypeEntity {
         name = this.name,
         description = this.description,
         color = this.color,
-        owner = this.owner,
+        owner = this.owner.orEmpty(),
         status = this.status,
         quantityImagesCreate = this.quantityImagesCreate.defaultIfNull(0),
         quantityAudiosCreate = this.quantityAudiosCreate.defaultIfNull(0),

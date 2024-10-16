@@ -338,6 +338,10 @@ fun CardItemListV2(
                 title = stringResource(id = R.string.mechanic),
                 value = card.mechanicName.orDefault()
             )
+            SectionTag(
+                title = stringResource(id = R.string.comments),
+                value = card.commentsAtCardCreation.orDefault()
+            )
             CustomSpacer()
             AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
                 CustomButton(

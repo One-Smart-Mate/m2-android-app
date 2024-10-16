@@ -1,11 +1,14 @@
 package com.ih.osm.ui.pages.login
 
+import android.content.Context
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
@@ -15,6 +18,7 @@ import com.ih.osm.ui.utils.EMPTY
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.launch
 
@@ -26,7 +30,8 @@ constructor(
     private val loginUseCase: LoginUseCase,
     private val saveUserUseCase: SaveUserUseCase,
     private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    @ApplicationContext private val context: Context
 ) : MavericksViewModel<LoginViewModel.UiState>(initialState) {
     data class UiState(
         val isLoading: Boolean = false,
@@ -48,15 +53,30 @@ constructor(
 
     fun process(action: Action) {
         when (action) {
-            is Action.Login -> handleLogin(action.email, action.password)
+            is Action.Login -> checkConnection(action.email, action.password)
             is Action.SetEmail -> handleSetEmail(action.email)
             is Action.SetPassword -> handleSetPassword(action.password)
             is Action.ClearMessage -> setState { copy(message = EMPTY) }
         }
     }
 
+    private fun checkConnection(email: String, password: String) {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            if (NetworkConnection.isConnected().not()) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
+            } else {
+                handleLogin(email, password)
+            }
+        }
+    }
+
     private fun handleLogin(email: String, password: String) {
-        setState { copy(isLoading = true) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 loginUseCase(LoginRequest(email, password))

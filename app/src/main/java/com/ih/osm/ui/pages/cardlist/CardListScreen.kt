@@ -2,22 +2,32 @@ package com.ih.osm.ui.pages.cardlist
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.flowWithLifecycle
@@ -25,12 +35,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.PullToRefreshLazyColumn
 import com.ih.osm.ui.components.SpacerSize
+import com.ih.osm.ui.components.buttons.ButtonType
+import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
 import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.extensions.defaultScreen
@@ -38,7 +51,10 @@ import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.OsmAppTheme
+import com.ih.osm.ui.theme.PaddingToolbar
+import com.ih.osm.ui.theme.Size120
 import com.ih.osm.ui.utils.EMPTY
+import kotlinx.coroutines.launch
 
 @Composable
 fun CardListScreen(
@@ -48,6 +64,8 @@ fun CardListScreen(
 ) {
     val state by viewModel.collectAsState()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val scope = rememberCoroutineScope()
+    val snackBarHostState = remember { SnackbarHostState() }
 
     if (state.isLoading) {
         LoadingScreen(text = state.message)
@@ -74,12 +92,32 @@ fun CardListScreen(
         )
     }
 
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = Color.Red,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar)
+        )
+    }
+
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (state.refreshCards) {
                     viewModel.process(CardListViewModel.Action.GetCards(filter))
+                }
+                if (state.isLoading.not() &&
+                    state.isRefreshing.not() &&
+                    state.message.isNotEmpty()
+                ) {
+                    scope.launch {
+                        snackBarHostState.showSnackbar(
+                            message = state.message
+                        )
+                        viewModel.process(CardListViewModel.Action.ClearMessage)
+                    }
                 }
             }
     }
@@ -121,12 +159,23 @@ fun CardListContent(
             header = {
                 CustomAppBar(navController = navController, title = title)
                 Box(
-                    modifier = Modifier.fillMaxWidth(),
-                    contentAlignment = Alignment.CenterEnd
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    FiltersBottomSheet(
-                        onFilterChange
-                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.End
+                    ) {
+                        CustomButton(
+                            text = stringResource(R.string.update_list),
+                            modifier = Modifier.width(Size120),
+                            buttonType = ButtonType.TEXT
+                        ) {
+                            onRefresh()
+                        }
+                        FiltersBottomSheet(
+                            onFilterChange
+                        )
+                    }
                 }
                 CustomSpacer(space = SpacerSize.SMALL)
             },

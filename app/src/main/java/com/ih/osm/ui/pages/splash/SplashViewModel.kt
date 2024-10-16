@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.splash
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.navigation.Screen
@@ -39,6 +40,7 @@ constructor(
             }.onSuccess {
                 val route =
                     if (it != null) {
+                        FirebaseCrashlytics.getInstance().setUserId(it.userId)
                         // Screen.Home.route
                         Screen.HomeV2.route
                     } else {

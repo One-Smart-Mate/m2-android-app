@@ -8,6 +8,7 @@ import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.osm.R
+import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.filterByStatus
 import com.ih.osm.domain.model.isAnomalies
@@ -27,9 +28,7 @@ import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
-class CardListViewModel
-@AssistedInject
-constructor(
+class CardListViewModel @AssistedInject constructor(
     @Assisted initialState: UiState,
     private val coroutineContext: CoroutineContext,
     private val getCardsUseCase: GetCardsUseCase,
@@ -49,12 +48,10 @@ constructor(
 
     sealed class Action {
         data class GetCards(val filter: String) : Action()
-
         data object OnRefreshCards : Action()
-
         data class OnFilterChange(val filter: String) : Action()
-
         data object OnRefreshCardList : Action()
+        data object ClearMessage : Action()
     }
 
     fun process(action: Action) {
@@ -63,6 +60,7 @@ constructor(
             is Action.OnRefreshCards -> setState { copy(refreshCards = true) }
             is Action.OnFilterChange -> handleOnApplyFilterClick(action.filter)
             is Action.OnRefreshCardList -> handleOnRefreshCardList()
+            is Action.ClearMessage -> setState { copy(message = EMPTY) }
         }
     }
 
@@ -171,7 +169,7 @@ constructor(
             copy(
                 isLoading = false,
                 message = message,
-                refreshCards = false
+                refreshCards = false,
             )
         }
     }
@@ -179,6 +177,15 @@ constructor(
     private fun handleOnRefreshCardList() {
         setState { copy(isRefreshing = true) }
         viewModelScope.launch {
+            if (NetworkConnection.isConnected().not()) {
+                setState {
+                    copy(
+                        isRefreshing = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
+                return@launch
+            }
             val state = stateFlow.first()
             handleGetCards(state.filter, context.getString(R.string.syncing_remote_cards), true)
         }
