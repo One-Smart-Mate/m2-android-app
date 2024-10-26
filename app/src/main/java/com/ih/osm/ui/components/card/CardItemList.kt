@@ -47,6 +47,7 @@ import com.ih.osm.domain.model.priorityValue
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTag
 import com.ih.osm.ui.components.SectionTag
+import com.ih.osm.ui.components.SpacerDirection
 import com.ih.osm.ui.components.TagSize
 import com.ih.osm.ui.components.TagType
 import com.ih.osm.ui.components.buttons.ButtonType
@@ -292,12 +293,22 @@ fun CardItemListV2(
                 showVoice = card.evidenceAudioCreation > 0
             )
 
-            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
-                CustomTag(
-                    title = stringResource(R.string.local_card),
-                    tagSize = TagSize.SMALL,
-                    tagType = TagType.OUTLINE
-                )
+            Row {
+                AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
+                    CustomTag(
+                        title = stringResource(R.string.local_card),
+                        tagSize = TagSize.SMALL,
+                        tagType = TagType.OUTLINE
+                    )
+                }
+                CustomSpacer(direction = SpacerDirection.HORIZONTAL)
+                AnimatedVisibility(visible = card.hasLocalSolutions) {
+                    CustomTag(
+                        title = "Soluciones locales",
+                        tagSize = TagSize.SMALL,
+                        tagType = TagType.OUTLINE
+                    )
+                }
             }
 
             SectionTag(

@@ -7,6 +7,8 @@ import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.model.CreateEvidenceRequest
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
+import com.ih.osm.domain.model.isLocalCard
+import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -25,7 +27,8 @@ constructor(
     private val firebaseStorageRepository: FirebaseStorageRepository,
     private val notificationManager: NotificationManager,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    private val saveCardSolutionUseCase: SaveCardSolutionUseCase
 ) : SyncCardsUseCase {
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
         var currentProgress = 0f
@@ -38,6 +41,7 @@ constructor(
         val progressByCard: Float = 100f / cardList.size
         var selectedCard: Card? = null
         try {
+            Log.e("test", "CardList -> ${cardList.isEmpty()}")
             cardList.forEach { card ->
                 selectedCard = card
                 if (handleNotification) {
@@ -47,6 +51,7 @@ constructor(
                         currentProgress = currentProgress.toInt()
                     )
                 }
+
                 val evidences = mutableListOf<CreateEvidenceRequest>()
                 Log.e("test", "Current card.. $card")
                 card.evidences?.forEach { evidence ->
@@ -57,16 +62,39 @@ constructor(
                         localRepository.deleteEvidence(evidence.id)
                     }
                 }
-                val cardRequest = card.toCardRequest(evidences)
-                fileHelper.logCreateCardRequest(cardRequest)
-                Log.e("test", "Current card request.. $cardRequest")
-                val remoteCard = cardRepository.saveCard(cardRequest)
-                firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
+
+                val remoteCard = if (card.isLocalCard()) {
+                    val cardRequest = card.toCardRequest(evidences)
+                    fileHelper.logCreateCardRequest(cardRequest)
+                    Log.e("test", "Current card request.. $cardRequest")
+                    firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
+                    val networkCard = cardRepository.saveCard(cardRequest)
+                    localRepository.deleteCard(card.uuid)
+                    localRepository.saveCard(networkCard)
+                    fileHelper.logCreateCardRequestSuccess(networkCard)
+                    firebaseAnalyticsHelper.logCreateRemoteCard(networkCard)
+                    networkCard
+                } else {
+                    card
+                }
                 Log.e("test", "Current card remote.. $remoteCard")
-                localRepository.deleteCard(card.uuid)
-                localRepository.saveCard(remoteCard)
-                fileHelper.logCreateCardRequestSuccess(remoteCard)
-                firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
+
+                val solutions = localRepository.getCardSolutions(card.uuid)
+                solutions.forEach {
+                    saveCardSolutionUseCase(
+                        solutionType = it.solutionType,
+                        cardId = remoteCard.id,
+                        userSolutionId = it.userSolutionId,
+                        comments = it.comments,
+                        remoteEvidences = if (card.isRemoteCard()) {
+                            evidences.toList()
+                        } else {
+                            emptyList()
+                        },
+                        saveLocal = false
+                    )
+                }
+                localRepository.deleteSolutions(card.uuid)
                 Log.e("test", "saving card.. $remoteCard")
             }
         } catch (e: Exception) {

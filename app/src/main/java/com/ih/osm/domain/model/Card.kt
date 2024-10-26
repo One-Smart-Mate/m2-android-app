@@ -121,7 +121,8 @@ data class Card(
     val evidences: List<Evidence>? = emptyList(),
     val stored: String? = STORED_REMOTE,
     val creationDateFormatted: String? = null,
-    val cardLocation: String
+    val cardLocation: String,
+    val hasLocalSolutions: Boolean
 ) {
     companion object {
         fun mock(): Card {
@@ -187,7 +188,8 @@ data class Card(
                 "",
                 emptyList(),
                 STORED_LOCAL,
-                cardLocation = "Procesos/Mixer 1 /Bomba 1"
+                cardLocation = "Procesos/Mixer 1 /Bomba 1",
+                hasLocalSolutions = true
             )
         }
 
@@ -267,7 +269,8 @@ data class Card(
                 deletedAt = EMPTY,
                 evidences = evidences,
                 stored = STORED_LOCAL,
-                cardLocation = EMPTY
+                cardLocation = EMPTY,
+                hasLocalSolutions = false
             )
         }
     }
@@ -442,7 +445,7 @@ fun Card.toEntity(): CardEntity {
     )
 }
 
-fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL }
+fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL || it.hasLocalSolutions }
 
 fun List<Card>.toAnomaliesList() = this.filter { it.isAnomalies() }
 

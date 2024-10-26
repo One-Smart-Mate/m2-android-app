@@ -1,15 +1,18 @@
 package com.ih.osm.domain.usecase.card
 
 import android.util.Log
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.core.file.FileHelper
+import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateEvidenceRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.repository.cards.CardRepository
-import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 import javax.inject.Inject
@@ -17,10 +20,12 @@ import javax.inject.Inject
 interface SaveCardSolutionUseCase {
     suspend operator fun invoke(
         solutionType: String,
-        cardId: Int,
+        cardId: String,
         userSolutionId: String,
         comments: String,
-        evidences: List<Evidence>
+        evidences: List<Evidence> = emptyList(),
+        saveLocal: Boolean = true,
+        remoteEvidences: List<CreateEvidenceRequest> = emptyList()
     ): Card?
 }
 
@@ -29,59 +34,104 @@ class SaveCardSolutionUseCaseImpl
 constructor(
     private val cardRepository: CardRepository,
     private val localRepository: LocalRepository,
-    private val firebaseStorageRepository: FirebaseStorageRepository,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 ) : SaveCardSolutionUseCase {
     override suspend fun invoke(
         solutionType: String,
-        cardId: Int,
+        cardId: String,
         userSolutionId: String,
         comments: String,
-        evidences: List<Evidence>
+        evidences: List<Evidence>,
+        saveLocal: Boolean,
+        remoteEvidences: List<CreateEvidenceRequest>
     ): Card? {
-        val evidenceList = mutableListOf<CreateEvidenceRequest>()
-        val userAppSolutionId = localRepository.getUser()?.userId.orEmpty()
-        evidences.forEach {
-            val url = firebaseStorageRepository.uploadEvidence(it)
-            Log.e("test", "Provisional solution $url")
-            if (url.isNotEmpty()) {
-                evidenceList.add(CreateEvidenceRequest(it.type, url))
+        return try {
+            var card: Card? = localRepository.getCardByUUID(cardId)
+            val userAppSolution = localRepository.getUser()
+            val userSolution =
+                localRepository.getEmployees().firstOrNull { it.id == userSolutionId }
+            if (saveLocal) {
+                evidences.forEach {
+                    localRepository.saveEvidence(it)
+                }
             }
-        }
-        return when (solutionType) {
-            DEFINITIVE_SOLUTION -> {
-                val request =
-                    CreateDefinitiveSolutionRequest(
-                        cardId = cardId,
-                        userDefinitiveSolutionId = userSolutionId.toInt(),
-                        userAppDefinitiveSolutionId = userAppSolutionId.toInt(),
-                        evidences = evidenceList.toList(),
-                        comments = comments
-                    )
-                fileHelper.logDefinitiveSolution(request)
-                val card = cardRepository.saveDefinitiveSolution(request)
-                Log.e("Test", "Solution New card $card")
-                localRepository.saveCard(card)
-                card
+            val solutionEntity = SolutionEntity(
+                solutionType = solutionType,
+                cardId = cardId,
+                userSolutionId = userSolutionId,
+                comments = comments
+            )
+            return when (solutionType) {
+                DEFINITIVE_SOLUTION -> {
+                    if (saveLocal) {
+                        localRepository.saveSolution(solutionEntity)
+                        card = card?.copy(
+                            commentsAtCardDefinitiveSolution = comments,
+                            userAppDefinitiveSolutionId = userAppSolution?.userId,
+                            userAppDefinitiveSolutionName = userAppSolution?.name,
+                            userDefinitiveSolutionId = userSolution?.id,
+                            userDefinitiveSolutionName = userSolution?.name
+                        )
+                    } else {
+                        val request =
+                            CreateDefinitiveSolutionRequest(
+                                cardId = cardId.toInt(),
+                                userDefinitiveSolutionId = userSolutionId.toInt(),
+                                userAppDefinitiveSolutionId = userAppSolution?.userId?.toInt()
+                                    .defaultIfNull(0),
+                                evidences = remoteEvidences,
+                                comments = comments
+                            )
+                        fileHelper.logDefinitiveSolution(request)
+                        card = cardRepository.saveDefinitiveSolution(request)
+                    }
+                    Log.e("Test", "Solution definitive card -> $card")
+                    card?.let {
+                        localRepository.saveCard(it)
+                    }
+                    card
+                }
+
+                PROVISIONAL_SOLUTION -> {
+                    if (saveLocal) {
+                        localRepository.saveSolution(solutionEntity)
+                        card = card?.copy(
+                            commentsAtCardProvisionalSolution = comments,
+                            userAppProvisionalSolutionId = userAppSolution?.userId,
+                            userAppProvisionalSolutionName = userAppSolution?.name,
+                            userProvisionalSolutionId = userSolution?.id,
+                            userProvisionalSolutionName = userSolution?.name
+                        )
+                    } else {
+                        val request =
+                            CreateProvisionalSolutionRequest(
+                                cardId = cardId.toInt(),
+                                userProvisionalSolutionId = userSolutionId.toInt(),
+                                userAppProvisionalSolutionId = userAppSolution?.userId?.toInt()
+                                    .defaultIfNull(0),
+                                evidences = remoteEvidences,
+                                comments = comments
+                            )
+                        fileHelper.logProvisionalSolution(request)
+                        card = cardRepository.saveProvisionalSolution(request)
+                    }
+                    Log.e("Test", "Solution provisional card $card")
+                    card?.let {
+                        localRepository.saveCard(it)
+                    }
+                    card
+                }
+
+                else -> {
+                    null
+                }
             }
-            PROVISIONAL_SOLUTION -> {
-                val request =
-                    CreateProvisionalSolutionRequest(
-                        cardId = cardId,
-                        userProvisionalSolutionId = userSolutionId.toInt(),
-                        userAppProvisionalSolutionId = userAppSolutionId.toInt(),
-                        evidences = evidenceList.toList(),
-                        comments = comments
-                    )
-                fileHelper.logProvisionalSolution(request)
-                val card = cardRepository.saveProvisionalSolution(request)
-                Log.e("Test", "Solution New card $card")
-                localRepository.saveCard(card)
-                card
-            }
-            else -> {
-                null
-            }
+        } catch (e: Exception) {
+            firebaseAnalyticsHelper.logSyncCardException(e)
+            FirebaseCrashlytics.getInstance().recordException(e)
+            fileHelper.logException(e)
+            null
         }
     }
 }

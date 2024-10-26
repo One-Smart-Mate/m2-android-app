@@ -53,4 +53,8 @@ object DatabaseModule {
     @Singleton
     @Provides
     fun providesEmployeeDao(database: AppDatabase) = database.getEmployeeDao()
+
+    @Singleton
+    @Provides
+    fun providesSolutionDao(database: AppDatabase) = database.getSolutionDao()
 }

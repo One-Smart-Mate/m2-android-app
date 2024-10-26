@@ -22,6 +22,7 @@ constructor(
             localRepository.removeLevels()
             localRepository.deleteEvidences()
             localRepository.deleteEmployees()
+            localRepository.removeSolutions()
             true
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())

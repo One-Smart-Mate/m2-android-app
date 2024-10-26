@@ -24,6 +24,6 @@ fun CircularImage(image: String, size: Dp = 54.dp) {
             .size(size)
             .clip(CircleShape),
         failure = placeholder(R.drawable.loading_image),
-        loading = placeholder(R.drawable.loading_image)
+        loading = placeholder(R.drawable.loading_image),
     )
 }

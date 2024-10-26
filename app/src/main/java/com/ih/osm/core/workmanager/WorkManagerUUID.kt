@@ -11,4 +11,8 @@ object WorkManagerUUID {
         }
         return uuid
     }
+
+    fun resetUUID() {
+        uuid = UUID.randomUUID()
+    }
 }

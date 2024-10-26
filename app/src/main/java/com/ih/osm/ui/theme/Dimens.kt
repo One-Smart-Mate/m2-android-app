@@ -28,3 +28,4 @@ val Size120 = 120.dp
 val Size200 = 200.dp
 val Size250 = 250.dp
 val Size90 = 90.dp
+val Size230 = 230.dp

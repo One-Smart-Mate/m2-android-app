@@ -1,17 +1,18 @@
 package com.ih.osm
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkRequest
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.result.IntentSenderRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
@@ -25,8 +26,6 @@ import androidx.work.WorkManager
 import com.airbnb.mvrx.Mavericks
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
-import com.google.android.play.core.common.IntentSenderForResultStarter
-import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
 import com.ih.osm.core.network.NetworkConnection
@@ -119,32 +118,47 @@ class MainActivity : ComponentActivity() {
         )
     }
 
+    private fun openPlayStore() {
+        try {
+            startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")))
+        } catch (e: Exception) {
+            startActivity(
+                Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
+                )
+            )
+        }
+    }
+
     private fun handleAppUpdates() {
         val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        val updateOptions = AppUpdateOptions.newBuilder(AppUpdateType.FLEXIBLE).build()
+        val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
         val updateFlowResultLauncher = registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult()
-        ) { _ ->
-            Toast.makeText(this, "App Updated", Toast.LENGTH_SHORT).show()
+        ) { result ->
+            if (result.resultCode != RESULT_OK) {
+                AlertDialog.Builder(this)
+                    .setTitle("Alert")
+                    .setMessage("You need to update the app!")
+                    .setCancelable(false)
+                    .setPositiveButton("Update") { _, _ ->
+                        openPlayStore()
+                    }
+                    .setNegativeButton("Cancel") { _, _ ->
+                        this.finish()
+                    }
+            }
         }
-
-        val starter = IntentSenderForResultStarter { intent, _, fillInIntent,
-                                                     flagsMask, flagsValues, _, _ ->
-            val request = IntentSenderRequest.Builder(intent)
-                .setFillInIntent(fillInIntent).setFlags(flagsValues, flagsMask).build()
-            updateFlowResultLauncher.launch(request)
-        }
-
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
                 appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
             ) {
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
-                    starter,
-                    updateOptions,
-                    10
+                    updateFlowResultLauncher,
+                    updateOptions
                 )
             }
         }

@@ -1,5 +1,6 @@
 package com.ih.osm.domain.repository.local
 
+import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
@@ -84,4 +85,12 @@ interface LocalRepository {
     suspend fun getEmployees(): List<Employee>
 
     suspend fun getCardByUUID(uuid: String): Card?
+
+    suspend fun saveSolution(solutionEntity: SolutionEntity)
+
+    suspend fun removeSolutions()
+
+    suspend fun getCardSolutions(cardId: String): List<SolutionEntity>
+
+    suspend fun deleteSolutions(cardId: String)
 }

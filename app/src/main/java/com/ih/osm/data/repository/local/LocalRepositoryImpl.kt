@@ -8,6 +8,7 @@ import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.osm.data.database.dao.priority.PriorityDao
+import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.database.entities.cardtype.toDomain
 import com.ih.osm.data.database.entities.employee.toDomain
@@ -15,6 +16,7 @@ import com.ih.osm.data.database.entities.evidence.toDomain
 import com.ih.osm.data.database.entities.level.toDomain
 import com.ih.osm.data.database.entities.preclassifier.toDomain
 import com.ih.osm.data.database.entities.priority.toDomain
+import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
@@ -39,7 +41,8 @@ constructor(
     private val priorityDao: PriorityDao,
     private val levelDao: LevelDao,
     private val evidenceDao: EvidenceDao,
-    private val employeeDao: EmployeeDao
+    private val employeeDao: EmployeeDao,
+    private val solutionDao: SolutionDao
 ) : LocalRepository {
     override suspend fun saveUser(user: User): Long {
         return userDao.insertUser(user.toEntity())
@@ -67,7 +70,10 @@ constructor(
     }
 
     override suspend fun getCards(): List<Card> {
-        return cardDao.getCards().map { it.toDomain() }.sortedByDescending { it.id }
+        return cardDao.getCards().map {
+            val hasLocalSolutions = solutionDao.getSolutions(it.uuid)
+            it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
+        }.sortedByDescending { it.id }
     }
 
     override suspend fun getCardTypes(filter: String): List<CardType> {
@@ -171,10 +177,21 @@ constructor(
     }
 
     override suspend fun getLocalCards(): List<Card> {
-        return cardDao.getLocalCards(stored = STORED_LOCAL).map { cardEntity ->
+        val localCards = cardDao.getLocalCards(stored = STORED_LOCAL).toMutableList()
+        val lists = solutionDao.getAllSolutions()
+        lists.forEach {
+            cardDao.getCardByUUID(it.cardId)?.let { card ->
+                localCards.add(card)
+            }
+        }
+        return localCards.toSet().map { cardEntity ->
             val evidences =
                 evidenceDao.getEvidencesByCard(cardEntity.uuid).map { it.toDomain() }
-            cardEntity.toDomain(evidences = evidences)
+            val hasLocalSolutions = solutionDao.getSolutions(cardEntity.uuid)
+            cardEntity.toDomain(
+                evidences = evidences,
+                hasLocalSolutions = hasLocalSolutions.isNotEmpty()
+            )
         }.sortedByDescending { it.siteCardId }
     }
 
@@ -194,11 +211,19 @@ constructor(
         val card = cardDao.getCard(cardId)
         val evidences =
             evidenceDao.getEvidencesByCard(card.uuid).map { it.toDomain() }
-        return card.toDomain(evidences = evidences)
+        val hasLocalSolutions = solutionDao.getSolutions(card.uuid)
+
+        return card.toDomain(
+            evidences = evidences,
+            hasLocalSolutions = hasLocalSolutions.isNotEmpty()
+        )
     }
 
     override suspend fun getCardsZone(siteId: String, superiorId: String): List<Card> {
-        return cardDao.getCardsZone(siteId, superiorId).map { it.toDomain() }
+        return cardDao.getCardsZone(
+            siteId,
+            superiorId
+        ).map { it.toDomain(hasLocalSolutions = false) }
     }
 
     override suspend fun saveEmployees(list: List<Employee>) {
@@ -216,6 +241,24 @@ constructor(
     }
 
     override suspend fun getCardByUUID(uuid: String): Card? {
-        return cardDao.getCardByUUID(uuid)?.toDomain()
+        val card = cardDao.getCardByUUID(uuid)
+        val hasLocalSolutions = solutionDao.getSolutions(card?.uuid.orEmpty())
+        return card?.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
+    }
+
+    override suspend fun saveSolution(solutionEntity: SolutionEntity) {
+        solutionDao.insertSolution(solutionEntity)
+    }
+
+    override suspend fun removeSolutions() {
+        solutionDao.deleteSolutions()
+    }
+
+    override suspend fun getCardSolutions(cardId: String): List<SolutionEntity> {
+        return solutionDao.getSolutions(cardId)
+    }
+
+    override suspend fun deleteSolutions(cardId: String) {
+        solutionDao.deleteSolutionsByCard(cardId)
     }
 }

@@ -174,5 +174,5 @@
     <string name="enter_your_new_password">Ingresa tu nueva contraseña</string>
     <string name="new_password">Nueva contraseña</string>
     <string name="confirm_password">Confirma tu contraseña</string>
-    <string name="update_list">Actualizar lista</string>
+    <string name="update_list">Actualizar</string>
 </resources>

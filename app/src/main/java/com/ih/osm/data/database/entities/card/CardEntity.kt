@@ -153,7 +153,7 @@ fun CardEntity.validateDate(): String {
     }
 }
 
-fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
+fun CardEntity.toDomain(evidences: List<Evidence> = emptyList(), hasLocalSolutions: Boolean): Card {
     return Card(
         id = this.cardId,
         siteCardId = this.siteCardId,
@@ -217,6 +217,7 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList()): Card {
         stored = this.stored ?: STORED_REMOTE,
         evidences = evidences,
         creationDateFormatted = validateDate(),
-        cardLocation = this.cardLocation
+        cardLocation = this.cardLocation,
+        hasLocalSolutions = hasLocalSolutions
     )
 }

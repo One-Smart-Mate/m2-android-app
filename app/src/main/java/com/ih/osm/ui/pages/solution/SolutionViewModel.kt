@@ -157,7 +157,7 @@ class SolutionViewModel @AssistedInject constructor(
             val list = state.evidences.toMutableList()
             list.add(
                 Evidence.fromCreateEvidence(
-                    cardId = state.card?.id.orEmpty(),
+                    cardId = state.card?.uuid.orEmpty(),
                     url = uri.toString(),
                     type = type.name
                 )
@@ -202,15 +202,6 @@ class SolutionViewModel @AssistedInject constructor(
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             val state = stateFlow.first()
-            if (NetworkConnection.isConnected().not()) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.please_connect_to_internet)
-                    )
-                }
-                return@launch
-            }
             val networkStatus = NetworkConnection.networkStatus(context)
             if (networkStatus == NetworkStatus.DATA_CONNECTED &&
                 sharedPreferences.getNetworkPreference().isEmpty()
@@ -236,6 +227,15 @@ class SolutionViewModel @AssistedInject constructor(
         setState { copy(isLoading = true, message = context.getString(R.string.assigned_mechanic)) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
+            if (NetworkConnection.isConnected().not()) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet)
+                    )
+                }
+                return@launch
+            }
             kotlin.runCatching {
                 updateCardMechanicUseCase(
                     mechanicId = state.selectedEmployee?.id.orEmpty(),
@@ -255,15 +255,6 @@ class SolutionViewModel @AssistedInject constructor(
         setState { copy(isLoading = true, message = context.getString(R.string.saving_solution)) }
         viewModelScope.launch(coroutineContext) {
             val state = stateFlow.first()
-            if (NetworkConnection.isConnected().not()) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.please_connect_to_internet)
-                    )
-                }
-                return@launch
-            }
             if (state.selectedEmployee == null) {
                 setState {
                     copy(
@@ -276,10 +267,11 @@ class SolutionViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 saveCardSolutionUseCase(
                     solutionType = state.solutionType,
-                    cardId = state.card?.id?.toInt().defaultIfNull(0),
+                    cardId = state.card?.uuid.toString(),
                     comments = state.comments,
                     userSolutionId = state.selectedEmployee.id,
-                    evidences = state.evidences
+                    evidences = state.evidences,
+                    saveLocal = true
                 )
             }.onSuccess {
                 Log.e("Test", "Solution Success $it")
@@ -353,6 +345,7 @@ class SolutionViewModel @AssistedInject constructor(
     }
 
     private fun handleGetCardDetail(cardId: String) {
+        Log.e("test", "CardID -> $cardId")
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {

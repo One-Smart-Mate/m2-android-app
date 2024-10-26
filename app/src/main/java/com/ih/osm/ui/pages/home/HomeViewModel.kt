@@ -276,6 +276,7 @@ constructor(
                     .collect {
                         when (it.state) {
                             WorkInfo.State.SUCCEEDED -> {
+                                WorkManagerUUID.resetUUID()
                                 handleGetCards()
                             }
 
@@ -283,6 +284,7 @@ constructor(
                             WorkInfo.State.FAILED,
                             WorkInfo.State.BLOCKED
                             -> {
+                                WorkManagerUUID.resetUUID()
                                 setState {
                                     copy(
                                         isLoading = false,

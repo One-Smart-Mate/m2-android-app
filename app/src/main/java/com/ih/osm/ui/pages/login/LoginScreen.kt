@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material3.Card
@@ -44,6 +42,7 @@ import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.ih.osm.BuildConfig
 import com.ih.osm.R
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
@@ -57,7 +56,7 @@ import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingToolbar
 import com.ih.osm.ui.theme.PaddingToolbarVertical
-import com.ih.osm.ui.theme.Size200
+import com.ih.osm.ui.theme.Size230
 import com.ih.osm.ui.utils.EMPTY
 import kotlinx.coroutines.launch
 
@@ -201,7 +200,7 @@ fun LoginTitle() {
         modifier =
         Modifier
             .fillMaxWidth()
-            .height(Size200),
+            .height(Size230),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -220,6 +219,15 @@ fun LoginTitle() {
                 text = stringResource(R.string.app_simple_name_desc),
                 style =
                 MaterialTheme.typography.bodySmall
+                    .copy(color = getColor())
+            )
+            CustomSpacer()
+            Text(
+                stringResource(
+                    R.string.app_version,
+                    BuildConfig.VERSION_NAME
+                ),
+                style = MaterialTheme.typography.labelSmall
                     .copy(color = getColor())
             )
         }

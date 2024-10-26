@@ -10,6 +10,7 @@ import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.osm.data.database.dao.priority.PriorityDao
+import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.UserEntity
 import com.ih.osm.data.database.entities.card.CardEntity
 import com.ih.osm.data.database.entities.cardtype.CardTypeEntity
@@ -18,6 +19,7 @@ import com.ih.osm.data.database.entities.evidence.EvidenceEntity
 import com.ih.osm.data.database.entities.level.LevelEntity
 import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 import com.ih.osm.data.database.entities.priority.PriorityEntity
+import com.ih.osm.data.database.entities.solution.SolutionEntity
 
 @Database(
     entities = [
@@ -28,9 +30,10 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
         PriorityEntity::class,
         LevelEntity::class,
         EvidenceEntity::class,
-        EmployeeEntity::class
+        EmployeeEntity::class,
+        SolutionEntity::class
     ],
-    version = 3
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
@@ -48,4 +51,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getEvidenceDao(): EvidenceDao
 
     abstract fun getEmployeeDao(): EmployeeDao
+
+    abstract fun getSolutionDao(): SolutionDao
 }
