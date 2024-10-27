@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ih.osm.R
 
 @OptIn(ExperimentalGlideComposeApi::class)
@@ -24,6 +25,8 @@ fun CircularImage(image: String, size: Dp = 54.dp) {
             .size(size)
             .clip(CircleShape),
         failure = placeholder(R.drawable.loading_image),
-        loading = placeholder(R.drawable.loading_image),
-    )
+        loading = placeholder(R.drawable.loading_image)
+    ) {
+        it.diskCacheStrategy(DiskCacheStrategy.ALL)
+    }
 }

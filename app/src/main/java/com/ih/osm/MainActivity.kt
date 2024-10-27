@@ -131,6 +131,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun showUpdateDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Alert")
+            .setMessage("You need to update the app!")
+            .setCancelable(false)
+            .setPositiveButton("Update") { _, _ ->
+                openPlayStore()
+            }
+            .setNegativeButton("Cancel") { _, _ ->
+                this.finish()
+            }
+    }
+
     private fun handleAppUpdates() {
         val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
@@ -139,16 +152,7 @@ class MainActivity : ComponentActivity() {
             ActivityResultContracts.StartIntentSenderForResult()
         ) { result ->
             if (result.resultCode != RESULT_OK) {
-                AlertDialog.Builder(this)
-                    .setTitle("Alert")
-                    .setMessage("You need to update the app!")
-                    .setCancelable(false)
-                    .setPositiveButton("Update") { _, _ ->
-                        openPlayStore()
-                    }
-                    .setNegativeButton("Cancel") { _, _ ->
-                        this.finish()
-                    }
+                showUpdateDialog()
             }
         }
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->

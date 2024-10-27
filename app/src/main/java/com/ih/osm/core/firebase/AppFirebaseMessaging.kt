@@ -65,22 +65,22 @@ enum class FirebaseNotificationType(val type: String) {
 }
 
 fun RemoteMessage.getType(): String {
-    return this.data[FirebaseMessage.MESSAGE_TYPE].orEmpty()
+    return this.data[FirebaseMessageProps.MESSAGE_TYPE].orEmpty()
 }
 
 fun RemoteMessage.getTitle(): String {
-    return this.data[FirebaseMessage.TITLE].defaultIfNull(
+    return this.data[FirebaseMessageProps.TITLE].defaultIfNull(
         this.notification?.title.orEmpty()
     )
 }
 
 fun RemoteMessage.getDescription(): String {
-    return this.data[FirebaseMessage.DESCRIPTION].defaultIfNull(
+    return this.data[FirebaseMessageProps.DESCRIPTION].defaultIfNull(
         this.notification?.body.orEmpty()
     )
 }
 
-object FirebaseMessage {
+object FirebaseMessageProps {
     const val MESSAGE_TYPE = "notification_type"
     const val TITLE = "notification_title"
     const val DESCRIPTION = "notification_description"
