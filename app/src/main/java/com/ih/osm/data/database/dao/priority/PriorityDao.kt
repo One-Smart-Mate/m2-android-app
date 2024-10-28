@@ -9,14 +9,14 @@ import com.ih.osm.data.database.entities.priority.PriorityEntity
 @Dao
 interface PriorityDao {
     @Query("SELECT * FROM priority_table")
-    suspend fun getPriorities(): List<PriorityEntity>
+    suspend fun getAll(): List<PriorityEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPriority(priorityEntity: PriorityEntity): Long
+    suspend fun insert(priorityEntity: PriorityEntity): Long
 
     @Query("DELETE FROM priority_table")
-    suspend fun deletePriorities()
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM priority_table WHERE id=:id")
-    suspend fun getPriority(id: String?): PriorityEntity?
+    suspend fun get(id: String): PriorityEntity?
 }

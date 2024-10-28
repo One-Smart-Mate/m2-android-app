@@ -12,6 +12,7 @@ import com.ih.osm.data.repository.level.LevelRepositoryImpl
 import com.ih.osm.data.repository.local.LocalRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.LocalPreclassifierRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
+import com.ih.osm.data.repository.priority.LocalPriorityRepositoryImpl
 import com.ih.osm.data.repository.priority.PriorityRepositoryImpl
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
@@ -25,6 +26,7 @@ import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
+import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.domain.repository.priority.PriorityRepository
 import dagger.Binds
 import dagger.Module
@@ -84,4 +86,9 @@ internal interface DataBindingModule {
     fun bindLocalPreclassifierRepository(
         localPreclassifierRepositoryImpl: LocalPreclassifierRepositoryImpl
     ): LocalPreclassifierRepository
+
+    @Binds
+    fun bindLocalPriorityRepository(
+        localPriorityRepositoryImpl: LocalPriorityRepositoryImpl
+    ): LocalPriorityRepository
 }

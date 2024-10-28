@@ -6,6 +6,7 @@ import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
+import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import javax.inject.Inject
 
 interface CleanCatalogsUseCase {
@@ -19,13 +20,14 @@ constructor(
     private val localCardRepo: LocalCardRepository,
     private val localCardTypeRepo: LocalCardTypeRepository,
     private val localEmployeeRepo: LocalEmployeeRepository,
-    private val localPreclassifierRepo: LocalPreclassifierRepository
+    private val localPreclassifierRepo: LocalPreclassifierRepository,
+    private val localPriorityRepo: LocalPriorityRepository
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
             localCardRepo.deleteAll()
             localPreclassifierRepo.deleteAll()
-            localRepository.removePriorities()
+            localPriorityRepo.deleteAll()
             localCardTypeRepo.deleteAll()
             localRepository.removeLevels()
             localRepository.deleteEvidences()

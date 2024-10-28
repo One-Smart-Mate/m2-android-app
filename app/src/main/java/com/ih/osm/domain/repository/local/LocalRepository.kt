@@ -3,7 +3,6 @@ package com.ih.osm.domain.repository.local
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
-import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
 
 interface LocalRepository {
@@ -15,12 +14,6 @@ interface LocalRepository {
 
     suspend fun getSiteId(): String
 
-    suspend fun getPriorities(): List<Priority>
-
-    suspend fun savePriorities(list: List<Priority>)
-
-    suspend fun getPriority(id: String?): Priority?
-
     suspend fun saveLevels(list: List<Level>)
 
     suspend fun getLevels(): List<Level>
@@ -28,8 +21,6 @@ interface LocalRepository {
     suspend fun getLevel(id: String?): Level?
 
     suspend fun removeLevels()
-
-    suspend fun removePriorities()
 
     suspend fun saveEvidence(evidence: Evidence): Long
 

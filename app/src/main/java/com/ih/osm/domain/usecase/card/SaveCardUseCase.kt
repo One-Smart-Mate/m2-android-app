@@ -8,6 +8,7 @@ import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
+import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.STORED_LOCAL
 import java.util.UUID
@@ -25,7 +26,8 @@ constructor(
     private val fileHelper: FileHelper,
     private val localCardRepo: LocalCardRepository,
     private val localCardTypeRepo: LocalCardTypeRepository,
-    private val localPreclassifierRepo: LocalPreclassifierRepository
+    private val localPreclassifierRepo: LocalPreclassifierRepository,
+    private val localPriorityRepo: LocalPriorityRepository
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
         val lastCardId = localCardRepo.getLastCardId()
@@ -33,7 +35,7 @@ constructor(
         val user = localRepository.getUser()
         val cardType = localCardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = localRepository.getLevel(card.areaId.toString())
-        val priority = localRepository.getPriority(card.priorityId)
+        val priority = localPriorityRepo.get(card.priorityId.orEmpty())
         val preclassifier = localPreclassifierRepo.get(card.preclassifierId)
         var uuid = card.uuid
         val hasData = localCardRepo.get(uuid)
