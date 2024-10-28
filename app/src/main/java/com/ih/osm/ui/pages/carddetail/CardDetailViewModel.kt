@@ -39,7 +39,7 @@ constructor(
     ) : MavericksState
 
     sealed class Action {
-        data class GetCardDetail(val cardId: String) : Action()
+        data class GetCardDetail(val uuid: String) : Action()
 
         data class AssignCardToEmployee(val employee: Employee) : Action()
 
@@ -48,20 +48,20 @@ constructor(
 
     fun process(action: Action) {
         when (action) {
-            is Action.GetCardDetail -> handleGetCardDetail(action.cardId)
+            is Action.GetCardDetail -> handleGetCardDetail(action.uuid)
             is Action.AssignCardToEmployee -> handleAssignCard(action.employee)
             is Action.ClearMessage -> setState { copy(message = EMPTY) }
         }
     }
 
-    private fun handleGetCardDetail(cardId: String) {
+    private fun handleGetCardDetail(uuid: String) {
         setState { copy(card = LCE.Loading) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardDetailUseCase(cardId = cardId)
+                getCardDetailUseCase(uuid = uuid)
             }.onSuccess {
                 handleGetEmployees()
-                Log.e("test", "$cardId ---- $it")
+                Log.e("test", "$uuid ---- $it")
                 setState { copy(card = LCE.Success(it), cardId = cardId) }
             }.onFailure {
                 fileHelper.logException(it)

@@ -74,7 +74,7 @@ import kotlinx.coroutines.launch
 fun SolutionScreen(
     navController: NavController,
     solutionType: String,
-    cardId: String,
+    uuid: String,
     viewModel: SolutionViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
@@ -136,7 +136,7 @@ fun SolutionScreen(
                     viewModel.process(
                         SolutionViewModel.Action.SetSolutionInfo(
                             solutionType,
-                            cardId
+                            uuid
                         )
                     )
                 }

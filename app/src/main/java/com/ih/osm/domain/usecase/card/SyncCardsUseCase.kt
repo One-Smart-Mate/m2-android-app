@@ -11,6 +11,7 @@ import com.ih.osm.domain.model.isLocalCard
 import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
@@ -28,7 +29,8 @@ constructor(
     private val notificationManager: NotificationManager,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
-    private val saveCardSolutionUseCase: SaveCardSolutionUseCase
+    private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
+    private val localRepo: LocalCardRepository
 ) : SyncCardsUseCase {
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
         var currentProgress = 0f
@@ -69,8 +71,8 @@ constructor(
                     Log.e("test", "Current card request.. $cardRequest")
                     firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
                     val networkCard = cardRepository.saveCard(cardRequest)
-                    localRepository.deleteCard(card.uuid)
-                    localRepository.saveCard(networkCard)
+                    localRepo.delete(card.uuid)
+                    localRepo.save(networkCard)
                     fileHelper.logCreateCardRequestSuccess(networkCard)
                     firebaseAnalyticsHelper.logCreateRemoteCard(networkCard)
                     networkCard

@@ -93,7 +93,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CardDetailScreen(
     navController: NavController,
-    cardId: String,
+    uuid: String,
     viewModel: CardDetailViewModel = mavericksViewModel()
 ) {
     val state by viewModel.collectAsState()
@@ -107,7 +107,7 @@ fun CardDetailScreen(
                 navController = navController,
                 errorMessage = screenState.error
             ) {
-                viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+                viewModel.process(CardDetailViewModel.Action.GetCardDetail(uuid))
             }
         }
 
@@ -140,7 +140,7 @@ fun CardDetailScreen(
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.card !is LCE.Success) {
-                    viewModel.process(CardDetailViewModel.Action.GetCardDetail(cardId))
+                    viewModel.process(CardDetailViewModel.Action.GetCardDetail(uuid))
                 }
 
                 if (state.message.isNotEmpty()) {

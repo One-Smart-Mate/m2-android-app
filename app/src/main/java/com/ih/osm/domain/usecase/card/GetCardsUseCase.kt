@@ -3,6 +3,7 @@ package com.ih.osm.domain.usecase.card
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.CardRepository
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import javax.inject.Inject
@@ -17,21 +18,22 @@ interface GetCardsUseCase {
 class GetCardsUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository,
+    private val remoteRepo: CardRepository,
+    private val localRepo: LocalCardRepository,
+    private val appLocalRepo: LocalRepository,
     private val notificationUseCase: GetFirebaseNotificationUseCase
 ) : GetCardsUseCase {
     override suspend fun invoke(syncRemote: Boolean, localCards: Boolean): List<Card> {
         if (syncRemote && NetworkConnection.isConnected()) {
-            val siteId = localRepository.getSiteId()
-            val remoteCards = cardRepository.getCardsByUser(siteId)
-            localRepository.saveCards(remoteCards)
+            val siteId = appLocalRepo.getSiteId()
+            val remoteCards = remoteRepo.getCardsByUser(siteId)
+            localRepo.saveAll(remoteCards)
             notificationUseCase(remove = true, syncCards = true)
         }
         return if (localCards) {
-            localRepository.getLocalCards()
+            localRepo.getAllLocal()
         } else {
-            localRepository.getCards()
+            localRepo.getAll()
         }
     }
 }

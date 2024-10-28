@@ -1,7 +1,6 @@
 package com.ih.osm.data.repository.local
 
 import com.ih.osm.data.database.dao.UserDao
-import com.ih.osm.data.database.dao.card.CardDao
 import com.ih.osm.data.database.dao.cardtype.CardTypeDao
 import com.ih.osm.data.database.dao.employee.EmployeeDao
 import com.ih.osm.data.database.dao.evidence.EvidenceDao
@@ -18,7 +17,6 @@ import com.ih.osm.data.database.entities.preclassifier.toDomain
 import com.ih.osm.data.database.entities.priority.toDomain
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
-import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
@@ -28,14 +26,12 @@ import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.local.LocalRepository
-import com.ih.osm.ui.utils.STORED_LOCAL
 import javax.inject.Inject
 
 class LocalRepositoryImpl
 @Inject
 constructor(
     private val userDao: UserDao,
-    private val cardDao: CardDao,
     private val cardTypeDao: CardTypeDao,
     private val preclassifierDao: PreclassifierDao,
     private val priorityDao: PriorityDao,
@@ -61,19 +57,6 @@ constructor(
 
     override suspend fun getSiteId(): String {
         return userDao.getUser()?.siteId.orEmpty()
-    }
-
-    override suspend fun saveCards(list: List<Card>) {
-        list.forEach {
-            cardDao.insertCard(it.toEntity())
-        }
-    }
-
-    override suspend fun getCards(): List<Card> {
-        return cardDao.getCards().map {
-            val hasLocalSolutions = solutionDao.getSolutions(it.uuid)
-            it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
-        }.sortedByDescending { it.id }
     }
 
     override suspend fun getCardTypes(filter: String): List<CardType> {
@@ -117,10 +100,6 @@ constructor(
         cardTypeDao.deleteCardTypes()
     }
 
-    override suspend fun removeCards() {
-        cardDao.deleteCards()
-    }
-
     override suspend fun removePreclassifiers() {
         preclassifierDao.deletePreclassifiers()
     }
@@ -144,14 +123,6 @@ constructor(
         levelDao.deleteLevels()
     }
 
-    override suspend fun getLastCardId(): String? {
-        return cardDao.getLastCardId()
-    }
-
-    override suspend fun getLastSiteCardId(): Long? {
-        return cardDao.getLastSiteCardId()
-    }
-
     override suspend fun getCardType(id: String?): CardType? {
         return cardTypeDao.getCardType(id)?.toDomain()
     }
@@ -168,31 +139,8 @@ constructor(
         return levelDao.getLevel(id)?.toDomain()
     }
 
-    override suspend fun saveCard(card: Card): Long {
-        return cardDao.insertCard(card.toEntity())
-    }
-
     override suspend fun saveEvidence(evidence: Evidence): Long {
         return evidenceDao.insertEvidence(evidence.toEntity())
-    }
-
-    override suspend fun getLocalCards(): List<Card> {
-        val localCards = cardDao.getLocalCards(stored = STORED_LOCAL).toMutableList()
-        val lists = solutionDao.getAllSolutions()
-        lists.forEach {
-            cardDao.getCardByUUID(it.cardId)?.let { card ->
-                localCards.add(card)
-            }
-        }
-        return localCards.toSet().map { cardEntity ->
-            val evidences =
-                evidenceDao.getEvidencesByCard(cardEntity.uuid).map { it.toDomain() }
-            val hasLocalSolutions = solutionDao.getSolutions(cardEntity.uuid)
-            cardEntity.toDomain(
-                evidences = evidences,
-                hasLocalSolutions = hasLocalSolutions.isNotEmpty()
-            )
-        }.sortedByDescending { it.siteCardId }
     }
 
     override suspend fun deleteEvidence(id: String) {
@@ -201,29 +149,6 @@ constructor(
 
     override suspend fun deleteEvidences() {
         evidenceDao.deleteEvidences()
-    }
-
-    override suspend fun deleteCard(id: String) {
-        cardDao.deleteCard(id)
-    }
-
-    override suspend fun getCard(cardId: String): Card {
-        val card = cardDao.getCard(cardId)
-        val evidences =
-            evidenceDao.getEvidencesByCard(card.uuid).map { it.toDomain() }
-        val hasLocalSolutions = solutionDao.getSolutions(card.uuid)
-
-        return card.toDomain(
-            evidences = evidences,
-            hasLocalSolutions = hasLocalSolutions.isNotEmpty()
-        )
-    }
-
-    override suspend fun getCardsZone(siteId: String, superiorId: String): List<Card> {
-        return cardDao.getCardsZone(
-            siteId,
-            superiorId
-        ).map { it.toDomain(hasLocalSolutions = false) }
     }
 
     override suspend fun saveEmployees(list: List<Employee>) {
@@ -238,12 +163,6 @@ constructor(
 
     override suspend fun getEmployees(): List<Employee> {
         return employeeDao.getEmployees().map { it.toDomain() }
-    }
-
-    override suspend fun getCardByUUID(uuid: String): Card? {
-        val card = cardDao.getCardByUUID(uuid)
-        val hasLocalSolutions = solutionDao.getSolutions(card?.uuid.orEmpty())
-        return card?.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
     }
 
     override suspend fun saveSolution(solutionEntity: SolutionEntity) {

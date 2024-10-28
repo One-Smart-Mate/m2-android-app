@@ -11,6 +11,7 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.repository.cards.CardRepository
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
@@ -32,8 +33,9 @@ interface SaveCardSolutionUseCase {
 class SaveCardSolutionUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
+    private val remoteRepo: CardRepository,
     private val localRepository: LocalRepository,
+    private val localRepo: LocalCardRepository,
     private val fileHelper: FileHelper,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper
 ) : SaveCardSolutionUseCase {
@@ -47,7 +49,7 @@ constructor(
         remoteEvidences: List<CreateEvidenceRequest>
     ): Card? {
         return try {
-            var card: Card? = localRepository.getCardByUUID(cardId)
+            var card: Card? = localRepo.get(cardId)
             val userAppSolution = localRepository.getUser()
             val userSolution =
                 localRepository.getEmployees().firstOrNull { it.id == userSolutionId }
@@ -84,11 +86,11 @@ constructor(
                                 comments = comments
                             )
                         fileHelper.logDefinitiveSolution(request)
-                        card = cardRepository.saveDefinitiveSolution(request)
+                        card = remoteRepo.saveDefinitiveSolution(request)
                     }
                     Log.e("Test", "Solution definitive card -> $card")
                     card?.let {
-                        localRepository.saveCard(it)
+                        localRepo.save(it)
                     }
                     card
                 }
@@ -114,11 +116,11 @@ constructor(
                                 comments = comments
                             )
                         fileHelper.logProvisionalSolution(request)
-                        card = cardRepository.saveProvisionalSolution(request)
+                        card = remoteRepo.saveProvisionalSolution(request)
                     }
                     Log.e("Test", "Solution provisional card $card")
                     card?.let {
-                        localRepository.saveCard(it)
+                        localRepo.save(it)
                     }
                     card
                 }

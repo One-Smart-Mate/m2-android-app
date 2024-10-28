@@ -9,16 +9,16 @@ import com.ih.osm.data.database.entities.card.CardEntity
 @Dao
 interface CardDao {
     @Query("SELECT * FROM card_table")
-    suspend fun getCards(): List<CardEntity>
+    suspend fun getAll(): List<CardEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCard(cardEntity: CardEntity): Long
+    suspend fun insert(cardEntity: CardEntity): Long
 
     @Query("DELETE FROM card_table")
-    suspend fun deleteCards()
+    suspend fun deleteAll()
 
     @Query("DELETE FROM card_table where stored=:stored")
-    suspend fun deleteRemoteCards(stored: String)
+    suspend fun deleteRemotes(stored: String)
 
     @Query("SELECT site_card_id FROM card_table ORDER BY site_card_id DESC LIMIT 1")
     suspend fun getLastSiteCardId(): Long?
@@ -27,17 +27,14 @@ interface CardDao {
     suspend fun getLastCardId(): String?
 
     @Query("SELECT * FROM card_table WHERE stored=:stored")
-    suspend fun getLocalCards(stored: String): List<CardEntity>
+    suspend fun getAllLocal(stored: String): List<CardEntity>
 
-    @Query("DELETE FROM card_table WHERE id=:id")
-    suspend fun deleteCard(id: String)
-
-    @Query("SELECT * FROM card_table WHERE card_id=:cardId")
-    suspend fun getCard(cardId: String): CardEntity
-
-    @Query("SELECT * FROM card_table  WHERE superior_id=:id AND site_id=:siteId")
-    suspend fun getCardsZone(siteId: String, id: String): List<CardEntity>
+    @Query("DELETE FROM card_table WHERE id=:uuid")
+    suspend fun delete(uuid: String)
 
     @Query("SELECT * FROM card_table WHERE id=:uuid")
-    suspend fun getCardByUUID(uuid: String): CardEntity?
+    suspend fun get(uuid: String): CardEntity?
+
+    @Query("SELECT * FROM card_table  WHERE superior_id=:id AND site_id=:siteId")
+    suspend fun getByZone(siteId: String, id: String): List<CardEntity>
 }

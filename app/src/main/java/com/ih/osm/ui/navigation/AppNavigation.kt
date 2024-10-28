@@ -66,8 +66,8 @@ fun AppNavigation(startDestination: String) {
             Screen.CardDetail.route,
             arguments = listOf(navArgument(ARG_CARD_ID) { type = NavType.StringType })
         ) {
-            val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
-            CardDetailScreen(navController = navController, cardId = cardId)
+            val uuid = it.arguments?.getString(ARG_CARD_ID).orEmpty()
+            CardDetailScreen(navController = navController, uuid = uuid)
         }
         composable(
             Screen.CreateCard.route,
@@ -88,11 +88,11 @@ fun AppNavigation(startDestination: String) {
             )
         ) {
             val solutionType = it.arguments?.getString(ARG_SOLUTION).orEmpty()
-            val cardId = it.arguments?.getString(ARG_CARD_ID).orEmpty()
+            val uuid = it.arguments?.getString(ARG_CARD_ID).orEmpty()
             SolutionScreen(
                 navController = navController,
                 solutionType = solutionType,
-                cardId = cardId
+                uuid = uuid
             )
         }
 
@@ -143,15 +143,15 @@ fun NavController.navigateToAccount() {
     navigate(Screen.Account.route)
 }
 
-fun NavController.navigateToCardDetail(id: String) {
+fun NavController.navigateToCardDetail(uuid: String) {
     navigate(
-        "${Screen.CardDetail.path}/$id"
+        "${Screen.CardDetail.path}/$uuid"
     )
 }
 
-fun NavController.navigateToCardSolution(solutionType: String, cardId: String) {
+fun NavController.navigateToCardSolution(solutionType: String, uuid: String) {
     navigate(
-        "${Screen.Solution.path}/$solutionType/$cardId"
+        "${Screen.Solution.path}/$solutionType/$uuid"
     )
 }
 

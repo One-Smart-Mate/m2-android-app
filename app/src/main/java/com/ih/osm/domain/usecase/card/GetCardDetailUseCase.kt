@@ -4,25 +4,25 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.repository.cards.CardRepository
-import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import javax.inject.Inject
 
 interface GetCardDetailUseCase {
-    suspend operator fun invoke(cardId: String, remote: Boolean = true): Card
+    suspend operator fun invoke(uuid: String, remote: Boolean = true): Card
 }
 
 class GetCardDetailUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository
+    private val remoteRepo: CardRepository,
+    private val localRepo: LocalCardRepository
 ) : GetCardDetailUseCase {
-    override suspend fun invoke(cardId: String, remote: Boolean): Card {
-        val card = localRepository.getCard(cardId)
+    override suspend fun invoke(uuid: String, remote: Boolean): Card {
+        val card = localRepo.get(uuid)
         return if (card.isRemoteCard() && remote && NetworkConnection.isConnected()) {
-            cardRepository.getCardDetail(cardId)
-                .defaultIfNull(localRepository.getCard(cardId))
+            remoteRepo.getCardDetail(card.id)
+                .defaultIfNull(localRepo.get(uuid))
         } else {
             card
         }

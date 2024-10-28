@@ -3,30 +3,32 @@ package com.ih.osm.domain.usecase.card
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.CardRepository
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
 interface UpdateCardMechanicUseCase {
-    suspend operator fun invoke(mechanicId: String, cardId: String): Card
+    suspend operator fun invoke(mechanicId: String, uuid: String): Card
 }
 
 class UpdateCardMechanicUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository
+    private val remoteRepo: CardRepository,
+    private val localRepo: LocalCardRepository,
+    private val appLocalRepository: LocalRepository
 ) : UpdateCardMechanicUseCase {
-    override suspend fun invoke(mechanicId: String, cardId: String): Card {
-        val userId = localRepository.getUser()?.userId.orEmpty().toInt()
-        val request = UpdateMechanicRequest(cardId.toInt(), mechanicId.toInt(), userId)
-        cardRepository.updateMechanic(request)
-        val card = localRepository.getCard(cardId)
-        val employee = localRepository.getEmployees().firstOrNull { it.id == mechanicId }
+    override suspend fun invoke(mechanicId: String, uuid: String): Card {
+        val userId = appLocalRepository.getUser()?.userId.orEmpty().toInt()
+        val card = localRepo.get(uuid)
+        val request = UpdateMechanicRequest(card.id.toInt(), mechanicId.toInt(), userId)
+        remoteRepo.updateMechanic(request)
+        val employee = appLocalRepository.getEmployees().firstOrNull { it.id == mechanicId }
         val newCard = card.copy(
             mechanicId = employee?.id,
             mechanicName = employee?.name
         )
-        localRepository.saveCard(newCard)
+        localRepo.save(newCard)
         return newCard
     }
 }

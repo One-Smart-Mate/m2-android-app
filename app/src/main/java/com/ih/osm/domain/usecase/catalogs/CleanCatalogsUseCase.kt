@@ -1,6 +1,7 @@
 package com.ih.osm.domain.usecase.catalogs
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
@@ -11,11 +12,12 @@ interface CleanCatalogsUseCase {
 class CleanCatalogsUseCaseImpl
 @Inject
 constructor(
-    private val localRepository: LocalRepository
+    private val localRepository: LocalRepository,
+    private val localCardRepository: LocalCardRepository
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
-            localRepository.removeCards()
+            localCardRepository.deleteAll()
             localRepository.removePreclassifiers()
             localRepository.removePriorities()
             localRepository.removeCardTypes()

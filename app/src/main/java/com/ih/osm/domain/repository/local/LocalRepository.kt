@@ -1,7 +1,6 @@
 package com.ih.osm.domain.repository.local
 
 import com.ih.osm.data.database.entities.solution.SolutionEntity
-import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
@@ -19,24 +18,6 @@ interface LocalRepository {
     suspend fun logout(): Int
 
     suspend fun getSiteId(): String
-
-    suspend fun saveCards(list: List<Card>)
-
-    suspend fun getCards(): List<Card>
-
-    suspend fun getLastCardId(): String?
-
-    suspend fun getLastSiteCardId(): Long?
-
-    suspend fun saveCard(card: Card): Long
-
-    suspend fun getLocalCards(): List<Card>
-
-    suspend fun deleteCard(id: String)
-
-    suspend fun getCard(cardId: String): Card
-
-    suspend fun getCardsZone(siteId: String, superiorId: String): List<Card>
 
     suspend fun getCardTypes(filter: String = EMPTY): List<CardType>
 
@@ -64,8 +45,6 @@ interface LocalRepository {
 
     suspend fun removeLevels()
 
-    suspend fun removeCards()
-
     suspend fun removeCardTypes()
 
     suspend fun removePreclassifiers()
@@ -83,8 +62,6 @@ interface LocalRepository {
     suspend fun deleteEmployees()
 
     suspend fun getEmployees(): List<Employee>
-
-    suspend fun getCardByUUID(uuid: String): Card?
 
     suspend fun saveSolution(solutionEntity: SolutionEntity)
 

@@ -73,7 +73,7 @@ class SolutionViewModel @AssistedInject constructor(
     ) : MavericksState
 
     sealed class Action {
-        data class SetSolutionInfo(val solutionType: String, val cardId: String) : Action()
+        data class SetSolutionInfo(val solutionType: String, val uuid: String) : Action()
 
         data object GetEmployees : Action()
 
@@ -98,7 +98,7 @@ class SolutionViewModel @AssistedInject constructor(
 
     fun process(action: Action) {
         when (action) {
-            is Action.SetSolutionInfo -> handleSetSolutionInfo(action.solutionType, action.cardId)
+            is Action.SetSolutionInfo -> handleSetSolutionInfo(action.solutionType, action.uuid)
             is Action.GetEmployees -> handleGetEmployees()
             is Action.OnSearchEmployee -> handleOnSearchEmployee(action.query)
             is Action.OnSelectEmployee -> handleOnSelectEmployee(action.employee)
@@ -225,7 +225,7 @@ class SolutionViewModel @AssistedInject constructor(
             kotlin.runCatching {
                 updateCardMechanicUseCase(
                     mechanicId = state.selectedEmployee?.id.orEmpty(),
-                    cardId = state.card?.id.orEmpty()
+                    uuid = state.card?.uuid.orEmpty()
                 )
             }.onSuccess {
                 setState { copy(isSolutionSuccess = true) }
@@ -318,7 +318,7 @@ class SolutionViewModel @AssistedInject constructor(
         }
     }
 
-    private fun handleSetSolutionInfo(solutionType: String, cardId: String) {
+    private fun handleSetSolutionInfo(solutionType: String, uuid: String) {
         setState {
             copy(
                 solutionType = solutionType,
@@ -327,15 +327,15 @@ class SolutionViewModel @AssistedInject constructor(
                 isCommentsEnabled = solutionType != ASSIGN_CARD_ACTION
             )
         }
-        handleGetCardDetail(cardId)
+        handleGetCardDetail(uuid)
     }
 
-    private fun handleGetCardDetail(cardId: String) {
-        Log.e("test", "CardID -> $cardId")
+    private fun handleGetCardDetail(uuid: String) {
+        Log.e("test", "CardID -> $uuid")
         setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                getCardDetailUseCase(cardId, false)
+                getCardDetailUseCase(uuid, false)
             }.onSuccess {
                 setState { copy(card = it) }
                 handleGetCardType(it.cardTypeId.orEmpty())

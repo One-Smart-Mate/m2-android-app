@@ -76,7 +76,7 @@ fun CardListScreen(
             title = state.title,
             onSolutionClick = { card, solutionType ->
                 viewModel.process(CardListViewModel.Action.OnRefreshCards)
-                navController.navigateToCardSolution(solutionType, card.id)
+                navController.navigateToCardSolution(solutionType, card.uuid)
             },
             onCreateCardClick = {
                 viewModel.process(CardListViewModel.Action.OnRefreshCards)
@@ -149,7 +149,7 @@ fun CardListContent(
                 CardItemListV2(
                     card = card,
                     onClick = {
-                        navController.navigateToCardDetail(card.id)
+                        navController.navigateToCardDetail(card.uuid)
                     },
                     onSolutionClick = { solution ->
                         onSolutionClick(card, solution)
