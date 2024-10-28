@@ -1,7 +1,6 @@
 package com.ih.osm.data.repository.local
 
 import com.ih.osm.data.database.dao.UserDao
-import com.ih.osm.data.database.dao.employee.EmployeeDao
 import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
@@ -16,7 +15,6 @@ import com.ih.osm.data.database.entities.preclassifier.toDomain
 import com.ih.osm.data.database.entities.priority.toDomain
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
-import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
@@ -34,7 +32,6 @@ constructor(
     private val priorityDao: PriorityDao,
     private val levelDao: LevelDao,
     private val evidenceDao: EvidenceDao,
-    private val employeeDao: EmployeeDao,
     private val solutionDao: SolutionDao
 ) : LocalRepository {
     override suspend fun saveUser(user: User): Long {
@@ -123,20 +120,6 @@ constructor(
 
     override suspend fun deleteEvidences() {
         evidenceDao.deleteEvidences()
-    }
-
-    override suspend fun saveEmployees(list: List<Employee>) {
-        list.forEach {
-            employeeDao.insertEmployee(it.toEntity())
-        }
-    }
-
-    override suspend fun deleteEmployees() {
-        employeeDao.deleteEmployees()
-    }
-
-    override suspend fun getEmployees(): List<Employee> {
-        return employeeDao.getEmployees().map { it.toDomain() }
     }
 
     override suspend fun saveSolution(solutionEntity: SolutionEntity) {

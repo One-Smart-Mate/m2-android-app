@@ -8,12 +8,13 @@ import com.ih.osm.data.database.entities.employee.EmployeeEntity
 
 @Dao
 interface EmployeeDao {
+
     @Query("SELECT * FROM employee_table")
-    suspend fun getEmployees(): List<EmployeeEntity>
+    suspend fun getAll(): List<EmployeeEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEmployee(employeeEntity: EmployeeEntity): Long
+    suspend fun insert(employeeEntity: EmployeeEntity): Long
 
     @Query("DELETE FROM employee_table")
-    suspend fun deleteEmployees()
+    suspend fun deleteAll()
 }

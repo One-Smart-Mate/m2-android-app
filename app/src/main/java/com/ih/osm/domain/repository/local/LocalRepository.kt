@@ -1,7 +1,6 @@
 package com.ih.osm.domain.repository.local
 
 import com.ih.osm.data.database.entities.solution.SolutionEntity
-import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
@@ -46,12 +45,6 @@ interface LocalRepository {
     suspend fun deleteEvidence(id: String)
 
     suspend fun deleteEvidences()
-
-    suspend fun saveEmployees(list: List<Employee>)
-
-    suspend fun deleteEmployees()
-
-    suspend fun getEmployees(): List<Employee>
 
     suspend fun saveSolution(solutionEntity: SolutionEntity)
 

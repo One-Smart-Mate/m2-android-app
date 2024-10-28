@@ -12,6 +12,7 @@ import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
@@ -37,7 +38,8 @@ constructor(
     private val localRepository: LocalRepository,
     private val localRepo: LocalCardRepository,
     private val fileHelper: FileHelper,
-    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper
+    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+    private val localEmployeeRepo: LocalEmployeeRepository
 ) : SaveCardSolutionUseCase {
     override suspend fun invoke(
         solutionType: String,
@@ -52,7 +54,7 @@ constructor(
             var card: Card? = localRepo.get(cardId)
             val userAppSolution = localRepository.getUser()
             val userSolution =
-                localRepository.getEmployees().firstOrNull { it.id == userSolutionId }
+                localEmployeeRepo.getAll().firstOrNull { it.id == userSolutionId }
             if (saveLocal) {
                 evidences.forEach {
                     localRepository.saveEvidence(it)

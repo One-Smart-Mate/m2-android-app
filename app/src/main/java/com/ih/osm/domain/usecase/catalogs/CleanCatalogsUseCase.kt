@@ -3,6 +3,7 @@ package com.ih.osm.domain.usecase.catalogs
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
+import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
@@ -15,7 +16,8 @@ class CleanCatalogsUseCaseImpl
 constructor(
     private val localRepository: LocalRepository,
     private val localCardRepository: LocalCardRepository,
-    private val localCardTypeRepository: LocalCardTypeRepository
+    private val localCardTypeRepository: LocalCardTypeRepository,
+    private val localEmployeeRepository: LocalEmployeeRepository
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
@@ -25,7 +27,7 @@ constructor(
             localCardTypeRepository.deleteAll()
             localRepository.removeLevels()
             localRepository.deleteEvidences()
-            localRepository.deleteEmployees()
+            localEmployeeRepository.deleteAll()
             localRepository.removeSolutions()
             true
         } catch (e: Exception) {

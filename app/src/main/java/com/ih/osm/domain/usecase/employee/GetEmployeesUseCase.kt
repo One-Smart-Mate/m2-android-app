@@ -2,6 +2,7 @@ package com.ih.osm.domain.usecase.employee
 
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.repository.employee.EmployeeRepository
+import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
@@ -12,15 +13,16 @@ interface GetEmployeesUseCase {
 class GetEmployeesUseCaseImpl
 @Inject
 constructor(
-    private val employeeRepository: EmployeeRepository,
-    private val localRepository: LocalRepository
+    private val remoteRepo: EmployeeRepository,
+    private val localRepo: LocalEmployeeRepository,
+    private val appLocalRepository: LocalRepository
 ) : GetEmployeesUseCase {
     override suspend fun invoke(syncRemote: Boolean): List<Employee> {
         if (syncRemote) {
-            val siteId = localRepository.getSiteId()
-            val employeeList = employeeRepository.getEmployees(siteId)
-            localRepository.saveEmployees(employeeList)
+            val siteId = appLocalRepository.getSiteId()
+            val employeeList = remoteRepo.getEmployees(siteId)
+            localRepo.saveAll(employeeList)
         }
-        return localRepository.getEmployees()
+        return localRepo.getAll()
     }
 }
