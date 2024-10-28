@@ -6,7 +6,7 @@ import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LevelRepository
-import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
+import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
@@ -21,7 +21,7 @@ constructor(
     private val localCardRepo: LocalCardRepository,
     private val cardTypeRepo: CardTypeRepository,
     private val employeeRepo: EmployeeRepository,
-    private val localPreclassifierRepo: LocalPreclassifierRepository,
+    private val preclassifierRepo: PreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
     private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository,
@@ -30,7 +30,7 @@ constructor(
     override suspend fun invoke(): Boolean {
         return try {
             localCardRepo.deleteAll()
-            localPreclassifierRepo.deleteAll()
+            preclassifierRepo.deleteAll()
             localPriorityRepo.deleteAll()
             cardTypeRepo.deleteAll()
             levelRepo.deleteAll()

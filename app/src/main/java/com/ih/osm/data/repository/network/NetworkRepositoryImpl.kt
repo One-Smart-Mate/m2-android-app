@@ -9,6 +9,7 @@ import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.repository.network.NetworkRepository
 import javax.inject.Inject
@@ -76,6 +77,15 @@ class NetworkRepositoryImpl @Inject constructor(
 
     override suspend fun getRemoteLevels(siteId: String): List<Level> {
         val response = apiService.getLevels(siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemotePreclassifiers(siteId: String): List<Preclassifier> {
+        val response = apiService.getPreclassifiers(siteId).execute()
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {

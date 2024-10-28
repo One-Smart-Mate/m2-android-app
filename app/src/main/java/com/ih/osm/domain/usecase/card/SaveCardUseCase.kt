@@ -9,7 +9,7 @@ import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LevelRepository
-import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
+import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.STORED_LOCAL
@@ -28,7 +28,7 @@ constructor(
     private val fileHelper: FileHelper,
     private val localCardRepo: LocalCardRepository,
     private val cardTypeRepo: CardTypeRepository,
-    private val localPreclassifierRepo: LocalPreclassifierRepository,
+    private val preclassifierRepo: PreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
     private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository
@@ -40,7 +40,7 @@ constructor(
         val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = levelRepo.get(card.areaId.toString())
         val priority = localPriorityRepo.get(card.priorityId.orEmpty())
-        val preclassifier = localPreclassifierRepo.get(card.preclassifierId)
+        val preclassifier = preclassifierRepo.get(card.preclassifierId)
         var uuid = card.uuid
         val hasData = localCardRepo.get(uuid)
         if (hasData != null) {
