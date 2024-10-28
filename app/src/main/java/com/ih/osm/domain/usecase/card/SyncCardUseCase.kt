@@ -9,7 +9,6 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
-import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import javax.inject.Inject
@@ -21,8 +20,7 @@ interface SyncCardUseCase {
 class SyncCardUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
-    private val localRepo: LocalCardRepository,
+    private val cardRepo: CardRepository,
     private val firebaseStorageRepository: FirebaseStorageRepository,
     private val notificationManager: NotificationManager,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
@@ -44,10 +42,10 @@ constructor(
             val cardRequest = card.toCardRequest(evidences)
             fileHelper.logCreateCardRequest(cardRequest)
             Log.e("test", "Current card request.. $cardRequest")
-            val remoteCard = cardRepository.saveCard(cardRequest)
+            val remoteCard = cardRepo.saveRemote(cardRequest)
             firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
             Log.e("test", "Current card remote.. $remoteCard")
-            localRepo.save(remoteCard)
+            cardRepo.save(remoteCard)
             firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
             Log.e("test", "saving card.. $remoteCard")
             if (handleNotification) {

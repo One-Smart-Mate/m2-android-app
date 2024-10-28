@@ -1,8 +1,13 @@
 package com.ih.osm.domain.repository.network
 
+import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
+import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
+import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
@@ -30,4 +35,24 @@ interface NetworkRepository {
     suspend fun getRemotePreclassifiers(siteId: String): List<Preclassifier>
 
     suspend fun getRemotePriorities(siteId: String): List<Priority>
+
+    suspend fun getRemoteCardsByUser(siteId: String): List<Card>
+
+    suspend fun getRemoteCardDetail(cardId: String): Card?
+
+    suspend fun saveRemoteCard(card: CreateCardRequest): Card
+
+    suspend fun getRemoteCardsZone(superiorId: String, siteId: String): List<Card>
+
+    suspend fun saveRemoteDefinitiveSolution(
+        createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest
+    ): Card
+
+    suspend fun saveRemoteProvisionalSolution(
+        createProvisionalSolutionRequest: CreateProvisionalSolutionRequest
+    ): Card
+
+    suspend fun getRemoteCardsLevelMachine(levelMachine: String, siteId: String): List<Card>
+
+    suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 }

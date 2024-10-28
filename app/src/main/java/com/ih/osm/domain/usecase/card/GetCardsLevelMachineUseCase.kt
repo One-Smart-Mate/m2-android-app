@@ -2,7 +2,6 @@ package com.ih.osm.domain.usecase.card
 
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
-import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import javax.inject.Inject
 
@@ -13,13 +12,11 @@ interface GetCardsLevelMachineUseCase {
 class GetCardsLevelMachineUseCaseImpl
 @Inject
 constructor(
-    private val cardRepository: CardRepository,
-    private val authRepo: AuthRepository
+    private val cardRepository: CardRepository
 ) : GetCardsLevelMachineUseCase {
     override suspend fun invoke(levelMachine: String): List<Card> {
-        val siteId = authRepo.getSiteId()
         return if (NetworkConnection.isConnected()) {
-            cardRepository.getCardsLevelMachine(levelMachine = levelMachine, siteId = siteId)
+            cardRepository.getRemoteByLevelMachine(levelMachine = levelMachine)
         } else {
             emptyList()
         }

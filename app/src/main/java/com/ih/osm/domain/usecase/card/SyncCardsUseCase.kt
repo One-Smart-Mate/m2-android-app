@@ -11,7 +11,6 @@ import com.ih.osm.domain.model.isLocalCard
 import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
-import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
@@ -30,7 +29,6 @@ constructor(
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
-    private val localRepo: LocalCardRepository,
     private val evidenceRepo: EvidenceRepository,
     private val solutionRepo: SolutionRepository
 ) : SyncCardsUseCase {
@@ -72,9 +70,9 @@ constructor(
                     fileHelper.logCreateCardRequest(cardRequest)
                     Log.e("test", "Current card request.. $cardRequest")
                     firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
-                    val networkCard = cardRepository.saveCard(cardRequest)
-                    localRepo.delete(card.uuid)
-                    localRepo.save(networkCard)
+                    val networkCard = cardRepository.saveRemote(cardRequest)
+                    cardRepository.delete(card.uuid)
+                    cardRepository.save(networkCard)
                     fileHelper.logCreateCardRequestSuccess(networkCard)
                     firebaseAnalyticsHelper.logCreateRemoteCard(networkCard)
                     networkCard

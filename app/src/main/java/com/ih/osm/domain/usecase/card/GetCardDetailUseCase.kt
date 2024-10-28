@@ -4,7 +4,6 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.repository.cards.CardRepository
-import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import javax.inject.Inject
 
@@ -15,15 +14,14 @@ interface GetCardDetailUseCase {
 class GetCardDetailUseCaseImpl
 @Inject
 constructor(
-    private val remoteRepo: CardRepository,
-    private val localRepo: LocalCardRepository
+    private val repo: CardRepository
 ) : GetCardDetailUseCase {
     override suspend fun invoke(uuid: String, remote: Boolean): Card? {
-        val card = localRepo.get(uuid)
+        val card = repo.get(uuid)
         card?.let {
             return if (card.isRemoteCard() && remote && NetworkConnection.isConnected()) {
-                remoteRepo.getCardDetail(card.id)
-                    .defaultIfNull(localRepo.get(uuid))
+                repo.getRemote(card.id)
+                    .defaultIfNull(repo.get(uuid))
             } else {
                 card
             }

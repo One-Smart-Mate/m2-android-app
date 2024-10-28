@@ -2,10 +2,15 @@ package com.ih.osm.data.repository.network
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.data.api.ApiService
+import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
+import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
+import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
@@ -99,6 +104,84 @@ class NetworkRepositoryImpl @Inject constructor(
         return if (response.isSuccessful && response.body() != null) {
             response.body()!!.toDomain()
         } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemoteCardsByUser(siteId: String): List<Card> {
+        val response = apiService.getCards(siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemoteCardDetail(cardId: String): Card? {
+        val response = apiService.getCardDetail(cardId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun saveRemoteCard(card: CreateCardRequest): Card {
+        val response = apiService.createCard(card).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemoteCardsZone(superiorId: String, siteId: String): List<Card> {
+        val response = apiService.getCardsZone(superiorId, siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun saveRemoteDefinitiveSolution(
+        createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest
+    ): Card {
+        val response = apiService.saveDefinitiveSolution(createDefinitiveSolutionRequest).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun saveRemoteProvisionalSolution(
+        createProvisionalSolutionRequest: CreateProvisionalSolutionRequest
+    ): Card {
+        val response =
+            apiService.saveProvisionalSolution(createProvisionalSolutionRequest).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemoteCardsLevelMachine(
+        levelMachine: String,
+        siteId: String
+    ): List<Card> {
+        val response = apiService.getCardsLevelMachine(siteId, levelMachine).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun updateRemoteMechanic(body: UpdateMechanicRequest) {
+        val response = apiService.updateMechanic(body).execute()
+        if (!response.isSuccessful && response.body() == null) {
             error(response.getErrorMessage())
         }
     }

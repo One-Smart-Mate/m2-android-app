@@ -1,29 +1,25 @@
 package com.ih.osm.domain.repository.cards
 
 import com.ih.osm.data.model.CreateCardRequest
-import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
-import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.domain.model.Card
 
 interface CardRepository {
-    suspend fun getCardsByUser(siteId: String): List<Card>
+    suspend fun getAllRemoteByUser(): List<Card>
+    suspend fun getRemote(cardId: String): Card?
+    suspend fun saveRemote(card: CreateCardRequest): Card
+    suspend fun getRemoteByZone(superiorId: String): List<Card>
+    suspend fun getRemoteByLevelMachine(levelMachine: String): List<Card>
+    suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 
-    suspend fun getCardDetail(cardId: String): Card?
-
-    suspend fun saveCard(card: CreateCardRequest): Card
-
-    suspend fun getCardsZone(superiorId: String, siteId: String): List<Card>
-
-    suspend fun saveDefinitiveSolution(
-        createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest
-    ): Card
-
-    suspend fun saveProvisionalSolution(
-        createProvisionalSolutionRequest: CreateProvisionalSolutionRequest
-    ): Card
-
-    suspend fun getCardsLevelMachine(levelMachine: String, siteId: String): List<Card>
-
-    suspend fun updateMechanic(body: UpdateMechanicRequest)
+    suspend fun saveAll(cards: List<Card>)
+    suspend fun getAll(): List<Card>
+    suspend fun getLastCardId(): String?
+    suspend fun getLastSiteCardId(): Long?
+    suspend fun save(card: Card): Long
+    suspend fun getAllLocal(): List<Card>
+    suspend fun delete(uuid: String)
+    suspend fun get(uuid: String): Card?
+    suspend fun getByZone(superiorId: String): List<Card>
+    suspend fun deleteAll()
 }

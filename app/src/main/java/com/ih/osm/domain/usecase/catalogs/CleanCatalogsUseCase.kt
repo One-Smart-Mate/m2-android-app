@@ -1,7 +1,7 @@
 package com.ih.osm.domain.usecase.catalogs
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
@@ -18,7 +18,7 @@ interface CleanCatalogsUseCase {
 class CleanCatalogsUseCaseImpl
 @Inject
 constructor(
-    private val localCardRepo: LocalCardRepository,
+    private val cardRepo: CardRepository,
     private val cardTypeRepo: CardTypeRepository,
     private val employeeRepo: EmployeeRepository,
     private val preclassifierRepo: PreclassifierRepository,
@@ -29,7 +29,7 @@ constructor(
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
-            localCardRepo.deleteAll()
+            cardRepo.deleteAll()
             preclassifierRepo.deleteAll()
             priorityRepo.deleteAll()
             cardTypeRepo.deleteAll()
