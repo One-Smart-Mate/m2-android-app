@@ -3,7 +3,6 @@ package com.ih.osm.data.repository.local
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
-import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.osm.data.database.dao.priority.PriorityDao
 import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.card.toDomain
@@ -17,7 +16,6 @@ import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
-import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toEntity
@@ -28,7 +26,6 @@ class LocalRepositoryImpl
 @Inject
 constructor(
     private val userDao: UserDao,
-    private val preclassifierDao: PreclassifierDao,
     private val priorityDao: PriorityDao,
     private val levelDao: LevelDao,
     private val evidenceDao: EvidenceDao,
@@ -53,17 +50,6 @@ constructor(
         return userDao.getUser()?.siteId.orEmpty()
     }
 
-    override suspend fun getPreclassifiers(): List<Preclassifier> {
-        return preclassifierDao.getPreclassifiers().map { it.toDomain() }
-    }
-
-    override suspend fun savePreclassifiers(list: List<Preclassifier>) {
-        preclassifierDao.deletePreclassifiers()
-        list.forEach {
-            preclassifierDao.insertPreclassifier(it.toEntity())
-        }
-    }
-
     override suspend fun getPriorities(): List<Priority> {
         return priorityDao.getPriorities().map { it.toDomain() }
     }
@@ -73,10 +59,6 @@ constructor(
         list.forEach {
             priorityDao.insertPriority(it.toEntity())
         }
-    }
-
-    override suspend fun removePreclassifiers() {
-        preclassifierDao.deletePreclassifiers()
     }
 
     override suspend fun removePriorities() {
@@ -96,10 +78,6 @@ constructor(
 
     override suspend fun removeLevels() {
         levelDao.deleteLevels()
-    }
-
-    override suspend fun getPreclassifier(id: String?): Preclassifier? {
-        return preclassifierDao.getPreclassifier(id)?.toDomain()
     }
 
     override suspend fun getPriority(id: String?): Priority? {

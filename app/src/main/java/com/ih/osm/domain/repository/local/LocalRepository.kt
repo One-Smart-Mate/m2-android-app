@@ -3,7 +3,6 @@ package com.ih.osm.domain.repository.local
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
-import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
 
@@ -15,12 +14,6 @@ interface LocalRepository {
     suspend fun logout(): Int
 
     suspend fun getSiteId(): String
-
-    suspend fun getPreclassifiers(): List<Preclassifier>
-
-    suspend fun savePreclassifiers(list: List<Preclassifier>)
-
-    suspend fun getPreclassifier(id: String?): Preclassifier?
 
     suspend fun getPriorities(): List<Priority>
 
@@ -35,8 +28,6 @@ interface LocalRepository {
     suspend fun getLevel(id: String?): Level?
 
     suspend fun removeLevels()
-
-    suspend fun removePreclassifiers()
 
     suspend fun removePriorities()
 

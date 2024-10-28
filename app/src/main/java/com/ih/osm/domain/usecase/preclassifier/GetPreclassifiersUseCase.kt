@@ -2,6 +2,7 @@ package com.ih.osm.domain.usecase.preclassifier
 
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import javax.inject.Inject
 
@@ -12,16 +13,17 @@ interface GetPreclassifiersUseCase {
 class GetPreclassifiersUseCaseImpl
 @Inject
 constructor(
-    private val preclassifierRepository: PreclassifierRepository,
-    private val localRepository: LocalRepository
+    private val remoteRepo: PreclassifierRepository,
+    private val localRepo: LocalPreclassifierRepository,
+    private val appLocalRepository: LocalRepository
 ) : GetPreclassifiersUseCase {
     override suspend fun invoke(syncRemote: Boolean): List<Preclassifier> {
         if (syncRemote) {
-            val siteId = localRepository.getSiteId()
-            val preclassifierList = preclassifierRepository.getPreclassifiers(siteId)
-            localRepository.savePreclassifiers(preclassifierList)
+            val siteId = appLocalRepository.getSiteId()
+            val list = remoteRepo.getPreclassifiers(siteId)
+            localRepo.saveAll(list)
         }
 
-        return localRepository.getPreclassifiers()
+        return localRepo.getAll()
     }
 }

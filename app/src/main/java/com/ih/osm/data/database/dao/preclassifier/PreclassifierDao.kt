@@ -9,14 +9,14 @@ import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 @Dao
 interface PreclassifierDao {
     @Query("SELECT * FROM preclassifier_table")
-    suspend fun getPreclassifiers(): List<PreclassifierEntity>
+    suspend fun getAll(): List<PreclassifierEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertPreclassifier(preclassifierEntity: PreclassifierEntity): Long
+    suspend fun insert(preclassifierEntity: PreclassifierEntity): Long
 
     @Query("DELETE FROM preclassifier_table")
-    suspend fun deletePreclassifiers()
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM preclassifier_table WHERE id=:id")
-    suspend fun getPreclassifier(id: String?): PreclassifierEntity?
+    suspend fun get(id: String): PreclassifierEntity?
 }
