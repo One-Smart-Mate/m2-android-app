@@ -338,7 +338,7 @@ class SolutionViewModel @AssistedInject constructor(
                 getCardDetailUseCase(uuid, false)
             }.onSuccess {
                 setState { copy(card = it) }
-                handleGetCardType(it.cardTypeId.orEmpty())
+                handleGetCardType(it?.cardTypeId.orEmpty())
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }

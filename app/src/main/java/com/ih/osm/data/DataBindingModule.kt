@@ -4,6 +4,7 @@ import com.ih.osm.data.repository.auth.AuthRepositoryImpl
 import com.ih.osm.data.repository.cards.CardRepositoryImpl
 import com.ih.osm.data.repository.cards.LocalCardRepositoryImpl
 import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
+import com.ih.osm.data.repository.cardtype.LocalCardTypeRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
@@ -14,6 +15,7 @@ import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
+import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
@@ -63,4 +65,9 @@ internal interface DataBindingModule {
     fun bindLocalCardRepository(
         localCardRepositoryImpl: LocalCardRepositoryImpl
     ): LocalCardRepository
+
+    @Binds
+    fun bindLocalCardTypeRepository(
+        localCardTypeRepositoryImpl: LocalCardTypeRepositoryImpl
+    ): LocalCardTypeRepository
 }

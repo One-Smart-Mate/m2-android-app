@@ -20,7 +20,7 @@ constructor(
 ) : UpdateCardMechanicUseCase {
     override suspend fun invoke(mechanicId: String, uuid: String): Card {
         val userId = appLocalRepository.getUser()?.userId.orEmpty().toInt()
-        val card = localRepo.get(uuid)
+        val card = localRepo.get(uuid) ?: error("Card $uuid not found")
         val request = UpdateMechanicRequest(card.id.toInt(), mechanicId.toInt(), userId)
         remoteRepo.updateMechanic(request)
         val employee = appLocalRepository.getEmployees().firstOrNull { it.id == mechanicId }

@@ -1,14 +1,12 @@
 package com.ih.osm.domain.repository.local
 
 import com.ih.osm.data.database.entities.solution.SolutionEntity
-import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
-import com.ih.osm.ui.utils.EMPTY
 
 interface LocalRepository {
     suspend fun saveUser(user: User): Long
@@ -18,12 +16,6 @@ interface LocalRepository {
     suspend fun logout(): Int
 
     suspend fun getSiteId(): String
-
-    suspend fun getCardTypes(filter: String = EMPTY): List<CardType>
-
-    suspend fun saveCardTypes(list: List<CardType>)
-
-    suspend fun getCardType(id: String?): CardType?
 
     suspend fun getPreclassifiers(): List<Preclassifier>
 
@@ -44,8 +36,6 @@ interface LocalRepository {
     suspend fun getLevel(id: String?): Level?
 
     suspend fun removeLevels()
-
-    suspend fun removeCardTypes()
 
     suspend fun removePreclassifiers()
 

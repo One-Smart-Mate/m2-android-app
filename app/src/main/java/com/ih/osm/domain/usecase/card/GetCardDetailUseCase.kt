@@ -9,7 +9,7 @@ import com.ih.osm.ui.extensions.defaultIfNull
 import javax.inject.Inject
 
 interface GetCardDetailUseCase {
-    suspend operator fun invoke(uuid: String, remote: Boolean = true): Card
+    suspend operator fun invoke(uuid: String, remote: Boolean = true): Card?
 }
 
 class GetCardDetailUseCaseImpl
@@ -18,13 +18,15 @@ constructor(
     private val remoteRepo: CardRepository,
     private val localRepo: LocalCardRepository
 ) : GetCardDetailUseCase {
-    override suspend fun invoke(uuid: String, remote: Boolean): Card {
+    override suspend fun invoke(uuid: String, remote: Boolean): Card? {
         val card = localRepo.get(uuid)
-        return if (card.isRemoteCard() && remote && NetworkConnection.isConnected()) {
-            remoteRepo.getCardDetail(card.id)
-                .defaultIfNull(localRepo.get(uuid))
-        } else {
-            card
-        }
+        card?.let {
+            return if (card.isRemoteCard() && remote && NetworkConnection.isConnected()) {
+                remoteRepo.getCardDetail(card.id)
+                    .defaultIfNull(localRepo.get(uuid))
+            } else {
+                card
+            }
+        } ?: return null
     }
 }

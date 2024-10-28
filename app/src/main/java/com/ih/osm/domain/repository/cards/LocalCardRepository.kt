@@ -10,7 +10,7 @@ interface LocalCardRepository {
     suspend fun save(card: Card): Long
     suspend fun getAllLocal(): List<Card>
     suspend fun delete(uuid: String)
-    suspend fun get(uuid: String): Card
+    suspend fun get(uuid: String): Card?
     suspend fun getByZone(siteId: String, superiorId: String): List<Card>
     suspend fun deleteAll()
 }

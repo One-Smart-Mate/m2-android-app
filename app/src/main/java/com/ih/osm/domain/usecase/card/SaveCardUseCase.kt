@@ -5,6 +5,7 @@ import com.ih.osm.core.file.FileHelper
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.STORED_LOCAL
@@ -21,18 +22,19 @@ constructor(
     private val localRepository: LocalRepository,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
-    private val localRepo: LocalCardRepository
+    private val localCardRepo: LocalCardRepository,
+    private val localCardTypeRepo: LocalCardTypeRepository
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
-        val lastCardId = localRepo.getLastCardId()
-        val lastSiteCardId = localRepo.getLastSiteCardId()
+        val lastCardId = localCardRepo.getLastCardId()
+        val lastSiteCardId = localCardRepo.getLastSiteCardId()
         val user = localRepository.getUser()
-        val cardType = localRepository.getCardType(card.cardTypeId)
+        val cardType = localCardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = localRepository.getLevel(card.areaId.toString())
         val priority = localRepository.getPriority(card.priorityId)
         val preclassifier = localRepository.getPreclassifier(card.preclassifierId)
         var uuid = card.uuid
-        val hasData = localRepo.get(uuid)
+        val hasData = localCardRepo.get(uuid)
         if (hasData != null) {
             uuid = UUID.randomUUID().toString()
         }
@@ -57,7 +59,7 @@ constructor(
                 uuid = uuid
             )
         fileHelper.logCreateCard(updatedCard)
-        val id = localRepo.save(updatedCard)
+        val id = localCardRepo.save(updatedCard)
         card.evidences?.forEach {
             localRepository.saveEvidence(it.copy(cardId = uuid))
         }

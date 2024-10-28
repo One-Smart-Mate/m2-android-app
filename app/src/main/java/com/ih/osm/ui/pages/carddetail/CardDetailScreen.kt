@@ -48,7 +48,6 @@ import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
-import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
@@ -118,11 +117,8 @@ fun CardDetailScreen(
         is LCE.Success -> {
             CardDetailContent(
                 navController = navController,
-                card = screenState.value,
-                employeeList = state.employees
-            ) {
-                viewModel.process(CardDetailViewModel.Action.AssignCardToEmployee(it))
-            }
+                card = screenState.value
+            )
         }
     }
 
@@ -157,12 +153,7 @@ fun CardDetailScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardDetailContent(
-    navController: NavController,
-    card: Card,
-    employeeList: List<Employee>,
-    onAssignedClick: (Employee) -> Unit
-) {
+fun CardDetailContent(navController: NavController, card: Card) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding)
@@ -176,9 +167,7 @@ fun CardDetailContent(
 
             item {
                 CardInformationContent(
-                    card = card,
-                    onAssignedClick = onAssignedClick,
-                    employeeList = employeeList
+                    card = card
                 )
             }
         }
@@ -217,38 +206,7 @@ fun CardDetailHeader(card: Card) {
 }
 
 @Composable
-fun CardInformationContent(
-    card: Card,
-    employeeList: List<Employee>,
-    onAssignedClick: (Employee) -> Unit
-) {
-    val showBottomSheet =
-        remember {
-            mutableStateOf(false)
-        }
-//    Box(
-//        modifier =
-//            Modifier
-//                .fillMaxWidth()
-//                .padding(end = Size20),
-//        contentAlignment = Alignment.TopEnd,
-//    ) {
-//        CustomButton(text = "Asignar card") {
-//            showBottomSheet.value = true
-//        }
-//        AssignCardBottomSheet(
-//            employeeList = employeeList,
-//            onConfirmClick = {
-//                onAssignedClick(it)
-//                showBottomSheet.value = false
-//            },
-//            showBottomSheet = showBottomSheet.value,
-//            onDismissRequest = {
-//                showBottomSheet.value = false
-//            },
-//        )
-//    }
-
+fun CardInformationContent(card: Card) {
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.status),
@@ -516,9 +474,7 @@ private fun CardDetailScreenPreview() {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             CardDetailContent(
                 navController = rememberNavController(),
-                card = Card.mock(),
-                employeeList = emptyList(),
-                onAssignedClick = {}
+                card = Card.mock()
             )
         }
     }

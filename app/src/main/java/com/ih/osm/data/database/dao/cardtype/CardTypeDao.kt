@@ -9,17 +9,17 @@ import com.ih.osm.data.database.entities.cardtype.CardTypeEntity
 @Dao
 interface CardTypeDao {
     @Query("SELECT * FROM card_type_table")
-    suspend fun getCardTypes(): List<CardTypeEntity>
+    suspend fun getAll(): List<CardTypeEntity>
 
     @Query("SELECT * FROM card_type_table WHERE card_type_methodology=:filter")
-    suspend fun getCardTypesByMethodology(filter: String): List<CardTypeEntity>
+    suspend fun getByMethodology(filter: String): List<CardTypeEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertCardType(cardTypeEntity: CardTypeEntity): Long
+    suspend fun insert(cardTypeEntity: CardTypeEntity): Long
 
     @Query("DELETE FROM card_type_table")
-    suspend fun deleteCardTypes()
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM card_type_table WHERE id=:id")
-    suspend fun getCardType(id: String?): CardTypeEntity?
+    suspend fun get(id: String?): CardTypeEntity?
 }

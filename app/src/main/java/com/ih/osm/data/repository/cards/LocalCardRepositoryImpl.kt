@@ -65,8 +65,8 @@ class LocalCardRepositoryImpl @Inject constructor(
         dao.delete(uuid)
     }
 
-    override suspend fun get(uuid: String): Card {
-        val card = dao.get(uuid) ?: error("Card $uuid not found")
+    override suspend fun get(uuid: String): Card? {
+        val card = dao.get(uuid) ?: return null
         val evidences =
             evidenceDao.getEvidencesByCard(card.uuid).map { it.toDomain() }
         val hasLocalSolutions = solutionDao.getSolutions(card.uuid)

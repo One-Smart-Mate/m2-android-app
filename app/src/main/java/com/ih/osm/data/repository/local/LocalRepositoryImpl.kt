@@ -1,7 +1,6 @@
 package com.ih.osm.data.repository.local
 
 import com.ih.osm.data.database.dao.UserDao
-import com.ih.osm.data.database.dao.cardtype.CardTypeDao
 import com.ih.osm.data.database.dao.employee.EmployeeDao
 import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
@@ -17,7 +16,6 @@ import com.ih.osm.data.database.entities.preclassifier.toDomain
 import com.ih.osm.data.database.entities.priority.toDomain
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
-import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Level
@@ -32,7 +30,6 @@ class LocalRepositoryImpl
 @Inject
 constructor(
     private val userDao: UserDao,
-    private val cardTypeDao: CardTypeDao,
     private val preclassifierDao: PreclassifierDao,
     private val priorityDao: PriorityDao,
     private val levelDao: LevelDao,
@@ -59,21 +56,6 @@ constructor(
         return userDao.getUser()?.siteId.orEmpty()
     }
 
-    override suspend fun getCardTypes(filter: String): List<CardType> {
-        return if (filter.isEmpty()) {
-            cardTypeDao.getCardTypes().map { it.toDomain() }
-        } else {
-            cardTypeDao.getCardTypesByMethodology(filter).map { it.toDomain() }
-        }
-    }
-
-    override suspend fun saveCardTypes(list: List<CardType>) {
-        cardTypeDao.deleteCardTypes()
-        list.forEach {
-            cardTypeDao.insertCardType(it.toEntity())
-        }
-    }
-
     override suspend fun getPreclassifiers(): List<Preclassifier> {
         return preclassifierDao.getPreclassifiers().map { it.toDomain() }
     }
@@ -94,10 +76,6 @@ constructor(
         list.forEach {
             priorityDao.insertPriority(it.toEntity())
         }
-    }
-
-    override suspend fun removeCardTypes() {
-        cardTypeDao.deleteCardTypes()
     }
 
     override suspend fun removePreclassifiers() {
@@ -121,10 +99,6 @@ constructor(
 
     override suspend fun removeLevels() {
         levelDao.deleteLevels()
-    }
-
-    override suspend fun getCardType(id: String?): CardType? {
-        return cardTypeDao.getCardType(id)?.toDomain()
     }
 
     override suspend fun getPreclassifier(id: String?): Preclassifier? {
