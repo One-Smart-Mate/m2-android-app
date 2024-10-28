@@ -15,6 +15,7 @@ import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.domain.repository.solution.SolutionRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
@@ -41,7 +42,8 @@ constructor(
     private val fileHelper: FileHelper,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val localEmployeeRepo: LocalEmployeeRepository,
-    private val localEvidenceRepo: EvidenceRepository
+    private val localEvidenceRepo: EvidenceRepository,
+    private val solutionRepo: SolutionRepository
 ) : SaveCardSolutionUseCase {
     override suspend fun invoke(
         solutionType: String,
@@ -71,7 +73,7 @@ constructor(
             return when (solutionType) {
                 DEFINITIVE_SOLUTION -> {
                     if (saveLocal) {
-                        localRepository.saveSolution(solutionEntity)
+                        solutionRepo.save(solutionEntity)
                         card = card?.copy(
                             commentsAtCardDefinitiveSolution = comments,
                             userAppDefinitiveSolutionId = userAppSolution?.userId,
@@ -101,7 +103,7 @@ constructor(
 
                 PROVISIONAL_SOLUTION -> {
                     if (saveLocal) {
-                        localRepository.saveSolution(solutionEntity)
+                        solutionRepo.save(solutionEntity)
                         card = card?.copy(
                             commentsAtCardProvisionalSolution = comments,
                             userAppProvisionalSolutionId = userAppSolution?.userId,

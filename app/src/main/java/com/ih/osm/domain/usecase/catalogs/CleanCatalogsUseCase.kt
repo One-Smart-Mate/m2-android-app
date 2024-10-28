@@ -9,6 +9,7 @@ import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
+import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
 interface CleanCatalogsUseCase {
@@ -25,7 +26,8 @@ constructor(
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
     private val localLevelRepo: LocalLevelRepository,
-    private val evidenceRepo: EvidenceRepository
+    private val evidenceRepo: EvidenceRepository,
+    private val solutionRepo: SolutionRepository
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
@@ -36,7 +38,7 @@ constructor(
             localLevelRepo.deleteAll()
             evidenceRepo.deleteAll()
             localEmployeeRepo.deleteAll()
-            localRepository.removeSolutions()
+            solutionRepo.deleteAll()
             true
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())

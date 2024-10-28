@@ -1,20 +1,20 @@
 package com.ih.osm.data.repository.cards
 
 import com.ih.osm.data.database.dao.card.CardDao
-import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.database.entities.evidence.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
+import com.ih.osm.domain.repository.solution.SolutionRepository
 import com.ih.osm.ui.utils.STORED_LOCAL
 import javax.inject.Inject
 
 class LocalCardRepositoryImpl @Inject constructor(
     private val dao: CardDao,
-    private val solutionDao: SolutionDao,
-    private val evidenceRepo: EvidenceRepository
+    private val evidenceRepo: EvidenceRepository,
+    private val solutionRepo: SolutionRepository
 ) : LocalCardRepository {
 
     override suspend fun saveAll(cards: List<Card>) {
@@ -25,7 +25,7 @@ class LocalCardRepositoryImpl @Inject constructor(
 
     override suspend fun getAll(): List<Card> {
         return dao.getAll().map {
-            val hasLocalSolutions = solutionDao.getSolutions(it.uuid)
+            val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
             it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
         }.sortedByDescending { it.id }
     }
@@ -44,7 +44,7 @@ class LocalCardRepositoryImpl @Inject constructor(
 
     override suspend fun getAllLocal(): List<Card> {
         val localCards = dao.getAllLocal(stored = STORED_LOCAL).toMutableList()
-        val lists = solutionDao.getAllSolutions()
+        val lists = solutionRepo.getAll()
         lists.forEach {
             dao.get(it.cardId)?.let { card ->
                 localCards.add(card)
@@ -53,7 +53,7 @@ class LocalCardRepositoryImpl @Inject constructor(
         return localCards.toSet().map { cardEntity ->
             val evidences =
                 evidenceRepo.getAllByCard(cardEntity.uuid)
-            val hasLocalSolutions = solutionDao.getSolutions(cardEntity.uuid)
+            val hasLocalSolutions = solutionRepo.getAllByCard(cardEntity.uuid)
             cardEntity.toDomain(
                 evidences = evidences,
                 hasLocalSolutions = hasLocalSolutions.isNotEmpty()
@@ -69,7 +69,7 @@ class LocalCardRepositoryImpl @Inject constructor(
         val card = dao.get(uuid) ?: return null
         val evidences =
             evidenceRepo.getAllByCard(card.uuid)
-        val hasLocalSolutions = solutionDao.getSolutions(card.uuid)
+        val hasLocalSolutions = solutionRepo.getAllByCard(card.uuid)
 
         return card.toDomain(
             evidences = evidences,

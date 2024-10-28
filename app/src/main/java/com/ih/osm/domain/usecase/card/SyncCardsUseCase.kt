@@ -15,6 +15,7 @@ import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
 interface SyncCardsUseCase {
@@ -32,7 +33,8 @@ constructor(
     private val fileHelper: FileHelper,
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
     private val localRepo: LocalCardRepository,
-    private val evidenceRepo: EvidenceRepository
+    private val evidenceRepo: EvidenceRepository,
+    private val solutionRepo: SolutionRepository
 ) : SyncCardsUseCase {
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
         var currentProgress = 0f
@@ -83,7 +85,7 @@ constructor(
                 }
                 Log.e("test", "Current card remote.. $remoteCard")
 
-                val solutions = localRepository.getCardSolutions(card.uuid)
+                val solutions = solutionRepo.getAllByCard(card.uuid)
                 solutions.forEach {
                     saveCardSolutionUseCase(
                         solutionType = it.solutionType,
@@ -98,7 +100,7 @@ constructor(
                         saveLocal = false
                     )
                 }
-                localRepository.deleteSolutions(card.uuid)
+                solutionRepo.deleteAllByCard(card.uuid)
                 Log.e("test", "saving card.. $remoteCard")
             }
         } catch (e: Exception) {
