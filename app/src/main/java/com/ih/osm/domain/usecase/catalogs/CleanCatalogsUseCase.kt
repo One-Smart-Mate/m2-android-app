@@ -7,7 +7,7 @@ import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
-import com.ih.osm.domain.repository.priority.LocalPriorityRepository
+import com.ih.osm.domain.repository.priority.PriorityRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
@@ -22,7 +22,7 @@ constructor(
     private val cardTypeRepo: CardTypeRepository,
     private val employeeRepo: EmployeeRepository,
     private val preclassifierRepo: PreclassifierRepository,
-    private val localPriorityRepo: LocalPriorityRepository,
+    private val priorityRepo: PriorityRepository,
     private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository,
     private val solutionRepo: SolutionRepository
@@ -31,7 +31,7 @@ constructor(
         return try {
             localCardRepo.deleteAll()
             preclassifierRepo.deleteAll()
-            localPriorityRepo.deleteAll()
+            priorityRepo.deleteAll()
             cardTypeRepo.deleteAll()
             levelRepo.deleteAll()
             evidenceRepo.deleteAll()

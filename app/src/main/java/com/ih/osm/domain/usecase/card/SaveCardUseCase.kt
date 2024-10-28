@@ -10,7 +10,7 @@ import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
-import com.ih.osm.domain.repository.priority.LocalPriorityRepository
+import com.ih.osm.domain.repository.priority.PriorityRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.STORED_LOCAL
 import java.util.UUID
@@ -29,7 +29,7 @@ constructor(
     private val localCardRepo: LocalCardRepository,
     private val cardTypeRepo: CardTypeRepository,
     private val preclassifierRepo: PreclassifierRepository,
-    private val localPriorityRepo: LocalPriorityRepository,
+    private val priorityRepo: PriorityRepository,
     private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository
 ) : SaveCardUseCase {
@@ -39,7 +39,7 @@ constructor(
         val user = authRepo.get()
         val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = levelRepo.get(card.areaId.toString())
-        val priority = localPriorityRepo.get(card.priorityId.orEmpty())
+        val priority = priorityRepo.get(card.priorityId.orEmpty())
         val preclassifier = preclassifierRepo.get(card.preclassifierId)
         var uuid = card.uuid
         val hasData = localCardRepo.get(uuid)

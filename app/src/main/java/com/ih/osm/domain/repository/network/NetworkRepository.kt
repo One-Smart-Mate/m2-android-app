@@ -7,6 +7,7 @@ import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
+import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.User
 
 interface NetworkRepository {
@@ -27,4 +28,6 @@ interface NetworkRepository {
     suspend fun getRemoteLevels(siteId: String): List<Level>
 
     suspend fun getRemotePreclassifiers(siteId: String): List<Preclassifier>
+
+    suspend fun getRemotePriorities(siteId: String): List<Priority>
 }
