@@ -10,11 +10,11 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
-import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
@@ -33,11 +33,9 @@ interface SaveCardSolutionUseCase {
     ): Card?
 }
 
-class SaveCardSolutionUseCaseImpl
-@Inject
-constructor(
+class SaveCardSolutionUseCaseImpl @Inject constructor(
     private val remoteRepo: CardRepository,
-    private val localRepository: LocalRepository,
+    private val authRepo: AuthRepository,
     private val localRepo: LocalCardRepository,
     private val fileHelper: FileHelper,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
@@ -56,7 +54,7 @@ constructor(
     ): Card? {
         return try {
             var card: Card? = localRepo.get(cardId)
-            val userAppSolution = localRepository.getUser()
+            val userAppSolution = authRepo.get()
             val userSolution =
                 localEmployeeRepo.getAll().firstOrNull { it.id == userSolutionId }
             if (saveLocal) {

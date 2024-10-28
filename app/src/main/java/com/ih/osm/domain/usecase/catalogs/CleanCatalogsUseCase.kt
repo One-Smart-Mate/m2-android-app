@@ -6,7 +6,6 @@ import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
-import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
@@ -19,7 +18,6 @@ interface CleanCatalogsUseCase {
 class CleanCatalogsUseCaseImpl
 @Inject
 constructor(
-    private val localRepository: LocalRepository,
     private val localCardRepo: LocalCardRepository,
     private val localCardTypeRepo: LocalCardTypeRepository,
     private val localEmployeeRepo: LocalEmployeeRepository,

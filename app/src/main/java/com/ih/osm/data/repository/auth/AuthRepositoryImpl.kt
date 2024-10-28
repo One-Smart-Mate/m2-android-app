@@ -2,11 +2,14 @@ package com.ih.osm.data.repository.auth
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.data.api.ApiService
+import com.ih.osm.data.database.dao.UserDao
+import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.User
+import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.auth.AuthRepository
 import javax.inject.Inject
 import org.json.JSONObject
@@ -15,7 +18,8 @@ import retrofit2.Response
 class AuthRepositoryImpl
 @Inject
 constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val dao: UserDao
 ) : AuthRepository {
     override suspend fun login(data: LoginRequest): User {
         val response = apiService.login(data).execute()
@@ -52,6 +56,25 @@ constructor(
         if (!response.isSuccessful || response.body() == null) {
             error(response.getErrorMessage())
         }
+    }
+
+    override suspend fun save(user: User): Long {
+        return dao.insertUser(user.toEntity())
+    }
+
+    override suspend fun get(): User? {
+        return dao.getUser().toDomain()
+    }
+
+    override suspend fun logout(): Int {
+        dao.getUser()?.let {
+            return dao.deleteUser(it)
+        }
+        return 0
+    }
+
+    override suspend fun getSiteId(): String {
+        return dao.getUser()?.siteId.orEmpty()
     }
 }
 

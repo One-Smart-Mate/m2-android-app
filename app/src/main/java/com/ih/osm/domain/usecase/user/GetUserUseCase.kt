@@ -1,7 +1,7 @@
 package com.ih.osm.domain.usecase.user
 
 import com.ih.osm.domain.model.User
-import com.ih.osm.domain.repository.local.LocalRepository
+import com.ih.osm.domain.repository.auth.AuthRepository
 import javax.inject.Inject
 
 interface GetUserUseCase {
@@ -11,9 +11,9 @@ interface GetUserUseCase {
 class GetUserUseCaseImpl
 @Inject
 constructor(
-    private val localRepository: LocalRepository
+    private val authRepository: AuthRepository
 ) : GetUserUseCase {
     override suspend fun invoke(): User? {
-        return localRepository.getUser()
+        return authRepository.get()
     }
 }

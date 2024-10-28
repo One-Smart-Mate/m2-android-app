@@ -15,4 +15,12 @@ interface AuthRepository {
     suspend fun resetPassword(data: RestorePasswordRequest)
 
     suspend fun updateToken(data: UpdateTokenRequest)
+
+    suspend fun save(user: User): Long
+
+    suspend fun get(): User?
+
+    suspend fun logout(): Int
+
+    suspend fun getSiteId(): String
 }

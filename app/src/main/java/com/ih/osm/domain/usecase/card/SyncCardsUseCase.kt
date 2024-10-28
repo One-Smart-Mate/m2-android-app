@@ -14,7 +14,6 @@ import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
-import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
@@ -26,7 +25,6 @@ class SyncCardsUseCaseImpl
 @Inject
 constructor(
     private val cardRepository: CardRepository,
-    private val localRepository: LocalRepository,
     private val firebaseStorageRepository: FirebaseStorageRepository,
     private val notificationManager: NotificationManager,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,

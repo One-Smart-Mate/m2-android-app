@@ -11,7 +11,6 @@ import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
 import com.ih.osm.data.repository.level.LocalLevelRepositoryImpl
-import com.ih.osm.data.repository.local.LocalRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.LocalPreclassifierRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
 import com.ih.osm.data.repository.priority.LocalPriorityRepositoryImpl
@@ -28,7 +27,6 @@ import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
-import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
@@ -44,9 +42,6 @@ import dagger.hilt.components.SingletonComponent
 internal interface DataBindingModule {
     @Binds
     fun bindAuthRepository(authRepositoryImpl: AuthRepositoryImpl): AuthRepository
-
-    @Binds
-    fun bindLocalRepository(localRepositoryImpl: LocalRepositoryImpl): LocalRepository
 
     @Binds
     fun bindCardRepository(cardRepositoryImpl: CardRepositoryImpl): CardRepository

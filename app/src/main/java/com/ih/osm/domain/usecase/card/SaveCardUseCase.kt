@@ -4,11 +4,11 @@ import android.util.Log
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
+import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
-import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -23,7 +23,7 @@ interface SaveCardUseCase {
 class SaveCardUseCaseImpl
 @Inject
 constructor(
-    private val localRepository: LocalRepository,
+    private val authRepo: AuthRepository,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
     private val localCardRepo: LocalCardRepository,
@@ -36,7 +36,7 @@ constructor(
     override suspend fun invoke(card: Card): Long {
         val lastCardId = localCardRepo.getLastCardId()
         val lastSiteCardId = localCardRepo.getLastSiteCardId()
-        val user = localRepository.getUser()
+        val user = authRepo.get()
         val cardType = localCardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = localLevelRepo.get(card.areaId.toString())
         val priority = localPriorityRepo.get(card.priorityId.orEmpty())
