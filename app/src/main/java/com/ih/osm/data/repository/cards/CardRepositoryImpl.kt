@@ -6,7 +6,7 @@ import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.toDomain
-import com.ih.osm.data.repository.auth.getErrorMessage
+import com.ih.osm.data.repository.network.getErrorMessage
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.CardRepository
 import javax.inject.Inject

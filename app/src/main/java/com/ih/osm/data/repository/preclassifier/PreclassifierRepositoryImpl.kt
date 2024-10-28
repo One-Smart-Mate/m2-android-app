@@ -2,7 +2,7 @@ package com.ih.osm.data.repository.preclassifier
 
 import com.ih.osm.data.api.ApiService
 import com.ih.osm.data.model.toDomain
-import com.ih.osm.data.repository.auth.getErrorMessage
+import com.ih.osm.data.repository.network.getErrorMessage
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import javax.inject.Inject
