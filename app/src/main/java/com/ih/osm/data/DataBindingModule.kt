@@ -9,6 +9,7 @@ import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.employee.LocalEmployeeRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
+import com.ih.osm.data.repository.level.LocalLevelRepositoryImpl
 import com.ih.osm.data.repository.local.LocalRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.LocalPreclassifierRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
@@ -23,6 +24,7 @@ import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
+import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
@@ -91,4 +93,9 @@ internal interface DataBindingModule {
     fun bindLocalPriorityRepository(
         localPriorityRepositoryImpl: LocalPriorityRepositoryImpl
     ): LocalPriorityRepository
+
+    @Binds
+    fun bindLocalLevelRepository(
+        localLevelRepositoryImpl: LocalLevelRepositoryImpl
+    ): LocalLevelRepository
 }

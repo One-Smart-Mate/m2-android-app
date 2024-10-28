@@ -4,6 +4,7 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
 
@@ -16,11 +17,12 @@ class GetCardsZoneUseCaseImpl
 constructor(
     private val remoteRepo: CardRepository,
     private val appLocalRepo: LocalRepository,
-    private val localRepo: LocalCardRepository
+    private val localRepo: LocalCardRepository,
+    private val localLevelRepo: LocalLevelRepository
 ) : GetCardsZoneUseCase {
     override suspend fun invoke(superiorId: String): List<Card> {
         val siteId = appLocalRepo.getSiteId()
-        val area = appLocalRepo.getLevel(superiorId)
+        val area = localLevelRepo.get(superiorId)
         val id = area?.superiorId.orEmpty()
         return if (NetworkConnection.isConnected()) {
             remoteRepo.getCardsZone(superiorId = id, siteId = siteId)

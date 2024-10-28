@@ -9,14 +9,14 @@ import com.ih.osm.data.database.entities.level.LevelEntity
 @Dao
 interface LevelDao {
     @Query("SELECT * FROM level_table")
-    suspend fun getLevels(): List<LevelEntity>
+    suspend fun getAll(): List<LevelEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertLevel(levelEntity: LevelEntity): Long
+    suspend fun insert(levelEntity: LevelEntity): Long
 
     @Query("DELETE FROM level_table")
-    suspend fun deleteLevels()
+    suspend fun deleteAll()
 
     @Query("SELECT * FROM level_table WHERE id=:id")
-    suspend fun getLevel(id: String?): LevelEntity?
+    suspend fun get(id: String): LevelEntity?
 }

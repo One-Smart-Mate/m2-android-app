@@ -14,7 +14,6 @@ import com.ih.osm.data.database.entities.priority.toDomain
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.domain.model.Evidence
-import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.local.LocalRepository
@@ -45,25 +44,6 @@ constructor(
 
     override suspend fun getSiteId(): String {
         return userDao.getUser()?.siteId.orEmpty()
-    }
-
-    override suspend fun saveLevels(list: List<Level>) {
-        levelDao.deleteLevels()
-        list.forEach {
-            levelDao.insertLevel(it.toEntity())
-        }
-    }
-
-    override suspend fun getLevels(): List<Level> {
-        return levelDao.getLevels().map { it.toDomain() }
-    }
-
-    override suspend fun removeLevels() {
-        levelDao.deleteLevels()
-    }
-
-    override suspend fun getLevel(id: String?): Level? {
-        return levelDao.getLevel(id)?.toDomain()
     }
 
     override suspend fun saveEvidence(evidence: Evidence): Long {

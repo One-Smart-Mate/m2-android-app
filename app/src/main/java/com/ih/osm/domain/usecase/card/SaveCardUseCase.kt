@@ -6,6 +6,7 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
+import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
@@ -27,14 +28,15 @@ constructor(
     private val localCardRepo: LocalCardRepository,
     private val localCardTypeRepo: LocalCardTypeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
-    private val localPriorityRepo: LocalPriorityRepository
+    private val localPriorityRepo: LocalPriorityRepository,
+    private val localLevelRepo: LocalLevelRepository
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
         val lastCardId = localCardRepo.getLastCardId()
         val lastSiteCardId = localCardRepo.getLastSiteCardId()
         val user = localRepository.getUser()
         val cardType = localCardTypeRepo.get(card.cardTypeId.orEmpty())
-        val area = localRepository.getLevel(card.areaId.toString())
+        val area = localLevelRepo.get(card.areaId.toString())
         val priority = localPriorityRepo.get(card.priorityId.orEmpty())
         val preclassifier = localPreclassifierRepo.get(card.preclassifierId)
         var uuid = card.uuid
