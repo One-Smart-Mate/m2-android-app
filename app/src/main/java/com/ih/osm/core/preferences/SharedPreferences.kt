@@ -22,6 +22,7 @@ constructor(
         private const val LAST_SYNC_PREFERENCES = "last_sync_date"
         private const val FIREBASE_TOKEN_PREFERENCES = "firebase_token"
         private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
+        private const val NOTIFICATION_APP_VERSION = "app_version"
     }
 
     init {
@@ -35,6 +36,7 @@ constructor(
                 remove(LAST_SYNC_PREFERENCES)
                 remove(FIREBASE_TOKEN_PREFERENCES)
                 remove(NOTIFICATION_TYPE_PREFERENCES)
+                remove(NOTIFICATION_APP_VERSION)
                 commit()
             }
         }
@@ -111,12 +113,28 @@ constructor(
         ).orEmpty().uppercase()
     }
 
-    fun removeNotification() {
+    fun removeNotification(withAppVersion: Boolean = false) {
         sharedPreferences?.let {
             with(it.edit()) {
                 remove(NOTIFICATION_TYPE_PREFERENCES)
+                if (withAppVersion) {
+                    remove(NOTIFICATION_APP_VERSION)
+                }
                 commit()
             }
         }
+    }
+
+    fun saveAppVersion(appVersion: String) {
+        sharedPreferences?.let {
+            with(it.edit()) {
+                putString(NOTIFICATION_APP_VERSION, appVersion)
+                commit()
+            }
+        }
+    }
+
+    fun getAppVersion(): String {
+        return sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
     }
 }

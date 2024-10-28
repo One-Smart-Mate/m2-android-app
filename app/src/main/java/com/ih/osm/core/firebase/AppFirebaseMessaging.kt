@@ -29,10 +29,11 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 
     private fun saveNotificationType(message: RemoteMessage) {
         try {
-            if (this::sharedPreferences.isInitialized) {
-                val notificationType = message.getType()
-                if (notificationType.isNotEmpty()) {
-                    sharedPreferences.saveNotificationType(notificationType)
+            val notificationType = message.getType()
+            if (notificationType.isNotEmpty()) {
+                sharedPreferences.saveNotificationType(notificationType)
+                if (notificationType == FirebaseNotificationType.UPDATE_APP.name) {
+                    sharedPreferences.saveAppVersion(message.getAppVersion())
                 }
             }
         } catch (e: Exception) {
@@ -61,11 +62,16 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 enum class FirebaseNotificationType(val type: String) {
     SYNC_REMOTE_CATALOGS("SYNC_REMOTE_CATALOGS"),
     UNKNOWN(EMPTY),
-    SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS")
+    SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS"),
+    UPDATE_APP("UPDATE_APP")
 }
 
 fun RemoteMessage.getType(): String {
     return this.data[FirebaseMessageProps.MESSAGE_TYPE].orEmpty()
+}
+
+fun RemoteMessage.getAppVersion(): String {
+    return this.data[FirebaseMessageProps.APP_VERSION].orEmpty()
 }
 
 fun RemoteMessage.getTitle(): String {
@@ -84,4 +90,5 @@ object FirebaseMessageProps {
     const val MESSAGE_TYPE = "notification_type"
     const val TITLE = "notification_title"
     const val DESCRIPTION = "notification_description"
+    const val APP_VERSION = "notification_update_app_version"
 }

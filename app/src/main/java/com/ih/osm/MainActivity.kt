@@ -131,17 +131,17 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun showUpdateDialog() {
+    fun showUpdateDialog() {
         AlertDialog.Builder(this)
-            .setTitle("Alert")
-            .setMessage("You need to update the app!")
+            .setTitle(getString(R.string.update_title))
+            .setMessage(getString(R.string.update_description))
             .setCancelable(false)
-            .setPositiveButton("Update") { _, _ ->
+            .setPositiveButton(getString(R.string.update_list)) { _, _ ->
                 openPlayStore()
             }
-            .setNegativeButton("Cancel") { _, _ ->
+            .setNegativeButton(getString(R.string.update_cancel)) { _, _ ->
                 this.finish()
-            }
+            }.show()
     }
 
     private fun handleAppUpdates() {

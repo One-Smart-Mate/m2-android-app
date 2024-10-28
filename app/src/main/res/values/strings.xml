@@ -177,4 +177,7 @@
     <string name="new_password">New Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="update_list">Update</string>
+    <string name="update_title">Available update!</string>
+    <string name="update_description">Open the app to update it, then restart the app to continue use it</string>
+    <string name="update_cancel">Cancel</string>
 </resources>

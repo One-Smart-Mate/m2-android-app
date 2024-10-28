@@ -18,7 +18,6 @@ import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceType
-import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.toAudios
 import com.ih.osm.domain.model.toImages
 import com.ih.osm.domain.model.toVideos
@@ -202,19 +201,6 @@ class SolutionViewModel @AssistedInject constructor(
         viewModelScope.launch {
             setState { copy(isLoading = true) }
             val state = stateFlow.first()
-            val networkStatus = NetworkConnection.networkStatus(context)
-            if (networkStatus == NetworkStatus.DATA_CONNECTED &&
-                sharedPreferences.getNetworkPreference().isEmpty()
-            ) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.network_preferences_allowed)
-                    )
-                }
-                return@launch
-            }
-            Log.e("test", "Aqui continue")
             if (state.solutionType == ASSIGN_CARD_ACTION) {
                 handleOnSaveMechanic()
             } else {

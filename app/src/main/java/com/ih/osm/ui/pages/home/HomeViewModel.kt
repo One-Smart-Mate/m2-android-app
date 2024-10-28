@@ -8,6 +8,7 @@ import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
 import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import com.ih.osm.BuildConfig
 import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
@@ -61,7 +62,8 @@ constructor(
         val lastSyncUpdate: String = EMPTY,
         val showSyncCards: Boolean = false,
         val showSyncCatalogsCard: Boolean = false,
-        val showSyncRemoteCards: Boolean = false
+        val showSyncRemoteCards: Boolean = false,
+        val updateApp: Boolean = false
     ) : MavericksState
 
     sealed class Action {
@@ -353,7 +355,8 @@ constructor(
     private fun checkPreferences() {
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
-                when (getFirebaseNotificationUseCase()) {
+                val firebaseNotifications = getFirebaseNotificationUseCase()
+                when (firebaseNotifications) {
                     FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
                         setState { copy(showSyncCatalogsCard = true) }
                     }
@@ -361,7 +364,15 @@ constructor(
                     FirebaseNotificationType.SYNC_REMOTE_CARDS -> {
                         setState { copy(showSyncRemoteCards = true) }
                     }
-
+                    FirebaseNotificationType.UPDATE_APP -> {
+                        val appVersion = sharedPreferences.getAppVersion()
+                        if (appVersion.isNotEmpty() && appVersion != BuildConfig.VERSION_NAME) {
+                            setState { copy(updateApp = true) }
+                        } else {
+                            getFirebaseNotificationUseCase(remove = true, appUpdate = true)
+                            setState { copy(updateApp = false) }
+                        }
+                    }
                     else -> {
                     }
                 }

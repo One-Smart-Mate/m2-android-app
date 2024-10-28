@@ -52,6 +52,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
+import com.ih.osm.MainActivity
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
@@ -68,6 +69,7 @@ import com.ih.osm.ui.components.TagSize
 import com.ih.osm.ui.components.TagType
 import com.ih.osm.ui.components.card.NetworkCard
 import com.ih.osm.ui.components.images.CircularImage
+import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.extensions.headerContent
@@ -148,6 +150,10 @@ fun HomeScreen(
                         )
                         viewModel.process(HomeViewModel.Action.ClearMessage)
                     }
+                }
+                if (state.updateApp) {
+                    context.getActivity<MainActivity>()
+                        ?.showUpdateDialog()
                 }
             }
     }

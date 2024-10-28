@@ -175,4 +175,9 @@
     <string name="new_password">Nueva contraseña</string>
     <string name="confirm_password">Confirma tu contraseña</string>
     <string name="update_list">Actualizar</string>
+
+    <string name="update_title">Actualización disponible!</string>
+    <string name="update_description">Abre la app para actualizar, una vez actualizada reiniciala para continuar usandola</string>
+    <string name="update_cancel">Cancelar</string>
+
 </resources>

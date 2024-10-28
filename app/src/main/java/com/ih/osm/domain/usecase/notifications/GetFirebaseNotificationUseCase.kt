@@ -9,7 +9,8 @@ interface GetFirebaseNotificationUseCase {
     suspend operator fun invoke(
         remove: Boolean = false,
         syncCatalogs: Boolean = false,
-        syncCards: Boolean = false
+        syncCards: Boolean = false,
+        appUpdate: Boolean = false
     ): FirebaseNotificationType
 }
 
@@ -21,7 +22,8 @@ constructor(
     override suspend fun invoke(
         remove: Boolean,
         syncCatalogs: Boolean,
-        syncCards: Boolean
+        syncCards: Boolean,
+        appUpdate: Boolean
     ): FirebaseNotificationType {
         return try {
             if (remove) {
@@ -44,6 +46,14 @@ constructor(
                         }
                     }
 
+                    appUpdate -> {
+                        if (sharedPreferences.getNotificationType()
+                            == FirebaseNotificationType.UPDATE_APP.name
+                        ) {
+                            sharedPreferences.removeNotification(withAppVersion = true)
+                            FirebaseNotificationType.UNKNOWN
+                        }
+                    }
                     else -> {
                         sharedPreferences.removeNotification()
                         FirebaseNotificationType.UNKNOWN
