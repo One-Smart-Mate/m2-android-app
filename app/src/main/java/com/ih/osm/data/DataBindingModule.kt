@@ -4,7 +4,6 @@ import com.ih.osm.data.repository.auth.AuthRepositoryImpl
 import com.ih.osm.data.repository.cards.CardRepositoryImpl
 import com.ih.osm.data.repository.cards.LocalCardRepositoryImpl
 import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
-import com.ih.osm.data.repository.cardtype.LocalCardTypeRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.employee.LocalEmployeeRepositoryImpl
 import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
@@ -21,7 +20,6 @@ import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
-import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
@@ -78,11 +76,6 @@ internal interface DataBindingModule {
     fun bindLocalCardRepository(
         localCardRepositoryImpl: LocalCardRepositoryImpl
     ): LocalCardRepository
-
-    @Binds
-    fun bindLocalCardTypeRepository(
-        localCardTypeRepositoryImpl: LocalCardTypeRepositoryImpl
-    ): LocalCardTypeRepository
 
     @Binds
     fun bindLocalEmployeeRepository(

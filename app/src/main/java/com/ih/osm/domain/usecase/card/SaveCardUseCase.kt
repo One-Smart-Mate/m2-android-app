@@ -6,7 +6,7 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
-import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
+import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
@@ -27,7 +27,7 @@ constructor(
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
     private val localCardRepo: LocalCardRepository,
-    private val localCardTypeRepo: LocalCardTypeRepository,
+    private val cardTypeRepo: CardTypeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
     private val localLevelRepo: LocalLevelRepository,
@@ -37,7 +37,7 @@ constructor(
         val lastCardId = localCardRepo.getLastCardId()
         val lastSiteCardId = localCardRepo.getLastSiteCardId()
         val user = authRepo.get()
-        val cardType = localCardTypeRepo.get(card.cardTypeId.orEmpty())
+        val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
         val area = localLevelRepo.get(card.areaId.toString())
         val priority = localPriorityRepo.get(card.priorityId.orEmpty())
         val preclassifier = localPreclassifierRepo.get(card.preclassifierId)

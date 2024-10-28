@@ -3,6 +3,7 @@ package com.ih.osm.domain.repository.network
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
+import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.User
 
 interface NetworkRepository {
@@ -15,4 +16,6 @@ interface NetworkRepository {
     suspend fun resetPassword(data: RestorePasswordRequest)
 
     suspend fun updateToken(data: UpdateTokenRequest)
+
+    suspend fun getRemoteCardTypes(siteId: String): List<CardType>
 }

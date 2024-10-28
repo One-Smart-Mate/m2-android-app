@@ -6,6 +6,7 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
+import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.repository.network.NetworkRepository
 import javax.inject.Inject
@@ -49,6 +50,15 @@ class NetworkRepositoryImpl @Inject constructor(
     override suspend fun updateToken(data: UpdateTokenRequest) {
         val response = apiService.updateToken(data).execute()
         if (!response.isSuccessful || response.body() == null) {
+            error(response.getErrorMessage())
+        }
+    }
+
+    override suspend fun getRemoteCardTypes(siteId: String): List<CardType> {
+        val response = apiService.getCardTypes(siteId).execute()
+        return if (response.isSuccessful && response.body() != null) {
+            response.body()!!.toDomain()
+        } else {
             error(response.getErrorMessage())
         }
     }

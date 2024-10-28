@@ -1,7 +1,7 @@
 package com.ih.osm.domain.usecase.cardtype
 
 import com.ih.osm.domain.model.CardType
-import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
+import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import javax.inject.Inject
 
 interface GetCardTypeUseCase {
@@ -11,9 +11,9 @@ interface GetCardTypeUseCase {
 class GetCardTypeUseCaseImpl
 @Inject
 constructor(
-    private val localRepo: LocalCardTypeRepository
+    private val repo: CardTypeRepository
 ) : GetCardTypeUseCase {
     override suspend fun invoke(id: String): CardType? {
-        return localRepo.get(id)
+        return repo.get(id)
     }
 }
