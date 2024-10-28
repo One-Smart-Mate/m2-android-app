@@ -12,6 +12,7 @@ import com.ih.osm.domain.model.isRemoteCard
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
@@ -30,7 +31,8 @@ constructor(
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
     private val fileHelper: FileHelper,
     private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
-    private val localRepo: LocalCardRepository
+    private val localRepo: LocalCardRepository,
+    private val evidenceRepo: EvidenceRepository
 ) : SyncCardsUseCase {
     override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
         var currentProgress = 0f
@@ -61,7 +63,7 @@ constructor(
                     Log.e("test", "saving evidence.. $url")
                     if (url.isNotEmpty()) {
                         evidences.add(CreateEvidenceRequest(evidence.type, url))
-                        localRepository.deleteEvidence(evidence.id)
+                        evidenceRepo.delete(evidence.id)
                     }
                 }
 
@@ -114,7 +116,7 @@ constructor(
     private suspend fun restoreEvidences(selectedCard: Card?) {
         firebaseStorageRepository.deleteEvidence(selectedCard?.uuid.orEmpty())
         selectedCard?.evidences?.forEach { evidence ->
-            localRepository.saveEvidence(evidence)
+            evidenceRepo.save(evidence)
         }
     }
 }

@@ -7,6 +7,7 @@ import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
 import com.ih.osm.data.repository.cardtype.LocalCardTypeRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.employee.LocalEmployeeRepositoryImpl
+import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
 import com.ih.osm.data.repository.level.LocalLevelRepositoryImpl
@@ -22,6 +23,7 @@ import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
@@ -98,4 +100,7 @@ internal interface DataBindingModule {
     fun bindLocalLevelRepository(
         localLevelRepositoryImpl: LocalLevelRepositoryImpl
     ): LocalLevelRepository
+
+    @Binds
+    fun bindEvidenceRepository(evidenceRepositoryImpl: EvidenceRepositoryImpl): EvidenceRepository
 }

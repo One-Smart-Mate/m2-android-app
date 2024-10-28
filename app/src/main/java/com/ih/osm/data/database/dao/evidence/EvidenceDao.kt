@@ -8,18 +8,19 @@ import com.ih.osm.data.database.entities.evidence.EvidenceEntity
 
 @Dao
 interface EvidenceDao {
-    @Query("SELECT * FROM evidence_table WHERE card_id=:id")
-    suspend fun getEvidencesByCard(id: String): List<EvidenceEntity>
+
+    @Query("SELECT * FROM evidence_table WHERE card_id=:uuid")
+    suspend fun getAllByCard(uuid: String): List<EvidenceEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertEvidence(evidenceEntity: EvidenceEntity): Long
+    suspend fun insert(evidenceEntity: EvidenceEntity): Long
 
     @Query("DELETE FROM evidence_table")
-    suspend fun deleteEvidences()
+    suspend fun deleteAll()
 
-    @Query("DELETE FROM evidence_table WHERE card_id=:id")
-    suspend fun deleteEvidenceByCard(id: String)
+    @Query("DELETE FROM evidence_table WHERE card_id=:uuid")
+    suspend fun deleteByCard(uuid: String)
 
     @Query("DELETE FROM evidence_table WHERE id=:id")
-    suspend fun deleteEvidence(id: String)
+    suspend fun delete(id: String)
 }

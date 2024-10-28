@@ -4,6 +4,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
 import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
@@ -23,7 +24,8 @@ constructor(
     private val localEmployeeRepo: LocalEmployeeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
-    private val localLevelRepo: LocalLevelRepository
+    private val localLevelRepo: LocalLevelRepository,
+    private val evidenceRepo: EvidenceRepository
 ) : CleanCatalogsUseCase {
     override suspend fun invoke(): Boolean {
         return try {
@@ -32,7 +34,7 @@ constructor(
             localPriorityRepo.deleteAll()
             localCardTypeRepo.deleteAll()
             localLevelRepo.deleteAll()
-            localRepository.deleteEvidences()
+            evidenceRepo.deleteAll()
             localEmployeeRepo.deleteAll()
             localRepository.removeSolutions()
             true

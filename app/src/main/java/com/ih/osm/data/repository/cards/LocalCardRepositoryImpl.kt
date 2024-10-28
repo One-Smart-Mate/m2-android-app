@@ -1,20 +1,20 @@
 package com.ih.osm.data.repository.cards
 
 import com.ih.osm.data.database.dao.card.CardDao
-import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.database.entities.evidence.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.ui.utils.STORED_LOCAL
 import javax.inject.Inject
 
 class LocalCardRepositoryImpl @Inject constructor(
     private val dao: CardDao,
     private val solutionDao: SolutionDao,
-    private val evidenceDao: EvidenceDao
+    private val evidenceRepo: EvidenceRepository
 ) : LocalCardRepository {
 
     override suspend fun saveAll(cards: List<Card>) {
@@ -52,7 +52,7 @@ class LocalCardRepositoryImpl @Inject constructor(
         }
         return localCards.toSet().map { cardEntity ->
             val evidences =
-                evidenceDao.getEvidencesByCard(cardEntity.uuid).map { it.toDomain() }
+                evidenceRepo.getAllByCard(cardEntity.uuid)
             val hasLocalSolutions = solutionDao.getSolutions(cardEntity.uuid)
             cardEntity.toDomain(
                 evidences = evidences,
@@ -68,7 +68,7 @@ class LocalCardRepositoryImpl @Inject constructor(
     override suspend fun get(uuid: String): Card? {
         val card = dao.get(uuid) ?: return null
         val evidences =
-            evidenceDao.getEvidencesByCard(card.uuid).map { it.toDomain() }
+            evidenceRepo.getAllByCard(card.uuid)
         val hasLocalSolutions = solutionDao.getSolutions(card.uuid)
 
         return card.toDomain(

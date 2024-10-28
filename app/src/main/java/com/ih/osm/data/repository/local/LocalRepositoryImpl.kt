@@ -2,7 +2,6 @@ package com.ih.osm.data.repository.local
 
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.dao.evidence.EvidenceDao
-import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.database.entities.cardtype.toDomain
@@ -13,7 +12,6 @@ import com.ih.osm.data.database.entities.preclassifier.toDomain
 import com.ih.osm.data.database.entities.priority.toDomain
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.database.entities.toDomain
-import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.local.LocalRepository
@@ -23,7 +21,6 @@ class LocalRepositoryImpl
 @Inject
 constructor(
     private val userDao: UserDao,
-    private val levelDao: LevelDao,
     private val evidenceDao: EvidenceDao,
     private val solutionDao: SolutionDao
 ) : LocalRepository {
@@ -44,18 +41,6 @@ constructor(
 
     override suspend fun getSiteId(): String {
         return userDao.getUser()?.siteId.orEmpty()
-    }
-
-    override suspend fun saveEvidence(evidence: Evidence): Long {
-        return evidenceDao.insertEvidence(evidence.toEntity())
-    }
-
-    override suspend fun deleteEvidence(id: String) {
-        evidenceDao.deleteEvidence(id)
-    }
-
-    override suspend fun deleteEvidences() {
-        evidenceDao.deleteEvidences()
     }
 
     override suspend fun saveSolution(solutionEntity: SolutionEntity) {

@@ -1,7 +1,6 @@
 package com.ih.osm.domain.repository.local
 
 import com.ih.osm.data.database.entities.solution.SolutionEntity
-import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.User
 
 interface LocalRepository {
@@ -12,12 +11,6 @@ interface LocalRepository {
     suspend fun logout(): Int
 
     suspend fun getSiteId(): String
-
-    suspend fun saveEvidence(evidence: Evidence): Long
-
-    suspend fun deleteEvidence(id: String)
-
-    suspend fun deleteEvidences()
 
     suspend fun saveSolution(solutionEntity: SolutionEntity)
 

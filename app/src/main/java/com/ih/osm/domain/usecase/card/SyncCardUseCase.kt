@@ -10,6 +10,7 @@ import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.toCardRequest
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import javax.inject.Inject
@@ -27,7 +28,8 @@ constructor(
     private val firebaseStorageRepository: FirebaseStorageRepository,
     private val notificationManager: NotificationManager,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val fileHelper: FileHelper
+    private val fileHelper: FileHelper,
+    private val evidenceRepo: EvidenceRepository
 ) : SyncCardUseCase {
     override suspend fun invoke(card: Card, handleNotification: Boolean): Card? {
         return try {
@@ -38,7 +40,7 @@ constructor(
                 Log.e("test", "saving evidence.. $url")
                 if (url.isNotEmpty()) {
                     evidences.add(CreateEvidenceRequest(evidence.type, url))
-                    localRepository.deleteEvidence(evidence.id)
+                    evidenceRepo.delete(evidence.id)
                 }
             }
             val cardRequest = card.toCardRequest(evidences)

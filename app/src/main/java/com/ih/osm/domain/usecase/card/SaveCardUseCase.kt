@@ -6,6 +6,7 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.LocalCardTypeRepository
+import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.level.LocalLevelRepository
 import com.ih.osm.domain.repository.local.LocalRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
@@ -29,7 +30,8 @@ constructor(
     private val localCardTypeRepo: LocalCardTypeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
-    private val localLevelRepo: LocalLevelRepository
+    private val localLevelRepo: LocalLevelRepository,
+    private val evidenceRepo: EvidenceRepository
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
         val lastCardId = localCardRepo.getLastCardId()
@@ -67,7 +69,7 @@ constructor(
         fileHelper.logCreateCard(updatedCard)
         val id = localCardRepo.save(updatedCard)
         card.evidences?.forEach {
-            localRepository.saveEvidence(it.copy(cardId = uuid))
+            evidenceRepo.save(it.copy(cardId = uuid))
         }
         firebaseAnalyticsHelper.logCreateCard(updatedCard)
         Log.e("Card", "Card $updatedCard")
