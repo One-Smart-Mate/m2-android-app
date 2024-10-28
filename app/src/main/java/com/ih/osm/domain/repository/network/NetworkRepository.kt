@@ -5,6 +5,7 @@ import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
+import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.User
 
 interface NetworkRepository {
@@ -21,4 +22,6 @@ interface NetworkRepository {
     suspend fun getRemoteCardTypes(siteId: String): List<CardType>
 
     suspend fun getRemoteEmployees(siteId: String): List<Employee>
+
+    suspend fun getRemoteLevels(siteId: String): List<Level>
 }

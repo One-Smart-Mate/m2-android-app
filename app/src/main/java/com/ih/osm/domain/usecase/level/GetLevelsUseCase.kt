@@ -1,9 +1,7 @@
 package com.ih.osm.domain.usecase.level
 
 import com.ih.osm.domain.model.Level
-import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.level.LevelRepository
-import com.ih.osm.domain.repository.level.LocalLevelRepository
 import javax.inject.Inject
 
 interface GetLevelsUseCase {
@@ -13,16 +11,13 @@ interface GetLevelsUseCase {
 class GetLevelsUseCaseImpl
 @Inject
 constructor(
-    private val remoteRepo: LevelRepository,
-    private val authRepository: AuthRepository,
-    private val localRepo: LocalLevelRepository
+    private val repo: LevelRepository
 ) : GetLevelsUseCase {
     override suspend fun invoke(syncRemote: Boolean): List<Level> {
         if (syncRemote) {
-            val siteId = authRepository.getSiteId()
-            val list = remoteRepo.getLevels(siteId)
-            localRepo.saveAll(list)
+            val list = repo.getAllRemote()
+            repo.saveAll(list)
         }
-        return localRepo.getAll()
+        return repo.getAll()
     }
 }

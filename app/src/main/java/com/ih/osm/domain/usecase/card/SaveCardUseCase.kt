@@ -8,7 +8,7 @@ import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
-import com.ih.osm.domain.repository.level.LocalLevelRepository
+import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -30,7 +30,7 @@ constructor(
     private val cardTypeRepo: CardTypeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
-    private val localLevelRepo: LocalLevelRepository,
+    private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
@@ -38,7 +38,7 @@ constructor(
         val lastSiteCardId = localCardRepo.getLastSiteCardId()
         val user = authRepo.get()
         val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
-        val area = localLevelRepo.get(card.areaId.toString())
+        val area = levelRepo.get(card.areaId.toString())
         val priority = localPriorityRepo.get(card.priorityId.orEmpty())
         val preclassifier = localPreclassifierRepo.get(card.preclassifierId)
         var uuid = card.uuid

@@ -5,7 +5,7 @@ import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
-import com.ih.osm.domain.repository.level.LocalLevelRepository
+import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.preclassifier.LocalPreclassifierRepository
 import com.ih.osm.domain.repository.priority.LocalPriorityRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
@@ -23,7 +23,7 @@ constructor(
     private val employeeRepo: EmployeeRepository,
     private val localPreclassifierRepo: LocalPreclassifierRepository,
     private val localPriorityRepo: LocalPriorityRepository,
-    private val localLevelRepo: LocalLevelRepository,
+    private val levelRepo: LevelRepository,
     private val evidenceRepo: EvidenceRepository,
     private val solutionRepo: SolutionRepository
 ) : CleanCatalogsUseCase {
@@ -33,7 +33,7 @@ constructor(
             localPreclassifierRepo.deleteAll()
             localPriorityRepo.deleteAll()
             cardTypeRepo.deleteAll()
-            localLevelRepo.deleteAll()
+            levelRepo.deleteAll()
             evidenceRepo.deleteAll()
             employeeRepo.deleteAll()
             solutionRepo.deleteAll()
