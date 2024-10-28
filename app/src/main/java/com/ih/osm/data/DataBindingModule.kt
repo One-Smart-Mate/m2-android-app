@@ -5,7 +5,6 @@ import com.ih.osm.data.repository.cards.CardRepositoryImpl
 import com.ih.osm.data.repository.cards.LocalCardRepositoryImpl
 import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
-import com.ih.osm.data.repository.employee.LocalEmployeeRepositoryImpl
 import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
@@ -21,7 +20,6 @@ import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
-import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
@@ -76,11 +74,6 @@ internal interface DataBindingModule {
     fun bindLocalCardRepository(
         localCardRepositoryImpl: LocalCardRepositoryImpl
     ): LocalCardRepository
-
-    @Binds
-    fun bindLocalEmployeeRepository(
-        localEmployeeRepositoryImpl: LocalEmployeeRepositoryImpl
-    ): LocalEmployeeRepository
 
     @Binds
     fun bindLocalPreclassifierRepository(

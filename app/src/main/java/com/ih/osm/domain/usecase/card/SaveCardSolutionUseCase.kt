@@ -13,7 +13,7 @@ import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cards.LocalCardRepository
-import com.ih.osm.domain.repository.employee.LocalEmployeeRepository
+import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -39,7 +39,7 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
     private val localRepo: LocalCardRepository,
     private val fileHelper: FileHelper,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val localEmployeeRepo: LocalEmployeeRepository,
+    private val employeeRepo: EmployeeRepository,
     private val localEvidenceRepo: EvidenceRepository,
     private val solutionRepo: SolutionRepository
 ) : SaveCardSolutionUseCase {
@@ -56,7 +56,7 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
             var card: Card? = localRepo.get(cardId)
             val userAppSolution = authRepo.get()
             val userSolution =
-                localEmployeeRepo.getAll().firstOrNull { it.id == userSolutionId }
+                employeeRepo.getAll().firstOrNull { it.id == userSolutionId }
             if (saveLocal) {
                 evidences.forEach {
                     localEvidenceRepo.save(it)
