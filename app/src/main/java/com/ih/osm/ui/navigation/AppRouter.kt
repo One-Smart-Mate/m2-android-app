@@ -9,6 +9,7 @@ const val ARG_CARD_FILTER = "arg_card_filter"
 
 private object Route {
     const val LOGIN = "login"
+
     const val HOME_PATH = "home"
     const val HOME = "$HOME_PATH?$ARG_SYNC_CATALOG={$ARG_SYNC_CATALOG}"
 

@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.login
 
 import android.content.Context
+import android.util.Log
 import com.airbnb.mvrx.MavericksState
 import com.airbnb.mvrx.MavericksViewModel
 import com.airbnb.mvrx.MavericksViewModelFactory
@@ -84,6 +85,7 @@ constructor(
                 fileHelper.logUser(it)
                 handleSaveUser(it)
             }.onFailure {
+                Log.e("test", "Failure ${it.localizedMessage}")
                 setState {
                     copy(
                         isLoading = false,

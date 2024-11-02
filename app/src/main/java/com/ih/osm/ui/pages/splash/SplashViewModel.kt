@@ -42,7 +42,7 @@ constructor(
                     if (it != null) {
                         FirebaseCrashlytics.getInstance().setUserId(it.userId)
                         // Screen.Home.route
-                        Screen.HomeV2.route
+                        Screen.Home.route
                     } else {
                         Screen.Login.route
                     }

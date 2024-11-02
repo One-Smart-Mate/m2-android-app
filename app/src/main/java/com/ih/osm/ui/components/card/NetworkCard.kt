@@ -29,7 +29,11 @@ import com.ih.osm.ui.theme.PaddingTinySmall
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun NetworkCard(networkStatus: NetworkStatus, modifier: Modifier = Modifier) {
+fun NetworkCard(
+    networkStatus: NetworkStatus,
+    modifier: Modifier = Modifier,
+    textColor: Color = getColor()
+) {
     val context = LocalContext.current
     Row(
         modifier = modifier
@@ -38,7 +42,7 @@ fun NetworkCard(networkStatus: NetworkStatus, modifier: Modifier = Modifier) {
             text = getNetworkStatus(networkStatus, context),
             style =
             MaterialTheme.typography.labelSmall.copy(
-                color = getColor()
+                color = textColor
             ),
             modifier = Modifier.padding(end = PaddingTinySmall)
         )

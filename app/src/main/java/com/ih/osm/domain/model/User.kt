@@ -1,7 +1,6 @@
 package com.ih.osm.domain.model
 
 import com.ih.osm.data.database.entities.UserEntity
-
 data class User(
     val userId: String,
     val name: String,
@@ -24,7 +23,7 @@ data class User(
             logo = "",
             companyId = "",
             siteId = "",
-            companyName = "Company name",
+            companyName = "Universal S.A de C.V",
             siteName = "site name"
         )
     }

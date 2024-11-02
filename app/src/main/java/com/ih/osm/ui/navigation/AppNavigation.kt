@@ -15,6 +15,7 @@ import com.ih.osm.ui.pages.cardlist.CardListScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreen
+import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
@@ -46,7 +47,7 @@ fun AppNavigation(startDestination: String) {
             LoginScreen(navController = navController)
         }
         composable(
-            Screen.HomeV2.route,
+            Screen.Home.route,
             arguments =
             listOf(
                 navArgument(ARG_SYNC_CATALOG) {
@@ -58,6 +59,21 @@ fun AppNavigation(startDestination: String) {
         ) {
             val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
             HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
+        }
+
+        composable(
+            Screen.HomeV2.route,
+            arguments =
+            listOf(
+                navArgument(ARG_SYNC_CATALOG) {
+                    type = NavType.StringType
+                    nullable = true
+                    defaultValue = EMPTY
+                }
+            )
+        ) {
+            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
+            HomeScreenV2(navController = navController, syncCatalogs = syncCatalogs)
         }
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)
@@ -129,6 +145,10 @@ fun NavController.navigateAndClean(route: String) {
         popUpTo(graph.startDestinationId) { inclusive = true }
     }
     graph.setStartDestination(route)
+}
+
+fun NavController.navigateToHome() {
+    navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
 }
 
 fun NavController.navigateToHomeV2() {

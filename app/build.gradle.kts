@@ -22,14 +22,14 @@ android {
         }
     }
     namespace = "com.ih.osm"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.ih.osm"
         minSdk = 24
-        targetSdk = 34
-        versionCode = 14
-        versionName = "1.0.11"
+        targetSdk = 35
+        versionCode = 15
+        versionName = "1.0.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

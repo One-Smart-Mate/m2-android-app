@@ -13,13 +13,19 @@ import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
 
 @Composable
-fun Modifier.headerContent(paddingTop: Dp): Modifier {
-    return this
-        .fillMaxWidth()
-        .background(
-            color = MaterialTheme.colorScheme.primary
-        )
-        .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
+fun Modifier.headerContent(paddingTop: Dp, showBackground: Boolean = true): Modifier {
+    return if (showBackground) {
+        this
+            .fillMaxWidth()
+            .background(
+                color = MaterialTheme.colorScheme.primary
+            )
+            .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
+    } else {
+        this
+            .fillMaxWidth()
+            .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
+    }
 }
 
 @Composable

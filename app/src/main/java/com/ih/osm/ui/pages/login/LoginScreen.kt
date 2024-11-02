@@ -50,7 +50,7 @@ import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.extensions.getColor
-import com.ih.osm.ui.navigation.navigateToHomeV2
+import com.ih.osm.ui.navigation.navigateToHome
 import com.ih.osm.ui.navigation.navigateToRestoreAccount
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
@@ -102,7 +102,7 @@ fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController:
             .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.isAuthenticated) {
-                    navController.navigateToHomeV2()
+                    navController.navigateToHome()
                 }
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {

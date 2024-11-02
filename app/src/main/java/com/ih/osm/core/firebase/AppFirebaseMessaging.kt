@@ -56,6 +56,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
 
     override fun onNewToken(token: String) {
         super.onNewToken(token)
+        sharedPreferences.saveFirebaseToken(token)
     }
 }
 

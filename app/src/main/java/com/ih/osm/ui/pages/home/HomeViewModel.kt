@@ -97,32 +97,73 @@ constructor(
 
     private fun handleSyncCatalogs(syncCatalogs: String) {
         if (syncCatalogs == LOAD_CATALOGS) {
-            setState {
-                copy(
-                    isLoading = true,
-                    message = context.getString(R.string.loading_data),
-                    isSyncing = true
-                )
-            }
-            viewModelScope.launch(coroutineContext) {
-                kotlin.runCatching {
-                    syncCatalogsUseCase(syncCards = true)
-                }.onSuccess {
+            viewModelScope.launch {
+                setState {
+                    copy(
+                        isLoading = true,
+                        message = context.getString(R.string.loading_data),
+                        isSyncing = true
+                    )
+                }
+
+                val state = stateFlow.first()
+                if (NetworkConnection.isConnected().not() ||
+                    state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                    state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
+                    state.networkStatus == NetworkStatus.DATA_DISCONNECTED
+                ) {
                     setState {
                         copy(
-                            syncCompleted = true,
-                            showSyncCatalogsCard = false,
+                            isLoading = false,
+                            message = context.getString(R.string.please_connect_to_internet),
                             isSyncing = false
                         )
                     }
-                    handleCheckUser()
-                }.onFailure {
-                    fileHelper.logException(it)
-                    handleCheckUser()
+                    return@launch
                 }
+                if (state.networkStatus == NetworkStatus.DATA_CONNECTED &&
+                    sharedPreferences.getNetworkPreference().isEmpty()
+                ) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.network_preferences_allowed),
+                            isSyncing = false
+                        )
+                    }
+                    return@launch
+                }
+                handleGetCatalogs()
             }
         } else {
             handleCheckUser()
+        }
+    }
+
+    private fun handleGetCatalogs() {
+        setState {
+            copy(
+                isLoading = true,
+                message = context.getString(R.string.loading_data),
+                isSyncing = true
+            )
+        }
+        viewModelScope.launch(coroutineContext) {
+            kotlin.runCatching {
+                syncCatalogsUseCase(syncCards = true)
+            }.onSuccess {
+                setState {
+                    copy(
+                        syncCompleted = true,
+                        showSyncCatalogsCard = false,
+                        isSyncing = false
+                    )
+                }
+                handleCheckUser()
+            }.onFailure {
+                fileHelper.logException(it)
+                handleCheckUser()
+            }
         }
     }
 
@@ -276,7 +317,7 @@ constructor(
                 WorkManager.getInstance(appContext)
                     .getWorkInfoByIdFlow(uuid)
                     .collect {
-                        when (it.state) {
+                        when (it?.state) {
                             WorkInfo.State.SUCCEEDED -> {
                                 WorkManagerUUID.resetUUID()
                                 handleGetCards()
