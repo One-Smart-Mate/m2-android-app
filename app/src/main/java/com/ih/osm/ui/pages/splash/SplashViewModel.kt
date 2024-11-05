@@ -3,6 +3,11 @@ package com.ih.osm.ui.pages.splash
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.remoteconfig.FirebaseRemoteConfig
+import com.google.firebase.remoteconfig.get
+import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.navigation.Screen
@@ -13,6 +18,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 @HiltViewModel
 class SplashViewModel
@@ -30,10 +36,28 @@ constructor(
 
     init {
         handleSyncFirebaseToken()
-        handleGetUser()
+        handleSyncFirebaseConfigs()
     }
 
-    private fun handleGetUser() {
+    private fun handleSyncFirebaseConfigs() {
+        viewModelScope.launch {
+            try {
+                val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+                val configSettings = remoteConfigSettings {
+                    minimumFetchIntervalInSeconds = 3600
+                }
+                remoteConfig.setConfigSettingsAsync(configSettings)
+                remoteConfig.fetchAndActivate().await()
+                val newHome = remoteConfig.getBoolean("HOME_REDESIGN")
+                handleGetUser(newHome)
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                handleGetUser(false)
+            }
+        }
+    }
+
+    private fun handleGetUser(showNewHome: Boolean) {
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getUserUseCase()
@@ -41,8 +65,11 @@ constructor(
                 val route =
                     if (it != null) {
                         FirebaseCrashlytics.getInstance().setUserId(it.userId)
-                        // Screen.Home.route
-                        Screen.Home.route
+                        if (showNewHome) {
+                            Screen.HomeV2.route
+                        } else {
+                            Screen.Home.route
+                        }
                     } else {
                         Screen.Login.route
                     }
@@ -63,7 +90,7 @@ constructor(
 
     private suspend fun navigateToScreen(route: String) {
         _startRoute.value = route
-        delay(2000)
+        delay(1000)
         _isAuthenticated.value = true
     }
 }

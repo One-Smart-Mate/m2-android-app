@@ -1,6 +1,7 @@
 package com.ih.osm.data.repository.network
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.data.api.ApiService
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -23,7 +24,8 @@ import org.json.JSONObject
 import retrofit2.Response
 
 class NetworkRepositoryImpl @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val fileHelper: FileHelper
 ) : NetworkRepository {
 
     override suspend fun login(data: LoginRequest): User {
@@ -185,19 +187,22 @@ class NetworkRepositoryImpl @Inject constructor(
             error(response.getErrorMessage())
         }
     }
-}
 
-fun <T> Response<T>.getErrorMessage(): String {
-    val instance = FirebaseCrashlytics.getInstance()
-    try {
-        val data = JSONObject(this.errorBody()?.charStream()?.readText().orEmpty())
-        val message = data.getString("message")
-        instance.setCustomKey("Custom_Error_API_Service ", message)
-        instance.log(message)
-        instance.recordException(Exception(data.toString()))
-        return message
-    } catch (e: Exception) {
-        instance.recordException(e)
-        return e.localizedMessage.orEmpty()
+    private fun <T> Response<T>.getErrorMessage(): String {
+        val instance = FirebaseCrashlytics.getInstance()
+        try {
+            val data = JSONObject(this.errorBody()?.charStream()?.readText().orEmpty())
+            val message = data.getString("message")
+            instance.setCustomKey("Custom_Error_API_Service ", message)
+            instance.log(message)
+            instance.recordException(Exception(data.toString()))
+            fileHelper.logException(Exception(data.toString()))
+            return message
+        } catch (e: Exception) {
+            instance.recordException(e)
+            fileHelper.logException(e)
+            return e.localizedMessage.orEmpty()
+        }
     }
+
 }

@@ -2,6 +2,8 @@ package com.ih.osm.ui.pages.home
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.icu.util.Calendar
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
@@ -23,6 +25,7 @@ import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.twotone.CheckCircle
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -189,7 +192,7 @@ private fun HomeContent(
                         contentDescription = EMPTY
                     )
                 }
-                CustomSpacer(space = SpacerSize.TINY)
+                CustomSpacer()
                 FloatingActionButton(
                     onClick = {
                         navController.navigateToAccount()
@@ -214,6 +217,24 @@ private fun HomeContent(
                         networkStatus = networkStatus
                     )
                 }
+            }
+            item {
+                CustomSpacer(space = SpacerSize.LARGE)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        stringResource(R.string.cards),
+                        style =
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = getTextColor()
+                        ),
+                        modifier = Modifier.padding(horizontal = PaddingNormal)
+                    )
+                    HorizontalDivider()
+                }
+                CustomSpacer()
             }
             item {
                 AnimatedVisibility(visible = showSyncRemoteCards) {
@@ -345,13 +366,13 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImage(image = user.logo)
+            CircularImage(image = user.logo, size = 64.dp)
             NetworkCard(networkStatus = networkStatus, textColor = getTextColor())
         }
         CustomSpacer(space = SpacerSize.SMALL)
         Column {
             Text(
-                text = "Good morning,\nFausto Camano.",
+                text = "${getTimeText()},\n${user.name}.",
                 style =
                 MaterialTheme.typography.headlineMedium.copy(
                     fontWeight = FontWeight.Bold,
@@ -373,7 +394,6 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
                     contentDescription = user.companyName,
                     tint = Color(0XFF048574),
                     modifier = Modifier.size(16.dp)
-
                 )
             }
             CustomSpacer()
@@ -391,6 +411,19 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
             }
         }
         CustomSpacer(space = SpacerSize.TINY)
+    }
+}
+
+@Composable
+private fun getTimeText(): String {
+    val calendar = Calendar.getInstance()
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    Log.e("test", "Hour -> $hour")
+    return when (hour) {
+        in 0..11 -> stringResource(R.string.good_morning)
+        in 12..19 -> stringResource(R.string.good_evening)
+        in 20..24 -> stringResource(R.string.good_night)
+        else -> stringResource(R.string.welcome_back)
     }
 }
 

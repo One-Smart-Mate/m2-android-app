@@ -50,7 +50,6 @@ class SolutionViewModel @AssistedInject constructor(
     private val fileHelper: FileHelper,
     private val notificationManager: NotificationManager,
     private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
-    private val sharedPreferences: SharedPreferences
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
     data class UiState(
         val solutionType: String = EMPTY,
@@ -266,7 +265,6 @@ class SolutionViewModel @AssistedInject constructor(
                 cleanScreenStates()
             }.onFailure {
                 fileHelper.logException(it)
-                Log.e("Test", "Solution Failure ${it.localizedMessage}")
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }

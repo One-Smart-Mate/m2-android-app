@@ -66,6 +66,7 @@ android {
                 "SERVICE_URL",
                 project.properties["API_URL_DEV"].toString()
             )
+            signingConfig = signingConfigs.getByName("debug")
         }
     }
     compileOptions {
@@ -183,4 +184,5 @@ dependencies {
     implementation(libs.core)
     implementation(libs.compressor)
     implementation(libs.logging.interceptor)
+    implementation(libs.firebase.config)
 }
