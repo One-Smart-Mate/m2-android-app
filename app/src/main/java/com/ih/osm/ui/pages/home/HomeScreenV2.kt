@@ -227,12 +227,14 @@ private fun HomeContent(
                         stringResource(R.string.cards),
                         style =
                         MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
+                            fontWeight = FontWeight.W500,
                             color = getTextColor()
                         ),
                         modifier = Modifier.padding(horizontal = PaddingNormal)
                     )
-                    HorizontalDivider()
+                    HorizontalDivider(
+                        modifier = Modifier.padding(end = PaddingNormal)
+                    )
                 }
                 CustomSpacer()
             }

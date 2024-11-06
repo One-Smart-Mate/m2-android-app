@@ -12,7 +12,6 @@ import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.notifications.NotificationManager
-import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
@@ -49,7 +48,7 @@ class SolutionViewModel @AssistedInject constructor(
     @ApplicationContext private val context: Context,
     private val fileHelper: FileHelper,
     private val notificationManager: NotificationManager,
-    private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
+    private val updateCardMechanicUseCase: UpdateCardMechanicUseCase
 ) : MavericksViewModel<SolutionViewModel.UiState>(initialState) {
     data class UiState(
         val solutionType: String = EMPTY,

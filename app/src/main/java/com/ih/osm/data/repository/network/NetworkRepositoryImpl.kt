@@ -204,5 +204,4 @@ class NetworkRepositoryImpl @Inject constructor(
             return e.localizedMessage.orEmpty()
         }
     }
-
 }

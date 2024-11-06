@@ -39,7 +39,7 @@
     <string name="comments">Problem description</string>
 
 
-    <string name="welcome_back_X">Welcome Back! %1$s</string>
+    <string name="welcome_back_x">Welcome Back! %1$s</string>
     <string name="open">Open</string>
     <string name="closed">Closed</string>
     <string name="status">Status</string>
