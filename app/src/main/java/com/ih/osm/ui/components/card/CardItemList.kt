@@ -42,6 +42,7 @@ import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
 import com.ih.osm.domain.model.isClosed
+import com.ih.osm.domain.model.isLocalCard
 import com.ih.osm.domain.model.preclassifierValue
 import com.ih.osm.domain.model.priorityValue
 import com.ih.osm.ui.components.CustomSpacer
@@ -294,7 +295,7 @@ fun CardItemListV2(
             )
 
             Row {
-                AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
+                AnimatedVisibility(visible = card.isLocalCard()) {
                     CustomTag(
                         title = stringResource(R.string.local_card),
                         tagSize = TagSize.SMALL,
@@ -304,7 +305,7 @@ fun CardItemListV2(
                 CustomSpacer(direction = SpacerDirection.HORIZONTAL)
                 AnimatedVisibility(visible = card.hasLocalSolutions) {
                     CustomTag(
-                        title = "Soluciones locales",
+                        title = stringResource(R.string.local_solutions),
                         tagSize = TagSize.SMALL,
                         tagType = TagType.OUTLINE
                     )

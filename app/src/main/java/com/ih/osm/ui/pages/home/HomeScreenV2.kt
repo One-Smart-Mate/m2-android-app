@@ -6,6 +6,7 @@ import android.icu.util.Calendar
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.Refresh
@@ -82,8 +84,11 @@ import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
+import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.PaddingToolbar
+import com.ih.osm.ui.theme.Radius8
 import com.ih.osm.ui.theme.Size2
+import com.ih.osm.ui.theme.Size64
 import com.ih.osm.ui.utils.CARD_ANOMALIES
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
@@ -109,22 +114,28 @@ fun HomeScreenV2(
             navController = navController,
             user = (state.state as? LCE.Success)?.value,
             cardList = state.cards,
-            onSyncCardsClick = {
-                viewModel.process(HomeViewModel.Action.SyncCards(context))
-            },
-            onCardClick = {
-                navController.navigateToCardList(it)
-            },
             networkStatus = state.networkStatus,
             lastSyncUpdateDate = state.lastSyncUpdate,
             showSyncCards = state.showSyncCards,
             showSyncCatalogs = state.showSyncCatalogsCard,
-            onSyncCatalogsClick = {
-                viewModel.process(HomeViewModel.Action.SyncCatalogs(LOAD_CATALOGS))
-            },
             showSyncRemoteCards = state.showSyncRemoteCards,
-            onSyncRemoteCardsClick = {
-                viewModel.process(HomeViewModel.Action.SyncRemoteCards)
+            onClick = { action ->
+                when (action) {
+                    HomeActionClick.CATALOGS -> {
+                        viewModel.process(HomeViewModel.Action.SyncCatalogs(LOAD_CATALOGS))
+                    }
+                    HomeActionClick.LOCAL_CARDS -> {
+                        viewModel.process(HomeViewModel.Action.SyncCards(context))
+                    }
+
+                    HomeActionClick.REMOTE_CARDS -> {
+                        viewModel.process(HomeViewModel.Action.SyncRemoteCards)
+                    }
+
+                    HomeActionClick.NAVIGATION -> {
+                        navController.navigateToCardList(CARD_ANOMALIES)
+                    }
+                }
             }
         )
     }
@@ -169,15 +180,12 @@ private fun HomeContent(
     navController: NavController,
     user: User?,
     cardList: List<Card>,
-    onSyncCardsClick: () -> Unit,
-    onCardClick: (String) -> Unit,
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
     showSyncCards: Boolean,
     showSyncCatalogs: Boolean,
-    onSyncCatalogsClick: () -> Unit,
     showSyncRemoteCards: Boolean,
-    onSyncRemoteCardsClick: () -> Unit
+    onClick: (HomeActionClick) -> Unit
 ) {
     Scaffold(
         floatingActionButton = {
@@ -247,7 +255,7 @@ private fun HomeContent(
                         subText = stringResource(R.string.important),
                         subTextColor = MaterialTheme.colorScheme.error
                     ) {
-                        onSyncRemoteCardsClick()
+                        onClick(HomeActionClick.REMOTE_CARDS)
                     }
                 }
 
@@ -266,7 +274,7 @@ private fun HomeContent(
                             cardList.toLocalCards().size
                         )
                     ) {
-                        onSyncCardsClick()
+                        onClick(HomeActionClick.LOCAL_CARDS)
                     }
                 }
                 AnimatedVisibility(visible = showSyncCatalogs) {
@@ -277,7 +285,7 @@ private fun HomeContent(
                         subText = stringResource(R.string.important),
                         subTextColor = MaterialTheme.colorScheme.error
                     ) {
-                        onSyncCatalogsClick()
+                        onClick(HomeActionClick.CATALOGS)
                     }
                 }
                 HomeSectionCardItem(
@@ -293,11 +301,18 @@ private fun HomeContent(
                         EMPTY
                     }
                 ) {
-                    onCardClick(CARD_ANOMALIES)
+                    onClick(HomeActionClick.NAVIGATION)
                 }
             }
         }
     }
+}
+
+enum class HomeActionClick {
+    CATALOGS,
+    LOCAL_CARDS,
+    REMOTE_CARDS,
+    NAVIGATION
 }
 
 @Composable
@@ -368,8 +383,15 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImage(image = user.logo, size = 64.dp)
-            NetworkCard(networkStatus = networkStatus, textColor = getTextColor())
+            CircularImage(image = user.logo, size = Size64)
+            NetworkCard(
+                networkStatus = networkStatus,
+                textColor = getTextColor(),
+                modifier = Modifier.background(
+                    shape = RoundedCornerShape(Radius8),
+                    color = Color.Gray.copy(alpha = 0.1f)
+                ).padding(PaddingTiny)
+            )
         }
         CustomSpacer(space = SpacerSize.SMALL)
         Column {
@@ -440,15 +462,12 @@ private fun HomeScreenPreview() {
                 navController = rememberNavController(),
                 user = User.mockUser(),
                 cardList = emptyList(),
-                onSyncCardsClick = {},
-                onCardClick = {},
                 networkStatus = NetworkStatus.WIFI_CONNECTED,
                 lastSyncUpdateDate = "",
                 showSyncCards = true,
                 showSyncCatalogs = true,
-                onSyncCatalogsClick = {},
                 showSyncRemoteCards = true,
-                onSyncRemoteCardsClick = {}
+                onClick = {}
             )
         }
     }
