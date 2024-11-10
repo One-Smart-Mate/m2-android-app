@@ -407,7 +407,7 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = user.companyName,
+                    text = user.siteName,
                     style =
                     MaterialTheme.typography.bodyLarge.copy(
                         color = getTextColor()
@@ -415,7 +415,7 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
                 )
                 Icon(
                     Icons.TwoTone.CheckCircle,
-                    contentDescription = user.companyName,
+                    contentDescription = user.siteName,
                     tint = Color(0XFF048574),
                     modifier = Modifier.size(16.dp)
                 )
