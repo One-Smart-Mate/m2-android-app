@@ -184,4 +184,7 @@
     <string name="good_night">Buenas noches</string>
     <string name="welcome_back">Bienvenido de regreso</string>
     <string name="local_solutions">Soluciones locales</string>
+
+    <string name="record_video">Grabando video</string>
+
 </resources>

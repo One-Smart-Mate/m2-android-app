@@ -185,4 +185,6 @@
     <string name="good_night">Good night</string>
     <string name="welcome_back">Welcome back</string>
     <string name="local_solutions">Local solutions</string>
+
+    <string name="record_video">Record video</string>
 </resources>

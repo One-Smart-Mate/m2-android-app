@@ -27,7 +27,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
-import androidx.core.net.toUri
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.FileType
 import com.ih.osm.core.ui.functions.getUriForFile
@@ -35,9 +34,6 @@ import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.utils.AndroidAudioRecorder
-import com.ih.osm.ui.utils.COMPRESS_QUALITY
-import id.zelory.compressor.Compressor
-import id.zelory.compressor.constraint.quality
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -71,10 +67,7 @@ fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
         onStop = {
             scope.launch {
                 androidAudioPlayer.stop()
-                val compressedImage = Compressor.compress(context, file.second) {
-                    quality(COMPRESS_QUALITY)
-                }
-                onComplete(compressedImage.toUri())
+                onComplete(file.first)
                 file = context.getUriForFile(FileType.AUDIO)
             }
         },
