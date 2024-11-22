@@ -45,7 +45,7 @@ fun ProfileScreen(
 ) {
     val state by viewModel.collectAsState()
     when (val result = state.state) {
-        is LCE.Loading, LCE.Uninitialized -> {
+        is LCE.Loading -> {
             LoadingScreen(text = stringResource(id = R.string.loading_data))
         }
         is LCE.Success -> {

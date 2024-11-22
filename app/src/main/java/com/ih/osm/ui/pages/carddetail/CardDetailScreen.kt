@@ -4,51 +4,33 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.flowWithLifecycle
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
-import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.getBorderColor
@@ -71,83 +53,43 @@ import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SectionTag
-import com.ih.osm.ui.components.VideoPlayer
-import com.ih.osm.ui.components.evidence.PreviewVideo
-import com.ih.osm.ui.components.images.PreviewImage
+import com.ih.osm.ui.components.card.CardAudioSection
+import com.ih.osm.ui.components.card.CardImageSection
+import com.ih.osm.ui.components.card.CardVideoSection
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.isExpired
 import com.ih.osm.ui.extensions.orDefault
-import com.ih.osm.ui.pages.createcard.PhotoCardItem
 import com.ih.osm.ui.pages.error.ErrorScreen
 import com.ih.osm.ui.theme.OsmAppTheme
-import com.ih.osm.ui.theme.PaddingTiny
-import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.theme.Size120
 import com.ih.osm.ui.theme.Size20
-import com.ih.osm.ui.theme.Size200
-import com.ih.osm.ui.theme.Size250
-import com.ih.osm.ui.utils.EMPTY
-import kotlinx.coroutines.launch
 
 @Composable
 fun CardDetailScreen(
     navController: NavController,
-    uuid: String,
-    viewModel: CardDetailViewModel = mavericksViewModel()
+    viewModel: CardDetailViewModel = hiltViewModel()
 ) {
-    val state by viewModel.collectAsState()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
-    val snackBarHostState = remember { SnackbarHostState() }
-    val scope = rememberCoroutineScope()
+    val screenState = viewModel.state.collectAsStateWithLifecycle()
 
-    when (val screenState = state.card) {
+    when (val result = screenState.value.state) {
         is LCE.Fail -> {
             ErrorScreen(
                 navController = navController,
-                errorMessage = screenState.error
+                errorMessage = result.error
             ) {
-                viewModel.process(CardDetailViewModel.Action.GetCardDetail(uuid))
+                navController.popBackStack()
             }
         }
 
-        is LCE.Loading, LCE.Uninitialized -> {
+        is LCE.Loading -> {
             LoadingScreen(text = stringResource(R.string.loading_card_details))
         }
 
         is LCE.Success -> {
             CardDetailContent(
                 navController = navController,
-                card = screenState.value
+                card = result.value
             )
         }
-    }
-
-    SnackbarHost(hostState = snackBarHostState) {
-        Snackbar(
-            snackbarData = it,
-            containerColor = Color.Green,
-            contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
-        )
-    }
-
-    LaunchedEffect(viewModel, lifecycle) {
-        snapshotFlow { state }
-            .flowWithLifecycle(lifecycle)
-            .collect {
-                if (it.card !is LCE.Success) {
-                    viewModel.process(CardDetailViewModel.Action.GetCardDetail(uuid))
-                }
-
-                if (state.message.isNotEmpty()) {
-                    scope.launch {
-                        snackBarHostState.showSnackbar(
-                            message = state.message
-                        )
-                        viewModel.process(CardDetailViewModel.Action.ClearMessage)
-                    }
-                }
-            }
     }
 }
 
@@ -261,7 +203,22 @@ fun CardInformationContent(card: Card) {
         )
     }
 
-    CardInformationEvidence(card = card)
+    ExpandableCard(title = stringResource(R.string.evidences)) {
+        CardImageSection(
+            title = stringResource(R.string.images),
+            evidences = card.evidences?.toImagesAtCreation().orEmpty()
+        )
+
+        CardVideoSection(
+            title = stringResource(R.string.videos),
+            evidences = card.evidences?.toVideosAtCreation().orEmpty()
+        )
+
+        CardAudioSection(
+            title = stringResource(R.string.audios),
+            evidences = card.evidences?.toAudiosAtCreation().orEmpty()
+        )
+    }
 
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
         SectionTag(
@@ -275,6 +232,21 @@ fun CardInformationContent(card: Card) {
         SectionTag(
             title = stringResource(R.string.comments),
             value = card.commentsAtCardProvisionalSolution.orDefault()
+        )
+
+        CardImageSection(
+            title = stringResource(R.string.images_provisional_solution),
+            evidences = card.evidences?.toImagesAtProvisionalSolution().orEmpty()
+        )
+
+        CardVideoSection(
+            title = stringResource(R.string.videos_provisional_solution),
+            evidences = card.evidences?.toVideosAtProvisionalSolution().orEmpty()
+        )
+
+        CardAudioSection(
+            title = stringResource(R.string.audios_provisional_solution),
+            evidences = card.evidences?.toAudiosAtProvisionalSolution().orEmpty()
         )
     }
 
@@ -291,177 +263,21 @@ fun CardInformationContent(card: Card) {
             title = stringResource(R.string.comments),
             value = card.commentsAtCardDefinitiveSolution.orDefault()
         )
-    }
-}
 
-@Composable
-fun CardInformationEvidence(card: Card) {
-    if (card.evidences.isNullOrEmpty().not()) {
-        val evidences = card.evidences.orEmpty()
-        ExpandableCard(title = stringResource(R.string.evidences)) {
-            val imagesAtCreation = evidences.toImagesAtCreation()
-            if (imagesAtCreation.isNotEmpty()) {
-                EvidenceImagesCardSection(
-                    title = stringResource(R.string.images),
-                    evidences = imagesAtCreation
-                )
-            }
-            val imagesAtProvisionalSolution = evidences.toImagesAtProvisionalSolution()
-            if (imagesAtProvisionalSolution.isNotEmpty()) {
-                EvidenceImagesCardSection(
-                    title = stringResource(R.string.images_provisional_solution),
-                    evidences = imagesAtProvisionalSolution
-                )
-            }
-            val imagesAtDefinitiveSolution = evidences.toImagesAtDefinitiveSolution()
-            if (imagesAtDefinitiveSolution.isNotEmpty()) {
-                EvidenceImagesCardSection(
-                    title = stringResource(R.string.images_definitive_solution),
-                    evidences = imagesAtDefinitiveSolution
-                )
-            }
-            val videosAtCreation = evidences.toVideosAtCreation()
-            if (videosAtCreation.isNotEmpty()) {
-                EvidenceVideoCardSection(
-                    title = stringResource(R.string.videos),
-                    evidences = videosAtCreation
-                )
-            }
-            val videosAtProvisionalSolution = evidences.toVideosAtProvisionalSolution()
-            if (videosAtProvisionalSolution.isNotEmpty()) {
-                EvidenceVideoCardSection(
-                    title = stringResource(R.string.videos_provisional_solution),
-                    evidences = videosAtProvisionalSolution
-                )
-            }
-            val videosAtDefinitiveSolution = evidences.toVideosAtDefinitiveSolution()
-            if (videosAtDefinitiveSolution.isNotEmpty()) {
-                EvidenceVideoCardSection(
-                    title = stringResource(R.string.videos_definitive_solution),
-                    evidences = videosAtDefinitiveSolution
-                )
-            }
-            val audiosAtCreation = evidences.toAudiosAtCreation()
-            if (audiosAtCreation.isNotEmpty()) {
-                EvidenceAudioCardSection(
-                    title = stringResource(R.string.audios),
-                    evidences = audiosAtCreation
-                )
-            }
-            val audiosAtProvisionalSolution = evidences.toAudiosAtProvisionalSolution()
-            if (audiosAtProvisionalSolution.isNotEmpty()) {
-                EvidenceAudioCardSection(
-                    title = stringResource(R.string.audios_provisional_solution),
-                    evidences = audiosAtProvisionalSolution
-                )
-            }
-            val audiosAtDefinitiveSolution = evidences.toAudiosAtDefinitiveSolution()
-            if (audiosAtDefinitiveSolution.isNotEmpty()) {
-                EvidenceAudioCardSection(
-                    title = stringResource(R.string.audios_definitive_solution),
-                    evidences = audiosAtDefinitiveSolution
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun EvidenceImagesCardSection(title: String, evidences: List<Evidence>) {
-    var imageUrl by remember {
-        mutableStateOf(EMPTY)
-    }
-    var openImage by remember {
-        mutableStateOf(false)
-    }
-    Column {
-        Text(
-            text = title,
-            style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+        CardImageSection(
+            title = stringResource(R.string.images_definitive_solution),
+            evidences = card.evidences?.toImagesAtDefinitiveSolution().orEmpty()
         )
-        LazyRow {
-            items(evidences) {
-                PhotoCardItem(
-                    model = it.url,
-                    showIcon = false,
-                    modifier =
-                    Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            imageUrl = it.url
-                            openImage = true
-                        }
-                )
-            }
-        }
-        PreviewImage(openImage = openImage, model = imageUrl) {
-            openImage = false
-            imageUrl = EMPTY
-        }
-    }
-}
 
-@Composable
-fun EvidenceVideoCardSection(title: String, evidences: List<Evidence>) {
-    var videoUrl by remember {
-        mutableStateOf(EMPTY)
-    }
-    var openVideo by remember {
-        mutableStateOf(false)
-    }
-    Column {
-        Text(
-            text = title,
-            style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+        CardVideoSection(
+            title = stringResource(R.string.videos_definitive_solution),
+            evidences = card.evidences?.toVideosAtDefinitiveSolution().orEmpty()
         )
-        LazyRow {
-            items(evidences) {
-                PhotoCardItem(
-                    model = it.url,
-                    showIcon = false,
-                    modifier =
-                    Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            videoUrl = it.url
-                            openVideo = true
-                        }
-                )
-            }
-        }
-        PreviewVideo(openVideo = openVideo, url = videoUrl) {
-            videoUrl = EMPTY
-            openVideo = false
-        }
-    }
-}
 
-@Composable
-fun EvidenceAudioCardSection(title: String, evidences: List<Evidence>) {
-    Column {
-        Text(
-            text = title,
-            style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+        CardAudioSection(
+            title = stringResource(R.string.audios_definitive_solution),
+            evidences = card.evidences?.toAudiosAtDefinitiveSolution().orEmpty()
         )
-        LazyRow {
-            items(evidences) {
-                VideoPlayer(
-                    modifier =
-                    Modifier
-                        .size(Size120)
-                        .padding(PaddingTiny),
-                    url = it.url
-                )
-            }
-        }
     }
 }
 

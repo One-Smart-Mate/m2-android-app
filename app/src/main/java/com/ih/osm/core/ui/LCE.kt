@@ -2,9 +2,6 @@ package com.ih.osm.core.ui
 
 sealed class LCE<out T>(private val value: T?) {
     fun invoke(): T? = value
-
-    data object Uninitialized : LCE<Nothing>(value = null)
-
     data object Loading : LCE<Nothing>(value = null)
 
     data class Success<out T>(val value: T) : LCE<T>(value = value)

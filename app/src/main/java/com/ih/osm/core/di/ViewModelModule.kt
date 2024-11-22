@@ -4,7 +4,6 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.ih.osm.ui.pages.account.AccountViewModel
-import com.ih.osm.ui.pages.carddetail.CardDetailViewModel
 import com.ih.osm.ui.pages.cardlist.CardListViewModel
 import com.ih.osm.ui.pages.createcard.CreateCardViewModel
 import com.ih.osm.ui.pages.home.HomeViewModel
@@ -46,13 +45,13 @@ interface ViewModelModule {
     fun bindCreateCardViewModel(
         factory: CreateCardViewModel.Factory
     ): AssistedViewModelFactory<*, *>
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(CardDetailViewModel::class)
-    fun bindCardDetailViewModel(
-        factory: CardDetailViewModel.Factory
-    ): AssistedViewModelFactory<*, *>
+//
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(CardDetailViewModel::class)
+//    fun bindCardDetailViewModel(
+//        factory: CardDetailViewModel.Factory
+//    ): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

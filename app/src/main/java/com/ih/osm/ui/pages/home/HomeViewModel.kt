@@ -51,7 +51,7 @@ constructor(
     private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase
 ) : MavericksViewModel<HomeViewModel.UiState>(initialState) {
     data class UiState(
-        val state: LCE<User> = LCE.Uninitialized,
+        val state: LCE<User> = LCE.Loading,
         val message: String = EMPTY,
         val syncCatalogs: Boolean = true,
         val cards: List<Card> = emptyList(),

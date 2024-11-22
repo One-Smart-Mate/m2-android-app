@@ -22,7 +22,7 @@ constructor(
     private val getUserUseCase: GetUserUseCase
 ) : MavericksViewModel<ProfileViewModel.UiState>(initialState) {
     data class UiState(
-        val state: LCE<User> = LCE.Uninitialized
+        val state: LCE<User> = LCE.Loading
     ) : MavericksState
 
     init {
