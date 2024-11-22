@@ -4,13 +4,11 @@ import com.airbnb.mvrx.hilt.AssistedViewModelFactory
 import com.airbnb.mvrx.hilt.MavericksViewModelComponent
 import com.airbnb.mvrx.hilt.ViewModelKey
 import com.ih.osm.ui.pages.account.AccountViewModel
-import com.ih.osm.ui.pages.cardlist.CardListViewModel
 import com.ih.osm.ui.pages.createcard.CreateCardViewModel
 import com.ih.osm.ui.pages.home.HomeViewModel
 import com.ih.osm.ui.pages.login.LoginViewModel
 import com.ih.osm.ui.pages.password.RestoreAccountViewModel
 import com.ih.osm.ui.pages.profile.ProfileViewModel
-import com.ih.osm.ui.pages.solution.SolutionViewModel
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -34,10 +32,10 @@ interface ViewModelModule {
     @ViewModelKey(HomeViewModel::class)
     fun bindHomeViewModelV2(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(CardListViewModel::class)
-    fun bindCardListViewModel(factory: CardListViewModel.Factory): AssistedViewModelFactory<*, *>
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(CardListViewModel::class)
+//    fun bindCardListViewModel(factory: CardListViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
@@ -53,10 +51,10 @@ interface ViewModelModule {
 //        factory: CardDetailViewModel.Factory
 //    ): AssistedViewModelFactory<*, *>
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(SolutionViewModel::class)
-    fun bindSolutionViewModel(factory: SolutionViewModel.Factory): AssistedViewModelFactory<*, *>
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(SolutionViewModel::class)
+//    fun bindSolutionViewModel(factory: SolutionViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

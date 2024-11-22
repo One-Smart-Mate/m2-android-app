@@ -1,4 +1,4 @@
-import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
+//import org.jlleitschuh.gradle.ktlint.reporter.ReporterType
 
 plugins {
     alias(libs.plugins.android.application)
@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.hilt)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("org.jlleitschuh.gradle.ktlint")
+   // id("org.jlleitschuh.gradle.ktlint")
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
 }
@@ -95,25 +95,25 @@ android {
         enableAggregatingTask = true
     }
 
-    ktlint {
-        val editorConfig =
-            mapOf(
-                "ktlint_standard_no-wildcard-imports" to "disabled",
-                "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
-                "ktlint_code_style" to "android_studio"
-            )
-        android = true
-        ignoreFailures = false
-        additionalEditorconfig = editorConfig
-        android = true
-        reporters {
-            reporter(ReporterType.HTML)
-        }
-    }
+//    ktlint {
+//        val editorConfig =
+//            mapOf(
+//                "ktlint_standard_no-wildcard-imports" to "disabled",
+//                "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
+//                "ktlint_code_style" to "android_studio"
+//            )
+//        android = true
+//        ignoreFailures = false
+//        additionalEditorconfig = editorConfig
+//        android = true
+//        reporters {
+//            reporter(ReporterType.HTML)
+//        }
+//    }
 
-    kotlin {
-        tasks.getByPath("preBuild").dependsOn("ktlintFormat")
-    }
+//    kotlin {
+//        tasks.getByPath("preBuild").dependsOn("ktlintFormat")
+//    }
 }
 
 dependencies {

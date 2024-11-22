@@ -18,6 +18,7 @@ import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
+import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.utils.ASSIGN_CARD_ACTION
@@ -27,7 +28,7 @@ import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SolutionBottomSheet(
-    onSolutionClick: (String) -> Unit,
+    onAction: (CardItemSheetAction) -> Unit,
     onDismissRequest: () -> Unit,
     showProvisionalSolution: Boolean,
     showDefinitiveSolution: Boolean,
@@ -37,10 +38,9 @@ fun SolutionBottomSheet(
         SolutionBottomSheetContent(
             showProvisionalSolution,
             showDefinitiveSolution,
-            showAssignCard
-        ) {
-            onSolutionClick(it)
-        }
+            showAssignCard,
+            onAction
+        )
     }
 }
 
@@ -49,7 +49,7 @@ fun SolutionBottomSheetContent(
     showProvisionalSolution: Boolean,
     showDefinitiveSolution: Boolean,
     showAssignCard: Boolean,
-    onSolutionClick: (String) -> Unit
+    onAction: (CardItemSheetAction) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(PaddingNormal)
@@ -63,7 +63,7 @@ fun SolutionBottomSheetContent(
         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
         AnimatedVisibility(visible = showProvisionalSolution) {
             CustomButton(text = stringResource(R.string.provisional_solution)) {
-                onSolutionClick(PROVISIONAL_SOLUTION)
+                onAction(CardItemSheetAction.ProvisionalSolution)
             }
         }
         CustomSpacer()
@@ -72,7 +72,7 @@ fun SolutionBottomSheetContent(
                 text = stringResource(R.string.definitive_solution),
                 buttonType = ButtonType.OUTLINE
             ) {
-                onSolutionClick(DEFINITIVE_SOLUTION)
+                onAction(CardItemSheetAction.DefinitiveSolution)
             }
         }
         CustomSpacer()
@@ -81,7 +81,7 @@ fun SolutionBottomSheetContent(
                 text = stringResource(R.string.assign_card),
                 buttonType = ButtonType.TEXT
             ) {
-                onSolutionClick(ASSIGN_CARD_ACTION)
+                onAction(CardItemSheetAction.AssignMechanic)
             }
         }
     }

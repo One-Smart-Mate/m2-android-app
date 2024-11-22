@@ -53,6 +53,7 @@ import com.ih.osm.ui.components.TagSize
 import com.ih.osm.ui.components.TagType
 import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
+import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.sheets.SolutionBottomSheet
 import com.ih.osm.ui.extensions.getInvertedColor
 import com.ih.osm.ui.extensions.isExpired
@@ -66,126 +67,126 @@ import com.ih.osm.ui.theme.Size1
 import com.ih.osm.ui.theme.Size20
 import com.ih.osm.ui.utils.STORED_LOCAL
 
-@Composable
-fun CardItemList(
-    card: Card,
-    isActionsEnabled: Boolean = true,
-    onClick: () -> Unit,
-    onSolutionClick: (String) -> Unit
-) {
-    var showSolutionBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    Card(
-        modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(PaddingNormal),
-        onClick = {
-            onClick()
-        }
-    ) {
-        Column(
-            modifier = Modifier.padding(PaddingSmall)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = card.cardTitle(),
-                    style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center
-                )
-
-                Box(
-                    modifier =
-                    Modifier
-                        .padding(start = 5.dp)
-                        .size(20.dp)
-                        .background(
-                            color = card.getBorderColor(),
-                            shape = CircleShape
-                        )
-                )
-            }
-
-            CardItemEvidence(
-                showCamera = card.evidenceImageCreation > 0,
-                showVideo = card.evidenceVideoCreation > 0,
-                showVoice = card.evidenceAudioCreation > 0
-            )
-
-            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
-                CustomTag(
-                    title = stringResource(R.string.local_card),
-                    tagSize = TagSize.SMALL,
-                    tagType = TagType.OUTLINE
-                )
-            }
-
-            SectionTag(
-                title = stringResource(id = R.string.status),
-                value = card.getStatus()
-            )
-            SectionTag(
-                title = stringResource(id = R.string.type_card),
-                value = card.cardTypeName.orEmpty()
-            )
-            SectionTag(
-                title = stringResource(id = R.string.type_of_problem),
-                value = card.preclassifierValue()
-            )
-            SectionTag(
-                title = stringResource(R.string.priority),
-                value = card.priorityValue()
-            )
-            SectionTag(
-                title = stringResource(id = R.string.area),
-                value = card.areaName
-            )
-            SectionTag(
-                title = stringResource(id = R.string.created_by),
-                value = card.creatorName
-            )
-            SectionTag(
-                title = stringResource(id = R.string.date),
-                value = card.getCreationDate()
-            )
-            SectionTag(
-                title = stringResource(id = R.string.due_date),
-                value = card.dueDate
-            )
-
-            CustomSpacer()
-            AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
-                CustomButton(
-                    text = stringResource(R.string.actions),
-                    buttonType = ButtonType.OUTLINE
-                ) {
-                    showSolutionBottomSheet = true
-                }
-            }
-        }
-    }
-    if (showSolutionBottomSheet) {
-        SolutionBottomSheet(
-            onSolutionClick = {
-                showSolutionBottomSheet = false
-                onSolutionClick(it)
-            },
-            onDismissRequest = {
-                showSolutionBottomSheet = false
-            },
-            showProvisionalSolution = card.enableProvisionalSolution(),
-            showDefinitiveSolution = card.enableDefinitiveSolution(),
-            showAssignCard = card.enableAssignMechanic()
-        )
-    }
-}
+//@Composable
+//fun CardItemList(
+//    card: Card,
+//    isActionsEnabled: Boolean = true,
+//    onClick: () -> Unit,
+//    onSolutionClick: (String) -> Unit
+//) {
+//    var showSolutionBottomSheet by remember {
+//        mutableStateOf(false)
+//    }
+//    Card(
+//        modifier =
+//        Modifier
+//            .fillMaxWidth()
+//            .padding(PaddingNormal),
+//        onClick = {
+//            onClick()
+//        }
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(PaddingSmall)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.Center,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    text = card.cardTitle(),
+//                    style =
+//                    MaterialTheme.typography.titleLarge
+//                        .copy(fontWeight = FontWeight.Bold),
+//                    textAlign = TextAlign.Center
+//                )
+//
+//                Box(
+//                    modifier =
+//                    Modifier
+//                        .padding(start = 5.dp)
+//                        .size(20.dp)
+//                        .background(
+//                            color = card.getBorderColor(),
+//                            shape = CircleShape
+//                        )
+//                )
+//            }
+//
+//            CardItemEvidence(
+//                showCamera = card.evidenceImageCreation > 0,
+//                showVideo = card.evidenceVideoCreation > 0,
+//                showVoice = card.evidenceAudioCreation > 0
+//            )
+//
+//            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
+//                CustomTag(
+//                    title = stringResource(R.string.local_card),
+//                    tagSize = TagSize.SMALL,
+//                    tagType = TagType.OUTLINE
+//                )
+//            }
+//
+//            SectionTag(
+//                title = stringResource(id = R.string.status),
+//                value = card.getStatus()
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.type_card),
+//                value = card.cardTypeName.orEmpty()
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.type_of_problem),
+//                value = card.preclassifierValue()
+//            )
+//            SectionTag(
+//                title = stringResource(R.string.priority),
+//                value = card.priorityValue()
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.area),
+//                value = card.areaName
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.created_by),
+//                value = card.creatorName
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.date),
+//                value = card.getCreationDate()
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.due_date),
+//                value = card.dueDate
+//            )
+//
+//            CustomSpacer()
+//            AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
+//                CustomButton(
+//                    text = stringResource(R.string.actions),
+//                    buttonType = ButtonType.OUTLINE
+//                ) {
+//                    showSolutionBottomSheet = true
+//                }
+//            }
+//        }
+//    }
+//    if (showSolutionBottomSheet) {
+//        SolutionBottomSheet(
+//            onSolutionClick = {
+//                showSolutionBottomSheet = false
+//                onSolutionClick(it)
+//            },
+//            onDismissRequest = {
+//                showSolutionBottomSheet = false
+//            },
+//            showProvisionalSolution = card.enableProvisionalSolution(),
+//            showDefinitiveSolution = card.enableDefinitiveSolution(),
+//            showAssignCard = card.enableAssignMechanic()
+//        )
+//    }
+//}
 
 @Composable
 fun CardItemEvidence(showCamera: Boolean, showVideo: Boolean, showVoice: Boolean) {
@@ -212,38 +213,38 @@ fun CardItemEvidence(showCamera: Boolean, showVideo: Boolean, showVoice: Boolean
         }
     }
 }
-
-@Composable
-fun CardSectionItemList(card: Card) {
-    Card(
-        modifier = Modifier.padding(PaddingTinySmall),
-        border = BorderStroke(Size1, getInvertedColor())
-    ) {
-        Column(
-            modifier = Modifier.padding(PaddingSmall)
-        ) {
-            Text(
-                text = "${card.cardTypeName} ${card.siteCardId}",
-                style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-            SectionTag(
-                title = stringResource(id = R.string.area),
-                value = card.areaName
-            )
-        }
-    }
-}
+//
+//@Composable
+//fun CardSectionItemList(card: Card) {
+//    Card(
+//        modifier = Modifier.padding(PaddingTinySmall),
+//        border = BorderStroke(Size1, getInvertedColor())
+//    ) {
+//        Column(
+//            modifier = Modifier.padding(PaddingSmall)
+//        ) {
+//            Text(
+//                text = "${card.cardTypeName} ${card.siteCardId}",
+//                style =
+//                MaterialTheme.typography.titleLarge
+//                    .copy(fontWeight = FontWeight.Bold),
+//                textAlign = TextAlign.Center,
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//            SectionTag(
+//                title = stringResource(id = R.string.area),
+//                value = card.areaName
+//            )
+//        }
+//    }
+//}
 
 @Composable
 fun CardItemListV2(
     card: Card,
     isActionsEnabled: Boolean = true,
     onClick: () -> Unit,
-    onSolutionClick: (String) -> Unit
+    onAction: (CardItemSheetAction) -> Unit
 ) {
     var showSolutionBottomSheet by remember {
         mutableStateOf(false)
@@ -367,9 +368,9 @@ fun CardItemListV2(
     }
     if (showSolutionBottomSheet) {
         SolutionBottomSheet(
-            onSolutionClick = {
+            onAction = {
                 showSolutionBottomSheet = false
-                onSolutionClick(it)
+                onAction(it)
             },
             onDismissRequest = {
                 showSolutionBottomSheet = false
@@ -403,3 +404,4 @@ fun HomeCardItemListPreview() {
         }
     }
 }
+

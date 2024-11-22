@@ -285,7 +285,7 @@ fun CreateCardContent(
                                         card = it,
                                         isActionsEnabled = false,
                                         onClick = {},
-                                        onSolutionClick = {}
+                                        onAction = {}
                                     )
                                 }
                             }

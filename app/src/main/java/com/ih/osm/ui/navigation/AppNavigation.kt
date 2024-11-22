@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ih.osm.ui.components.card.actions.CardItemSheetAction
+import com.ih.osm.ui.components.card.actions.toActionString
 import com.ih.osm.ui.pages.account.AccountScreen
 import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
@@ -20,7 +22,7 @@ import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
-import com.ih.osm.ui.pages.solution.SolutionScreen
+import com.ih.osm.ui.pages.solution.CardActionScreen
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 
@@ -98,25 +100,18 @@ fun AppNavigation(startDestination: String) {
             Screen.Solution.route,
             arguments =
             listOf(
-                navArgument(ARG_SOLUTION) { type = NavType.StringType },
-                navArgument(ARG_CARD_ID) { type = NavType.StringType }
+                navArgument(ARG_CARD_ID) { type = NavType.StringType },
+                navArgument(ARG_ACTION_TYPE) { type = NavType.StringType }
             )
         ) {
-            val solutionType = it.arguments?.getString(ARG_SOLUTION).orEmpty()
-            val uuid = it.arguments?.getString(ARG_CARD_ID).orEmpty()
-            SolutionScreen(
-                navController = navController,
-                solutionType = solutionType,
-                uuid = uuid
-            )
+            CardActionScreen(navController = navController)
         }
 
         composable(
             Screen.CardList.route,
             arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType })
         ) {
-            val filter = it.arguments?.getString(ARG_CARD_FILTER).orEmpty()
-            CardListScreen(navController = navController, filter = filter)
+            CardListScreen(navController = navController)
         }
 
         composable(
@@ -168,9 +163,9 @@ fun NavController.navigateToCardDetail(uuid: String) {
     )
 }
 
-fun NavController.navigateToCardSolution(solutionType: String, uuid: String) {
+fun NavController.navigateToCardSolution(action: CardItemSheetAction, uuid: String) {
     navigate(
-        "${Screen.Solution.path}/$solutionType/$uuid"
+        "${Screen.Solution.path}/${action.toActionString()}/$uuid"
     )
 }
 

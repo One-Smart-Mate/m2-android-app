@@ -6,6 +6,7 @@ const val ARG_CARD_ID = "arg_card_id"
 const val ARG_SYNC_CATALOG = "arg_sync_catalogs"
 const val ARG_SOLUTION = "arg_solution"
 const val ARG_CARD_FILTER = "arg_card_filter"
+const val ARG_ACTION_TYPE = "arg_action_type"
 
 private object Route {
     const val LOGIN = "login"
@@ -25,7 +26,7 @@ private object Route {
 
     const val DEV = "dev"
     const val SOLUTION_PATH = "solution-card"
-    const val SOLUTION = "$SOLUTION_PATH/{$ARG_SOLUTION}/{$ARG_CARD_ID}"
+    const val SOLUTION = "$SOLUTION_PATH/{$ARG_ACTION_TYPE}/{$ARG_CARD_ID}"
 
     const val CARD_LIST_PATH = "card-list"
     const val CARD_LIST = "$CARD_LIST_PATH/{$ARG_CARD_FILTER}"
