@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.solution
+package com.ih.osm.ui.pages.cardaction
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
@@ -56,13 +56,10 @@ import com.ih.osm.ui.components.evidence.SectionImagesEvidence
 import com.ih.osm.ui.components.evidence.SectionVideosEvidence
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
-import com.ih.osm.ui.pages.solution.action.CardAction
+import com.ih.osm.ui.pages.cardaction.action.CardAction
 import com.ih.osm.ui.theme.PaddingLarge
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.utils.ASSIGN_CARD_ACTION
-import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
-import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")

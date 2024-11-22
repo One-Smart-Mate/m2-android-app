@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.solution.action
+package com.ih.osm.ui.pages.cardaction.action
 
 import android.net.Uri
 import com.ih.osm.domain.model.Employee

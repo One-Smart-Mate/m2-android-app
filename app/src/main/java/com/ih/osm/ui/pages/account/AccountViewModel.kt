@@ -1,43 +1,34 @@
 package com.ih.osm.ui.pages.account
 
 import android.net.Uri
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.file.FileHelper
-import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
+import com.ih.osm.ui.extensions.BaseViewModel
+import com.ih.osm.ui.pages.account.action.AccountAction
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.NETWORK_DATA_MOBILE
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.delay
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class AccountViewModel
-@AssistedInject
-constructor(
-    @Assisted initialState: UiState,
-    private val coroutineContext: CoroutineContext,
+@HiltViewModel
+class AccountViewModel @Inject constructor(
     private val logoutUseCase: LogoutUseCase,
     private val syncCatalogsUseCase: SyncCatalogsUseCase,
-    private val notificationManager: NotificationManager,
     private val sharedPreferences: SharedPreferences,
     private val fileHelper: FileHelper
-) : MavericksViewModel<AccountViewModel.UiState>(initialState) {
+) : BaseViewModel<AccountViewModel.UiState>(UiState()) {
+
     data class UiState(
         val logout: Boolean = false,
         val message: String = EMPTY,
         val isLoading: Boolean = false,
         val checked: Boolean = false,
         val uri: Uri? = null
-    ) : MavericksState
+    )
 
     init {
         getNetworkPreferences()
@@ -51,22 +42,11 @@ constructor(
         }
     }
 
-    sealed class Action {
-        data object Logout : Action()
-
-        data object SyncCatalogs : Action()
-
-        data object ShowNotification : Action()
-
-        data class OnSwitchChange(val checked: Boolean) : Action()
-    }
-
-    fun process(action: Action) {
+    fun process(action: AccountAction) {
         when (action) {
-            is Action.Logout -> handleLogout()
-            is Action.SyncCatalogs -> handleSyncCatalogs()
-            is Action.ShowNotification -> handleShowNotification()
-            is Action.OnSwitchChange -> handleOnSwitchChange(action.checked)
+            is AccountAction.Logout -> handleLogout()
+            is AccountAction.SyncCatalogs -> handleSyncCatalogs()
+            is AccountAction.SetSwitch -> handleOnSwitchChange(action.checked)
         }
     }
 
@@ -77,7 +57,7 @@ constructor(
             } else {
                 EMPTY
             }
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             sharedPreferences.saveNetworkPreference(network)
             setState { copy(checked = checked) }
         }
@@ -90,9 +70,9 @@ constructor(
     }
 
     private fun handleLogout() {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                logoutUseCase()
+                callUseCase { logoutUseCase() }
             }.onSuccess {
                 setState { copy(logout = true) }
             }.onFailure {
@@ -101,26 +81,12 @@ constructor(
         }
     }
 
-    private fun handleShowNotification() {
-        viewModelScope.launch {
-            var progres = 0
-            val id = notificationManager.buildProgressNotification()
-            while (progres != 100) {
-                delay(3000)
-                notificationManager.updateNotificationProgress(
-                    notificationId = id,
-                    currentProgress = progres
-                )
-                progres += 10
-            }
-        }
-    }
 
     private fun handleSyncCatalogs() {
         setState { copy(isLoading = true) }
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                syncCatalogsUseCase(syncCards = false)
+                callUseCase { syncCatalogsUseCase(syncCards = false) }
             }.onSuccess {
                 setState { copy(isLoading = false, message = "Successfully sync!") }
             }.onFailure {
@@ -128,12 +94,4 @@ constructor(
             }
         }
     }
-
-    @AssistedFactory
-    interface Factory : AssistedViewModelFactory<AccountViewModel, UiState> {
-        override fun create(state: UiState): AccountViewModel
-    }
-
-    companion object :
-        MavericksViewModelFactory<AccountViewModel, UiState> by hiltMavericksViewModelFactory()
 }

@@ -22,10 +22,10 @@ interface ViewModelModule {
     @ViewModelKey(LoginViewModel::class)
     fun bindLoginViewModel(factory: LoginViewModel.Factory): AssistedViewModelFactory<*, *>
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(AccountViewModel::class)
-    fun bindAccountViewModel(factory: AccountViewModel.Factory): AssistedViewModelFactory<*, *>
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(AccountViewModel::class)
+//    fun bindAccountViewModel(factory: AccountViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

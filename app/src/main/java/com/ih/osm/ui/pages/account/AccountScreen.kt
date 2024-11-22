@@ -37,7 +37,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -55,48 +57,40 @@ import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.Screen
 import com.ih.osm.ui.navigation.navigateToLogin
 import com.ih.osm.ui.navigation.navigateToProfile
+import com.ih.osm.ui.pages.account.action.AccountAction
+import com.ih.osm.ui.pages.cardaction.action.CardAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
 fun AccountScreen(
     navController: NavController,
-    viewModel: AccountViewModel = mavericksViewModel()
+    viewModel: AccountViewModel = hiltViewModel()
 ) {
-    val state by viewModel.collectAsState()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
 
     if (state.isLoading) {
-        LoadingScreen(stringResource(R.string.sync_catalogs))
+        LoadingScreen()
     } else {
         AccountContent(
             navController = navController,
-            onLogout = {
-                viewModel.process(AccountViewModel.Action.Logout)
-            },
-            onSyncCatalogs = {
-                viewModel.process(AccountViewModel.Action.SyncCatalogs)
-            },
-            context = getContext(),
-            onDevClick = {
-                navController.navigate(Screen.Dev.route)
-            },
             checked = state.checked,
-            onSwitchChange = {
-                viewModel.process(AccountViewModel.Action.OnSwitchChange(it))
-            },
-            uri = state.uri
+            uri = state.uri,
+            onAction = { action ->
+                viewModel.process(action)
+            }
         )
     }
-    if (state.message.isNotEmpty()) {
-        Toast.makeText(getContext(), state.message, Toast.LENGTH_SHORT).show()
-    }
-    LaunchedEffect(viewModel, lifecycle) {
+
+    LaunchedEffect(viewModel) {
         snapshotFlow { state }
-            .flowWithLifecycle(lifecycle)
             .collect {
                 if (it.logout) {
                     navController.navigateToLogin()
+                }
+                if (state.message.isNotEmpty()) {
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
                 }
             }
     }
@@ -106,14 +100,11 @@ fun AccountScreen(
 @Composable
 fun AccountContent(
     navController: NavController,
-    onLogout: () -> Unit,
-    onSyncCatalogs: () -> Unit,
-    context: Context,
-    onDevClick: () -> Unit,
     checked: Boolean,
-    onSwitchChange: (Boolean) -> Unit,
-    uri: Uri? = null
-) {
+    uri: Uri? = null,
+    onAction: (AccountAction) -> Unit,
+    ) {
+    val context = LocalContext.current
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding)
@@ -171,7 +162,7 @@ fun AccountContent(
                     tonalElevation = PaddingNormal,
                     modifier =
                     Modifier.clickable {
-                        onSyncCatalogs()
+                        onAction(AccountAction.SyncCatalogs)
                     }
                 )
 
@@ -187,7 +178,7 @@ fun AccountContent(
                         Switch(
                             checked = checked,
                             onCheckedChange = {
-                                onSwitchChange(it)
+                                onAction(AccountAction.SetSwitch(it))
                             },
                             colors =
                             SwitchDefaults.colors(
@@ -199,10 +190,6 @@ fun AccountContent(
                         )
                     },
                     tonalElevation = PaddingNormal,
-                    modifier =
-                    Modifier.clickable {
-                        onSyncCatalogs()
-                    }
                 )
 
                 if (BuildConfig.DEBUG) {
@@ -216,7 +203,7 @@ fun AccountContent(
                         },
                         tonalElevation = PaddingNormal,
                         modifier = Modifier.clickable {
-                            onDevClick()
+                            navController.navigate(Screen.Dev.route)
                         }
                     )
                 }
@@ -267,7 +254,7 @@ fun AccountContent(
                     tonalElevation = PaddingNormal,
                     modifier =
                     Modifier.clickable {
-                        onLogout()
+                       onAction(AccountAction.Logout)
                     }
                 )
             }
@@ -302,12 +289,9 @@ fun AccountPreview() {
             val context = LocalContext.current
             AccountContent(
                 navController = rememberNavController(),
-                onLogout = {},
-                onSyncCatalogs = {},
-                context,
-                onDevClick = {},
-                onSwitchChange = {},
-                checked = true
+                checked = false,
+                uri = null,
+                onAction = {}
             )
         }
     }

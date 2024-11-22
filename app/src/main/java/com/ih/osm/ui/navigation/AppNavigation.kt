@@ -22,7 +22,7 @@ import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
-import com.ih.osm.ui.pages.solution.CardActionScreen
+import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 

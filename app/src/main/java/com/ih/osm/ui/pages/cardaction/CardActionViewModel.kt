@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.solution
+package com.ih.osm.ui.pages.cardaction
 
 import android.content.Context
 import android.net.Uri
@@ -28,7 +28,7 @@ import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.navigation.ARG_ACTION_TYPE
 import com.ih.osm.ui.navigation.ARG_CARD_ID
-import com.ih.osm.ui.pages.solution.action.CardAction
+import com.ih.osm.ui.pages.cardaction.action.CardAction
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
