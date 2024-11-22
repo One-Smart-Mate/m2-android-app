@@ -22,20 +22,11 @@ interface ViewModelModule {
     @ViewModelKey(LoginViewModel::class)
     fun bindLoginViewModel(factory: LoginViewModel.Factory): AssistedViewModelFactory<*, *>
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(AccountViewModel::class)
-//    fun bindAccountViewModel(factory: AccountViewModel.Factory): AssistedViewModelFactory<*, *>
-
     @Binds
     @IntoMap
     @ViewModelKey(HomeViewModel::class)
     fun bindHomeViewModelV2(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(CardListViewModel::class)
-//    fun bindCardListViewModel(factory: CardListViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap
@@ -44,22 +35,7 @@ interface ViewModelModule {
         factory: CreateCardViewModel.Factory
     ): AssistedViewModelFactory<*, *>
 //
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(CardDetailViewModel::class)
-//    fun bindCardDetailViewModel(
-//        factory: CardDetailViewModel.Factory
-//    ): AssistedViewModelFactory<*, *>
 
-//    @Binds
-//    @IntoMap
-//    @ViewModelKey(SolutionViewModel::class)
-//    fun bindSolutionViewModel(factory: SolutionViewModel.Factory): AssistedViewModelFactory<*, *>
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(ProfileViewModel::class)
-    fun bindProfileViewModel(factory: ProfileViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

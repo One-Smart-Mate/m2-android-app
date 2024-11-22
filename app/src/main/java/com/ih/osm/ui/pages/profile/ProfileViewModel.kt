@@ -1,49 +1,32 @@
 package com.ih.osm.ui.pages.profile
 
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.user.GetUserUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
-import kotlin.coroutines.CoroutineContext
+import com.ih.osm.ui.extensions.BaseViewModel
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel
-@AssistedInject
-constructor(
-    @Assisted initialState: UiState,
-    private val coroutineContext: CoroutineContext,
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     private val getUserUseCase: GetUserUseCase
-) : MavericksViewModel<ProfileViewModel.UiState>(initialState) {
+) : BaseViewModel<ProfileViewModel.UiState>(UiState()) {
+
     data class UiState(
         val state: LCE<User> = LCE.Loading
-    ) : MavericksState
+    )
 
     init {
-        process(Action.GetUser)
-    }
-
-    sealed class Action {
-        data object GetUser : Action()
-    }
-
-    fun process(action: Action) {
-        when (action) {
-            is Action.GetUser -> handleGetUser()
-        }
+        handleGetUser()
     }
 
     private fun handleGetUser() {
         setState { copy(state = LCE.Loading) }
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getUserUseCase()
+                callUseCase { getUserUseCase() }
             }.onSuccess {
                 it?.let {
                     setState { copy(state = LCE.Success(it)) }
@@ -53,12 +36,4 @@ constructor(
             }
         }
     }
-
-    @AssistedFactory
-    interface Factory : AssistedViewModelFactory<ProfileViewModel, UiState> {
-        override fun create(state: UiState): ProfileViewModel
-    }
-
-    companion object :
-        MavericksViewModelFactory<ProfileViewModel, UiState> by hiltMavericksViewModelFactory()
 }
