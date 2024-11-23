@@ -1,37 +1,30 @@
 package com.ih.osm.ui.pages.password
 
 import android.content.Context
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.domain.usecase.password.ResetPasswordUseCase
 import com.ih.osm.domain.usecase.password.SendRestorePasswordCodeUseCase
 import com.ih.osm.domain.usecase.password.VerifyPasswordCodeUseCase
+import com.ih.osm.ui.extensions.BaseViewModel
+import com.ih.osm.ui.pages.password.action.RestoreAction
 import com.ih.osm.ui.utils.EMPTY
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class RestoreAccountViewModel
-@AssistedInject
-constructor(
-    @Assisted initialState: UiState,
-    private val coroutineContext: CoroutineContext,
+@HiltViewModel
+class RestoreAccountViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
     private val sendRestorePasswordCodeUseCase: SendRestorePasswordCodeUseCase,
     private val verifyPasswordCodeUseCase: VerifyPasswordCodeUseCase,
     private val resetPasswordUseCase: ResetPasswordUseCase,
     private val notificationManager: NotificationManager
-) : MavericksViewModel<RestoreAccountViewModel.UiState>(initialState) {
+) : BaseViewModel<RestoreAccountViewModel.UiState>(UiState()) {
+
     data class UiState(
         val isLoading: Boolean = false,
         val message: String = EMPTY,
@@ -42,41 +35,23 @@ constructor(
         val confirmPassword: String = EMPTY,
         val isComplete: Boolean = false,
         val canResend: Boolean = true
-    ) : MavericksState
+    )
 
-    sealed class Action {
-        data object ClearMessage : Action()
-
-        data class OnEmailChange(val email: String) : Action()
-
-        data class OnActionClick(val action: String) : Action()
-
-        data class OnCodeChange(val code: String) : Action()
-
-        data class OnPasswordChange(val password: String) : Action()
-
-        data class OnConfirmPasswordChange(val password: String) : Action()
-    }
-
-    fun process(action: Action) {
+    fun process(action: RestoreAction) {
         when (action) {
-            is Action.ClearMessage -> setState { copy(message = EMPTY) }
-            is Action.OnEmailChange -> setState { copy(email = action.email) }
-            is Action.OnActionClick -> handleOnAction(action.action)
-            is Action.OnCodeChange -> setState { copy(code = action.code) }
-            is Action.OnPasswordChange -> setState { copy(password = action.password) }
-            is Action.OnConfirmPasswordChange -> setState {
-                copy(
-                    confirmPassword = action.password
-                )
+            is RestoreAction.SetEmail -> setState { copy(email = action.email) }
+            is RestoreAction.OnActionClick -> handleOnAction(action.action)
+            is RestoreAction.SetCode -> setState { copy(code = action.code) }
+            is RestoreAction.SetPassword -> setState { copy(password = action.password) }
+            is RestoreAction.ConfirmPassword -> setState { copy(confirmPassword = action.password)
             }
         }
     }
 
     private fun handleOnAction(action: String) {
         setState { copy(isLoading = true) }
-        viewModelScope.launch(coroutineContext) {
-            val state = stateFlow.first()
+        viewModelScope.launch {
+            val state = getState()
             when (action) {
                 "email_check" -> {
                     if (state.email.isEmpty()) {
@@ -147,11 +122,11 @@ constructor(
     }
 
     private fun handleCheckEmail() {
-        viewModelScope.launch(coroutineContext) {
-            val email = stateFlow.first().email
+        viewModelScope.launch {
+            val email = getState().email
             val request = RestorePasswordRequest(email = email)
             kotlin.runCatching {
-                sendRestorePasswordCodeUseCase(request)
+                callUseCase { sendRestorePasswordCodeUseCase(request) }
             }.onSuccess {
                 setState { copy(isLoading = false, currentStep = 2) }
             }.onFailure {
@@ -166,11 +141,11 @@ constructor(
     }
 
     private fun handleCheckCode() {
-        viewModelScope.launch(coroutineContext) {
-            val state = stateFlow.first()
+        viewModelScope.launch {
+            val state = getState()
             val request = RestorePasswordRequest(email = state.email, resetCode = state.code)
             kotlin.runCatching {
-                verifyPasswordCodeUseCase(request)
+                callUseCase { verifyPasswordCodeUseCase(request) }
             }.onSuccess {
                 setState { copy(isLoading = false, currentStep = 3) }
             }.onFailure {
@@ -185,8 +160,8 @@ constructor(
     }
 
     private fun handleChangePassword() {
-        viewModelScope.launch(coroutineContext) {
-            val state = stateFlow.first()
+        viewModelScope.launch {
+            val state = getState()
             val request =
                 RestorePasswordRequest(
                     email = state.email,
@@ -194,7 +169,7 @@ constructor(
                     newPassword = state.password
                 )
             kotlin.runCatching {
-                resetPasswordUseCase(request)
+                callUseCase { resetPasswordUseCase(request) }
             }.onSuccess {
                 notificationManager.buildNotificationSuccessChangePassword()
                 setState { copy(isLoading = false, isComplete = true) }
@@ -231,13 +206,7 @@ constructor(
             else -> context.getString(R.string.something_went_wrong)
         }
     }
-
-    @AssistedFactory
-    interface Factory : AssistedViewModelFactory<RestoreAccountViewModel, UiState> {
-        override fun create(state: UiState): RestoreAccountViewModel
+    fun cleanMessage() {
+        setState { copy(message = EMPTY) }
     }
-
-    companion object :
-        MavericksViewModelFactory<RestoreAccountViewModel, UiState>
-        by hiltMavericksViewModelFactory()
 }

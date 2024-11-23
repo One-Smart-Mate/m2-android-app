@@ -33,10 +33,4 @@ interface ViewModelModule {
 //
 
 
-    @Binds
-    @IntoMap
-    @ViewModelKey(RestoreAccountViewModel::class)
-    fun bindRestoreAccountViewModel(
-        factory: RestoreAccountViewModel.Factory
-    ): AssistedViewModelFactory<*, *>
 }
