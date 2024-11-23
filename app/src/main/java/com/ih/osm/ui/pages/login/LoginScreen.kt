@@ -35,9 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.airbnb.mvrx.compose.collectAsState
 import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -52,41 +55,28 @@ import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.navigation.navigateToHome
 import com.ih.osm.ui.navigation.navigateToRestoreAccount
+import com.ih.osm.ui.pages.login.action.LoginAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingToolbar
 import com.ih.osm.ui.theme.PaddingToolbarVertical
 import com.ih.osm.ui.theme.Size230
 import com.ih.osm.ui.utils.EMPTY
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
-@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController: NavController) {
-    val state by viewModel.collectAsState()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavController) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
     LoginContent(
-        onEmailChange = {
-            viewModel.process(LoginViewModel.Action.SetEmail(it))
-        },
-        onPasswordChange = {
-            viewModel.process(LoginViewModel.Action.SetPassword(it))
-        },
         isButtonLoading = state.isLoading,
-        onClick = {
-            viewModel.process(
-                LoginViewModel.Action.Login(
-                    state.email,
-                    state.password
-                )
-            )
+        onAction = { action ->
+            viewModel.process(action)
         },
-        onNavigate = {
-            navController.navigateToRestoreAccount()
-        }
+        navController = navController
     )
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -97,9 +87,9 @@ fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController:
             modifier = Modifier.padding(top = PaddingToolbar)
         )
     }
-    LaunchedEffect(viewModel, lifecycle) {
+    LaunchedEffect(viewModel) {
         snapshotFlow { state }
-            .flowWithLifecycle(lifecycle)
+            .distinctUntilChanged()
             .collect {
                 if (it.isAuthenticated) {
                     navController.navigateToHome()
@@ -109,8 +99,8 @@ fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController:
                         snackBarHostState.showSnackbar(
                             message = state.message
                         )
-                        viewModel.process(LoginViewModel.Action.ClearMessage)
                     }
+                    viewModel.cleanMessage()
                 }
             }
     }
@@ -119,11 +109,9 @@ fun LoginScreen(viewModel: LoginViewModel = mavericksViewModel(), navController:
 @Composable
 fun LoginContent(
     modifier: Modifier = Modifier,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
+    onAction: (LoginAction) -> Unit,
     isButtonLoading: Boolean,
-    onClick: () -> Unit,
-    onNavigate: () -> Unit
+    navController: NavController
 ) {
     LazyColumn(
         modifier = modifier.background(color = MaterialTheme.colorScheme.primary)
@@ -133,11 +121,9 @@ fun LoginContent(
             Spacer(modifier = Modifier.fillMaxHeight())
             LoginForm(
                 modifier = Modifier.fillParentMaxSize(),
-                onEmailChange = onEmailChange,
-                onPasswordChange = onPasswordChange,
+                onAction = onAction,
                 isButtonLoading = isButtonLoading,
-                onClick = onClick,
-                onNavigate = onNavigate
+                navController = navController
             )
         }
     }
@@ -146,11 +132,9 @@ fun LoginContent(
 @Composable
 fun LoginForm(
     modifier: Modifier,
-    onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
+    onAction: (LoginAction) -> Unit,
     isButtonLoading: Boolean,
-    onClick: () -> Unit,
-    onNavigate: () -> Unit
+    navController: NavController
 ) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
@@ -166,7 +150,7 @@ fun LoginForm(
                 placeholder = stringResource(R.string.enter_your_email),
                 icon = Icons.Outlined.Email
             ) {
-                onEmailChange(it)
+                onAction(LoginAction.SetEmail(it))
             }
             CustomSpacer()
             CustomTextField(
@@ -176,18 +160,18 @@ fun LoginForm(
                 icon = Icons.Outlined.Lock,
                 isPassword = true
             ) {
-                onPasswordChange(it)
+                onAction(LoginAction.SetPassword(it))
             }
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomButton(text = stringResource(R.string.login), isLoading = isButtonLoading) {
-                onClick()
+                onAction(LoginAction.Login)
             }
             CustomSpacer()
             CustomButton(
                 text = stringResource(R.string.forgot_password),
                 buttonType = ButtonType.TEXT
             ) {
-                onNavigate()
+                navController.navigateToRestoreAccount()
             }
         }
     }
@@ -242,11 +226,9 @@ fun LoginPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             LoginContent(
-                onEmailChange = {},
-                onPasswordChange = {},
+                onAction = {},
                 isButtonLoading = false,
-                onClick = {},
-                onNavigate = {}
+                navController = rememberNavController()
             )
         }
     }

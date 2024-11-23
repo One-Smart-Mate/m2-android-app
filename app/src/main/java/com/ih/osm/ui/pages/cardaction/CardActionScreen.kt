@@ -60,6 +60,7 @@ import com.ih.osm.ui.pages.cardaction.action.CardAction
 import com.ih.osm.ui.theme.PaddingLarge
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingToolbar
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -101,6 +102,7 @@ fun CardActionScreen(
 
     LaunchedEffect(viewModel, lifecycle) {
         snapshotFlow { state }
+            .distinctUntilChanged()
             .collect {
                 if (state.isActionSuccess) {
                     navController.popBackStack()
@@ -109,6 +111,7 @@ fun CardActionScreen(
                     scope.launch {
                         snackBarHostState.showSnackbar(state.message)
                     }
+                    viewModel.cleanMessage()
                 }
             }
     }

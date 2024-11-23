@@ -338,4 +338,8 @@ class CardActionViewModel @Inject constructor(
     private fun cleanScreenStates(message: String = EMPTY) {
         setState { copy(isLoading = false, message = message) }
     }
+
+    fun cleanMessage() {
+        cleanScreenStates()
+    }
 }

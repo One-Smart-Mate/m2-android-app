@@ -17,10 +17,6 @@ import dagger.multibindings.IntoMap
 @Module
 @InstallIn(MavericksViewModelComponent::class)
 interface ViewModelModule {
-    @Binds
-    @IntoMap
-    @ViewModelKey(LoginViewModel::class)
-    fun bindLoginViewModel(factory: LoginViewModel.Factory): AssistedViewModelFactory<*, *>
 
     @Binds
     @IntoMap

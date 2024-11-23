@@ -23,5 +23,5 @@ abstract class BaseViewModel<S : Any>(
         return withContext(Dispatchers.IO) { call() }
     }
 
-    suspend fun getState() = _state.value
+    fun getState() = _state.value
 }
