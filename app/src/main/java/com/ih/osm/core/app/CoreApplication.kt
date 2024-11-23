@@ -7,8 +7,9 @@ import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
+import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.preferences.SharedPreferences
-import com.ih.osm.core.workmanager.CardWorker
+import com.ih.osm.core.workmanager.AppWorker
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import dagger.hilt.android.HiltAndroidApp
@@ -28,26 +29,39 @@ class CoreApplication : Application(), Configuration.Provider {
                 .build()
 }
 
-class CustomWorkerFactory
-@Inject
-constructor(
-    private val getCardsUseCase: GetCardsUseCase,
+class CustomWorkerFactory @Inject constructor(
     private val syncCardsUseCase: SyncCardsUseCase,
-    private val coroutineContext: CoroutineContext,
-    private val sharedPreferences: SharedPreferences
-) : WorkerFactory() {
+    private val  notificationManager: NotificationManager
+): WorkerFactory() {
     override fun createWorker(
         appContext: Context,
         workerClassName: String,
-        workerParameters: WorkerParameters
+        workerParameters: WorkerParameters,
     ): ListenableWorker {
-        return CardWorker(
-            appContext,
-            workerParameters,
-            getCardsUseCase,
-            syncCardsUseCase,
-            coroutineContext,
-            sharedPreferences
-        )
+        return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager)
     }
 }
+
+//class CustomWorkerFactory
+//@Inject
+//constructor(
+//    private val getCardsUseCase: GetCardsUseCase,
+//    private val syncCardsUseCase: SyncCardsUseCase,
+//    private val coroutineContext: CoroutineContext,
+//    private val sharedPreferences: SharedPreferences
+//) : WorkerFactory() {
+//    override fun createWorker(
+//        appContext: Context,
+//        workerClassName: String,
+//        workerParameters: WorkerParameters
+//    ): ListenableWorker {
+//        return CardWorker(
+//            appContext,
+//            workerParameters,
+//            getCardsUseCase,
+//            syncCardsUseCase,
+//            coroutineContext,
+//            sharedPreferences
+//        )
+//    }
+//}

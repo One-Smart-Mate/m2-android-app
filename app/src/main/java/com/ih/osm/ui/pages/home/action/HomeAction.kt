@@ -11,7 +11,7 @@ sealed class HomeAction {
 
     //data object SetIsSync : Action()
 
-    data object SyncLocalCards : HomeAction()
+    data class SyncLocalCards(val context: Context) : HomeAction()
 
 //    data object ClearMessage : Action()
 

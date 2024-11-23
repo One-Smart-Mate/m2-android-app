@@ -12,7 +12,9 @@ object WorkManagerUUID {
         return uuid
     }
 
-    fun resetUUID() {
-        uuid = UUID.randomUUID()
+    fun deleteUUID() {
+        uuid = null
     }
+
+    fun checkIfNull() = uuid == null
 }

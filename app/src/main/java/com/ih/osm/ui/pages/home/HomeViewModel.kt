@@ -6,12 +6,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
 import com.ih.osm.BuildConfig
+import com.ih.osm.MainActivity
 import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
@@ -29,6 +25,7 @@ import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
+import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.lastSyncDate
 import com.ih.osm.ui.extensions.runWorkRequest
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
@@ -87,8 +84,14 @@ class HomeViewModel @Inject constructor(
         is HomeAction.GetCards -> handleGetCards()
         is HomeAction.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
         is HomeAction.SyncRemoteCards -> handleSyncRemoteCards()
-        else -> {}
+        is HomeAction.SyncLocalCards -> handleSyncLocalCards(action.context)
+
     }
+    }
+
+    private fun handleSyncLocalCards(appContext: Context) {
+       appContext.getActivity<MainActivity>()?.enqueueSyncCardsWork()
+        Log.e("test","Activity ")
     }
 
     init {
@@ -167,7 +170,7 @@ class HomeViewModel @Inject constructor(
                 callUseCase { getCardsUseCase(syncRemote = syncRemote) }
             }.onSuccess { cards ->
                 val hasLocalCards = cards.toLocalCards().isNotEmpty()
-                Log.e("test","Fetch cards complete")
+                Log.e("test","Fetch cards complete wok in progress? ${WorkManagerUUID.checkIfNull()}")
                 setState {
                     copy(
                         cards = cards,

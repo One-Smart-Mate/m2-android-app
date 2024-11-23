@@ -10,9 +10,9 @@
               <option name="connection">
                 <ConnectionSetting>
                   <option name="appId" value="com.ih.osm" />
-                  <option name="mobileSdkAppId" value="1:783003138627:android:0b491006672fe14d91b2f6" />
-                  <option name="projectId" value="osm-android-app" />
-                  <option name="projectNumber" value="783003138627" />
+                  <option name="mobileSdkAppId" value="1:703295341497:android:cf4b4e21c1a9eeb7dd2c68" />
+                  <option name="projectId" value="osm-dev-c2f20" />
+                  <option name="projectNumber" value="703295341497" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

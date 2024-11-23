@@ -10,6 +10,7 @@ import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,16 +21,16 @@ import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.work.BackoffPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import com.airbnb.mvrx.Mavericks
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
 import com.ih.osm.core.network.NetworkConnection
-import com.ih.osm.core.workmanager.CardWorker
+import com.ih.osm.core.workmanager.AppWorker
 import com.ih.osm.core.workmanager.WorkManagerUUID
 import com.ih.osm.ui.navigation.AppNavigation
 import com.ih.osm.ui.pages.splash.SplashViewModel
@@ -45,7 +46,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        Mavericks.initialize(this)
+
         Timber.plant(Timber.DebugTree())
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkNotificationPermissions()
@@ -80,26 +81,36 @@ class MainActivity : ComponentActivity() {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun workRequest() {
-        val uuid = WorkManagerUUID.get()
-        uuid?.let {
-            val workRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                OneTimeWorkRequestBuilder<CardWorker>()
-                    .setId(uuid)
-                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .setBackoffCriteria(
-                        backoffPolicy = BackoffPolicy.LINEAR,
-                        duration = Duration.ofSeconds(5)
-                    ).build()
-            } else {
-                OneTimeWorkRequestBuilder<CardWorker>()
-                    .setId(uuid)
-                    .setBackoffCriteria(
-                        backoffPolicy = BackoffPolicy.LINEAR,
-                        duration = Duration.ofSeconds(5)
-                    ).build()
-            }
-            WorkManager.getInstance(this@MainActivity).enqueue(workRequest)
-        }
+//        val uuid = WorkManagerUUID.get()
+//        uuid?.let {
+//            val workRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+//                OneTimeWorkRequestBuilder<CardWorker>()
+//                    .setId(uuid)
+//                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+//                    .setBackoffCriteria(
+//                        backoffPolicy = BackoffPolicy.LINEAR,
+//                        duration = Duration.ofSeconds(5)
+//                    ).build()
+//            } else {
+//                OneTimeWorkRequestBuilder<CardWorker>()
+//                    .setId(uuid)
+//                    .setBackoffCriteria(
+//                        backoffPolicy = BackoffPolicy.LINEAR,
+//                        duration = Duration.ofSeconds(5)
+//                    ).build()
+//            }
+//            WorkManager.getInstance(this@MainActivity).enqueue(workRequest)
+//        }
+    }
+
+    fun enqueueSyncCardsWork() {
+        val workRequest = OneTimeWorkRequestBuilder<AppWorker>().build()
+        val uuid = WorkManagerUUID.get().toString()
+        WorkManager.getInstance(this@MainActivity).enqueueUniqueWork(
+            uuid,
+            ExistingWorkPolicy.REPLACE,
+            workRequest
+        )
     }
 
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)

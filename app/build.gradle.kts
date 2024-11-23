@@ -144,10 +144,10 @@ dependencies {
     implementation(libs.converter.gson)
     implementation(libs.retrofit.adapter)
     implementation(libs.timber)
-    implementation(libs.mavericks)
+  //  implementation(libs.mavericks)
     implementation(libs.hilt.navigation.compose)
-    implementation(libs.mavericks.compose)
-    implementation(libs.mavericks.hilt)
+   // implementation(libs.mavericks.compose)
+   // implementation(libs.mavericks.hilt)
 
     implementation(libs.androidx.navigation.compose)
     implementation(libs.hilt.navigation.compose)

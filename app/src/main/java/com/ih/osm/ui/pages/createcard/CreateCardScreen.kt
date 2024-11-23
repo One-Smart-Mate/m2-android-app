@@ -45,12 +45,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -79,6 +79,7 @@ import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.extensions.getIconColor
 import com.ih.osm.ui.extensions.getPrimaryColor
+import com.ih.osm.ui.pages.createcard.action.CreateCardAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
@@ -87,17 +88,16 @@ import com.ih.osm.ui.theme.Size100
 import com.ih.osm.ui.theme.Size180
 import com.ih.osm.ui.utils.EMPTY
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun CreateCardScreen(
     navController: NavController,
-    viewModel: CreateCardViewModel = mavericksViewModel(),
-    filter: String = EMPTY
+    viewModel: CreateCardViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.collectAsState()
-    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
@@ -108,43 +108,22 @@ fun CreateCardScreen(
         CreateCardContent(
             navController = navController,
             cardTypeList = state.cardTypeList,
-            onCardTypeClick = {
-                viewModel.process(CreateCardViewModel.Action.SetCardType(it.id))
-            },
             selectedCardType = state.selectedCardType,
             preclassifierList = state.preclassifierList,
-            onPreclassifierClick = {
-                viewModel.process(CreateCardViewModel.Action.SetPreclassifier(it.id))
-            },
             selectedPreclassifier = state.selectedPreclassifier,
             priorityList = state.priorityList,
-            onPriorityClick = {
-                viewModel.process(CreateCardViewModel.Action.SetPriority(it.id))
-            },
             selectedPriority = state.selectedPriority,
             levelList = state.nodeLevelList,
-            onLevelClick = { item, key ->
-                viewModel.process(CreateCardViewModel.Action.SetLevel(item.id, key))
-            },
             selectedLevelList = state.selectedLevelList,
             lastLevelCompleted = state.lastLevelCompleted,
-            onCommentChange = {
-                viewModel.process(CreateCardViewModel.Action.OnCommentChange(it))
-            },
             evidences = state.evidences,
-            onAddEvidence = { uri, type ->
-                viewModel.process(CreateCardViewModel.Action.OnAddEvidence(uri, type))
-            },
-            onDeleteEvidence = {
-                viewModel.process(CreateCardViewModel.Action.OnDeleteEvidence(it))
-            },
-            onSaveClick = {
-                viewModel.process(CreateCardViewModel.Action.OnSaveCard)
-            },
             audioDuration = state.audioDuration,
             cardsZone = state.cardsZone,
             coroutineScope = scope,
-            lazyColumState = lazyState
+            lazyColumState = lazyState,
+            onAction = { action ->
+                viewModel.process(action)
+            }
         )
     }
 
@@ -157,13 +136,10 @@ fun CreateCardScreen(
         )
     }
 
-    LaunchedEffect(viewModel, lifecycle) {
+    LaunchedEffect(viewModel) {
         snapshotFlow { state }
-            .flowWithLifecycle(lifecycle)
+            .distinctUntilChanged()
             .collect {
-                if (filter.isNotEmpty()) {
-                    viewModel.process(CreateCardViewModel.Action.GetCardTypes(filter))
-                }
                 if (state.isCardSuccess) {
                     navController.popBackStack()
                 }
@@ -172,7 +148,7 @@ fun CreateCardScreen(
                         snackBarHostState.showSnackbar(
                             message = state.message
                         )
-                        viewModel.process(CreateCardViewModel.Action.ClearMessage)
+                        viewModel.cleanMessage()
                     }
                 }
             }
@@ -184,23 +160,16 @@ fun CreateCardScreen(
 fun CreateCardContent(
     navController: NavController,
     cardTypeList: List<NodeCardItem>,
-    onCardTypeClick: (NodeCardItem) -> Unit,
     selectedCardType: String,
     preclassifierList: List<NodeCardItem>,
-    onPreclassifierClick: (NodeCardItem) -> Unit,
     selectedPreclassifier: String,
     priorityList: List<NodeCardItem>,
-    onPriorityClick: (NodeCardItem) -> Unit,
     selectedPriority: String,
     levelList: Map<Int, List<NodeCardItem>>,
-    onLevelClick: (NodeCardItem, key: Int) -> Unit,
     selectedLevelList: Map<Int, String>,
+    onAction: (CreateCardAction) -> Unit,
     lastLevelCompleted: Boolean,
-    onCommentChange: (String) -> Unit,
     evidences: List<Evidence>,
-    onAddEvidence: (Uri, EvidenceType) -> Unit,
-    onDeleteEvidence: (Evidence) -> Unit,
-    onSaveClick: () -> Unit,
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
@@ -219,11 +188,11 @@ fun CreateCardContent(
             }
             item {
                 CustomSpacer()
-                CardTypeContent(cardTypeList, onCardTypeClick, selectedCardType)
-                PreclassifierContent(preclassifierList, onPreclassifierClick, selectedPreclassifier)
-                PriorityContent(priorityList, onPriorityClick, selectedPriority)
+                CardTypeContent(cardTypeList, onAction, selectedCardType)
+                PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
+                PriorityContent(priorityList, onAction, selectedPriority)
                 LevelContent(levelList, onLevelClick = { item, key ->
-                    onLevelClick(item, key)
+                    onAction(CreateCardAction.SetLevel(item.id, key))
                     coroutineScope.launch {
                         lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
                     }
@@ -238,19 +207,21 @@ fun CreateCardContent(
                         HorizontalDivider()
                         SectionCardEvidence(
                             audioDuration = audioDuration,
-                            onAddEvidence = onAddEvidence,
+                            onAddEvidence = { uri, type ->
+                                onAction(CreateCardAction.AddEvidence(uri, type))
+                            },
                             imageType = EvidenceType.IMCR,
                             audioType = EvidenceType.AUCR,
                             videoType = EvidenceType.VICR
                         )
                         SectionImagesEvidence(imageEvidences = evidences.toImages()) {
-                            onDeleteEvidence(it)
+                            onAction(CreateCardAction.DeleteEvidence(it))
                         }
                         SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
-                            onDeleteEvidence(it)
+                            onAction(CreateCardAction.DeleteEvidence(it))
                         }
                         SectionAudiosEvidence(audioEvidences = evidences.toAudios()) {
-                            onDeleteEvidence(it)
+                            onAction(CreateCardAction.DeleteEvidence(it))
                         }
                         CustomSpacer()
                     }
@@ -275,7 +246,7 @@ fun CreateCardContent(
                             modifier = Modifier.fillParentMaxWidth(),
                             maxLines = 5
                         ) {
-                            onCommentChange(it)
+                            onAction(CreateCardAction.SetComment(it))
                         }
                         CustomSpacer()
                         AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
@@ -292,8 +263,9 @@ fun CreateCardContent(
                         }
                         CustomSpacer()
                         CustomButton(text = stringResource(R.string.save)) {
-                            onSaveClick()
+                            onAction(CreateCardAction.Save)
                         }
+                        CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                     }
                 }
             }
@@ -337,7 +309,7 @@ fun LevelContent(
 @Composable
 fun PriorityContent(
     priorityList: List<NodeCardItem>,
-    onPriorityClick: (NodeCardItem) -> Unit,
+    onAction: (CreateCardAction) -> Unit,
     selectedPriority: String
 ) {
     AnimatedVisibility(visible = priorityList.isNotEmpty()) {
@@ -355,7 +327,7 @@ fun PriorityContent(
                         description = it.description,
                         selected = it.id == selectedPriority
                     ) {
-                        onPriorityClick(it)
+                        onAction(CreateCardAction.SetPriority(it.id))
                     }
                 }
             }
@@ -366,7 +338,7 @@ fun PriorityContent(
 @Composable
 fun PreclassifierContent(
     preclassifierList: List<NodeCardItem>,
-    onPreclassifierClick: (NodeCardItem) -> Unit,
+    onAction: (CreateCardAction) -> Unit,
     selectedPreclassifier: String
 ) {
     AnimatedVisibility(visible = preclassifierList.isNotEmpty()) {
@@ -384,7 +356,7 @@ fun PreclassifierContent(
                         description = it.description,
                         selected = it.id == selectedPreclassifier
                     ) {
-                        onPreclassifierClick(it)
+                        onAction(CreateCardAction.SetPreclassifier(it.id))
                     }
                 }
             }
@@ -395,7 +367,7 @@ fun PreclassifierContent(
 @Composable
 fun CardTypeContent(
     cardTypeList: List<NodeCardItem>,
-    onCardTypeClick: (NodeCardItem) -> Unit,
+    onAction: (CreateCardAction) -> Unit,
     selectedCardType: String
 ) {
     Text(
@@ -411,7 +383,7 @@ fun CardTypeContent(
                 description = it.description,
                 selected = it.id == selectedCardType
             ) {
-                onCardTypeClick(it)
+                onAction(CreateCardAction.SetCardType(it.id))
             }
         }
     }
@@ -528,31 +500,31 @@ fun SectionItemCard(
 fun CreateCardPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            CreateCardContent(
-                navController = rememberNavController(),
-                cardTypeList = emptyList(),
-                onCardTypeClick = {},
-                selectedCardType = "",
-                preclassifierList = emptyList(),
-                onPreclassifierClick = {},
-                selectedPreclassifier = "",
-                priorityList = emptyList(),
-                onPriorityClick = {},
-                selectedPriority = "",
-                levelList = emptyMap(),
-                onLevelClick = { _, _ -> },
-                selectedLevelList = emptyMap(),
-                lastLevelCompleted = true,
-                onCommentChange = {},
-                evidences = emptyList(),
-                onAddEvidence = { _, _ -> },
-                onDeleteEvidence = {},
-                onSaveClick = {},
-                audioDuration = 60,
-                cardsZone = emptyList(),
-                coroutineScope = rememberCoroutineScope(),
-                lazyColumState = rememberLazyListState()
-            )
+//            CreateCardContent(
+//                navController = rememberNavController(),
+//                cardTypeList = emptyList(),
+//                onCardTypeClick = {},
+//                selectedCardType = "",
+//                preclassifierList = emptyList(),
+//                onPreclassifierClick = {},
+//                selectedPreclassifier = "",
+//                priorityList = emptyList(),
+//                onPriorityClick = {},
+//                selectedPriority = "",
+//                levelList = emptyMap(),
+//                onLevelClick = { _, _ -> },
+//                selectedLevelList = emptyMap(),
+//                lastLevelCompleted = true,
+//                onCommentChange = {},
+//                evidences = emptyList(),
+//                onAddEvidence = { _, _ -> },
+//                onDeleteEvidence = {},
+//                onSaveClick = {},
+//                audioDuration = 60,
+//                cardsZone = emptyList(),
+//                coroutineScope = rememberCoroutineScope(),
+//                lazyColumState = rememberLazyListState()
+//            )
         }
     }
 }

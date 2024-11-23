@@ -59,8 +59,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.airbnb.mvrx.compose.collectAsState
-import com.airbnb.mvrx.compose.mavericksViewModel
 import com.ih.osm.MainActivity
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
@@ -129,7 +127,7 @@ fun HomeScreenV2(
                          viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
                     HomeActionClick.LOCAL_CARDS -> {
-                       // viewModel.process(HomeViewModel.Action.SyncCards(context))
+                        viewModel.process(HomeAction.SyncLocalCards(context))
                     }
 
                     HomeActionClick.REMOTE_CARDS -> {

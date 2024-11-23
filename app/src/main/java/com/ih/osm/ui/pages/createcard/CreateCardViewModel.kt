@@ -3,11 +3,7 @@ package com.ih.osm.ui.pages.createcard
 import android.content.Context
 import android.net.Uri
 import android.util.Log
-import com.airbnb.mvrx.MavericksState
-import com.airbnb.mvrx.MavericksViewModel
-import com.airbnb.mvrx.MavericksViewModelFactory
-import com.airbnb.mvrx.hilt.AssistedViewModelFactory
-import com.airbnb.mvrx.hilt.hiltMavericksViewModelFactory
+import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
@@ -20,7 +16,6 @@ import com.ih.osm.domain.model.NodeCardItem
 import com.ih.osm.domain.model.hasAudios
 import com.ih.osm.domain.model.hasImages
 import com.ih.osm.domain.model.hasVideos
-import com.ih.osm.domain.model.isAnomaliesCardType
 import com.ih.osm.domain.model.toAudios
 import com.ih.osm.domain.model.toImages
 import com.ih.osm.domain.model.toNodeItemCard
@@ -34,25 +29,19 @@ import com.ih.osm.domain.usecase.level.GetLevelsUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
+import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.defaultIfNull
-import com.ih.osm.ui.utils.CARD_ANOMALIES
-import com.ih.osm.ui.utils.CARD_TYPE_ANOMALIES_A
+import com.ih.osm.ui.pages.createcard.action.CreateCardAction
 import com.ih.osm.ui.utils.EMPTY
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
+import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import java.util.UUID
-import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class CreateCardViewModel
-@AssistedInject
-constructor(
-    @Assisted initialState: UiState,
-    private val coroutineContext: CoroutineContext,
+@HiltViewModel
+class CreateCardViewModel @Inject constructor(
     private val getCardTypesUseCase: GetCardTypesUseCase,
     private val getPrioritiesUseCase: GetPrioritiesUseCase,
     private val getPreclassifiersUseCase: GetPreclassifiersUseCase,
@@ -61,10 +50,11 @@ constructor(
     private val getCardTypeUseCase: GetCardTypeUseCase,
     private val getCardsZoneUseCase: GetCardsZoneUseCase,
     private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    @ApplicationContext private val context: Context,
     private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
-    private val fileHelper: FileHelper
-) : MavericksViewModel<CreateCardViewModel.UiState>(initialState) {
+    private val fileHelper: FileHelper,
+    @ApplicationContext private val context: Context
+) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
+
     data class UiState(
         val cardTypeList: List<NodeCardItem> = emptyList(),
         val selectedCardType: String = EMPTY,
@@ -86,60 +76,27 @@ constructor(
         val isLoading: Boolean = false,
         val isCardSuccess: Boolean = false,
         val cardsZone: List<Card> = emptyList()
-    ) : MavericksState
+    )
 
-    sealed class Action {
-        data class GetCardTypes(val filter: String) : Action()
-
-        data class SetCardType(val id: String) : Action()
-
-        data class GetPreclassifiers(val id: String) : Action()
-
-        data class SetPreclassifier(val id: String) : Action()
-
-        data object GetPriorities : Action()
-
-        data class SetPriority(val id: String) : Action()
-
-        data class SetLevel(val id: String, val key: Int) : Action()
-
-        data class OnCommentChange(val comment: String) : Action()
-
-        data object OnSaveCard : Action()
-
-        data class OnAddEvidence(val uri: Uri, val type: EvidenceType) : Action()
-
-        data class OnDeleteEvidence(val evidence: Evidence) : Action()
-
-        data object GetLevels : Action()
-
-        data object GetCardsZone : Action()
-
-        data object ClearMessage : Action()
+    init {
+        handleGetCardTypes()
     }
 
-    fun process(action: Action) {
-        when (action) {
-            is Action.GetCardTypes -> handleGetCardTypes(action.filter)
-            is Action.SetCardType -> handleSetCardType(action.id)
-            is Action.GetPreclassifiers -> handleGetPreclassifiers(action.id)
-            is Action.SetPreclassifier -> handleSetPreclassifier(action.id)
-            is Action.GetPriorities -> handleGetPriorities()
-            is Action.SetPriority -> handleSetPriority(action.id)
-            is Action.SetLevel -> handleSetLevel(action.id, action.key)
-            is Action.OnCommentChange -> handleOnCommentChange(action.comment)
-            is Action.OnSaveCard -> handleOnSaveCard()
-            is Action.OnAddEvidence -> handleOnAddEvidence(action.uri, action.type)
-            is Action.OnDeleteEvidence -> handleOnDeleteEvidence(action.evidence)
-            is Action.GetLevels -> handleGetLevels()
-            is Action.GetCardsZone -> handleGetCardsZone()
-            is Action.ClearMessage -> cleanScreenStates()
+    fun process(action: CreateCardAction) {
+        when(action) {
+            is CreateCardAction.SetCardType -> handleSetCardType(action.id)
+            is CreateCardAction.SetPreclassifier -> setState { copy(selectedPreclassifier = action.id) }
+            is CreateCardAction.SetPriority -> handleSetPriority(action.id)
+            is CreateCardAction.SetLevel -> handleSetLevel(action.id, action.key)
+            is CreateCardAction.SetComment -> setState { copy(comment = action.comment) }
+            is CreateCardAction.DeleteEvidence -> handleDeleteEvidence(action.evidence)
+            is CreateCardAction.AddEvidence -> handleAddEvidence(action.uri, action.type)
+            is CreateCardAction.Save -> handleSaveCard()
         }
     }
-
-    private fun handleOnAddEvidence(uri: Uri, type: EvidenceType) {
+    private fun handleAddEvidence(uri: Uri, type: EvidenceType) {
         viewModelScope.launch {
-            val state = stateFlow.first()
+            val state = getState()
             val cardType = state.cardType
             val errorMessage =
                 when (type) {
@@ -189,16 +146,12 @@ constructor(
         }
     }
 
-    private fun handleOnDeleteEvidence(evidence: Evidence) {
+    private fun handleDeleteEvidence(evidence: Evidence) {
         viewModelScope.launch {
-            val state = stateFlow.first()
+            val state = getState()
             val list = state.evidences.filter { it.id != evidence.id }
             setState { copy(evidences = list) }
         }
-    }
-
-    private fun handleOnCommentChange(comment: String) {
-        setState { copy(comment = comment) }
     }
 
     private fun handleSetCardType(id: String) {
@@ -218,22 +171,10 @@ constructor(
                     comment = EMPTY
                 )
             }
+            handleGetPriorities()
             handleGetPreclassifiers(id)
             handleGetCardType(id)
-            val state = stateFlow.first()
-            val cardType = state.cardTypeList.find { it.id == id }
-            Log.e("test", "CardType -> $cardType -- ${cardType.isAnomaliesCardType()}")
-            if (cardType.isAnomaliesCardType().defaultIfNull(false)) {
-                handleGetPriorities()
-            } else {
-                val levelList = getLevelById("0", 0)
-                setState { copy(nodeLevelList = levelList) }
-            }
         }
-    }
-
-    private fun handleSetPreclassifier(id: String) {
-        setState { copy(selectedPreclassifier = id) }
     }
 
     private fun handleSetPriority(id: String) {
@@ -244,8 +185,8 @@ constructor(
     }
 
     private suspend fun getLevelById(id: String, selectedKey: Int): Map<Int, List<NodeCardItem>> {
-        val firstList = stateFlow.first().levelList.filter { it.superiorId == id }
-        val state = stateFlow.first()
+    val state = getState()
+    val firstList = state.levelList.filter { it.superiorId == id }
         val map = state.nodeLevelList.toMutableMap()
         val selectedMap = state.selectedLevelList.toMutableMap()
         for (index in selectedKey until map.keys.size) {
@@ -269,19 +210,19 @@ constructor(
     }
 
     private suspend fun checkLastLevelSection(id: String) {
-        val isEmpty = stateFlow.first().levelList.none { it.superiorId == id }
+        val isEmpty = getState().levelList.none { it.superiorId == id }
         if (isEmpty.not()) {
             setState { copy(evidences = emptyList()) }
         } else {
-            process(Action.GetCardsZone)
+            handleGetCardsZone()
         }
         setState { copy(lastLevelCompleted = isEmpty) }
     }
 
     private fun handleGetPreclassifiers(id: String) {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getPreclassifiersUseCase()
+                callUseCase { getPreclassifiersUseCase() }
             }.onSuccess {
                 setState {
                     copy(preclassifierList = it.filter { it.cardTypeId == id }.toNodeItemCard())
@@ -293,23 +234,13 @@ constructor(
         }
     }
 
-    private fun handleGetCardTypes(filter: String) {
-        viewModelScope.launch(coroutineContext) {
-            val cardType =
-                when (filter) {
-                    CARD_ANOMALIES -> {
-                        CARD_TYPE_ANOMALIES_A
-                    }
-
-                    else -> {
-                        EMPTY
-                    }
-                }
+    private fun handleGetCardTypes() {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getCardTypesUseCase(filter = cardType)
+                callUseCase { getCardTypesUseCase() }
             }.onSuccess {
                 setState { copy(cardTypeList = it.toNodeItemList()) }
-                process(Action.GetLevels)
+                handleGetLevels()
             }.onFailure {
                 cleanScreenStates(it.localizedMessage.orEmpty())
             }
@@ -317,9 +248,9 @@ constructor(
     }
 
     private fun handleGetPriorities() {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getPrioritiesUseCase()
+                callUseCase { getPrioritiesUseCase() }
             }.onSuccess {
                 setState { copy(priorityList = it.toNodeItemCard()) }
                 cleanScreenStates()
@@ -330,9 +261,9 @@ constructor(
     }
 
     private fun handleGetLevels() {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getLevelsUseCase()
+                callUseCase { getLevelsUseCase() }
             }.onSuccess {
                 setState { copy(levelList = it.toNodeItemList()) }
                 cleanScreenStates()
@@ -343,10 +274,10 @@ constructor(
         }
     }
 
-    private fun handleOnSaveCard() {
+    private fun handleSaveCard() {
         setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
-        viewModelScope.launch(coroutineContext) {
-            val state = stateFlow.first()
+        viewModelScope.launch {
+            val state = getState()
             val card =
                 Card.fromCreateCard(
                     areaId = state.lastSelectedLevel.toLong(),
@@ -363,7 +294,7 @@ constructor(
                     uuid = state.uuid
                 )
             kotlin.runCatching {
-                saveCardUseCase(card)
+                callUseCase { saveCardUseCase(card) }
             }.onSuccess {
                 Log.e("Test", "Success $it")
                 setState { copy(isCardSuccess = true) }
@@ -378,15 +309,15 @@ constructor(
     }
 
     private fun handleGetCardType(id: String) {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
-                getCardTypeUseCase(id)
+                callUseCase { getCardTypeUseCase(id) }
             }.onSuccess {
                 it?.let {
                     setState {
                         copy(
                             cardType = it,
-                            audioDuration = it.audiosDurationCreate.defaultIfNull(60)
+                            audioDuration = it.audiosDurationCreate.defaultIfNull(120)
                         )
                     }
                     cleanScreenStates()
@@ -398,10 +329,10 @@ constructor(
     }
 
     private fun handleGetCardsZone() {
-        viewModelScope.launch(coroutineContext) {
-            val id = stateFlow.first().lastSelectedLevel
+        viewModelScope.launch {
+            val id = getState().lastSelectedLevel
             kotlin.runCatching {
-                getCardsZoneUseCase(id)
+               callUseCase { getCardsZoneUseCase(id) }
             }.onSuccess {
                 setState { copy(cardsZone = it) }
                 cleanScreenStates()
@@ -415,11 +346,15 @@ constructor(
         setState { copy(isLoading = false, message = message) }
     }
 
+    fun cleanMessage() {
+        setState { copy(message = EMPTY) }
+    }
+
     private fun checkCatalogs() {
-        viewModelScope.launch(coroutineContext) {
+        viewModelScope.launch {
             kotlin.runCatching {
                 delay(2000L)
-                when (getFirebaseNotificationUseCase()) {
+                when (callUseCase { getFirebaseNotificationUseCase() }) {
                     FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
                         cleanScreenStates(
                             context.getString(R.string.update_catalogs_action_message)
@@ -431,12 +366,4 @@ constructor(
             }
         }
     }
-
-    @AssistedFactory
-    interface Factory : AssistedViewModelFactory<CreateCardViewModel, UiState> {
-        override fun create(state: UiState): CreateCardViewModel
-    }
-
-    companion object :
-        MavericksViewModelFactory<CreateCardViewModel, UiState> by hiltMavericksViewModelFactory()
 }
