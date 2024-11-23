@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import androidx.work.WorkInfo
-import androidx.work.WorkManager
 import com.ih.osm.BuildConfig
 import com.ih.osm.MainActivity
 import com.ih.osm.R
@@ -14,7 +12,6 @@ import com.ih.osm.core.firebase.FirebaseNotificationType
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.preferences.SharedPreferences
-import com.ih.osm.core.ui.LCE
 import com.ih.osm.core.workmanager.WorkManagerUUID
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
@@ -27,19 +24,12 @@ import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.lastSyncDate
-import com.ih.osm.ui.extensions.runWorkRequest
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedFactory
-import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.cancel
-import kotlin.coroutines.CoroutineContext
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -53,7 +43,7 @@ class HomeViewModel @Inject constructor(
     private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
     @ApplicationContext private val context: Context,
     savedStateHandle: SavedStateHandle,
-    ) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
+) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
 
     data class UiState(
         val user: User? = null,
@@ -66,38 +56,58 @@ class HomeViewModel @Inject constructor(
         val showSyncLocalCards: Boolean = false,
         val showSyncCatalogs: Boolean = false,
         val showSyncRemoteCards: Boolean = false,
-        val updateApp: Boolean = false
+        val updateApp: Boolean = false,
     )
 
 
-
     fun process(action: HomeAction) {
-//        when (action) {
-//            is Action.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
-//            is Action.GetCards -> handleGetCards()
-//            is Action.SetIsSync -> setState { copy(isSyncing = true) }
-//            is Action.SyncCards -> handleSyncCards(action.context)
-//            is Action.ClearMessage -> cleanScreenStates()
-//            is Action.SyncRemoteCards -> handleGetRemoteCards()
-//        }
-    when(action) {
-        is HomeAction.GetCards -> handleGetCards()
-        is HomeAction.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
-        is HomeAction.SyncRemoteCards -> handleSyncRemoteCards()
-        is HomeAction.SyncLocalCards -> handleSyncLocalCards(action.context)
+        when (action) {
+            is HomeAction.GetCards -> handleGetCards()
+            is HomeAction.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
+            is HomeAction.SyncRemoteCards -> handleSyncRemoteCards()
+            is HomeAction.SyncLocalCards -> handleSyncLocalCards(action.context)
 
-    }
-    }
-
-    private fun handleSyncLocalCards(appContext: Context) {
-       appContext.getActivity<MainActivity>()?.enqueueSyncCardsWork()
-        Log.e("test","Activity ")
+        }
     }
 
     init {
         checkNetworkStatus()
         val syncCatalogs = savedStateHandle.get<String>(ARG_SYNC_CATALOG).orEmpty()
         handleSyncCatalogs(syncCatalogs)
+    }
+
+    private fun handleSyncLocalCards(appContext: Context) {
+        viewModelScope.launch {
+            val state = getState()
+            if (NetworkConnection.isConnected().not() ||
+                state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
+                state.networkStatus == NetworkStatus.DATA_DISCONNECTED
+            ) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet),
+                        showSyncLocalCards = true,
+                    )
+                }
+                return@launch
+            }
+            if (state.networkStatus == NetworkStatus.DATA_CONNECTED &&
+                sharedPreferences.getNetworkPreference().isEmpty()
+            ) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.network_preferences_allowed),
+                        showSyncLocalCards = true,
+                    )
+                }
+                return@launch
+            }
+            appContext.getActivity<MainActivity>()?.enqueueSyncCardsWork()
+            setState { copy(showSyncLocalCards = false) }
+        }
     }
 
     private fun handleSyncCatalogs(syncCatalogs: String) {
@@ -143,13 +153,14 @@ class HomeViewModel @Inject constructor(
             handleGetUser()
         }
     }
-//
+
+    //
     private fun handleGetCatalogs() {
         viewModelScope.launch {
             kotlin.runCatching {
                 callUseCase { syncCatalogsUseCase(syncCards = true) }
             }.onSuccess {
-                Log.e("test","Fetch catalogs complete")
+                Log.e("test", "Fetch catalogs complete")
                 setState {
                     copy(
                         showSyncCatalogs = false,
@@ -161,20 +172,21 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-//
 
-//
     private fun handleGetCards(syncRemote: Boolean = false) {
         viewModelScope.launch {
             kotlin.runCatching {
                 callUseCase { getCardsUseCase(syncRemote = syncRemote) }
             }.onSuccess { cards ->
                 val hasLocalCards = cards.toLocalCards().isNotEmpty()
-                Log.e("test","Fetch cards complete wok in progress? ${WorkManagerUUID.checkIfNull()}")
+                Log.e(
+                    "test",
+                    "Fetch cards complete wok in progress? ${WorkManagerUUID.checkIfNull()}"
+                )
                 setState {
                     copy(
                         cards = cards,
-                        showSyncLocalCards = hasLocalCards,
+                        showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
                         showSyncRemoteCards = false
                     )
                 }
@@ -188,7 +200,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-//
+
     private fun handleSyncRemoteCards() {
         setState {
             copy(
@@ -225,7 +237,7 @@ class HomeViewModel @Inject constructor(
             handleGetCards(syncRemote = true)
         }
     }
-//
+
     private fun checkLastUpdate() {
         viewModelScope.launch {
             val lastUpdate = sharedPreferences.getLastSyncDate()
@@ -239,14 +251,14 @@ class HomeViewModel @Inject constructor(
             setState { copy(lastSyncUpdate = lastUpdateText) }
         }
     }
-//
+
     private fun handleGetUser() {
         setState { copy(isLoading = true) }
         viewModelScope.launch {
             kotlin.runCatching {
-              callUseCase {  getUserUseCase() }
+                callUseCase { getUserUseCase() }
             }.onSuccess { user ->
-                Log.e("test","Fetch user complete")
+                Log.e("test", "Fetch user complete")
                 handleGetCards()
                 setState { copy(user = user) }
             }.onFailure {
@@ -254,84 +266,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-//
-//    private fun handleSyncCards(appContext: Context) {
-//        viewModelScope.launch {
-//            val state = stateFlow.first()
-//            if (state.isSyncing) return@launch
-//            setState {
-//                copy(
-//                    isLoading = true,
-//                    message = context.getString(R.string.upload_cards),
-//                    showSyncCards = false,
-//                    isSyncing = true
-//                )
-//            }
-//        }
-//        viewModelScope.launch(coroutineContext) {
-//            val state = stateFlow.first()
-//            if (NetworkConnection.isConnected().not() ||
-//                state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
-//                state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
-//                state.networkStatus == NetworkStatus.DATA_DISCONNECTED
-//            ) {
-//                setState {
-//                    copy(
-//                        isLoading = false,
-//                        message = context.getString(R.string.please_connect_to_internet),
-//                        showSyncCards = true,
-//                        isSyncing = false
-//                    )
-//                }
-//                return@launch
-//            }
-//            if (state.networkStatus == NetworkStatus.DATA_CONNECTED &&
-//                sharedPreferences.getNetworkPreference().isEmpty()
-//            ) {
-//                setState {
-//                    copy(
-//                        isLoading = false,
-//                        message = context.getString(R.string.network_preferences_allowed),
-//                        showSyncCards = true,
-//                        isSyncing = false
-//                    )
-//                }
-//                return@launch
-//            }
-//
-//            appContext.runWorkRequest()
-//            WorkManagerUUID.get()?.let { uuid ->
-//                WorkManager.getInstance(appContext)
-//                    .getWorkInfoByIdFlow(uuid)
-//                    .collect {
-//                        when (it?.state) {
-//                            WorkInfo.State.SUCCEEDED -> {
-//                                WorkManagerUUID.resetUUID()
-//                                handleGetCards()
-//                            }
-//
-//                            WorkInfo.State.CANCELLED,
-//                            WorkInfo.State.FAILED,
-//                            WorkInfo.State.BLOCKED
-//                            -> {
-//                                WorkManagerUUID.resetUUID()
-//                                setState {
-//                                    copy(
-//                                        isLoading = false,
-//                                        isSyncing = false,
-//                                        message = context.getString(R.string.work_failed)
-//                                    )
-//                                }
-//                            }
-//
-//                            else -> {
-//                            }
-//                        }
-//                    }
-//            } ?: handleGetCards()
-//        }
-//    }
-//
+
     private fun checkNetworkStatus() {
         viewModelScope.launch {
             NetworkConnection.initObserve(
@@ -349,7 +284,7 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
-//
+
     private fun checkConnectivity(networkStatus: NetworkStatus) {
         viewModelScope.launch {
             val isDisconnected = callUseCase { NetworkConnection.isConnected().not() }
@@ -368,7 +303,8 @@ class HomeViewModel @Inject constructor(
             setState { copy(networkStatus = networkState) }
         }
     }
-//
+
+    //
     private fun cleanScreenStates(message: String = EMPTY) {
         setState {
             copy(
@@ -378,12 +314,12 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-//
+
     private fun checkPreferences() {
         viewModelScope.launch {
             kotlin.runCatching {
                 val firebaseNotifications = callUseCase { getFirebaseNotificationUseCase() }
-                Log.e("test","Firebase $firebaseNotifications")
+                Log.e("test", "Firebase $firebaseNotifications")
 
                 when (firebaseNotifications) {
                     FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
@@ -393,6 +329,7 @@ class HomeViewModel @Inject constructor(
                     FirebaseNotificationType.SYNC_REMOTE_CARDS -> {
                         setState { copy(showSyncRemoteCards = true) }
                     }
+
                     FirebaseNotificationType.UPDATE_APP -> {
                         val appVersion = sharedPreferences.getAppVersion()
                         if (appVersion.isNotEmpty() && appVersion != BuildConfig.VERSION_NAME) {
@@ -402,12 +339,11 @@ class HomeViewModel @Inject constructor(
                             setState { copy(updateApp = false) }
                         }
                     }
+
                     else -> {
                     }
                 }
             }
         }
     }
-
-
 }

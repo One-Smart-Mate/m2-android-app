@@ -188,4 +188,9 @@
 
     <string name="record_video">Record video</string>
     <string name="full_name">Full name</string>
+
+    <string name="sync_cards_title">Cards</string>
+    <string name="sync_cards_start">Starting the cards synchronization</string>
+    <string name="sync_cards_complete">Cards sync completed</string>
+
 </resources>

@@ -2,6 +2,7 @@ package com.ih.osm.domain.usecase.card
 
 import android.util.Log
 import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.repository.auth.AuthRepository
@@ -31,7 +32,8 @@ constructor(
     private val preclassifierRepo: PreclassifierRepository,
     private val priorityRepo: PriorityRepository,
     private val levelRepo: LevelRepository,
-    private val evidenceRepo: EvidenceRepository
+    private val evidenceRepo: EvidenceRepository,
+    private val notificationManager: NotificationManager
 ) : SaveCardUseCase {
     override suspend fun invoke(card: Card): Long {
         val lastCardId = cardRepo.getLastCardId()
@@ -73,6 +75,7 @@ constructor(
         }
         firebaseAnalyticsHelper.logCreateCard(updatedCard)
         Log.e("Card", "Card $updatedCard")
+        notificationManager.buildNotificationSuccessCard(updatedCard.siteCardId.toString())
         return id
     }
 }

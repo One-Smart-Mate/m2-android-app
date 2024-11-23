@@ -17,7 +17,7 @@ import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
 interface SyncCardsUseCase {
-    suspend operator fun invoke(cardList: List<Card>, handleNotification: Boolean = true)
+    suspend operator fun invoke(handleNotification: Boolean = true)
 }
 
 class SyncCardsUseCaseImpl
@@ -32,28 +32,15 @@ constructor(
     private val evidenceRepo: EvidenceRepository,
     private val solutionRepo: SolutionRepository
 ) : SyncCardsUseCase {
-    override suspend fun invoke(cardList: List<Card>, handleNotification: Boolean) {
-        var currentProgress = 0f
-        val id =
-            if (handleNotification && cardList.isNotEmpty()) {
-                notificationManager.buildProgressNotification()
-            } else {
-                0
-            }
-        val progressByCard: Float = 100f / cardList.size
+    override suspend fun invoke(handleNotification: Boolean) {
+
         var selectedCard: Card? = null
+
         try {
+            val cardList = cardRepository.getAllLocal()
             Log.e("test", "CardList -> ${cardList.isEmpty()}")
             cardList.forEach { card ->
                 selectedCard = card
-                if (handleNotification) {
-                    currentProgress += progressByCard
-                    notificationManager.updateNotificationProgress(
-                        notificationId = id,
-                        currentProgress = currentProgress.toInt()
-                    )
-                }
-
                 val evidences = mutableListOf<CreateEvidenceRequest>()
                 Log.e("test", "Current card.. $card")
                 card.evidences?.forEach { evidence ->
@@ -98,6 +85,7 @@ constructor(
                 }
                 solutionRepo.deleteAllByCard(card.uuid)
                 Log.e("test", "saving card.. $remoteCard")
+                notificationManager.buildNotificationSuccessCard(remoteCard.siteCardId.toString())
             }
         } catch (e: Exception) {
             Log.e("test", "saving card exception.. ${e.localizedMessage}")
@@ -105,9 +93,7 @@ constructor(
             firebaseAnalyticsHelper.logSyncCardException(e)
             FirebaseCrashlytics.getInstance().recordException(e)
             fileHelper.logException(e)
-            if (cardList.isNotEmpty()) {
-                notificationManager.buildErrorNotification(id, e.localizedMessage.orEmpty())
-            }
+            notificationManager.buildErrorNotification(e.localizedMessage.orEmpty())
         }
     }
 

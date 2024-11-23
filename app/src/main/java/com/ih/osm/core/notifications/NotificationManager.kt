@@ -42,10 +42,10 @@ constructor(private val context: Context) {
         }
     }
 
-    fun buildNotificationSuccessCard() {
+    fun buildNotificationSuccessCard(cardId: String) {
         try {
             buildNotification(
-                title = context.getString(R.string.card_successfully),
+                title = "${context.getString(R.string.card_successfully)} $cardId",
                 description = context.getString(R.string.card_successfully_desc)
             )
         } catch (e: Exception) {
@@ -156,26 +156,13 @@ constructor(private val context: Context) {
         }
     }
 
-    fun buildErrorNotification(notificationId: Int, message: String) {
-        val builder =
-            getBuilderNotification(
-                context.getString(R.string.something_went_wrong),
-                context.getString(
-                    R.string.error,
-                    message
-                ),
-                R.drawable.ic_error
-            )
-        NotificationManagerCompat.from(context).apply {
-            if (ActivityCompat.checkSelfPermission(
-                    context,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                builder.setSilent(true)
-                builder.setProgress(0, 0, false)
-                notify(notificationId, builder.build())
-            }
-        }
+    fun buildErrorNotification(message: String) {
+        buildNotification(
+            context.getString(R.string.something_went_wrong),
+            context.getString(
+                R.string.error,
+                message
+            ),
+        )
     }
 }

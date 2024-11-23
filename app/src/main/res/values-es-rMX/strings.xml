@@ -188,5 +188,9 @@
     <string name="record_video">Grabando video</string>
     <string name="full_name">Nombre completo</string>
 
+    <string name="sync_cards_title">Tarjetas</string>
+    <string name="sync_cards_start">Empezando sincronización de las tarjetas</string>
+    <string name="sync_cards_complete">Sincronización completa</string>
+
 
 </resources>
