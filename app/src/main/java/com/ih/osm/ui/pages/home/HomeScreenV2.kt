@@ -53,7 +53,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -79,9 +81,11 @@ import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.extensions.headerContent
+import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToQrScanner
+import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
@@ -92,16 +96,16 @@ import com.ih.osm.ui.theme.Size64
 import com.ih.osm.ui.utils.CARD_ANOMALIES
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun HomeScreenV2(
     navController: NavController,
-    viewModel: HomeViewModel = mavericksViewModel(),
-    syncCatalogs: String = EMPTY
+    viewModel: HomeViewModel = hiltViewModel(),
 ) {
-    val state by viewModel.collectAsState()
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -112,24 +116,24 @@ fun HomeScreenV2(
     } else {
         HomeContent(
             navController = navController,
-            user = (state.state as? LCE.Success)?.value,
+            user = state.user,
             cardList = state.cards,
             networkStatus = state.networkStatus,
             lastSyncUpdateDate = state.lastSyncUpdate,
-            showSyncCards = state.showSyncCards,
-            showSyncCatalogs = state.showSyncCatalogsCard,
+            showSyncLocalCards = state.showSyncLocalCards,
+            showSyncCatalogs = state.showSyncCatalogs,
             showSyncRemoteCards = state.showSyncRemoteCards,
             onClick = { action ->
                 when (action) {
                     HomeActionClick.CATALOGS -> {
-                        viewModel.process(HomeViewModel.Action.SyncCatalogs(LOAD_CATALOGS))
+                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
                     HomeActionClick.LOCAL_CARDS -> {
-                        viewModel.process(HomeViewModel.Action.SyncCards(context))
+                       // viewModel.process(HomeViewModel.Action.SyncCards(context))
                     }
 
                     HomeActionClick.REMOTE_CARDS -> {
-                        viewModel.process(HomeViewModel.Action.SyncRemoteCards)
+                        viewModel.process(HomeAction.SyncRemoteCards)
                     }
 
                     HomeActionClick.NAVIGATION -> {
@@ -149,27 +153,37 @@ fun HomeScreenV2(
         )
     }
 
-    LaunchedEffect(viewModel, lifecycle) {
+    LaunchedEffect(Unit) {
+        if (state.isSyncing.not()) {
+            viewModel.process(HomeAction.GetCards)
+        }
+    }
+
+    LaunchedEffect(viewModel) {
         snapshotFlow { state }
             .flowWithLifecycle(lifecycle)
+            .distinctUntilChanged()
             .collect {
-                if (state.syncCatalogs && state.syncCompleted.not()) {
-                    viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
-                } else if (state.isSyncing.not()) {
-                    viewModel.process(HomeViewModel.Action.GetCards)
-                }
-                if (state.message.isNotEmpty() && state.isLoading.not()) {
-                    scope.launch {
-                        snackBarHostState.showSnackbar(
-                            message = state.message
-                        )
-                        viewModel.process(HomeViewModel.Action.ClearMessage)
-                    }
-                }
+//                if (state.syncCatalogs && state.syncCompleted.not()) {
+//                  //  viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
+//                } else if (state.isSyncing.not()) {
+//                  //  viewModel.process(HomeViewModel.Action.GetCards)
+//                }
+//                if (state.message.isNotEmpty() && state.isLoading.not()) {
+//                    scope.launch {
+//                        snackBarHostState.showSnackbar(
+//                            message = state.message
+//                        )
+//                       // viewModel.process(HomeViewModel.Action.ClearMessage)
+//                    }
+//                }
                 if (state.updateApp) {
                     context.getActivity<MainActivity>()
                         ?.showUpdateDialog()
                 }
+//                if (!state.isLoading) {
+//                    viewModel.process(HomeAction.GetCards)
+//                }
             }
     }
 }
@@ -182,7 +196,7 @@ private fun HomeContent(
     cardList: List<Card>,
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
-    showSyncCards: Boolean,
+    showSyncLocalCards: Boolean,
     showSyncCatalogs: Boolean,
     showSyncRemoteCards: Boolean,
     onClick: (HomeActionClick) -> Unit
@@ -259,7 +273,7 @@ private fun HomeContent(
                     }
                 }
 
-                AnimatedVisibility(visible = showSyncCards) {
+                AnimatedVisibility(visible = showSyncLocalCards) {
                     HomeSectionCardItem(
                         title = stringResource(R.string.sync_cards),
                         icon = Icons.Outlined.Refresh,
@@ -295,7 +309,7 @@ private fun HomeContent(
                     if (cardList.isNotEmpty()) {
                         stringResource(
                             R.string.total_cards,
-                            cardList.toAnomaliesList().size
+                            cardList.size
                         )
                     } else {
                         EMPTY
@@ -458,17 +472,17 @@ private fun getTimeText(): String {
 private fun HomeScreenPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            HomeContent(
-                navController = rememberNavController(),
-                user = User.mockUser(),
-                cardList = emptyList(),
-                networkStatus = NetworkStatus.WIFI_CONNECTED,
-                lastSyncUpdateDate = "",
-                showSyncCards = true,
-                showSyncCatalogs = true,
-                showSyncRemoteCards = true,
-                onClick = {}
-            )
+//            HomeContent(
+//                navController = rememberNavController(),
+//                user = User.mockUser(),
+//                cardList = emptyList(),
+//                networkStatus = NetworkStatus.WIFI_CONNECTED,
+//                lastSyncUpdateDate = "",
+//                showSyncCards = true,
+//                showSyncCatalogs = true,
+//                showSyncRemoteCards = true,
+//                onClick = {}
+//            )
         }
     }
 }

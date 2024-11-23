@@ -17,12 +17,12 @@ import dagger.multibindings.IntoMap
 @Module
 @InstallIn(MavericksViewModelComponent::class)
 interface ViewModelModule {
-
-    @Binds
-    @IntoMap
-    @ViewModelKey(HomeViewModel::class)
-    fun bindHomeViewModelV2(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
-
+//
+//    @Binds
+//    @IntoMap
+//    @ViewModelKey(HomeViewModel::class)
+//    fun bindHomeViewModelV2(factory: HomeViewModel.Factory): AssistedViewModelFactory<*, *>
+//
 
     @Binds
     @IntoMap

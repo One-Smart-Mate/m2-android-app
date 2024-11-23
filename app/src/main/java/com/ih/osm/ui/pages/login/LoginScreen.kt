@@ -53,7 +53,7 @@ import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.extensions.getColor
-import com.ih.osm.ui.navigation.navigateToHome
+import com.ih.osm.ui.navigation.navigateToHomeV2
 import com.ih.osm.ui.navigation.navigateToRestoreAccount
 import com.ih.osm.ui.pages.login.action.LoginAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -92,7 +92,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavC
             .distinctUntilChanged()
             .collect {
                 if (it.isAuthenticated) {
-                    navController.navigateToHome()
+                    navController.navigateToHomeV2()
                 }
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {

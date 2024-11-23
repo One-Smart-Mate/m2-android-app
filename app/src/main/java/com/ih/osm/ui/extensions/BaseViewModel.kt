@@ -24,4 +24,8 @@ abstract class BaseViewModel<S : Any>(
     }
 
     fun getState() = _state.value
+
+    fun load(block: () -> Unit) {
+        block()
+    }
 }

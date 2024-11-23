@@ -48,16 +48,16 @@ constructor(
                 }
                 remoteConfig.setConfigSettingsAsync(configSettings)
                 remoteConfig.fetchAndActivate().await()
-                val newHome = remoteConfig.getBoolean("HOME_REDESIGN")
-                handleGetUser(newHome)
+
+                handleGetUser()
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
-                handleGetUser(false)
+                handleGetUser()
             }
         }
     }
 
-    private fun handleGetUser(showNewHome: Boolean) {
+    private fun handleGetUser() {
         viewModelScope.launch(coroutineContext) {
             kotlin.runCatching {
                 getUserUseCase()
@@ -65,11 +65,7 @@ constructor(
                 val route =
                     if (it != null) {
                         FirebaseCrashlytics.getInstance().setUserId(it.userId)
-                        if (showNewHome) {
-                            Screen.HomeV2.route
-                        } else {
-                            Screen.Home.route
-                        }
+                        Screen.HomeV2.route
                     } else {
                         Screen.Login.route
                     }

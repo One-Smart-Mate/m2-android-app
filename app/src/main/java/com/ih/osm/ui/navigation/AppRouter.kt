@@ -11,8 +11,8 @@ const val ARG_ACTION_TYPE = "arg_action_type"
 private object Route {
     const val LOGIN = "login"
 
-    const val HOME_PATH = "home"
-    const val HOME = "$HOME_PATH?$ARG_SYNC_CATALOG={$ARG_SYNC_CATALOG}"
+//    const val HOME_PATH = "home"
+//    const val HOME = "$HOME_PATH?$ARG_SYNC_CATALOG={$ARG_SYNC_CATALOG}"
 
     const val HOME_PATH_V2 = "home-v2"
     const val HOME_V2 = "$HOME_PATH_V2?$ARG_SYNC_CATALOG={$ARG_SYNC_CATALOG}"
@@ -40,7 +40,7 @@ private object Route {
 sealed class Screen(val route: String, val path: String = EMPTY) {
     data object Login : Screen(Route.LOGIN)
 
-    data object Home : Screen(Route.HOME, Route.HOME_PATH)
+   // data object Home : Screen(Route.HOME, Route.HOME_PATH)
 
     data object HomeV2 : Screen(Route.HOME_V2, Route.HOME_PATH_V2)
 

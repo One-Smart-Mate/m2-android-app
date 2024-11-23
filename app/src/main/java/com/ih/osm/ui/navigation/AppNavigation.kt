@@ -48,20 +48,20 @@ fun AppNavigation(startDestination: String) {
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
         }
-        composable(
-            Screen.Home.route,
-            arguments =
-            listOf(
-                navArgument(ARG_SYNC_CATALOG) {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = EMPTY
-                }
-            )
-        ) {
-            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-            HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
-        }
+//        composable(
+//            Screen.Home.route,
+//            arguments =
+//            listOf(
+//                navArgument(ARG_SYNC_CATALOG) {
+//                    type = NavType.StringType
+//                    nullable = true
+//                    defaultValue = EMPTY
+//                }
+//            )
+//        ) {
+//            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
+//            HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
+//        }
 
         composable(
             Screen.HomeV2.route,
@@ -74,8 +74,7 @@ fun AppNavigation(startDestination: String) {
                 }
             )
         ) {
-            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-            HomeScreenV2(navController = navController, syncCatalogs = syncCatalogs)
+            HomeScreenV2(navController = navController)
         }
         composable(Screen.Account.route) {
             AccountScreen(navController = navController)
@@ -141,9 +140,9 @@ fun NavController.navigateAndClean(route: String) {
     graph.setStartDestination(route)
 }
 
-fun NavController.navigateToHome() {
-    navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
-}
+//fun NavController.navigateToHome() {
+//    navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
+//}
 
 fun NavController.navigateToHomeV2() {
     navigateAndClean("${Screen.HomeV2.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")

@@ -40,11 +40,10 @@ class RestoreAccountViewModel @Inject constructor(
     fun process(action: RestoreAction) {
         when (action) {
             is RestoreAction.SetEmail -> setState { copy(email = action.email) }
-            is RestoreAction.OnActionClick -> handleOnAction(action.action)
+            is RestoreAction.SetAction -> handleOnAction(action.action)
             is RestoreAction.SetCode -> setState { copy(code = action.code) }
             is RestoreAction.SetPassword -> setState { copy(password = action.password) }
-            is RestoreAction.ConfirmPassword -> setState { copy(confirmPassword = action.password)
-            }
+            is RestoreAction.ConfirmPassword -> setState { copy(confirmPassword = action.password) }
         }
     }
 
