@@ -23,7 +23,10 @@ import com.ih.osm.ui.theme.Size250
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun CardVideoSection(title: String, evidences: List<Evidence>) {
+fun CardVideoSection(
+    title: String,
+    evidences: List<Evidence>,
+) {
     var videoUrl by remember {
         mutableStateOf(EMPTY)
     }
@@ -31,27 +34,27 @@ fun CardVideoSection(title: String, evidences: List<Evidence>) {
         mutableStateOf(false)
     }
     Column {
-       if(evidences.isNotEmpty()) {
-           Text(
-               text = title,
-               style =
-               MaterialTheme.typography.titleLarge
-                   .copy(fontWeight = FontWeight.Bold)
-           )
-       }
+        if (evidences.isNotEmpty()) {
+            Text(
+                text = title,
+                style =
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
+            )
+        }
         LazyRow {
             items(evidences) {
                 PhotoCardItem(
                     model = it.url,
                     showIcon = false,
                     modifier =
-                    Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            videoUrl = it.url
-                            openVideo = true
-                        }
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
+                            .clickable {
+                                videoUrl = it.url
+                                openVideo = true
+                            },
                 )
             }
         }

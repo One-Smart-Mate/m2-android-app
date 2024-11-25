@@ -58,14 +58,11 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.ih.osm.MainActivity
 import com.ih.osm.R
-import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.User
-import com.ih.osm.domain.model.toAnomaliesList
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTag
@@ -79,7 +76,6 @@ import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.extensions.headerContent
-import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToQrScanner
@@ -95,7 +91,6 @@ import com.ih.osm.ui.utils.CARD_ANOMALIES
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -124,7 +119,7 @@ fun HomeScreenV2(
             onClick = { action ->
                 when (action) {
                     HomeActionClick.CATALOGS -> {
-                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
+                        viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
                     HomeActionClick.LOCAL_CARDS -> {
                         viewModel.process(HomeAction.SyncLocalCards(context))
@@ -138,7 +133,7 @@ fun HomeScreenV2(
                         navController.navigateToCardList(CARD_ANOMALIES)
                     }
                 }
-            }
+            },
         )
     }
 
@@ -147,7 +142,7 @@ fun HomeScreenV2(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
 
@@ -197,7 +192,7 @@ private fun HomeContent(
     showSyncLocalCards: Boolean,
     showSyncCatalogs: Boolean,
     showSyncRemoteCards: Boolean,
-    onClick: (HomeActionClick) -> Unit
+    onClick: (HomeActionClick) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -205,55 +200,55 @@ private fun HomeContent(
                 FloatingActionButton(
                     onClick = {
                         navController.navigateToQrScanner()
-                    }
+                    },
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_qr_scan),
-                        contentDescription = EMPTY
+                        contentDescription = EMPTY,
                     )
                 }
                 CustomSpacer()
                 FloatingActionButton(
                     onClick = {
                         navController.navigateToAccount()
-                    }
+                    },
                 ) {
                     Icon(
                         Icons.Outlined.Settings,
-                        contentDescription = EMPTY
+                        contentDescription = EMPTY,
                     )
                 }
             }
-        }
+        },
     ) { padding ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         ) {
             stickyHeader {
                 user?.let {
                     HomeAppBarV2(
                         user = it,
                         padding = padding.calculateTopPadding(),
-                        networkStatus = networkStatus
+                        networkStatus = networkStatus,
                     )
                 }
             }
             item {
                 CustomSpacer(space = SpacerSize.LARGE)
                 Row(
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
                         stringResource(R.string.cards),
                         style =
-                        MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.W500,
-                            color = getTextColor()
-                        ),
-                        modifier = Modifier.padding(horizontal = PaddingNormal)
+                            MaterialTheme.typography.titleLarge.copy(
+                                fontWeight = FontWeight.W500,
+                                color = getTextColor(),
+                            ),
+                        modifier = Modifier.padding(horizontal = PaddingNormal),
                     )
                     HorizontalDivider(
-                        modifier = Modifier.padding(end = PaddingNormal)
+                        modifier = Modifier.padding(end = PaddingNormal),
                     )
                 }
                 CustomSpacer()
@@ -265,7 +260,7 @@ private fun HomeContent(
                         icon = Icons.Outlined.Refresh,
                         description = stringResource(R.string.sync_remote_cards_description),
                         subText = stringResource(R.string.important),
-                        subTextColor = MaterialTheme.colorScheme.error
+                        subTextColor = MaterialTheme.colorScheme.error,
                     ) {
                         onClick(HomeActionClick.REMOTE_CARDS)
                     }
@@ -276,15 +271,15 @@ private fun HomeContent(
                         title = stringResource(R.string.sync_cards),
                         icon = Icons.Outlined.Refresh,
                         subText =
-                        stringResource(
-                            R.string.last_update,
-                            lastSyncUpdateDate
-                        ),
+                            stringResource(
+                                R.string.last_update,
+                                lastSyncUpdateDate,
+                            ),
                         description =
-                        stringResource(
-                            R.string.local_cards,
-                            cardList.toLocalCards().size
-                        )
+                            stringResource(
+                                R.string.local_cards,
+                                cardList.toLocalCards().size,
+                            ),
                     ) {
                         onClick(HomeActionClick.LOCAL_CARDS)
                     }
@@ -295,7 +290,7 @@ private fun HomeContent(
                         icon = Icons.Outlined.Refresh,
                         description = stringResource(R.string.you_have_new_catalogs_to_sync),
                         subText = stringResource(R.string.important),
-                        subTextColor = MaterialTheme.colorScheme.error
+                        subTextColor = MaterialTheme.colorScheme.error,
                     ) {
                         onClick(HomeActionClick.CATALOGS)
                     }
@@ -304,14 +299,14 @@ private fun HomeContent(
                     title = stringResource(R.string.anomalies_cards),
                     icon = Icons.Outlined.Build,
                     description =
-                    if (cardList.isNotEmpty()) {
-                        stringResource(
-                            R.string.total_cards,
-                            cardList.size
-                        )
-                    } else {
-                        EMPTY
-                    }
+                        if (cardList.isNotEmpty()) {
+                            stringResource(
+                                R.string.total_cards,
+                                cardList.size,
+                            )
+                        } else {
+                            EMPTY
+                        },
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
@@ -324,7 +319,7 @@ enum class HomeActionClick {
     CATALOGS,
     LOCAL_CARDS,
     REMOTE_CARDS,
-    NAVIGATION
+    NAVIGATION,
 }
 
 @Composable
@@ -334,47 +329,47 @@ private fun HomeSectionCardItem(
     description: String = EMPTY,
     subText: String = EMPTY,
     subTextColor: Color = Color.Unspecified,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(PaddingNormal),
-        onClick = onClick
+            Modifier
+                .fillMaxWidth()
+                .padding(PaddingNormal),
+        onClick = onClick,
     ) {
         Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CustomSpacer()
             Icon(icon, contentDescription = EMPTY, tint = getPrimaryColor())
             Text(
                 text = title,
                 style =
-                MaterialTheme.typography.titleLarge.copy(
-                    color = getPrimaryColor()
-                ),
-                modifier = Modifier.padding(PaddingNormal)
+                    MaterialTheme.typography.titleLarge.copy(
+                        color = getPrimaryColor(),
+                    ),
+                modifier = Modifier.padding(PaddingNormal),
             )
             AnimatedVisibility(visible = description.isNotEmpty()) {
                 Column(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
                         text = description,
                         style =
-                        MaterialTheme.typography.bodyMedium
-                            .copy(fontWeight = FontWeight.SemiBold),
-                        modifier = Modifier.padding(bottom = Size2)
+                            MaterialTheme.typography.bodyMedium
+                                .copy(fontWeight = FontWeight.SemiBold),
+                        modifier = Modifier.padding(bottom = Size2),
                     )
                     AnimatedVisibility(visible = subText.isNotEmpty()) {
                         Text(
                             text = subText,
                             style =
-                            MaterialTheme.typography.bodySmall
-                                .copy(color = subTextColor)
+                                MaterialTheme.typography.bodySmall
+                                    .copy(color = subTextColor),
                         )
                     }
                     CustomSpacer()
@@ -385,24 +380,29 @@ private fun HomeSectionCardItem(
 }
 
 @Composable
-private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) {
+private fun HomeAppBarV2(
+    user: User,
+    padding: Dp,
+    networkStatus: NetworkStatus,
+) {
     Column(
         modifier = Modifier.headerContent(padding, false),
-        horizontalAlignment = Alignment.Start
+        horizontalAlignment = Alignment.Start,
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
         ) {
             CircularImage(image = user.logo, size = Size64)
             NetworkCard(
                 networkStatus = networkStatus,
                 textColor = getTextColor(),
-                modifier = Modifier.background(
-                    shape = RoundedCornerShape(Radius8),
-                    color = Color.Gray.copy(alpha = 0.1f)
-                ).padding(PaddingTiny)
+                modifier =
+                    Modifier.background(
+                        shape = RoundedCornerShape(Radius8),
+                        color = Color.Gray.copy(alpha = 0.1f),
+                    ).padding(PaddingTiny),
             )
         }
         CustomSpacer(space = SpacerSize.SMALL)
@@ -410,26 +410,26 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
             Text(
                 text = "${getTimeText()},\n${user.name}.",
                 style =
-                MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    color = getTextColor()
-                )
+                    MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.Bold,
+                        color = getTextColor(),
+                    ),
             )
             Row(
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = user.siteName,
                     style =
-                    MaterialTheme.typography.bodyLarge.copy(
-                        color = getTextColor()
-                    )
+                        MaterialTheme.typography.bodyLarge.copy(
+                            color = getTextColor(),
+                        ),
                 )
                 Icon(
                     Icons.TwoTone.CheckCircle,
                     contentDescription = user.siteName,
                     tint = Color(0XFF048574),
-                    modifier = Modifier.size(16.dp)
+                    modifier = Modifier.size(16.dp),
                 )
             }
             CustomSpacer()
@@ -440,7 +440,7 @@ private fun HomeAppBarV2(user: User, padding: Dp, networkStatus: NetworkStatus) 
                             title = it,
                             tagSize = TagSize.SMALL,
                             tagType = TagType.OUTLINE,
-                            invertedColors = false
+                            invertedColors = false,
                         )
                     }
                 }

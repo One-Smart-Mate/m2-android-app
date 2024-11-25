@@ -38,15 +38,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-
 import com.ih.osm.BuildConfig
 import com.ih.osm.R
-import com.ih.osm.core.ui.functions.getContext
 import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
@@ -57,14 +53,13 @@ import com.ih.osm.ui.navigation.Screen
 import com.ih.osm.ui.navigation.navigateToLogin
 import com.ih.osm.ui.navigation.navigateToProfile
 import com.ih.osm.ui.pages.account.action.AccountAction
-import com.ih.osm.ui.pages.cardaction.action.CardAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
 fun AccountScreen(
     navController: NavController,
-    viewModel: AccountViewModel = hiltViewModel()
+    viewModel: AccountViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
@@ -78,7 +73,7 @@ fun AccountScreen(
             uri = state.uri,
             onAction = { action ->
                 viewModel.process(action)
-            }
+            },
         )
     }
 
@@ -102,16 +97,16 @@ fun AccountContent(
     checked: Boolean,
     uri: Uri? = null,
     onAction: (AccountAction) -> Unit,
-    ) {
+) {
     val context = LocalContext.current
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.account)
+                    title = stringResource(R.string.account),
                 )
             }
 
@@ -121,14 +116,14 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.Filled.AccountCircle,
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                    Modifier.clickable {
-                        navController.navigateToProfile()
-                    }
+                        Modifier.clickable {
+                            navController.navigateToProfile()
+                        },
                 )
 
                 ListItem(
@@ -136,33 +131,33 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.Filled.Notifications,
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                    Modifier.clickable {
-                        openAppSettings(context)
-                    }
+                        Modifier.clickable {
+                            openAppSettings(context)
+                        },
                 )
 
                 ListItem(
                     headlineContent = {
                         Text(
-                            text = stringResource(R.string.sync_remote_catalogs)
+                            text = stringResource(R.string.sync_remote_catalogs),
                         )
                     },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Refresh,
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                    Modifier.clickable {
-                        onAction(AccountAction.SyncCatalogs)
-                    }
+                        Modifier.clickable {
+                            onAction(AccountAction.SyncCatalogs)
+                        },
                 )
 
                 ListItem(
@@ -170,7 +165,7 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             painterResource(id = R.drawable.ic_wifi),
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
                     trailingContent = {
@@ -180,12 +175,12 @@ fun AccountContent(
                                 onAction(AccountAction.SetSwitch(it))
                             },
                             colors =
-                            SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                                uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
-                            )
+                                SwitchDefaults.colors(
+                                    checkedThumbColor = MaterialTheme.colorScheme.primary,
+                                    checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer,
+                                ),
                         )
                     },
                     tonalElevation = PaddingNormal,
@@ -197,13 +192,14 @@ fun AccountContent(
                         leadingContent = {
                             Icon(
                                 Icons.Filled.Settings,
-                                contentDescription = stringResource(R.string.empty)
+                                contentDescription = stringResource(R.string.empty),
                             )
                         },
                         tonalElevation = PaddingNormal,
-                        modifier = Modifier.clickable {
-                            navController.navigate(Screen.Dev.route)
-                        }
+                        modifier =
+                            Modifier.clickable {
+                                navController.navigate(Screen.Dev.route)
+                            },
                     )
                 }
 
@@ -212,17 +208,17 @@ fun AccountContent(
                         Text(
                             stringResource(
                                 R.string.app_version,
-                                BuildConfig.VERSION_NAME
-                            )
+                                BuildConfig.VERSION_NAME,
+                            ),
                         )
                     },
                     leadingContent = {
                         Icon(
                             Icons.Filled.Info,
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
-                    tonalElevation = PaddingNormal
+                    tonalElevation = PaddingNormal,
                 )
                 AnimatedVisibility(visible = uri != null) {
                     ListItem(
@@ -230,14 +226,14 @@ fun AccountContent(
                         leadingContent = {
                             Icon(
                                 Icons.Filled.Share,
-                                contentDescription = stringResource(R.string.empty)
+                                contentDescription = stringResource(R.string.empty),
                             )
                         },
                         tonalElevation = PaddingNormal,
                         modifier =
-                        Modifier.clickable {
-                            shareUri(context, uri)
-                        }
+                            Modifier.clickable {
+                                shareUri(context, uri)
+                            },
                     )
                 }
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
@@ -247,21 +243,24 @@ fun AccountContent(
                     leadingContent = {
                         Icon(
                             Icons.AutoMirrored.Outlined.ExitToApp,
-                            contentDescription = stringResource(R.string.empty)
+                            contentDescription = stringResource(R.string.empty),
                         )
                     },
                     tonalElevation = PaddingNormal,
                     modifier =
-                    Modifier.clickable {
-                       onAction(AccountAction.Logout)
-                    }
+                        Modifier.clickable {
+                            onAction(AccountAction.Logout)
+                        },
                 )
             }
         }
     }
 }
 
-private fun shareUri(context: Context, uri: Uri?) {
+private fun shareUri(
+    context: Context,
+    uri: Uri?,
+) {
     try {
         val intent = Intent(Intent.ACTION_SEND)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
@@ -273,7 +272,7 @@ private fun shareUri(context: Context, uri: Uri?) {
         Toast.makeText(
             context,
             "Can't share the data $uri",
-            Toast.LENGTH_SHORT
+            Toast.LENGTH_SHORT,
         ).show()
     }
 }
@@ -290,7 +289,7 @@ fun AccountPreview() {
                 navController = rememberNavController(),
                 checked = false,
                 uri = null,
-                onAction = {}
+                onAction = {},
             )
         }
     }

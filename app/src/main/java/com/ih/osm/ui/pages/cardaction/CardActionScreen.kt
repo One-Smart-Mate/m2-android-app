@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CardActionScreen(
     navController: NavController,
-    viewModel: CardActionViewModel = hiltViewModel()
+    viewModel: CardActionViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -81,13 +81,13 @@ fun CardActionScreen(
             navController = navController,
             title = state.screenTitle,
             onAction = {
-               viewModel.process(it)
+                viewModel.process(it)
             },
             employeeList = state.filteredEmployeeList,
             isContentEnabled = state.isContentEnabled,
             selectedEmployee = state.selectedEmployee,
             actionType = state.actionType,
-            evidences = state.evidences
+            evidences = state.evidences,
         )
     }
 
@@ -96,7 +96,7 @@ fun CardActionScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
 
@@ -117,7 +117,6 @@ fun CardActionScreen(
     }
 }
 
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SolutionScreenContent(
@@ -130,32 +129,31 @@ fun SolutionScreenContent(
     actionType: CardItemSheetAction?,
     evidences: List<Evidence>,
 ) {
-
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = title
+                    title = title,
                 )
             }
             item {
                 CustomTextField(
                     modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingNormal),
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(PaddingNormal),
                     label = stringResource(R.string.search_for_a_user),
-                    icon = Icons.Filled.Search
+                    icon = Icons.Filled.Search,
                 ) { query ->
                     onAction(CardAction.SearchEmployee(query))
                 }
             }
             items(employeeList) { item ->
                 EmployeeItemCard(
-                    title = item.name
+                    title = item.name,
                 ) {
                     onAction(CardAction.SetEmployee(item))
                 }
@@ -167,7 +165,7 @@ fun SolutionScreenContent(
                     SectionTag(
                         title = stringResource(R.string.selected_user),
                         value = selectedEmployee?.name.orEmpty(),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
                 CustomSpacer()
@@ -182,24 +180,27 @@ fun SolutionScreenContent(
                             onAddEvidence = { uri, type ->
                                 onAction(CardAction.AddEvidence(uri, type))
                             },
-                            imageType = if (actionType == CardItemSheetAction.DefinitiveSolution) {
-                                EvidenceType.IMCL
-                            } else {
-                                EvidenceType.IMPS
-                            },
-                            audioType = if (actionType == CardItemSheetAction.DefinitiveSolution) {
-                                EvidenceType.AUCL
-                            } else {
-                                EvidenceType.AUPS
-                            },
-                            videoType = if (actionType == CardItemSheetAction.DefinitiveSolution) {
-                                EvidenceType.VICL
-                            } else {
-                                EvidenceType.VIPS
-                            }
+                            imageType =
+                                if (actionType == CardItemSheetAction.DefinitiveSolution) {
+                                    EvidenceType.IMCL
+                                } else {
+                                    EvidenceType.IMPS
+                                },
+                            audioType =
+                                if (actionType == CardItemSheetAction.DefinitiveSolution) {
+                                    EvidenceType.AUCL
+                                } else {
+                                    EvidenceType.AUPS
+                                },
+                            videoType =
+                                if (actionType == CardItemSheetAction.DefinitiveSolution) {
+                                    EvidenceType.VICL
+                                } else {
+                                    EvidenceType.VIPS
+                                },
                         )
                         SectionImagesEvidence(imageEvidences = evidences.toImages()) {
-                           onAction(CardAction.DeleteEvidence(it))
+                            onAction(CardAction.DeleteEvidence(it))
                         }
                         SectionVideosEvidence(videoEvidences = evidences.toVideos()) {
                             onAction(CardAction.DeleteEvidence(it))
@@ -212,14 +213,13 @@ fun SolutionScreenContent(
                         CustomSpacer()
                         CustomTextField(
                             modifier =
-                            Modifier
-                                .fillMaxWidth(),
+                                Modifier
+                                    .fillMaxWidth(),
                             label = stringResource(R.string.comment_solution),
-                            icon = Icons.Filled.Create
+                            icon = Icons.Filled.Create,
                         ) {
                             onAction(CardAction.SetComment(it))
                         }
-
                     }
                 }
                 CustomSpacer()
@@ -232,26 +232,29 @@ fun SolutionScreenContent(
 }
 
 @Composable
-fun EmployeeItemCard(title: String, onClick: () -> Unit) {
+fun EmployeeItemCard(
+    title: String,
+    onClick: () -> Unit,
+) {
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = PaddingLarge, vertical = 1.dp)
-            .background(
-                color = MaterialTheme.colorScheme.primaryContainer,
-                shape = RoundedCornerShape(12.dp)
-            )
-            .clickable {
-                onClick()
-            }
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = PaddingLarge, vertical = 1.dp)
+                .background(
+                    color = MaterialTheme.colorScheme.primaryContainer,
+                    shape = RoundedCornerShape(12.dp),
+                )
+                .clickable {
+                    onClick()
+                },
     ) {
         Text(
             text = title,
             style =
-            MaterialTheme.typography.bodyLarge
-                .copy(color = getTextColor()),
-            modifier = Modifier.padding(PaddingNormal)
+                MaterialTheme.typography.bodyLarge
+                    .copy(color = getTextColor()),
+            modifier = Modifier.padding(PaddingNormal),
         )
     }
 }

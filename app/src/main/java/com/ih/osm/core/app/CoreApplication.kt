@@ -9,13 +9,10 @@ import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.notifications.NotificationManager
-import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.AppWorker
-import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
-import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
 class CoreApplication : Application(), Configuration.Provider {
@@ -30,28 +27,30 @@ class CoreApplication : Application(), Configuration.Provider {
                 .build()
 }
 
-class CustomWorkerFactory @Inject constructor(
-    private val syncCardsUseCase: SyncCardsUseCase,
-    private val  notificationManager: NotificationManager,
-    private val fileHelper: FileHelper,
-): WorkerFactory() {
-    override fun createWorker(
-        appContext: Context,
-        workerClassName: String,
-        workerParameters: WorkerParameters,
-    ): ListenableWorker {
-        return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager, fileHelper)
+class CustomWorkerFactory
+    @Inject
+    constructor(
+        private val syncCardsUseCase: SyncCardsUseCase,
+        private val notificationManager: NotificationManager,
+        private val fileHelper: FileHelper,
+    ) : WorkerFactory() {
+        override fun createWorker(
+            appContext: Context,
+            workerClassName: String,
+            workerParameters: WorkerParameters,
+        ): ListenableWorker {
+            return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager, fileHelper)
+        }
     }
-}
 
-//class CustomWorkerFactory
-//@Inject
-//constructor(
+// class CustomWorkerFactory
+// @Inject
+// constructor(
 //    private val getCardsUseCase: GetCardsUseCase,
 //    private val syncCardsUseCase: SyncCardsUseCase,
 //    private val coroutineContext: CoroutineContext,
 //    private val sharedPreferences: SharedPreferences
-//) : WorkerFactory() {
+// ) : WorkerFactory() {
 //    override fun createWorker(
 //        appContext: Context,
 //        workerClassName: String,
@@ -66,4 +65,4 @@ class CustomWorkerFactory @Inject constructor(
 //            sharedPreferences
 //        )
 //    }
-//}
+// }

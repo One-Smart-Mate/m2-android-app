@@ -14,12 +14,7 @@ plugins {
 
 android {
     signingConfigs {
-        getByName("debug") {
-            storeFile = file("/Users/immanuel.diaz/Desktop/OSM_API_KEY/android-key")
-            storePassword = "osm20240827"
-            keyAlias = "android-key"
-            keyPassword = "osm20240827"
-        }
+
     }
     namespace = "com.ih.osm"
     compileSdk = 35
@@ -47,24 +42,24 @@ android {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             buildConfigField(
                 "String",
                 "SERVICE_URL",
-                project.properties["API_URL_PROD"].toString()
+                project.properties["API_URL_PROD"].toString(),
             )
             signingConfig = signingConfigs.getByName("debug")
         }
         debug {
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             buildConfigField(
                 "String",
                 "SERVICE_URL",
-                project.properties["API_URL_DEV"].toString()
+                project.properties["API_URL_DEV"].toString(),
             )
             signingConfig = signingConfigs.getByName("debug")
         }
@@ -100,7 +95,7 @@ android {
             mapOf(
                 "ktlint_standard_no-wildcard-imports" to "disabled",
                 "ktlint_function_naming_ignore_when_annotated_with" to "Composable",
-                "ktlint_code_style" to "android_studio"
+                "ktlint_code_style" to "ktlint_official",
             )
         android = true
         ignoreFailures = false

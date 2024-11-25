@@ -2,7 +2,6 @@ package com.ih.osm.ui.pages.createcard
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
@@ -46,11 +45,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
@@ -86,7 +82,6 @@ import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.PaddingToolbar
 import com.ih.osm.ui.theme.Size100
 import com.ih.osm.ui.theme.Size180
-import com.ih.osm.ui.utils.EMPTY
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -123,7 +118,7 @@ fun CreateCardScreen(
             lazyColumState = lazyState,
             onAction = { action ->
                 viewModel.process(action)
-            }
+            },
         )
     }
 
@@ -132,7 +127,7 @@ fun CreateCardScreen(
             snackbarData = it,
             containerColor = Color.Red,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
 
@@ -146,7 +141,7 @@ fun CreateCardScreen(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message
+                            message = state.message,
                         )
                         viewModel.cleanMessage()
                     }
@@ -173,17 +168,17 @@ fun CreateCardContent(
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
-    lazyColumState: LazyListState
+    lazyColumState: LazyListState,
 ) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
-            state = lazyColumState
+            state = lazyColumState,
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.create_card)
+                    title = stringResource(R.string.create_card),
                 )
             }
             item {
@@ -212,7 +207,7 @@ fun CreateCardContent(
                             },
                             imageType = EvidenceType.IMCR,
                             audioType = EvidenceType.AUCR,
-                            videoType = EvidenceType.VICR
+                            videoType = EvidenceType.VICR,
                         )
                         SectionImagesEvidence(imageEvidences = evidences.toImages()) {
                             onAction(CreateCardAction.DeleteEvidence(it))
@@ -236,15 +231,15 @@ fun CreateCardContent(
                         Text(
                             text = stringResource(R.string.comments),
                             style =
-                            MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold)
+                                MaterialTheme.typography.titleLarge
+                                    .copy(fontWeight = FontWeight.Bold),
                         )
                         CustomSpacer()
                         CustomTextField(
                             label = stringResource(R.string.comments),
                             icon = Icons.Filled.Create,
                             modifier = Modifier.fillParentMaxWidth(),
-                            maxLines = 5
+                            maxLines = 5,
                         ) {
                             onAction(CreateCardAction.SetComment(it))
                         }
@@ -256,7 +251,7 @@ fun CreateCardContent(
                                         card = it,
                                         isActionsEnabled = false,
                                         onClick = {},
-                                        onAction = {}
+                                        onAction = {},
                                     )
                                 }
                             }
@@ -277,7 +272,7 @@ fun CreateCardContent(
 fun LevelContent(
     levelList: Map<Int, List<NodeCardItem>>,
     onLevelClick: (NodeCardItem, key: Int) -> Unit,
-    selectedLevelList: Map<Int, String>
+    selectedLevelList: Map<Int, String>,
 ) {
     AnimatedVisibility(visible = levelList.isNotEmpty()) {
         Column {
@@ -286,8 +281,8 @@ fun LevelContent(
                     Text(
                         text = "${stringResource(R.string.level)} ${level.key}",
                         style =
-                        MaterialTheme.typography.titleLarge
-                            .copy(fontWeight = FontWeight.Bold)
+                            MaterialTheme.typography.titleLarge
+                                .copy(fontWeight = FontWeight.Bold),
                     )
                 }
                 LazyRow {
@@ -295,7 +290,7 @@ fun LevelContent(
                         SectionItemCard(
                             title = item.name,
                             description = item.description,
-                            selected = item.id == selectedLevelList[level.key]
+                            selected = item.id == selectedLevelList[level.key],
                         ) {
                             onLevelClick(item, level.key)
                         }
@@ -310,22 +305,22 @@ fun LevelContent(
 fun PriorityContent(
     priorityList: List<NodeCardItem>,
     onAction: (CreateCardAction) -> Unit,
-    selectedPriority: String
+    selectedPriority: String,
 ) {
     AnimatedVisibility(visible = priorityList.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.priority),
                 style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
             LazyRow {
                 items(priorityList) {
                     SectionItemCard(
                         title = it.name,
                         description = it.description,
-                        selected = it.id == selectedPriority
+                        selected = it.id == selectedPriority,
                     ) {
                         onAction(CreateCardAction.SetPriority(it.id))
                     }
@@ -339,22 +334,22 @@ fun PriorityContent(
 fun PreclassifierContent(
     preclassifierList: List<NodeCardItem>,
     onAction: (CreateCardAction) -> Unit,
-    selectedPreclassifier: String
+    selectedPreclassifier: String,
 ) {
     AnimatedVisibility(visible = preclassifierList.isNotEmpty()) {
         Column {
             Text(
                 text = stringResource(R.string.type_of_problem),
                 style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
             LazyRow {
                 items(preclassifierList) {
                     SectionItemCard(
                         title = it.name,
                         description = it.description,
-                        selected = it.id == selectedPreclassifier
+                        selected = it.id == selectedPreclassifier,
                     ) {
                         onAction(CreateCardAction.SetPreclassifier(it.id))
                     }
@@ -368,20 +363,20 @@ fun PreclassifierContent(
 fun CardTypeContent(
     cardTypeList: List<NodeCardItem>,
     onAction: (CreateCardAction) -> Unit,
-    selectedCardType: String
+    selectedCardType: String,
 ) {
     Text(
         text = stringResource(R.string.card_types),
         style =
-        MaterialTheme.typography.titleLarge
-            .copy(fontWeight = FontWeight.Bold)
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold),
     )
     LazyRow {
         items(cardTypeList) {
             SectionItemCard(
                 title = it.name,
                 description = it.description,
-                selected = it.id == selectedCardType
+                selected = it.id == selectedCardType,
             ) {
                 onAction(CreateCardAction.SetCardType(it.id))
             }
@@ -395,17 +390,17 @@ fun PhotoCardItem(
     modifier: Modifier = Modifier,
     model: Any,
     showIcon: Boolean = true,
-    onClick: (() -> Unit?)? = null
+    onClick: (() -> Unit?)? = null,
 ) {
     Box(
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         GlideImage(
             model = model,
             contentDescription = stringResource(id = R.string.empty),
             failure = placeholder(R.drawable.loading_image),
             loading = placeholder(R.drawable.loading_image),
-            modifier = modifier.padding(PaddingTiny)
+            modifier = modifier.padding(PaddingTiny),
         ) {
             it.diskCacheStrategy(DiskCacheStrategy.ALL)
         }
@@ -426,17 +421,17 @@ fun CardItemIcon(
     icon: Painter,
     modifier: Modifier = Modifier,
     color: Color = getIconColor(),
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     Card(
         modifier = modifier.padding(8.dp),
-        onClick = onClick
+        onClick = onClick,
     ) {
         Icon(
             painter = icon,
             contentDescription = stringResource(id = R.string.empty),
             tint = color,
-            modifier = Modifier.padding(8.dp)
+            modifier = Modifier.padding(8.dp),
         )
     }
 }
@@ -446,48 +441,48 @@ fun SectionItemCard(
     title: String,
     description: String,
     selected: Boolean = false,
-    onItemClick: () -> Unit
+    onItemClick: () -> Unit,
 ) {
     val color =
         if (selected) {
             CardDefaults.cardColors(
                 contentColor = getColor(),
-                containerColor = getPrimaryColor()
+                containerColor = getPrimaryColor(),
             )
         } else {
             CardDefaults.cardColors()
         }
     Card(
         modifier =
-        Modifier
-            .padding(PaddingTiny)
-            .width(Size180)
-            .height(Size100),
+            Modifier
+                .padding(PaddingTiny)
+                .width(Size180)
+                .height(Size100),
         colors = color,
         onClick = {
             onItemClick()
-        }
+        },
     ) {
         Column(
             modifier =
-            Modifier
-                .padding(PaddingNormal)
-                .fillMaxWidth()
+                Modifier
+                    .padding(PaddingNormal)
+                    .fillMaxWidth(),
         ) {
             Text(
                 text = title,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
                 style =
-                MaterialTheme.typography.bodyMedium
-                    .copy(fontWeight = FontWeight.W700)
+                    MaterialTheme.typography.bodyMedium
+                        .copy(fontWeight = FontWeight.W700),
             )
             CustomSpacer(space = SpacerSize.TINY)
             Text(
                 text = description,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
             )
         }
     }

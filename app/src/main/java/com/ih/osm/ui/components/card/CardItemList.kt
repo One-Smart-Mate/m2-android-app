@@ -3,7 +3,6 @@ package com.ih.osm.ui.components.card
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -28,9 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.cardSiteTitle
@@ -55,25 +52,21 @@ import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.sheets.SolutionBottomSheet
-import com.ih.osm.ui.extensions.getInvertedColor
 import com.ih.osm.ui.extensions.isExpired
 import com.ih.osm.ui.extensions.orDefault
 import com.ih.osm.ui.pages.createcard.CardItemIcon
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
-import com.ih.osm.ui.theme.PaddingTinySmall
-import com.ih.osm.ui.theme.Size1
 import com.ih.osm.ui.theme.Size20
-import com.ih.osm.ui.utils.STORED_LOCAL
 
-//@Composable
-//fun CardItemList(
+// @Composable
+// fun CardItemList(
 //    card: Card,
 //    isActionsEnabled: Boolean = true,
 //    onClick: () -> Unit,
 //    onSolutionClick: (String) -> Unit
-//) {
+// ) {
 //    var showSolutionBottomSheet by remember {
 //        mutableStateOf(false)
 //    }
@@ -186,36 +179,40 @@ import com.ih.osm.ui.utils.STORED_LOCAL
 //            showAssignCard = card.enableAssignMechanic()
 //        )
 //    }
-//}
+// }
 
 @Composable
-fun CardItemEvidence(showCamera: Boolean, showVideo: Boolean, showVoice: Boolean) {
+fun CardItemEvidence(
+    showCamera: Boolean,
+    showVideo: Boolean,
+    showVoice: Boolean,
+) {
     Row(
         modifier =
-        Modifier
-            .fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center
+            Modifier
+                .fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
     ) {
         if (showCamera) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_photo_camera)
+                icon = painterResource(id = R.drawable.ic_photo_camera),
             ) {}
         }
         if (showVoice) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_voice)
+                icon = painterResource(id = R.drawable.ic_voice),
             ) {}
         }
         if (showVideo) {
             CardItemIcon(
-                icon = painterResource(id = R.drawable.ic_videocam)
+                icon = painterResource(id = R.drawable.ic_videocam),
             ) {}
         }
     }
 }
 //
-//@Composable
-//fun CardSectionItemList(card: Card) {
+// @Composable
+// fun CardSectionItemList(card: Card) {
 //    Card(
 //        modifier = Modifier.padding(PaddingTinySmall),
 //        border = BorderStroke(Size1, getInvertedColor())
@@ -237,62 +234,62 @@ fun CardItemEvidence(showCamera: Boolean, showVideo: Boolean, showVoice: Boolean
 //            )
 //        }
 //    }
-//}
+// }
 
 @Composable
 fun CardItemListV2(
     card: Card,
     isActionsEnabled: Boolean = true,
     onClick: () -> Unit,
-    onAction: (CardItemSheetAction) -> Unit
+    onAction: (CardItemSheetAction) -> Unit,
 ) {
     var showSolutionBottomSheet by remember {
         mutableStateOf(false)
     }
     Card(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(PaddingNormal),
+            Modifier
+                .fillMaxWidth()
+                .padding(PaddingNormal),
         onClick = {
             onClick()
-        }
+        },
     ) {
         Column(
-            modifier = Modifier.padding(PaddingSmall)
+            modifier = Modifier.padding(PaddingSmall),
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = card.cardSiteTitle(),
                     style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold)
+                        MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold),
                 )
                 Text(
                     text = card.cardTitle(),
                     style =
-                    MaterialTheme.typography.titleLarge
-                        .copy(fontWeight = FontWeight.Bold)
+                        MaterialTheme.typography.titleLarge
+                            .copy(fontWeight = FontWeight.Bold),
                 )
                 Box(
                     modifier =
-                    Modifier
-                        .size(Size20)
-                        .background(
-                            color = card.getBorderColor(),
-                            shape = CircleShape
-                        )
+                        Modifier
+                            .size(Size20)
+                            .background(
+                                color = card.getBorderColor(),
+                                shape = CircleShape,
+                            ),
                 )
             }
 
             CardItemEvidence(
                 showCamera = card.evidenceImageCreation > 0,
                 showVideo = card.evidenceVideoCreation > 0,
-                showVoice = card.evidenceAudioCreation > 0
+                showVoice = card.evidenceAudioCreation > 0,
             )
 
             Row {
@@ -300,7 +297,7 @@ fun CardItemListV2(
                     CustomTag(
                         title = stringResource(R.string.local_card),
                         tagSize = TagSize.SMALL,
-                        tagType = TagType.OUTLINE
+                        tagType = TagType.OUTLINE,
                     )
                 }
                 CustomSpacer(direction = SpacerDirection.HORIZONTAL)
@@ -308,58 +305,58 @@ fun CardItemListV2(
                     CustomTag(
                         title = stringResource(R.string.local_solutions),
                         tagSize = TagSize.SMALL,
-                        tagType = TagType.OUTLINE
+                        tagType = TagType.OUTLINE,
                     )
                 }
             }
 
             SectionTag(
                 title = stringResource(id = R.string.status),
-                value = card.getStatus()
+                value = card.getStatus(),
             )
             SectionTag(
                 title = stringResource(id = R.string.date),
-                value = card.getCreationDate()
+                value = card.getCreationDate(),
             )
             SectionTag(
                 title = stringResource(id = R.string.due_date),
                 value =
-                if (card.dueDate.isExpired()) {
-                    stringResource(id = R.string.expired)
-                } else {
-                    card.dueDate
-                },
-                isErrorEnabled = card.dueDate.isExpired()
+                    if (card.dueDate.isExpired()) {
+                        stringResource(id = R.string.expired)
+                    } else {
+                        card.dueDate
+                    },
+                isErrorEnabled = card.dueDate.isExpired(),
             )
             SectionTag(
                 title = stringResource(R.string.preclassifier),
-                value = card.preclassifierValue()
+                value = card.preclassifierValue(),
             )
             SectionTag(
                 title = stringResource(R.string.priority),
-                value = card.priorityValue()
+                value = card.priorityValue(),
             )
             SectionTag(
                 title = stringResource(R.string.card_location),
-                value = card.cardLocation
+                value = card.cardLocation,
             )
             SectionTag(
                 title = stringResource(id = R.string.created_by),
-                value = card.creatorName.orDefault()
+                value = card.creatorName.orDefault(),
             )
             SectionTag(
                 title = stringResource(id = R.string.mechanic),
-                value = card.mechanicName.orDefault()
+                value = card.mechanicName.orDefault(),
             )
             SectionTag(
                 title = stringResource(id = R.string.comments),
-                value = card.commentsAtCardCreation.orDefault()
+                value = card.commentsAtCardCreation.orDefault(),
             )
             CustomSpacer()
             AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
                 CustomButton(
                     text = stringResource(R.string.actions),
-                    buttonType = ButtonType.OUTLINE
+                    buttonType = ButtonType.OUTLINE,
                 ) {
                     showSolutionBottomSheet = true
                 }
@@ -377,7 +374,7 @@ fun CardItemListV2(
             },
             showProvisionalSolution = card.enableProvisionalSolution(),
             showDefinitiveSolution = card.enableDefinitiveSolution(),
-            showAssignCard = card.enableAssignMechanic()
+            showAssignCard = card.enableAssignMechanic(),
         )
     }
 }
@@ -394,14 +391,13 @@ fun HomeCardItemListPreview() {
                 CustomSpacer()
                 CardItemListV2(
                     Card.mock().copy(
-                        dueDate = "2024-12-12"
+                        dueDate = "2024-12-12",
                     ),
                     true,
-                    {}
+                    {},
                 ) {}
                 CustomSpacer()
             }
         }
     }
 }
-

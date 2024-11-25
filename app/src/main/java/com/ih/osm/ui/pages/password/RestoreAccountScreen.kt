@@ -28,11 +28,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
@@ -51,7 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun RestoreAccountScreen(
     navController: NavController,
-    viewModel: RestoreAccountViewModel = hiltViewModel()
+    viewModel: RestoreAccountViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
@@ -62,9 +59,9 @@ fun RestoreAccountScreen(
         isLoading = state.isLoading,
         currentStep = state.currentStep,
         onAction = { action ->
-          viewModel.process(action)
+            viewModel.process(action)
         },
-        canResend = state.canResend
+        canResend = state.canResend,
     )
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -72,7 +69,7 @@ fun RestoreAccountScreen(
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
 
@@ -86,7 +83,7 @@ fun RestoreAccountScreen(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message
+                            message = state.message,
                         )
                         viewModel.cleanMessage()
                     }
@@ -102,27 +99,27 @@ private fun RestoreAccountContent(
     isLoading: Boolean,
     currentStep: Int,
     onAction: (RestoreAction) -> Unit,
-    canResend: Boolean
+    canResend: Boolean,
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    title = stringResource(R.string.restore_account)
+                    title = stringResource(R.string.restore_account),
                 )
             }
 
             item {
                 Column(
-                    modifier = Modifier.padding(PaddingNormal)
+                    modifier = Modifier.padding(PaddingNormal),
                 ) {
                     AnimatedVisibility(visible = currentStep == 1) {
                         VerifyEmailContent(
                             isLoading = isLoading,
-                            onAction = onAction
+                            onAction = onAction,
                         )
                     }
 
@@ -130,14 +127,14 @@ private fun RestoreAccountContent(
                         VerifyCodeContent(
                             isLoading = isLoading,
                             onAction = onAction,
-                            canResend = canResend
+                            canResend = canResend,
                         )
                     }
 
                     AnimatedVisibility(visible = currentStep == 3) {
                         ChangePasswordContent(
                             isLoading = isLoading,
-                            onAction = onAction
+                            onAction = onAction,
                         )
                     }
                 }
@@ -150,16 +147,16 @@ private fun RestoreAccountContent(
 private fun VerifyEmailContent(
     isLoading: Boolean,
     onAction: (RestoreAction) -> Unit,
-    ) {
+) {
     Column {
         Text(
-            text = stringResource(R.string.restore_account_description)
+            text = stringResource(R.string.restore_account_description),
         )
         CustomSpacer()
         CustomTextField(
             label = stringResource(R.string.email),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onAction(RestoreAction.SetEmail(it))
         }
@@ -174,7 +171,7 @@ private fun VerifyEmailContent(
 private fun VerifyCodeContent(
     isLoading: Boolean,
     onAction: (RestoreAction) -> Unit,
-    canResend: Boolean
+    canResend: Boolean,
 ) {
     Column {
         Text(text = stringResource(R.string.enter_the_verification_code_from_your_email))
@@ -182,20 +179,19 @@ private fun VerifyCodeContent(
         CustomTextField(
             label = stringResource(R.string.code),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onAction(RestoreAction.SetCode(it))
         }
         CustomSpacer()
         CustomButton(text = stringResource(R.string.verify_code), isLoading = isLoading) {
             onAction(RestoreAction.SetAction("code_check"))
-
         }
         CustomSpacer()
         AnimatedVisibility(visible = isLoading.not() && canResend) {
             CustomButton(
                 text = stringResource(R.string.resend_code),
-                buttonType = ButtonType.OUTLINE
+                buttonType = ButtonType.OUTLINE,
             ) {
                 onAction(RestoreAction.SetAction("resend_check"))
             }
@@ -207,23 +203,22 @@ private fun VerifyCodeContent(
 private fun ChangePasswordContent(
     isLoading: Boolean,
     onAction: (RestoreAction) -> Unit,
-    ) {
+) {
     Column {
         Text(text = stringResource(R.string.enter_your_new_password))
         CustomSpacer()
         CustomTextField(
             label = stringResource(R.string.new_password),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onAction(RestoreAction.SetPassword(it))
-
         }
         CustomSpacer()
         CustomTextField(
             label = stringResource(R.string.confirm_password),
             icon = Icons.Outlined.Email,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         ) {
             onAction(RestoreAction.ConfirmPassword(it))
         }

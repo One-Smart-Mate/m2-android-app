@@ -12,17 +12,16 @@ import androidx.navigation.navArgument
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.card.actions.toActionString
 import com.ih.osm.ui.pages.account.AccountScreen
+import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
-import com.ih.osm.ui.pages.home.HomeScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
-import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 
@@ -43,7 +42,7 @@ fun AppNavigation(startDestination: String) {
         },
         popExitTransition = {
             slideOutOfContainer(AnimatedContentTransitionScope.SlideDirection.End, tween(700))
-        }
+        },
     ) {
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
@@ -66,13 +65,13 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.HomeV2.route,
             arguments =
-            listOf(
-                navArgument(ARG_SYNC_CATALOG) {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = EMPTY
-                }
-            )
+                listOf(
+                    navArgument(ARG_SYNC_CATALOG) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = EMPTY
+                    },
+                ),
         ) {
             HomeScreenV2(navController = navController)
         }
@@ -81,13 +80,13 @@ fun AppNavigation(startDestination: String) {
         }
         composable(
             Screen.CardDetail.route,
-            arguments = listOf(navArgument(ARG_CARD_ID) { type = NavType.StringType })
+            arguments = listOf(navArgument(ARG_CARD_ID) { type = NavType.StringType }),
         ) {
             CardDetailScreen(navController = navController)
         }
         composable(
             Screen.CreateCard.route,
-            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType })
+            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
         ) {
             CreateCardScreen(navController = navController)
         }
@@ -97,35 +96,35 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.Solution.route,
             arguments =
-            listOf(
-                navArgument(ARG_CARD_ID) { type = NavType.StringType },
-                navArgument(ARG_ACTION_TYPE) { type = NavType.StringType }
-            )
+                listOf(
+                    navArgument(ARG_CARD_ID) { type = NavType.StringType },
+                    navArgument(ARG_ACTION_TYPE) { type = NavType.StringType },
+                ),
         ) {
             CardActionScreen(navController = navController)
         }
 
         composable(
             Screen.CardList.route,
-            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType })
+            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
         ) {
             CardListScreen(navController = navController)
         }
 
         composable(
-            Screen.Profile.route
+            Screen.Profile.route,
         ) {
             ProfileScreen(navController = navController)
         }
 
         composable(
-            Screen.QrScanner.route
+            Screen.QrScanner.route,
         ) {
             QrScannerScreen(navController = navController)
         }
 
         composable(
-            Screen.RestoreAccount.route
+            Screen.RestoreAccount.route,
         ) {
             RestoreAccountScreen(navController = navController)
         }
@@ -139,9 +138,9 @@ fun NavController.navigateAndClean(route: String) {
     graph.setStartDestination(route)
 }
 
-//fun NavController.navigateToHome() {
+// fun NavController.navigateToHome() {
 //    navigateAndClean("${Screen.Home.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
-//}
+// }
 
 fun NavController.navigateToHomeV2() {
     navigateAndClean("${Screen.HomeV2.path}?$ARG_SYNC_CATALOG=$LOAD_CATALOGS")
@@ -157,19 +156,22 @@ fun NavController.navigateToAccount() {
 
 fun NavController.navigateToCardDetail(uuid: String) {
     navigate(
-        "${Screen.CardDetail.path}/$uuid"
+        "${Screen.CardDetail.path}/$uuid",
     )
 }
 
-fun NavController.navigateToCardSolution(action: CardItemSheetAction, uuid: String) {
+fun NavController.navigateToCardSolution(
+    action: CardItemSheetAction,
+    uuid: String,
+) {
     navigate(
-        "${Screen.Solution.path}/${action.toActionString()}/$uuid"
+        "${Screen.Solution.path}/${action.toActionString()}/$uuid",
     )
 }
 
 fun NavController.navigateToCardList(filter: String) {
     navigate(
-        "${Screen.CardList.path}/$filter"
+        "${Screen.CardList.path}/$filter",
     )
 }
 

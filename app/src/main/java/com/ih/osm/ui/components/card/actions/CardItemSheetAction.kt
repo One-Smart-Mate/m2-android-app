@@ -1,12 +1,12 @@
 package com.ih.osm.ui.components.card.actions
 
-
 sealed class CardItemSheetAction {
     data object ProvisionalSolution : CardItemSheetAction()
+
     data object DefinitiveSolution : CardItemSheetAction()
+
     data object AssignMechanic : CardItemSheetAction()
 }
-
 
 fun CardItemSheetAction.toActionString(): String {
     return when (this) {

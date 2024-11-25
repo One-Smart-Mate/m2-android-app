@@ -21,9 +21,6 @@ import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
-import com.ih.osm.ui.utils.ASSIGN_CARD_ACTION
-import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
-import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,14 +29,14 @@ fun SolutionBottomSheet(
     onDismissRequest: () -> Unit,
     showProvisionalSolution: Boolean,
     showDefinitiveSolution: Boolean,
-    showAssignCard: Boolean
+    showAssignCard: Boolean,
 ) {
     ModalBottomSheet(onDismissRequest = onDismissRequest) {
         SolutionBottomSheetContent(
             showProvisionalSolution,
             showDefinitiveSolution,
             showAssignCard,
-            onAction
+            onAction,
         )
     }
 }
@@ -49,16 +46,16 @@ fun SolutionBottomSheetContent(
     showProvisionalSolution: Boolean,
     showDefinitiveSolution: Boolean,
     showAssignCard: Boolean,
-    onAction: (CardItemSheetAction) -> Unit
+    onAction: (CardItemSheetAction) -> Unit,
 ) {
     Column(
-        modifier = Modifier.padding(PaddingNormal)
+        modifier = Modifier.padding(PaddingNormal),
     ) {
         Text(
             text = stringResource(R.string.actions),
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
         AnimatedVisibility(visible = showProvisionalSolution) {
@@ -70,7 +67,7 @@ fun SolutionBottomSheetContent(
         AnimatedVisibility(visible = showDefinitiveSolution) {
             CustomButton(
                 text = stringResource(R.string.definitive_solution),
-                buttonType = ButtonType.OUTLINE
+                buttonType = ButtonType.OUTLINE,
             ) {
                 onAction(CardItemSheetAction.DefinitiveSolution)
             }
@@ -79,7 +76,7 @@ fun SolutionBottomSheetContent(
         AnimatedVisibility(visible = showAssignCard) {
             CustomButton(
                 text = stringResource(R.string.assign_card),
-                buttonType = ButtonType.TEXT
+                buttonType = ButtonType.TEXT,
             ) {
                 onAction(CardItemSheetAction.AssignMechanic)
             }

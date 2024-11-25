@@ -19,90 +19,90 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LoginViewModel @Inject constructor(
-    private val loginUseCase: LoginUseCase,
-    private val saveUserUseCase: SaveUserUseCase,
-    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-    private val fileHelper: FileHelper,
-    @ApplicationContext private val context: Context
-) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
+class LoginViewModel
+    @Inject
+    constructor(
+        private val loginUseCase: LoginUseCase,
+        private val saveUserUseCase: SaveUserUseCase,
+        private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+        private val fileHelper: FileHelper,
+        @ApplicationContext private val context: Context,
+    ) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
+        data class UiState(
+            val isLoading: Boolean = false,
+            val message: String = EMPTY,
+            val isAuthenticated: Boolean = false,
+            val email: String = EMPTY,
+            val password: String = EMPTY,
+        )
 
-    data class UiState(
-        val isLoading: Boolean = false,
-        val message: String = EMPTY,
-        val isAuthenticated: Boolean = false,
-        val email: String = EMPTY,
-        val password: String = EMPTY
-    )
-
-
-    fun process(action: LoginAction) {
-        when (action) {
-            is LoginAction.Login -> checkConnection()
-            is LoginAction.SetEmail -> setState { copy(email = action.email) }
-            is LoginAction.SetPassword -> setState { copy(password = action.password) }
-        }
-    }
-
-   fun cleanMessage() {
-       setState { copy(message = EMPTY) }
-   }
-
-    private fun checkConnection() {
-        viewModelScope.launch {
-            setState { copy(isLoading = true) }
-            if (NetworkConnection.isConnected().not()) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.please_connect_to_internet)
-                    )
-                }
-            } else {
-                handleLogin()
+        fun process(action: LoginAction) {
+            when (action) {
+                is LoginAction.Login -> checkConnection()
+                is LoginAction.SetEmail -> setState { copy(email = action.email) }
+                is LoginAction.SetPassword -> setState { copy(password = action.password) }
             }
         }
-    }
 
-    private fun handleLogin() {
-        viewModelScope.launch {
-            val email = getState().email
-            val password = getState().password
+        fun cleanMessage() {
+            setState { copy(message = EMPTY) }
+        }
 
-            kotlin.runCatching {
-                callUseCase { loginUseCase(LoginRequest(email, password)) }
-            }.onSuccess {
-                fileHelper.logUser(it)
-                handleSaveUser(it)
-            }.onFailure {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = it.localizedMessage.orEmpty()
-                    )
+        private fun checkConnection() {
+            viewModelScope.launch {
+                setState { copy(isLoading = true) }
+                if (NetworkConnection.isConnected().not()) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.please_connect_to_internet),
+                        )
+                    }
+                } else {
+                    handleLogin()
                 }
             }
         }
-    }
 
-    private fun handleSaveUser(user: User) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-               callUseCase { saveUserUseCase(user) }
-            }.onSuccess {
-                handleSyncFirebaseToken()
-                setState { copy(isLoading = false, isAuthenticated = true) }
-            }.onFailure {
-                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+        private fun handleLogin() {
+            viewModelScope.launch {
+                val email = getState().email
+                val password = getState().password
+
+                kotlin.runCatching {
+                    callUseCase { loginUseCase(LoginRequest(email, password)) }
+                }.onSuccess {
+                    fileHelper.logUser(it)
+                    handleSaveUser(it)
+                }.onFailure {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
+                        )
+                    }
+                }
+            }
+        }
+
+        private fun handleSaveUser(user: User) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { saveUserUseCase(user) }
+                }.onSuccess {
+                    handleSyncFirebaseToken()
+                    setState { copy(isLoading = false, isAuthenticated = true) }
+                }.onFailure {
+                    setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+                }
+            }
+        }
+
+        private fun handleSyncFirebaseToken() {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { syncFirebaseTokenUseCase() }
+                }
             }
         }
     }
-
-    private fun handleSyncFirebaseToken() {
-        viewModelScope.launch {
-            kotlin.runCatching {
-               callUseCase { syncFirebaseTokenUseCase() }
-            }
-        }
-    }
-}

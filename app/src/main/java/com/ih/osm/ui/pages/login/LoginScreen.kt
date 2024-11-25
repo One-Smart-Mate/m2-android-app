@@ -36,9 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -64,7 +62,10 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavController) {
+fun LoginScreen(
+    viewModel: LoginViewModel = hiltViewModel(),
+    navController: NavController,
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
@@ -74,7 +75,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavC
         onAction = { action ->
             viewModel.process(action)
         },
-        navController = navController
+        navController = navController,
     )
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -82,7 +83,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavC
             snackbarData = it,
             containerColor = MaterialTheme.colorScheme.error,
             contentColor = Color.White,
-            modifier = Modifier.padding(top = PaddingToolbar)
+            modifier = Modifier.padding(top = PaddingToolbar),
         )
     }
     LaunchedEffect(viewModel) {
@@ -95,7 +96,7 @@ fun LoginScreen(viewModel: LoginViewModel = hiltViewModel(), navController: NavC
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = state.message
+                            message = state.message,
                         )
                     }
                     viewModel.cleanMessage()
@@ -109,10 +110,10 @@ fun LoginContent(
     modifier: Modifier = Modifier,
     onAction: (LoginAction) -> Unit,
     isButtonLoading: Boolean,
-    navController: NavController
+    navController: NavController,
 ) {
     LazyColumn(
-        modifier = modifier.background(color = MaterialTheme.colorScheme.primary)
+        modifier = modifier.background(color = MaterialTheme.colorScheme.primary),
     ) {
         item {
             LoginTitle()
@@ -121,7 +122,7 @@ fun LoginContent(
                 modifier = Modifier.fillParentMaxSize(),
                 onAction = onAction,
                 isButtonLoading = isButtonLoading,
-                navController = navController
+                navController = navController,
             )
         }
     }
@@ -132,21 +133,21 @@ fun LoginForm(
     modifier: Modifier,
     onAction: (LoginAction) -> Unit,
     isButtonLoading: Boolean,
-    navController: NavController
+    navController: NavController,
 ) {
     Card(
         shape = RoundedCornerShape(topStartPercent = 10, topEndPercent = 10),
-        modifier = modifier
+        modifier = modifier,
     ) {
         Column(
-            modifier = Modifier.padding(PaddingNormal)
+            modifier = Modifier.padding(PaddingNormal),
         ) {
             CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             CustomTextField(
                 modifier = Modifier.fillMaxWidth(),
                 label = stringResource(R.string.email),
                 placeholder = stringResource(R.string.enter_your_email),
-                icon = Icons.Outlined.Email
+                icon = Icons.Outlined.Email,
             ) {
                 onAction(LoginAction.SetEmail(it))
             }
@@ -156,7 +157,7 @@ fun LoginForm(
                 label = stringResource(R.string.password),
                 placeholder = stringResource(R.string.enter_your_password),
                 icon = Icons.Outlined.Lock,
-                isPassword = true
+                isPassword = true,
             ) {
                 onAction(LoginAction.SetPassword(it))
             }
@@ -167,7 +168,7 @@ fun LoginForm(
             CustomSpacer()
             CustomButton(
                 text = stringResource(R.string.forgot_password),
-                buttonType = ButtonType.TEXT
+                buttonType = ButtonType.TEXT,
             ) {
                 navController.navigateToRestoreAccount()
             }
@@ -180,37 +181,38 @@ fun LoginForm(
 fun LoginTitle() {
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(Size230),
-        contentAlignment = Alignment.Center
+            Modifier
+                .fillMaxWidth()
+                .height(Size230),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier.padding(top = PaddingToolbarVertical, bottom = PaddingNormal)
+            modifier = Modifier.padding(top = PaddingToolbarVertical, bottom = PaddingNormal),
         ) {
             GlideImage(model = R.mipmap.ic_launcher, contentDescription = EMPTY)
             Text(
                 text = stringResource(R.string.app_simple_name),
                 style =
-                MaterialTheme.typography.displaySmall
-                    .copy(color = getColor())
+                    MaterialTheme.typography.displaySmall
+                        .copy(color = getColor()),
             )
             Text(
                 text = stringResource(R.string.app_simple_name_desc),
                 style =
-                MaterialTheme.typography.bodySmall
-                    .copy(color = getColor())
+                    MaterialTheme.typography.bodySmall
+                        .copy(color = getColor()),
             )
             CustomSpacer()
             Text(
                 stringResource(
                     R.string.app_version,
-                    BuildConfig.VERSION_NAME
+                    BuildConfig.VERSION_NAME,
                 ),
-                style = MaterialTheme.typography.labelSmall
-                    .copy(color = getColor())
+                style =
+                    MaterialTheme.typography.labelSmall
+                        .copy(color = getColor()),
             )
         }
     }
@@ -226,7 +228,7 @@ fun LoginPreview() {
             LoginContent(
                 onAction = {},
                 isButtonLoading = false,
-                navController = rememberNavController()
+                navController = rememberNavController(),
             )
         }
     }

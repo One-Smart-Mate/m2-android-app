@@ -10,7 +10,6 @@ import android.net.NetworkRequest
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -20,10 +19,8 @@ import androidx.annotation.RequiresApi
 import androidx.compose.runtime.collectAsState
 import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.work.BackoffPolicy
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
-import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
@@ -36,7 +33,6 @@ import com.ih.osm.ui.navigation.AppNavigation
 import com.ih.osm.ui.pages.splash.SplashViewModel
 import com.ih.osm.ui.theme.OsmAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import java.time.Duration
 import timber.log.Timber
 
 @AndroidEntryPoint
@@ -109,7 +105,7 @@ class MainActivity : ComponentActivity() {
         WorkManager.getInstance(this@MainActivity).enqueueUniqueWork(
             uuid,
             ExistingWorkPolicy.REPLACE,
-            workRequest
+            workRequest,
         )
     }
 
@@ -123,9 +119,9 @@ class MainActivity : ComponentActivity() {
             this,
             arrayOf(
                 Manifest.permission.ACCESS_NETWORK_STATE,
-                Manifest.permission.CHANGE_NETWORK_STATE
+                Manifest.permission.CHANGE_NETWORK_STATE,
             ),
-            2
+            2,
         )
     }
 
@@ -136,8 +132,8 @@ class MainActivity : ComponentActivity() {
             startActivity(
                 Intent(
                     Intent.ACTION_VIEW,
-                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName")
-                )
+                    Uri.parse("https://play.google.com/store/apps/details?id=$packageName"),
+                ),
             )
         }
     }
@@ -159,13 +155,14 @@ class MainActivity : ComponentActivity() {
         val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
         val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
-        val updateFlowResultLauncher = registerForActivityResult(
-            ActivityResultContracts.StartIntentSenderForResult()
-        ) { result ->
-            if (result.resultCode != RESULT_OK) {
-                showUpdateDialog()
+        val updateFlowResultLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.StartIntentSenderForResult(),
+            ) { result ->
+                if (result.resultCode != RESULT_OK) {
+                    showUpdateDialog()
+                }
             }
-        }
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             if (appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
                 appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
@@ -173,7 +170,7 @@ class MainActivity : ComponentActivity() {
                 appUpdateManager.startUpdateFlowForResult(
                     appUpdateInfo,
                     updateFlowResultLauncher,
-                    updateOptions
+                    updateOptions,
                 )
             }
         }

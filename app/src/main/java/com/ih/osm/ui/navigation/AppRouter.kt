@@ -40,7 +40,7 @@ private object Route {
 sealed class Screen(val route: String, val path: String = EMPTY) {
     data object Login : Screen(Route.LOGIN)
 
-   // data object Home : Screen(Route.HOME, Route.HOME_PATH)
+    // data object Home : Screen(Route.HOME, Route.HOME_PATH)
 
     data object HomeV2 : Screen(Route.HOME_V2, Route.HOME_PATH_V2)
 

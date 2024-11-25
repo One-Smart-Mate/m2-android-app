@@ -10,30 +10,31 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProfileViewModel @Inject constructor(
-    private val getUserUseCase: GetUserUseCase
-) : BaseViewModel<ProfileViewModel.UiState>(UiState()) {
+class ProfileViewModel
+    @Inject
+    constructor(
+        private val getUserUseCase: GetUserUseCase,
+    ) : BaseViewModel<ProfileViewModel.UiState>(UiState()) {
+        data class UiState(
+            val state: LCE<User> = LCE.Loading,
+        )
 
-    data class UiState(
-        val state: LCE<User> = LCE.Loading
-    )
+        init {
+            handleGetUser()
+        }
 
-    init {
-        handleGetUser()
-    }
-
-    private fun handleGetUser() {
-        setState { copy(state = LCE.Loading) }
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getUserUseCase() }
-            }.onSuccess {
-                it?.let {
-                    setState { copy(state = LCE.Success(it)) }
+        private fun handleGetUser() {
+            setState { copy(state = LCE.Loading) }
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getUserUseCase() }
+                }.onSuccess {
+                    it?.let {
+                        setState { copy(state = LCE.Success(it)) }
+                    }
+                }.onFailure {
+                    setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
                 }
-            }.onFailure {
-                setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
             }
         }
     }
-}

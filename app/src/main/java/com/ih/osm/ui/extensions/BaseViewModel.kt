@@ -7,9 +7,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 
 abstract class BaseViewModel<S : Any>(
-    initialState: S
+    initialState: S,
 ) : ViewModel() {
-
     // StateFlow to hold the state of the UI
     private val _state = MutableStateFlow(initialState)
     val state: StateFlow<S> = _state

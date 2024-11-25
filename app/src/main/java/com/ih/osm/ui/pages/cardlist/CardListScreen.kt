@@ -2,7 +2,6 @@ package com.ih.osm.ui.pages.cardlist
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -31,19 +29,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
-import com.ih.osm.ui.components.PullToRefreshLazyColumn
 import com.ih.osm.ui.components.SpacerSize
-import com.ih.osm.ui.components.buttons.ButtonType
-import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
-import com.ih.osm.ui.components.card.actions.CardItemSheetAction
-import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
@@ -53,7 +45,10 @@ import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun CardListScreen(navController: NavController, viewModel: CardListViewModel = hiltViewModel()) {
+fun CardListScreen(
+    navController: NavController,
+    viewModel: CardListViewModel = hiltViewModel(),
+) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     if (state.isLoading) {
@@ -63,7 +58,7 @@ fun CardListScreen(navController: NavController, viewModel: CardListViewModel = 
             navController = navController,
             cards = state.cards,
             onAction = { action ->
-                when(action) {
+                when (action) {
                     is CardListAction.Action -> {
                         navController.navigateToCardSolution(action.action, action.id)
                     }
@@ -71,10 +66,10 @@ fun CardListScreen(navController: NavController, viewModel: CardListViewModel = 
                         navController.navigateToCreateCard()
                     }
                     is CardListAction.Detail -> {
-                       navController.navigateToCardDetail(action.id)
+                        navController.navigateToCardDetail(action.id)
                     }
                 }
-            }
+            },
         )
     }
 
@@ -88,34 +83,35 @@ fun CardListScreen(navController: NavController, viewModel: CardListViewModel = 
 fun CardListContent(
     navController: NavController,
     cards: List<Card>,
-    onAction: (CardListAction) -> Unit
+    onAction: (CardListAction) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
-              onAction(CardListAction.Create)
+                onAction(CardListAction.Create)
             }) {
                 Icon(Icons.Filled.Add, contentDescription = EMPTY)
             }
-        }
+        },
     ) { padding ->
 
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 Column(
-                    modifier = Modifier.background(
-                        color = MaterialTheme.colorScheme.background
-                    )
+                    modifier =
+                        Modifier.background(
+                            color = MaterialTheme.colorScheme.background,
+                        ),
                 ) {
                     CustomAppBar(navController = navController, title = stringResource(R.string.anomalies_cards))
                     Box(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End
+                            horizontalArrangement = Arrangement.End,
                         ) {
 //                            CustomButton(
 //                                text = stringResource(R.string.update_list),
@@ -141,7 +137,7 @@ fun CardListContent(
                     },
                     onAction = {
                         onAction(CardListAction.Action(it, card.uuid))
-                    }
+                    },
                 )
             }
         }
@@ -166,6 +162,6 @@ private fun CardListScreenScreenPreview() {
 //                {}
 //            )
 //        }
-    }
+        }
     }
 }

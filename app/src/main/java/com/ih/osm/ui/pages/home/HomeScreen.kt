@@ -1,102 +1,21 @@
 package com.ih.osm.ui.pages.home
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Build
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.Card
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-
-import com.ih.osm.MainActivity
-import com.ih.osm.R
-import com.ih.osm.core.ui.LCE
-import com.ih.osm.domain.model.Card
-import com.ih.osm.domain.model.NetworkStatus
-import com.ih.osm.domain.model.User
-import com.ih.osm.domain.model.toAnomaliesList
-import com.ih.osm.domain.model.toLocalCards
-import com.ih.osm.ui.components.CustomSpacer
-import com.ih.osm.ui.components.CustomTag
-import com.ih.osm.ui.components.LoadingScreen
-import com.ih.osm.ui.components.SpacerDirection
-import com.ih.osm.ui.components.SpacerSize
-import com.ih.osm.ui.components.TagSize
-import com.ih.osm.ui.components.TagType
-import com.ih.osm.ui.components.card.NetworkCard
-import com.ih.osm.ui.components.images.CircularImage
-import com.ih.osm.ui.extensions.getActivity
-import com.ih.osm.ui.extensions.getColor
-import com.ih.osm.ui.extensions.getPrimaryColor
-import com.ih.osm.ui.extensions.headerContent
-import com.ih.osm.ui.navigation.navigateToAccount
-import com.ih.osm.ui.navigation.navigateToCardList
-import com.ih.osm.ui.navigation.navigateToQrScanner
-import com.ih.osm.ui.theme.OsmAppTheme
-import com.ih.osm.ui.theme.PaddingNormal
-import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.theme.Size2
-import com.ih.osm.ui.utils.CARD_ANOMALIES
-import com.ih.osm.ui.utils.EMPTY
-import com.ih.osm.ui.utils.LOAD_CATALOGS
-import kotlinx.coroutines.launch
-
 
 @Composable
 fun HomeScreen(navController: NavController) {
-
 }
 
-//@SuppressLint("CoroutineCreationDuringComposition")
-//@Composable
-//fun HomeScreen(
+// @SuppressLint("CoroutineCreationDuringComposition")
+// @Composable
+// fun HomeScreen(
 //    navController: NavController,
 //    viewModel: HomeViewModel = mavericksViewModel(),
 //    syncCatalogs: String = EMPTY
-//) {
+// ) {
 //    val state by viewModel.collectAsState()
 //    val lifecycle = LocalLifecycleOwner.current.lifecycle
 //    val snackBarHostState = remember { SnackbarHostState() }
@@ -162,11 +81,11 @@ fun HomeScreen(navController: NavController) {
 //                }
 //            }
 //    }
-//}
+// }
 //
-//@OptIn(ExperimentalFoundationApi::class)
-//@Composable
-//private fun HomeContent(
+// @OptIn(ExperimentalFoundationApi::class)
+// @Composable
+// private fun HomeContent(
 //    navController: NavController,
 //    user: User?,
 //    cardList: List<Card>,
@@ -179,7 +98,7 @@ fun HomeScreen(navController: NavController) {
 //    onSyncCatalogsClick: () -> Unit,
 //    showSyncRemoteCards: Boolean,
 //    onSyncRemoteCardsClick: () -> Unit
-//) {
+// ) {
 //    Scaffold { padding ->
 //        LazyColumn(
 //            modifier = Modifier.fillMaxSize()
@@ -255,17 +174,17 @@ fun HomeScreen(navController: NavController) {
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@Composable
-//private fun HomeSectionCardItem(
+// @Composable
+// private fun HomeSectionCardItem(
 //    title: String,
 //    icon: ImageVector,
 //    description: String = EMPTY,
 //    subText: String = EMPTY,
 //    subTextColor: Color = Color.Unspecified,
 //    onClick: () -> Unit
-//) {
+// ) {
 //    Card(
 //        modifier =
 //        Modifier
@@ -312,15 +231,15 @@ fun HomeScreen(navController: NavController) {
 //            }
 //        }
 //    }
-//}
+// }
 //
-//@Composable
-//private fun HomeAppBar(
+// @Composable
+// private fun HomeAppBar(
 //    navController: NavController,
 //    user: User,
 //    padding: Dp,
 //    networkStatus: NetworkStatus
-//) {
+// ) {
 //    Column(
 //        modifier = Modifier.headerContent(padding),
 //        horizontalAlignment = Alignment.End
@@ -389,13 +308,13 @@ fun HomeScreen(navController: NavController) {
 //        }
 //        CustomSpacer()
 //    }
-//}
+// }
 
-//@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-//@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-//@Preview(showBackground = true, name = "light")
-//@Composable
-//private fun HomeScreenPreview() {
+// @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+// @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+// @Preview(showBackground = true, name = "light")
+// @Composable
+// private fun HomeScreenPreview() {
 //    OsmAppTheme {
 //        Scaffold(modifier = Modifier.fillMaxSize()) {
 //            HomeContent(
@@ -414,4 +333,4 @@ fun HomeScreen(navController: NavController) {
 //            )
 //        }
 //    }
-//}
+// }
