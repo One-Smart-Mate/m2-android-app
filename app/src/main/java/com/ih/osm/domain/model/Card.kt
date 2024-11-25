@@ -20,8 +20,6 @@ import com.ih.osm.ui.extensions.toFormatDate
 import com.ih.osm.ui.utils.ALL_OPEN_CARDS
 import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.ASSIGNED_CARDS
-import com.ih.osm.ui.utils.CARD_ANOMALIES_NAME
-import com.ih.osm.ui.utils.CARD_TYPE_ANOMALIES_A
 import com.ih.osm.ui.utils.CLOSED_CARDS
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.EXPIRED_CARDS
@@ -446,12 +444,6 @@ fun Card.toEntity(): CardEntity {
 }
 
 fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL || it.hasLocalSolutions }
-
-fun List<Card>.toAnomaliesList() = this.filter { it.isAnomalies() }
-
-fun Card.isAnomalies() =
-    this.cardTypeMethodology?.lowercase() == CARD_TYPE_ANOMALIES_A.lowercase() ||
-        this.cardTypeMethodologyName?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
 
 fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
     return CreateCardRequest(
