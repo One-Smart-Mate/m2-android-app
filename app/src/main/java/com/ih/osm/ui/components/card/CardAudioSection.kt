@@ -18,12 +18,14 @@ import com.ih.osm.ui.theme.Size120
 @Composable
 fun CardAudioSection(title: String, evidences: List<Evidence>) {
     Column {
-        Text(
-            text = title,
-            style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
-        )
+        if (evidences.isNotEmpty()) {
+            Text(
+                text = title,
+                style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold)
+            )
+        }
         LazyRow {
             items(evidences) {
                 VideoPlayer(

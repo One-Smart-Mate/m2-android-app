@@ -219,11 +219,12 @@ fun SolutionScreenContent(
                         ) {
                             onAction(CardAction.SetComment(it))
                         }
-                        CustomSpacer()
-                        CustomButton(text = stringResource(R.string.save)) {
-                            onAction(CardAction.Save)
-                        }
+
                     }
+                }
+                CustomSpacer()
+                CustomButton(text = stringResource(R.string.save)) {
+                    onAction(CardAction.Save)
                 }
             }
         }

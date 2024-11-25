@@ -50,9 +50,11 @@ import com.ih.osm.domain.model.toVideosAtProvisionalSolution
 import com.ih.osm.domain.model.validateCloseDate
 import com.ih.osm.domain.model.validateProvisionalDate
 import com.ih.osm.ui.components.CustomAppBar
+import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SectionTag
+import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.card.CardAudioSection
 import com.ih.osm.ui.components.card.CardImageSection
 import com.ih.osm.ui.components.card.CardVideoSection
@@ -194,9 +196,6 @@ fun CardInformationContent(card: Card) {
             title = stringResource(id = R.string.mechanic),
             value = card.mechanicName.orDefault()
         )
-    }
-
-    ExpandableCard(title = stringResource(id = R.string.comments)) {
         SectionTag(
             title = stringResource(id = R.string.comments),
             value = card.commentsAtCardCreation.orDefault()
@@ -279,6 +278,8 @@ fun CardInformationContent(card: Card) {
             evidences = card.evidences?.toAudiosAtDefinitiveSolution().orEmpty()
         )
     }
+
+    CustomSpacer(space = SpacerSize.LARGE)
 }
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")

@@ -46,13 +46,18 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.runtime.*
 import com.ih.osm.core.ui.functions.FileType
 import com.ih.osm.core.ui.functions.getUriForFile
+import com.ih.osm.ui.components.ModernAudioRecorderComponent
+import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import java.io.File
 
 @Composable
 fun DevScreen(navController: NavController) {
-    CameraLauncher {
-
+    Column {
+//        CustomSpacer()
+//        CustomSpacer()
+//        ModernAudioRecorderComponent(LocalContext.current)
+        Text("Components under development")
     }
 }
 

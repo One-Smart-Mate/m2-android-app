@@ -18,6 +18,8 @@ import com.ih.osm.domain.repository.solution.SolutionRepository
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.DEFINITIVE_SOLUTION
 import com.ih.osm.ui.utils.PROVISIONAL_SOLUTION
+import com.ih.osm.ui.utils.STATUS_P
+import com.ih.osm.ui.utils.STATUS_R
 import javax.inject.Inject
 
 interface SaveCardSolutionUseCase {
@@ -75,7 +77,8 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
                             userAppDefinitiveSolutionId = userAppSolution?.userId,
                             userAppDefinitiveSolutionName = userAppSolution?.name,
                             userDefinitiveSolutionId = userSolution?.id,
-                            userDefinitiveSolutionName = userSolution?.name
+                            userDefinitiveSolutionName = userSolution?.name,
+                            status = STATUS_R
                         )
                     } else {
                         val request =
@@ -105,7 +108,8 @@ class SaveCardSolutionUseCaseImpl @Inject constructor(
                             userAppProvisionalSolutionId = userAppSolution?.userId,
                             userAppProvisionalSolutionName = userAppSolution?.name,
                             userProvisionalSolutionId = userSolution?.id,
-                            userProvisionalSolutionName = userSolution?.name
+                            userProvisionalSolutionName = userSolution?.name,
+                            status = STATUS_P
                         )
                     } else {
                         val request =

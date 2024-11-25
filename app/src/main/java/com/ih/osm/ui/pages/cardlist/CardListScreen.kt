@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.cardlist
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -75,36 +77,10 @@ fun CardListScreen(navController: NavController, viewModel: CardListViewModel = 
             }
         )
     }
-//
-//    SnackbarHost(hostState = snackBarHostState) {
-//        Snackbar(
-//            snackbarData = it,
-//            containerColor = Color.Red,
-//            contentColor = Color.White,
-//            modifier = Modifier.padding(top = PaddingToolbar)
-//        )
-//    }
-//
-//    LaunchedEffect(viewModel, lifecycle) {
-//        snapshotFlow { state }
-//            .flowWithLifecycle(lifecycle)
-//            .collect {
-//                if (state.refreshCards) {
-//                    viewModel.process(CardListViewModel.Action.GetCards(filter))
-//                }
-//                if (state.isLoading.not() &&
-//                    state.isRefreshing.not() &&
-//                    state.message.isNotEmpty()
-//                ) {
-//                    scope.launch {
-//                        snackBarHostState.showSnackbar(
-//                            message = state.message
-//                        )
-//                        viewModel.process(CardListViewModel.Action.ClearMessage)
-//                    }
-//                }
-//            }
-//    }
+
+    LaunchedEffect(Unit) {
+        viewModel.load()
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

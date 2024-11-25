@@ -31,12 +31,14 @@ fun CardVideoSection(title: String, evidences: List<Evidence>) {
         mutableStateOf(false)
     }
     Column {
-        Text(
-            text = title,
-            style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
-        )
+       if(evidences.isNotEmpty()) {
+           Text(
+               text = title,
+               style =
+               MaterialTheme.typography.titleLarge
+                   .copy(fontWeight = FontWeight.Bold)
+           )
+       }
         LazyRow {
             items(evidences) {
                 PhotoCardItem(
