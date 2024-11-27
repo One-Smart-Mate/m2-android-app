@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "106447599572",
-    "project_id": "osm-android-app-prod",
-    "storage_bucket": "osm-android-app-prod.appspot.com"
+    "project_number": "268265829499",
+    "project_id": "osm-prod-94bd8",
+    "storage_bucket": "osm-prod-94bd8.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:106447599572:android:e16512f405ae36df524841",
+        "mobilesdk_app_id": "1:268265829499:android:60d39c5794cb7841179ede",
         "android_client_info": {
           "package_name": "com.ih.osm"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAiXpiiKJuVThrrxggzUga5d0sYUV4JIuA"
+          "current_key": "AIzaSyDp9OVSmKmpbpPPcWiAPvOxBDHCdaQfOx0"
         }
       ],
       "services": {

@@ -17,7 +17,7 @@ import com.ih.osm.domain.repository.solution.SolutionRepository
 import javax.inject.Inject
 
 interface SyncCardsUseCase {
-    suspend operator fun invoke(handleNotification: Boolean = true)
+    suspend operator fun invoke()
 }
 
 class SyncCardsUseCaseImpl
@@ -32,7 +32,7 @@ class SyncCardsUseCaseImpl
         private val evidenceRepo: EvidenceRepository,
         private val solutionRepo: SolutionRepository,
     ) : SyncCardsUseCase {
-        override suspend fun invoke(handleNotification: Boolean) {
+        override suspend fun invoke() {
             var selectedCard: Card? = null
 
             try {

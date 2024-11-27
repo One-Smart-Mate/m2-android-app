@@ -45,7 +45,7 @@ class NotificationManager
             }
         }
 
-        fun buildNotificationSuccessCard(cardId: String) {
+        fun buildNotificationSuccessCard(cardId: String = EMPTY) {
             try {
                 buildNotification(
                     title = "${context.getString(R.string.card_successfully)} $cardId",
