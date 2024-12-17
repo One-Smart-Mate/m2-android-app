@@ -12,7 +12,7 @@ data class Level(
     val superiorId: String,
     val name: String,
     val description: String,
-    val status: String
+    val status: String,
 )
 
 fun Level.toEntity(): LevelEntity {
@@ -23,7 +23,7 @@ fun Level.toEntity(): LevelEntity {
         superiorId = this.superiorId,
         name = this.name,
         description = this.description,
-        status = this.status
+        status = this.status,
     )
 }
 
@@ -33,7 +33,7 @@ fun List<Level>.toNodeItemList(): List<NodeCardItem> {
             id = it.id,
             name = it.name,
             description = it.description,
-            superiorId = it.superiorId
+            superiorId = it.superiorId,
         )
     }
 }

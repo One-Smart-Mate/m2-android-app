@@ -23,23 +23,31 @@ import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.theme.OsmAppTheme
 
 @Composable
-fun StepsProgressBar(modifier: Modifier = Modifier, numberOfSteps: Int, currentStep: Int) {
+fun StepsProgressBar(
+    modifier: Modifier = Modifier,
+    numberOfSteps: Int,
+    currentStep: Int,
+) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         for (step in 0..numberOfSteps) {
             Step(
                 modifier = Modifier.weight(1F),
                 isCompete = step < currentStep,
-                isCurrent = step == currentStep
+                isCurrent = step == currentStep,
             )
         }
     }
 }
 
 @Composable
-fun Step(modifier: Modifier = Modifier, isCompete: Boolean, isCurrent: Boolean) {
+fun Step(
+    modifier: Modifier = Modifier,
+    isCompete: Boolean,
+    isCurrent: Boolean,
+) {
     val color = if (isCompete || isCurrent) getPrimaryColor() else Color.LightGray
     val innerCircleColor = if (isCompete) getPrimaryColor() else Color.LightGray
 
@@ -48,23 +56,23 @@ fun Step(modifier: Modifier = Modifier, isCompete: Boolean, isCurrent: Boolean) 
         HorizontalDivider(
             modifier = Modifier.align(Alignment.CenterStart),
             color = color,
-            thickness = 2.dp
+            thickness = 2.dp,
         )
 
         // Circle
         Canvas(
             modifier =
-            Modifier
-                .size(15.dp)
-                .align(Alignment.CenterEnd)
-                .border(
-                    shape = CircleShape,
-                    width = 2.dp,
-                    color = color
-                ),
+                Modifier
+                    .size(15.dp)
+                    .align(Alignment.CenterEnd)
+                    .border(
+                        shape = CircleShape,
+                        width = 2.dp,
+                        color = color,
+                    ),
             onDraw = {
                 drawCircle(color = innerCircleColor)
-            }
+            },
         )
     }
 }
@@ -80,7 +88,7 @@ fun StepsProgressBarPreview() {
             StepsProgressBar(
                 modifier = Modifier.fillMaxWidth(),
                 numberOfSteps = 5,
-                currentStep = currentStep.value
+                currentStep = currentStep.value,
             )
         }
     }

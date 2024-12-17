@@ -9,15 +9,15 @@ interface GetPrioritiesUseCase {
 }
 
 class GetPrioritiesUseCaseImpl
-@Inject
-constructor(
-    private val repo: PriorityRepository
-) : GetPrioritiesUseCase {
-    override suspend fun invoke(syncRemote: Boolean): List<Priority> {
-        if (syncRemote) {
-            val list = repo.getAllRemote()
-            repo.saveAll(list)
+    @Inject
+    constructor(
+        private val repo: PriorityRepository,
+    ) : GetPrioritiesUseCase {
+        override suspend fun invoke(syncRemote: Boolean): List<Priority> {
+            if (syncRemote) {
+                val list = repo.getAllRemote()
+                repo.saveAll(list)
+            }
+            return repo.getAll()
         }
-        return repo.getAll()
     }
-}

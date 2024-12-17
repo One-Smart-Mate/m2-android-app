@@ -50,13 +50,13 @@ fun QrScannerScreen(navController: NavController) {
         LoadingScreen(text = stringResource(R.string.loading_data))
     } else {
         Box(
-            Modifier.fillMaxSize()
+            Modifier.fillMaxSize(),
         ) {
             QrCamera(
                 onCameraError = {
                     scope.launch {
                         snackBarHostState.showSnackbar(
-                            message = it
+                            message = it,
                         )
                     }
                 },
@@ -70,31 +70,31 @@ fun QrScannerScreen(navController: NavController) {
                     } else {
                         scope.launch {
                             snackBarHostState.showSnackbar(
-                                message = context.getString(R.string.valid_superior_id)
+                                message = context.getString(R.string.valid_superior_id),
                             )
                         }
                     }
-                }
+                },
             )
             Box(
                 modifier =
-                Modifier
-                    .padding(vertical = PaddingToolbarVertical, horizontal = PaddingNormal)
-                    .background(
-                        color = Color.White,
-                        shape = CircleShape
-                    )
+                    Modifier
+                        .padding(vertical = PaddingToolbarVertical, horizontal = PaddingNormal)
+                        .background(
+                            color = Color.White,
+                            shape = CircleShape,
+                        ),
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = stringResource(R.string.empty),
                     modifier =
-                    Modifier
-                        .size(Size38)
-                        .clickable {
-                            navController.popBackStack()
-                        },
-                    tint = getIconColor()
+                        Modifier
+                            .size(Size38)
+                            .clickable {
+                                navController.popBackStack()
+                            },
+                    tint = getIconColor(),
                 )
             }
         }
@@ -103,7 +103,7 @@ fun QrScannerScreen(navController: NavController) {
                 snackbarData = it,
                 containerColor = MaterialTheme.colorScheme.error,
                 contentColor = Color.White,
-                modifier = Modifier.padding(top = PaddingToolbar)
+                modifier = Modifier.padding(top = PaddingToolbar),
             )
         }
     }

@@ -16,7 +16,7 @@ fun LoginResponse.toDomain(): User {
         companyId = this.data.companyId,
         siteId = site?.id.orEmpty(),
         siteName = site?.name.orEmpty(),
-        logo = site?.logo.orEmpty()
+        logo = site?.logo.orEmpty(),
     )
 }
 
@@ -29,11 +29,11 @@ data class UserWrapper(
     val logo: String,
     val companyId: String,
     val companyName: String,
-    val sites: List<Site>
+    val sites: List<Site>,
 )
 
 data class Site(
     val id: String,
     val name: String,
-    val logo: String
+    val logo: String,
 )

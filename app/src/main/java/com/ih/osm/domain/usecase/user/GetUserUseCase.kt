@@ -9,11 +9,11 @@ interface GetUserUseCase {
 }
 
 class GetUserUseCaseImpl
-@Inject
-constructor(
-    private val authRepository: AuthRepository
-) : GetUserUseCase {
-    override suspend fun invoke(): User? {
-        return authRepository.get()
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : GetUserUseCase {
+        override suspend fun invoke(): User? {
+            return authRepository.get()
+        }
     }
-}

@@ -28,55 +28,61 @@ import com.ih.osm.ui.theme.PaddingLarge
 import com.ih.osm.ui.theme.Size38
 
 @Composable
-fun CustomAppBar(navController: NavController, title: String) {
+fun CustomAppBar(
+    navController: NavController,
+    title: String,
+) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                ),
     ) {
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(R.string.empty),
             modifier =
-            Modifier
-                .size(Size38)
-                .clickable {
-                    navController.popBackStack()
-                }
+                Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
         )
         Text(
             text = title,
             style =
-            MaterialTheme.typography.displaySmall
-                .copy(color = getTextColor()),
-            modifier = Modifier.padding(horizontal = PaddingLarge)
+                MaterialTheme.typography.displaySmall
+                    .copy(color = getTextColor()),
+            modifier = Modifier.padding(horizontal = PaddingLarge),
         )
         CustomSpacer()
     }
 }
 
 @Composable
-fun CustomAppBar(navController: NavController, content: @Composable () -> Unit) {
+fun CustomAppBar(
+    navController: NavController,
+    content: @Composable () -> Unit,
+) {
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.background
-            )
+            Modifier
+                .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.background,
+                ),
     ) {
         Icon(
             Icons.AutoMirrored.Filled.KeyboardArrowLeft,
             contentDescription = stringResource(R.string.empty),
             modifier =
-            Modifier
-                .size(Size38)
-                .clickable {
-                    navController.popBackStack()
-                }
+                Modifier
+                    .size(Size38)
+                    .clickable {
+                        navController.popBackStack()
+                    },
         )
         content()
         CustomSpacer()

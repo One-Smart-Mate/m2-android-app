@@ -28,7 +28,7 @@ class AppWorker
                     title = applicationContext.getString(R.string.sync_cards_title),
                     description = applicationContext.getString(R.string.sync_cards_start),
                 )
-                syncCardsUseCase(true)
+                syncCardsUseCase()
                 WorkManagerUUID.deleteUUID()
                 notificationManager.buildNotification(
                     title = applicationContext.getString(R.string.sync_cards_title),

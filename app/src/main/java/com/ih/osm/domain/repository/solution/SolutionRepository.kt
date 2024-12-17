@@ -6,7 +6,6 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.domain.model.Card
 
 interface SolutionRepository {
-
     suspend fun save(solutionEntity: SolutionEntity)
 
     suspend fun deleteAll()

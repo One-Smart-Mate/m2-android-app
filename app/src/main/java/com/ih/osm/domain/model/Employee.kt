@@ -8,6 +8,6 @@ fun Employee.toEntity(): EmployeeEntity {
     return EmployeeEntity(
         id = this.id,
         name = this.name,
-        email = this.email
+        email = this.email,
     )
 }

@@ -10,36 +10,37 @@ import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.navigation.ARG_CARD_ID
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @HiltViewModel
-class CardDetailViewModel @Inject constructor(
-    private val getCardDetailUseCase: GetCardDetailUseCase,
-    private val fileHelper: FileHelper,
-    savedStateHandle: SavedStateHandle
-) : BaseViewModel<CardDetailViewModel.UiState>(UiState()) {
+class CardDetailViewModel
+    @Inject
+    constructor(
+        private val getCardDetailUseCase: GetCardDetailUseCase,
+        private val fileHelper: FileHelper,
+        savedStateHandle: SavedStateHandle,
+    ) : BaseViewModel<CardDetailViewModel.UiState>(UiState()) {
+        data class UiState(
+            val state: LCE<Card> = LCE.Loading,
+            val message: String = EMPTY,
+        )
 
-    data class UiState(
-        val state: LCE<Card> = LCE.Loading,
-        val message: String = EMPTY
-    )
+        init {
+            val uuid = savedStateHandle.get<String>(ARG_CARD_ID).orEmpty()
+            handleGetCardDetail(uuid)
+        }
 
-    init {
-        val uuid = savedStateHandle.get<String>(ARG_CARD_ID).orEmpty()
-        handleGetCardDetail(uuid)
-    }
-
-    private fun handleGetCardDetail(uuid: String) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getCardDetailUseCase(uuid = uuid) }
-            }.onSuccess {
-                setState { copy(state = LCE.Success(it)) }
-            }.onFailure {
-                fileHelper.logException(it)
-                setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
+        private fun handleGetCardDetail(uuid: String) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getCardDetailUseCase(uuid = uuid) }
+                }.onSuccess {
+                    setState { copy(state = LCE.Success(it)) }
+                }.onFailure {
+                    fileHelper.logException(it)
+                    setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
+                }
             }
         }
     }
-}

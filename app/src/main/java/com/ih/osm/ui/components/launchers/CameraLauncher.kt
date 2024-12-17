@@ -35,9 +35,10 @@ fun CameraLauncher(onComplete: (uri: Uri) -> Unit) {
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) {
             if (it) {
                 scope.launch {
-                    val compressedImage = Compressor.compress(context, file) {
-                        quality(COMPRESS_QUALITY)
-                    }
+                    val compressedImage =
+                        Compressor.compress(context, file) {
+                            quality(COMPRESS_QUALITY)
+                        }
                     val newUri = compressedImage.toUri()
                     onComplete(newUri)
                     fileInfo = context.getUriForFile(fileType = FileType.IMAGE)
@@ -49,7 +50,7 @@ fun CameraLauncher(onComplete: (uri: Uri) -> Unit) {
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission(),
         ) {
             if (it) {
                 cameraLauncher.launch(uri)

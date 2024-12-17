@@ -28,7 +28,7 @@ import com.ih.osm.ui.theme.PaddingNormal
 fun ExpandableCard(
     title: String,
     expanded: Boolean = false,
-    content: @Composable ColumnScope.() -> Unit
+    content: @Composable ColumnScope.() -> Unit,
 ) {
     val isExpanded =
         remember {
@@ -44,26 +44,26 @@ fun ExpandableCard(
 
     Card(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(PaddingNormal)
+            Modifier
+                .fillMaxWidth()
+                .padding(PaddingNormal),
     ) {
         Row(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .clickable {
-                    isExpanded.value = isExpanded.value.not()
-                }
-                .padding(PaddingNormal),
-            horizontalArrangement = Arrangement.SpaceBetween
+                Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        isExpanded.value = isExpanded.value.not()
+                    }
+                    .padding(PaddingNormal),
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(text = title)
             Icon(arrowIcon, contentDescription = title)
         }
         AnimatedVisibility(visible = isExpanded.value) {
             Column(
-                modifier = Modifier.padding(PaddingNormal)
+                modifier = Modifier.padding(PaddingNormal),
             ) {
                 content()
             }

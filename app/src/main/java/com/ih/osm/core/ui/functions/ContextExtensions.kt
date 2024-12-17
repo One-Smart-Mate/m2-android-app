@@ -18,7 +18,7 @@ fun openAppSettings(context: Context) {
     val intent =
         Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-            Uri.fromParts("package", context.packageName, null)
+            Uri.fromParts("package", context.packageName, null),
         )
     context.startActivity(intent)
 }
@@ -34,7 +34,7 @@ fun Context.createImageFile(): File {
     return File.createTempFile(
         imageFileName,
         ".jpg",
-        externalCacheDir
+        externalCacheDir,
     )
 }
 
@@ -43,7 +43,7 @@ fun Context.createVideoFile(): File {
     return File.createTempFile(
         "VIDEO_${timeStamp}_",
         ".mp4",
-        externalCacheDir
+        externalCacheDir,
     )
 }
 
@@ -52,7 +52,7 @@ fun Context.createAudioFile(): File {
     return File.createTempFile(
         "AUDIO_${timeStamp}_",
         ".mp3",
-        externalCacheDir
+        externalCacheDir,
     )
 }
 
@@ -67,7 +67,7 @@ fun Context.getUriForFile(fileType: FileType): Pair<Uri, File> {
         FileProvider.getUriForFile(
             Objects.requireNonNull(this),
             BuildConfig.APPLICATION_ID + ".provider",
-            file
+            file,
         )
     return Pair(uri, file)
 }
@@ -75,5 +75,5 @@ fun Context.getUriForFile(fileType: FileType): Pair<Uri, File> {
 enum class FileType {
     IMAGE,
     VIDEO,
-    AUDIO
+    AUDIO,
 }

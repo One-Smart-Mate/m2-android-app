@@ -11,29 +11,28 @@ import com.ih.osm.domain.repository.network.NetworkRepository
 import javax.inject.Inject
 
 class EmployeeRepositoryImpl
-@Inject
-constructor(
-    private val networkRepository: NetworkRepository,
-    private val dao: EmployeeDao,
-    private val authRepository: AuthRepository
-) : EmployeeRepository {
+    @Inject
+    constructor(
+        private val networkRepository: NetworkRepository,
+        private val dao: EmployeeDao,
+        private val authRepository: AuthRepository,
+    ) : EmployeeRepository {
+        override suspend fun saveAll(list: List<Employee>) {
+            list.forEach {
+                dao.insert(it.toEntity())
+            }
+        }
 
-    override suspend fun saveAll(list: List<Employee>) {
-        list.forEach {
-            dao.insert(it.toEntity())
+        override suspend fun deleteAll() {
+            dao.deleteAll()
+        }
+
+        override suspend fun getAll(): List<Employee> {
+            return dao.getAll().map { it.toDomain() }
+        }
+
+        override suspend fun getAllRemote(): List<Employee> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteEmployees(siteId)
         }
     }
-
-    override suspend fun deleteAll() {
-        dao.deleteAll()
-    }
-
-    override suspend fun getAll(): List<Employee> {
-        return dao.getAll().map { it.toDomain() }
-    }
-
-    override suspend fun getAllRemote(): List<Employee> {
-        val siteId = authRepository.getSiteId()
-        return networkRepository.getRemoteEmployees(siteId)
-    }
-}

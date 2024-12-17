@@ -16,24 +16,27 @@ import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.Size120
 
 @Composable
-fun CardAudioSection(title: String, evidences: List<Evidence>) {
+fun CardAudioSection(
+    title: String,
+    evidences: List<Evidence>,
+) {
     Column {
         if (evidences.isNotEmpty()) {
             Text(
                 text = title,
                 style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
         }
         LazyRow {
             items(evidences) {
                 VideoPlayer(
                     modifier =
-                    Modifier
-                        .size(Size120)
-                        .padding(PaddingTiny),
-                    url = it.url
+                        Modifier
+                            .size(Size120)
+                            .padding(PaddingTiny),
+                    url = it.url,
                 )
             }
         }

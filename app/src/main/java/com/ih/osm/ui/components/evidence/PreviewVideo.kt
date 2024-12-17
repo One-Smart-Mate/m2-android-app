@@ -15,23 +15,27 @@ import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun PreviewVideo(openVideo: Boolean, url: String, onDismissClick: () -> Unit) {
+fun PreviewVideo(
+    openVideo: Boolean,
+    url: String,
+    onDismissClick: () -> Unit,
+) {
     if (openVideo) {
         Dialog(
             onDismissRequest = {
                 onDismissClick()
             },
             properties =
-            DialogProperties(
-                dismissOnBackPress = true,
-                dismissOnClickOutside = false,
-                usePlatformDefaultWidth = false
-            )
+                DialogProperties(
+                    dismissOnBackPress = true,
+                    dismissOnClickOutside = false,
+                    usePlatformDefaultWidth = false,
+                ),
         ) {
             Box {
                 VideoPlayer(
                     modifier = Modifier.fillMaxSize(),
-                    url = url
+                    url = url,
                 )
                 Box(modifier = Modifier.padding(horizontal = PaddingNormal)) {
                     CustomIconButton(text = EMPTY, icon = Icons.Outlined.Close) {

@@ -23,7 +23,10 @@ import com.ih.osm.ui.theme.Size250
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
-fun CardImageSection(title: String, evidences: List<Evidence>) {
+fun CardImageSection(
+    title: String,
+    evidences: List<Evidence>,
+) {
     var imageUrl by remember {
         mutableStateOf(EMPTY)
     }
@@ -35,8 +38,8 @@ fun CardImageSection(title: String, evidences: List<Evidence>) {
             Text(
                 text = title,
                 style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold)
+                    MaterialTheme.typography.titleLarge
+                        .copy(fontWeight = FontWeight.Bold),
             )
         }
         LazyRow {
@@ -45,13 +48,13 @@ fun CardImageSection(title: String, evidences: List<Evidence>) {
                     model = it.url,
                     showIcon = false,
                     modifier =
-                    Modifier
-                        .width(Size200)
-                        .height(Size250)
-                        .clickable {
-                            imageUrl = it.url
-                            openImage = true
-                        }
+                        Modifier
+                            .width(Size200)
+                            .height(Size250)
+                            .clickable {
+                                imageUrl = it.url
+                                openImage = true
+                            },
                 )
             }
         }

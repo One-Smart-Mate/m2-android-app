@@ -31,9 +31,9 @@ import com.ih.osm.data.database.entities.solution.SolutionEntity
         LevelEntity::class,
         EvidenceEntity::class,
         EmployeeEntity::class,
-        SolutionEntity::class
+        SolutionEntity::class,
     ],
-    version = 4
+    version = 4,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao

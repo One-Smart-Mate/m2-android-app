@@ -36,5 +36,8 @@ interface CardDao {
     suspend fun get(uuid: String): CardEntity?
 
     @Query("SELECT * FROM card_table  WHERE superior_id=:id AND site_id=:siteId")
-    suspend fun getByZone(siteId: String, id: String): List<CardEntity>
+    suspend fun getByZone(
+        siteId: String,
+        id: String,
+    ): List<CardEntity>
 }

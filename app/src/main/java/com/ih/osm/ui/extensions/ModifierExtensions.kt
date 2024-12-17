@@ -13,12 +13,15 @@ import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
 
 @Composable
-fun Modifier.headerContent(paddingTop: Dp, showBackground: Boolean = true): Modifier {
+fun Modifier.headerContent(
+    paddingTop: Dp,
+    showBackground: Boolean = true,
+): Modifier {
     return if (showBackground) {
         this
             .fillMaxWidth()
             .background(
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.primary,
             )
             .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
     } else {

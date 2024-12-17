@@ -9,15 +9,15 @@ interface GetEmployeesUseCase {
 }
 
 class GetEmployeesUseCaseImpl
-@Inject
-constructor(
-    private val remoteRepo: EmployeeRepository
-) : GetEmployeesUseCase {
-    override suspend fun invoke(syncRemote: Boolean): List<Employee> {
-        if (syncRemote) {
-            val employeeList = remoteRepo.getAllRemote()
-            remoteRepo.saveAll(employeeList)
+    @Inject
+    constructor(
+        private val remoteRepo: EmployeeRepository,
+    ) : GetEmployeesUseCase {
+        override suspend fun invoke(syncRemote: Boolean): List<Employee> {
+            if (syncRemote) {
+                val employeeList = remoteRepo.getAllRemote()
+                remoteRepo.saveAll(employeeList)
+            }
+            return remoteRepo.getAll()
         }
-        return remoteRepo.getAll()
     }
-}

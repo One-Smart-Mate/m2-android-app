@@ -9,16 +9,16 @@ interface GetPreclassifiersUseCase {
 }
 
 class GetPreclassifiersUseCaseImpl
-@Inject
-constructor(
-    private val repo: PreclassifierRepository
-) : GetPreclassifiersUseCase {
-    override suspend fun invoke(syncRemote: Boolean): List<Preclassifier> {
-        if (syncRemote) {
-            val list = repo.getAllRemote()
-            repo.saveAll(list)
-        }
+    @Inject
+    constructor(
+        private val repo: PreclassifierRepository,
+    ) : GetPreclassifiersUseCase {
+        override suspend fun invoke(syncRemote: Boolean): List<Preclassifier> {
+            if (syncRemote) {
+                val list = repo.getAllRemote()
+                repo.saveAll(list)
+            }
 
-        return repo.getAll()
+            return repo.getAll()
+        }
     }
-}

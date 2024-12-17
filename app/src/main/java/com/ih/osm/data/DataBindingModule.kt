@@ -30,7 +30,6 @@ import dagger.hilt.components.SingletonComponent
 @Module
 @InstallIn(SingletonComponent::class)
 internal interface DataBindingModule {
-
     @Binds
     fun bindNetworkRepository(networkRepositoryImpl: NetworkRepositoryImpl): NetworkRepository
 
@@ -44,9 +43,7 @@ internal interface DataBindingModule {
     fun bindCardTypeRepository(cardTypeRepositoryImpl: CardTypeRepositoryImpl): CardTypeRepository
 
     @Binds
-    fun bindPreclassifierRepository(
-        preclassifierRepositoryImpl: PreclassifierRepositoryImpl
-    ): PreclassifierRepository
+    fun bindPreclassifierRepository(preclassifierRepositoryImpl: PreclassifierRepositoryImpl): PreclassifierRepository
 
     @Binds
     fun bindPriorityRepository(priorityRepositoryImpl: PriorityRepositoryImpl): PriorityRepository
@@ -55,9 +52,7 @@ internal interface DataBindingModule {
     fun bindLevelRepository(levelRepositoryImpl: LevelRepositoryImpl): LevelRepository
 
     @Binds
-    fun bindFirebaseRepository(
-        firebaseStorageRepositoryImpl: FirebaseStorageRepositoryImpl
-    ): FirebaseStorageRepository
+    fun bindFirebaseRepository(firebaseStorageRepositoryImpl: FirebaseStorageRepositoryImpl): FirebaseStorageRepository
 
     @Binds
     fun bindEmployeeRepository(employeeRepositoryImpl: EmployeeRepositoryImpl): EmployeeRepository

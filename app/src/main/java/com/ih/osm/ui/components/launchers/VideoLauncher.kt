@@ -36,7 +36,7 @@ fun VideoLauncher(onComplete: (uri: Uri) -> Unit) {
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
+            ActivityResultContracts.RequestMultiplePermissions(),
         ) {
             if (checkPermission(context, Manifest.permission.RECORD_AUDIO) &&
                 checkPermission(context, Manifest.permission.CAMERA)
@@ -66,7 +66,7 @@ fun VideoLauncher(onComplete: (uri: Uri) -> Unit) {
             }
         } else {
             permissionLauncher.launch(
-                arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO)
+                arrayOf(Manifest.permission.CAMERA, Manifest.permission.RECORD_AUDIO),
             )
         }
     }
@@ -75,7 +75,7 @@ fun VideoLauncher(onComplete: (uri: Uri) -> Unit) {
             showVideoLauncher = false
         }, sheetState = state) {
             VideoLauncherV2(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             ) { uri ->
                 onComplete(uri)
                 showVideoLauncher = false
@@ -84,7 +84,10 @@ fun VideoLauncher(onComplete: (uri: Uri) -> Unit) {
     }
 }
 
-private fun checkPermission(context: Context, permission: String): Boolean {
+private fun checkPermission(
+    context: Context,
+    permission: String,
+): Boolean {
     return ContextCompat.checkSelfPermission(context, permission) ==
         PackageManager.PERMISSION_GRANTED
 }

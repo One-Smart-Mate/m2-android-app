@@ -28,7 +28,7 @@ fun CustomButton(
     text: String,
     isLoading: Boolean = false,
     buttonType: ButtonType = ButtonType.DEFAULT,
-    onClick: () -> Unit
+    onClick: () -> Unit,
 ) {
     val colors =
         when (buttonType) {
@@ -39,14 +39,14 @@ fun CustomButton(
             ButtonType.ERROR -> {
                 ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,
-                    contentColor = MaterialTheme.colorScheme.onPrimary
+                    contentColor = MaterialTheme.colorScheme.onPrimary,
                 )
             }
 
             else -> {
                 ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent,
-                    contentColor = MaterialTheme.colorScheme.primary
+                    contentColor = MaterialTheme.colorScheme.primary,
                 )
             }
         }
@@ -63,7 +63,7 @@ fun CustomButton(
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
+                        shape = CircleShape,
                     )
             }
 
@@ -74,7 +74,7 @@ fun CustomButton(
                     .border(
                         width = 2.dp,
                         color = MaterialTheme.colorScheme.primary,
-                        shape = CircleShape
+                        shape = CircleShape,
                     )
             }
         }
@@ -83,7 +83,7 @@ fun CustomButton(
         modifier = buttonModifier,
         onClick = onClick,
         colors = colors,
-        enabled = isLoading.not()
+        enabled = isLoading.not(),
     ) {
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
@@ -98,7 +98,7 @@ enum class ButtonType {
     OUTLINE,
     ERROR,
     TEXT,
-    SMALL
+    SMALL,
 }
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")

@@ -14,6 +14,7 @@ import javax.inject.Singleton
 object CoreModule {
     @Provides
     @Singleton
-    fun provideNotificationManager(@ApplicationContext context: Context): NotificationManager =
-        NotificationManager(context)
+    fun provideNotificationManager(
+        @ApplicationContext context: Context,
+    ): NotificationManager = NotificationManager(context)
 }

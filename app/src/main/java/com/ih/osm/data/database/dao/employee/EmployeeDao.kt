@@ -8,7 +8,6 @@ import com.ih.osm.data.database.entities.employee.EmployeeEntity
 
 @Dao
 interface EmployeeDao {
-
     @Query("SELECT * FROM employee_table")
     suspend fun getAll(): List<EmployeeEntity>
 

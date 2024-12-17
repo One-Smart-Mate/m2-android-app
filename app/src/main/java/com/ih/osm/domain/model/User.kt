@@ -1,6 +1,7 @@
 package com.ih.osm.domain.model
 
 import com.ih.osm.data.database.entities.UserEntity
+
 data class User(
     val userId: String,
     val name: String,
@@ -11,21 +12,22 @@ data class User(
     val companyId: String,
     val siteId: String,
     val companyName: String,
-    val siteName: String
+    val siteName: String,
 ) {
     companion object {
-        fun mockUser() = User(
-            userId = "",
-            name = "testName",
-            email = "test@gmail.com",
-            token = "",
-            roles = listOf("Admin", "mechanic"),
-            logo = "",
-            companyId = "",
-            siteId = "",
-            companyName = "Universal S.A de C.V",
-            siteName = "site name"
-        )
+        fun mockUser() =
+            User(
+                userId = "",
+                name = "testName",
+                email = "test@gmail.com",
+                token = "",
+                roles = listOf("Admin", "mechanic"),
+                logo = "",
+                companyId = "",
+                siteId = "",
+                companyName = "Universal S.A de C.V",
+                siteName = "site name",
+            )
     }
 }
 
@@ -40,6 +42,6 @@ fun User.toEntity(): UserEntity {
         companyId = this.companyId,
         siteId = this.siteId,
         companyName = this.companyName,
-        siteName = this.siteName
+        siteName = this.siteName,
     )
 }

@@ -13,5 +13,5 @@ data class CreateCardRequest(
     val comments: String,
     val evidences: List<CreateEvidenceRequest>,
     val appSo: String,
-    val appVersion: String
+    val appVersion: String,
 )

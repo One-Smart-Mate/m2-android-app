@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun CustomSpacer(
     direction: SpacerDirection = SpacerDirection.VERTICAL,
-    space: SpacerSize = SpacerSize.NORMAL
+    space: SpacerSize = SpacerSize.NORMAL,
 ) {
     val size =
         when (space) {
@@ -32,7 +32,7 @@ fun CustomSpacer(
 
 enum class SpacerDirection {
     VERTICAL,
-    HORIZONTAL
+    HORIZONTAL,
 }
 
 enum class SpacerSize {
@@ -40,5 +40,5 @@ enum class SpacerSize {
     SMALL,
     NORMAL,
     LARGE,
-    EXTRA_LARGE
+    EXTRA_LARGE,
 }

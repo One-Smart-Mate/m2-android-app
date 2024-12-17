@@ -9,37 +9,38 @@ import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.network.NetworkRepository
 import javax.inject.Inject
 
-class CardTypeRepositoryImpl @Inject constructor(
-    private val networkRepository: NetworkRepository,
-    private val dao: CardTypeDao,
-    private val authRepository: AuthRepository
-) : CardTypeRepository {
+class CardTypeRepositoryImpl
+    @Inject
+    constructor(
+        private val networkRepository: NetworkRepository,
+        private val dao: CardTypeDao,
+        private val authRepository: AuthRepository,
+    ) : CardTypeRepository {
+        override suspend fun getAll(filter: String): List<CardType> {
+            return if (filter.isEmpty()) {
+                dao.getAll().map { it.toDomain() }
+            } else {
+                dao.getByMethodology(filter).map { it.toDomain() }
+            }
+        }
 
-    override suspend fun getAll(filter: String): List<CardType> {
-        return if (filter.isEmpty()) {
-            dao.getAll().map { it.toDomain() }
-        } else {
-            dao.getByMethodology(filter).map { it.toDomain() }
+        override suspend fun saveAll(list: List<CardType>) {
+            dao.deleteAll()
+            list.forEach {
+                dao.insert(it.toEntity())
+            }
+        }
+
+        override suspend fun get(id: String): CardType? {
+            return dao.get(id)?.toDomain()
+        }
+
+        override suspend fun deleteAll() {
+            dao.deleteAll()
+        }
+
+        override suspend fun getAllRemote(): List<CardType> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteCardTypes(siteId)
         }
     }
-
-    override suspend fun saveAll(list: List<CardType>) {
-        dao.deleteAll()
-        list.forEach {
-            dao.insert(it.toEntity())
-        }
-    }
-
-    override suspend fun get(id: String): CardType? {
-        return dao.get(id)?.toDomain()
-    }
-
-    override suspend fun deleteAll() {
-        dao.deleteAll()
-    }
-
-    override suspend fun getAllRemote(): List<CardType> {
-        val siteId = authRepository.getSiteId()
-        return networkRepository.getRemoteCardTypes(siteId)
-    }
-}

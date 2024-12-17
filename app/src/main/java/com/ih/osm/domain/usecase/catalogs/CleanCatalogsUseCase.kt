@@ -16,31 +16,31 @@ interface CleanCatalogsUseCase {
 }
 
 class CleanCatalogsUseCaseImpl
-@Inject
-constructor(
-    private val cardRepo: CardRepository,
-    private val cardTypeRepo: CardTypeRepository,
-    private val employeeRepo: EmployeeRepository,
-    private val preclassifierRepo: PreclassifierRepository,
-    private val priorityRepo: PriorityRepository,
-    private val levelRepo: LevelRepository,
-    private val evidenceRepo: EvidenceRepository,
-    private val solutionRepo: SolutionRepository
-) : CleanCatalogsUseCase {
-    override suspend fun invoke(): Boolean {
-        return try {
-            cardRepo.deleteAll()
-            preclassifierRepo.deleteAll()
-            priorityRepo.deleteAll()
-            cardTypeRepo.deleteAll()
-            levelRepo.deleteAll()
-            evidenceRepo.deleteAll()
-            employeeRepo.deleteAll()
-            solutionRepo.deleteAll()
-            true
-        } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
-            false
+    @Inject
+    constructor(
+        private val cardRepo: CardRepository,
+        private val cardTypeRepo: CardTypeRepository,
+        private val employeeRepo: EmployeeRepository,
+        private val preclassifierRepo: PreclassifierRepository,
+        private val priorityRepo: PriorityRepository,
+        private val levelRepo: LevelRepository,
+        private val evidenceRepo: EvidenceRepository,
+        private val solutionRepo: SolutionRepository,
+    ) : CleanCatalogsUseCase {
+        override suspend fun invoke(): Boolean {
+            return try {
+                cardRepo.deleteAll()
+                preclassifierRepo.deleteAll()
+                priorityRepo.deleteAll()
+                cardTypeRepo.deleteAll()
+                levelRepo.deleteAll()
+                evidenceRepo.deleteAll()
+                employeeRepo.deleteAll()
+                solutionRepo.deleteAll()
+                true
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
+                false
+            }
         }
     }
-}

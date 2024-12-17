@@ -9,15 +9,15 @@ interface GetLevelsUseCase {
 }
 
 class GetLevelsUseCaseImpl
-@Inject
-constructor(
-    private val repo: LevelRepository
-) : GetLevelsUseCase {
-    override suspend fun invoke(syncRemote: Boolean): List<Level> {
-        if (syncRemote) {
-            val list = repo.getAllRemote()
-            repo.saveAll(list)
+    @Inject
+    constructor(
+        private val repo: LevelRepository,
+    ) : GetLevelsUseCase {
+        override suspend fun invoke(syncRemote: Boolean): List<Level> {
+            if (syncRemote) {
+                val list = repo.getAllRemote()
+                repo.saveAll(list)
+            }
+            return repo.getAll()
         }
-        return repo.getAll()
     }
-}

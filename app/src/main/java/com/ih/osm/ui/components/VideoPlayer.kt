@@ -21,7 +21,7 @@ fun VideoPlayer(
     modifier: Modifier,
     url: String,
     showIcon: Boolean = false,
-    onClick: (() -> Unit?)? = null
+    onClick: (() -> Unit?)? = null,
 ) {
     // Get the current context
     val context = LocalContext.current
@@ -50,7 +50,7 @@ fun VideoPlayer(
 
     // Use AndroidView to embed an Android View (PlayerView) into Compose
     Box(
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         AndroidView(
             factory = { ctx ->
@@ -58,7 +58,7 @@ fun VideoPlayer(
                     player = exoPlayer
                 }
             },
-            modifier = modifier
+            modifier = modifier,
         )
         if (showIcon) {
             Box {

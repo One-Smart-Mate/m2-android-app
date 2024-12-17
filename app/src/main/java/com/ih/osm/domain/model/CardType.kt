@@ -44,7 +44,7 @@ data class CardType(
     val audiosDurationPs: Int?,
     @SerializedName("videosDurationPs")
     val videosDurationPs: Int?,
-    val cardTypeMethodology: String?
+    val cardTypeMethodology: String?,
 )
 
 fun CardType.toEntity(): CardTypeEntity {
@@ -71,7 +71,7 @@ fun CardType.toEntity(): CardTypeEntity {
         quantityVideosPs = this.quantityVideosPs.defaultIfNull(0),
         audiosDurationPs = this.audiosDurationPs.defaultIfNull(0),
         videosDurationPs = this.videosDurationPs.defaultIfNull(0),
-        cardTypeMethodology = this.cardTypeMethodology
+        cardTypeMethodology = this.cardTypeMethodology,
     )
 }
 
@@ -86,7 +86,6 @@ fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
 
 // fun NodeCardItem?.isMaintenanceCardType(): Boolean = this?.name?.lowercase() == CARD_MAINTENANCE.lowercase()
 
-fun NodeCardItem?.isAnomaliesCardType(): Boolean =
-    this?.name?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
+fun NodeCardItem?.isAnomaliesCardType(): Boolean = this?.name?.lowercase() == CARD_ANOMALIES_NAME.lowercase()
 
 // fun NodeCardItem?.isBehaviorCardType(): Boolean = this?.name?.lowercase() == CARD_BEHAIVIOR.lowercase()

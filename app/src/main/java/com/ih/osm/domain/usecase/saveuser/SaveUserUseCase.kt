@@ -9,11 +9,11 @@ interface SaveUserUseCase {
 }
 
 class SaveUserUseCaseImpl
-@Inject
-constructor(
-    private val authRepository: AuthRepository
-) : SaveUserUseCase {
-    override suspend fun invoke(user: User): Long {
-        return authRepository.save(user)
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : SaveUserUseCase {
+        override suspend fun invoke(user: User): Long {
+            return authRepository.save(user)
+        }
     }
-}

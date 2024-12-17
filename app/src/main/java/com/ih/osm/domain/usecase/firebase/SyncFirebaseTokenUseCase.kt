@@ -11,28 +11,28 @@ interface SyncFirebaseTokenUseCase {
 }
 
 class SyncFirebaseTokenUseCaseImpl
-@Inject
-constructor(
-    private val getFirebaseTokenUseCase: GetFirebaseTokenUseCase,
-    private val sharedPreferences: SharedPreferences,
-    private val updateTokenUseCase: UpdateTokenUseCase
-) : SyncFirebaseTokenUseCase {
-    override suspend fun invoke(): Boolean {
-        return try {
-            var storedToken = sharedPreferences.getFirebaseToken()
-            if (storedToken.isEmpty()) {
-                // save to service
-                val token = getFirebaseTokenUseCase()
-                Log.e("Firebase", "Token $token")
-                sharedPreferences.saveFirebaseToken(token)
-                storedToken = token
+    @Inject
+    constructor(
+        private val getFirebaseTokenUseCase: GetFirebaseTokenUseCase,
+        private val sharedPreferences: SharedPreferences,
+        private val updateTokenUseCase: UpdateTokenUseCase,
+    ) : SyncFirebaseTokenUseCase {
+        override suspend fun invoke(): Boolean {
+            return try {
+                var storedToken = sharedPreferences.getFirebaseToken()
+                if (storedToken.isEmpty()) {
+                    // save to service
+                    val token = getFirebaseTokenUseCase()
+                    Log.e("Firebase", "Token $token")
+                    sharedPreferences.saveFirebaseToken(token)
+                    storedToken = token
+                }
+                updateTokenUseCase(storedToken)
+                Log.e("Firebase", "Token $storedToken")
+                true
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                false
             }
-            updateTokenUseCase(storedToken)
-            Log.e("Firebase", "Token $storedToken")
-            true
-        } catch (e: Exception) {
-            FirebaseCrashlytics.getInstance().recordException(e)
-            false
         }
     }
-}

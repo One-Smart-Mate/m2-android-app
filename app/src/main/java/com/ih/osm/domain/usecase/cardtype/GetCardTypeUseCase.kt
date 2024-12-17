@@ -9,11 +9,11 @@ interface GetCardTypeUseCase {
 }
 
 class GetCardTypeUseCaseImpl
-@Inject
-constructor(
-    private val repo: CardTypeRepository
-) : GetCardTypeUseCase {
-    override suspend fun invoke(id: String): CardType? {
-        return repo.get(id)
+    @Inject
+    constructor(
+        private val repo: CardTypeRepository,
+    ) : GetCardTypeUseCase {
+        override suspend fun invoke(id: String): CardType? {
+            return repo.get(id)
+        }
     }
-}

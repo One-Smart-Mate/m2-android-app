@@ -55,7 +55,10 @@ import kotlinx.coroutines.launch
 
 @SuppressLint("CheckResult", "MissingPermission")
 @Composable
-fun VideoLauncherV2(modifier: Modifier = Modifier, onComplete: (uri: Uri) -> Unit) {
+fun VideoLauncherV2(
+    modifier: Modifier = Modifier,
+    onComplete: (uri: Uri) -> Unit,
+) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var recording by remember { mutableStateOf<Recording?>(null) }
     val context = LocalContext.current
@@ -64,19 +67,22 @@ fun VideoLauncherV2(modifier: Modifier = Modifier, onComplete: (uri: Uri) -> Uni
     var uri = fileInfo.first
     var file = fileInfo.second
     val scope = rememberCoroutineScope()
-    val timeCount = remember {
-        mutableLongStateOf(0L)
-    }
-
-    val executeTimer = remember {
-        mutableStateOf(false)
-    }
-
-    val controller = remember {
-        LifecycleCameraController(context).apply {
-            setEnabledUseCases(CameraController.VIDEO_CAPTURE)
+    val timeCount =
+        remember {
+            mutableLongStateOf(0L)
         }
-    }
+
+    val executeTimer =
+        remember {
+            mutableStateOf(false)
+        }
+
+    val controller =
+        remember {
+            LifecycleCameraController(context).apply {
+                setEnabledUseCases(CameraController.VIDEO_CAPTURE)
+            }
+        }
 
     LaunchedEffect(executeTimer.value) {
         while (executeTimer.value) {
@@ -87,7 +93,7 @@ fun VideoLauncherV2(modifier: Modifier = Modifier, onComplete: (uri: Uri) -> Uni
 
     Box(
         modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.BottomCenter
+        contentAlignment = Alignment.BottomCenter,
     ) {
         AndroidView(
             factory = { context ->
@@ -98,92 +104,98 @@ fun VideoLauncherV2(modifier: Modifier = Modifier, onComplete: (uri: Uri) -> Uni
                     controller.bindToLifecycle(lifecycleOwner)
                 }
             },
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
         )
         AnimatedVisibility(visible = showStopButton.not()) {
             Box(
-                modifier = Modifier
-                    .padding(PaddingToolbarVertical)
-                    .clickable {
-                        showStopButton = true
-                        executeTimer.value = true
-                        if (recording != null) {
-                            recording?.stop()
-                            recording = null
-                            return@clickable
-                        }
+                modifier =
+                    Modifier
+                        .padding(PaddingToolbarVertical)
+                        .clickable {
+                            showStopButton = true
+                            executeTimer.value = true
+                            if (recording != null) {
+                                recording?.stop()
+                                recording = null
+                                return@clickable
+                            }
 
-                        recording = controller.startRecording(
-                            FileOutputOptions
-                                .Builder(file)
-                                .build(),
-                            AudioConfig.create(true),
-                            ContextCompat.getMainExecutor(context)
-                        ) { event ->
-                            when (event) {
-                                is VideoRecordEvent.Start -> {}
-                                is VideoRecordEvent.Pause -> {}
-                                is VideoRecordEvent.Resume -> {}
-                                is VideoRecordEvent.Finalize -> {
-                                    if (event.hasError()) {
-                                        recording?.close()
-                                        recording = null
-                                        Toast
-                                            .makeText(
-                                                context,
-                                                "Error: ${event.cause?.localizedMessage}",
-                                                Toast.LENGTH_SHORT
-                                            )
-                                            .show()
-                                    } else {
-                                        scope.launch {
-                                            Log.e(
-                                                "test",
-                                                "NewUri -> ${event.outputResults.outputUri}"
-                                            )
-                                            onComplete(event.outputResults.outputUri)
-                                            fileInfo = context.getUriForFile(
-                                                fileType = FileType.VIDEO
-                                            )
-                                            uri = fileInfo.first
-                                            file = fileInfo.second
+                            recording =
+                                controller.startRecording(
+                                    FileOutputOptions
+                                        .Builder(file)
+                                        .build(),
+                                    AudioConfig.create(true),
+                                    ContextCompat.getMainExecutor(context),
+                                ) { event ->
+                                    when (event) {
+                                        is VideoRecordEvent.Start -> {}
+                                        is VideoRecordEvent.Pause -> {}
+                                        is VideoRecordEvent.Resume -> {}
+                                        is VideoRecordEvent.Finalize -> {
+                                            if (event.hasError()) {
+                                                recording?.close()
+                                                recording = null
+                                                Toast
+                                                    .makeText(
+                                                        context,
+                                                        "Error: ${event.cause?.localizedMessage}",
+                                                        Toast.LENGTH_SHORT,
+                                                    )
+                                                    .show()
+                                            } else {
+                                                scope.launch {
+                                                    Log.e(
+                                                        "test",
+                                                        "NewUri -> ${event.outputResults.outputUri}",
+                                                    )
+                                                    onComplete(event.outputResults.outputUri)
+                                                    fileInfo =
+                                                        context.getUriForFile(
+                                                            fileType = FileType.VIDEO,
+                                                        )
+                                                    uri = fileInfo.first
+                                                    file = fileInfo.second
+                                                }
+                                            }
                                         }
                                     }
                                 }
-                            }
-                        }
-                    }
+                        },
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(70.dp)
-                        .border(2.dp, Color.White, CircleShape)
-                        .padding(10.dp)
-                        .clip(CircleShape)
-                        .background(Color.Red)
-                        .padding(bottom = 50.dp)
+                    modifier =
+                        Modifier
+                            .size(70.dp)
+                            .border(2.dp, Color.White, CircleShape)
+                            .padding(10.dp)
+                            .clip(CircleShape)
+                            .background(Color.Red)
+                            .padding(bottom = 50.dp),
                 )
             }
         }
         AnimatedVisibility(visible = showStopButton) {
             Box(
-                modifier = Modifier
-                    .padding(PaddingToolbarVertical)
-                    .clickable {
-                        showStopButton = false
-                        executeTimer.value = false
-                        recording?.stop()
-                        recording = null
-                    }
+                modifier =
+                    Modifier
+                        .padding(PaddingToolbarVertical)
+                        .clickable {
+                            showStopButton = false
+                            executeTimer.value = false
+                            recording?.stop()
+                            recording = null
+                        },
             ) {
                 Box(
-                    modifier = Modifier
-                        .size(70.dp)
-                        .border(2.dp, Color.White, CircleShape)
-                        .padding(20.dp)
-                        .clip(RectangleShape)
-                        .background(Color.Red)
-                        .padding(bottom = 50.dp)
+                    modifier =
+                        Modifier
+                            .size(70.dp)
+                            .border(2.dp, Color.White, CircleShape)
+                            .padding(20.dp)
+                            .clip(RectangleShape)
+                            .background(Color.Red)
+                            .padding(bottom = 50.dp),
                 )
             }
         }
@@ -196,15 +208,17 @@ fun VideoLauncherV2(modifier: Modifier = Modifier, onComplete: (uri: Uri) -> Uni
 @Composable
 fun VideoRecordTime(time: Long) {
     Column(
-        modifier = Modifier.padding(top = 30.dp)
-            .padding(10.dp)
-            .background(Color.Black, shape = RoundedCornerShape(8.dp))
+        modifier =
+            Modifier.padding(top = 30.dp)
+                .padding(10.dp)
+                .background(Color.Black, shape = RoundedCornerShape(8.dp)),
     ) {
         Text(
             "${stringResource(R.string.record_video)}: ${time.formatTime()}",
-            style = MaterialTheme
-                .typography.bodyMedium.copy(color = Color.White),
-            modifier = Modifier.padding(10.dp)
+            style =
+                MaterialTheme
+                    .typography.bodyMedium.copy(color = Color.White),
+            modifier = Modifier.padding(10.dp),
         )
     }
 }

@@ -10,15 +10,15 @@ interface GetCardsLevelMachineUseCase {
 }
 
 class GetCardsLevelMachineUseCaseImpl
-@Inject
-constructor(
-    private val cardRepository: CardRepository
-) : GetCardsLevelMachineUseCase {
-    override suspend fun invoke(levelMachine: String): List<Card> {
-        return if (NetworkConnection.isConnected()) {
-            cardRepository.getRemoteByLevelMachine(levelMachine = levelMachine)
-        } else {
-            emptyList()
+    @Inject
+    constructor(
+        private val cardRepository: CardRepository,
+    ) : GetCardsLevelMachineUseCase {
+        override suspend fun invoke(levelMachine: String): List<Card> {
+            return if (NetworkConnection.isConnected()) {
+                cardRepository.getRemoteByLevelMachine(levelMachine = levelMachine)
+            } else {
+                emptyList()
+            }
         }
     }
-}

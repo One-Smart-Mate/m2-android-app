@@ -68,7 +68,7 @@ import com.ih.osm.ui.theme.Size20
 @Composable
 fun CardDetailScreen(
     navController: NavController,
-    viewModel: CardDetailViewModel = hiltViewModel()
+    viewModel: CardDetailViewModel = hiltViewModel(),
 ) {
     val screenState = viewModel.state.collectAsStateWithLifecycle()
 
@@ -76,7 +76,7 @@ fun CardDetailScreen(
         is LCE.Fail -> {
             ErrorScreen(
                 navController = navController,
-                errorMessage = result.error
+                errorMessage = result.error,
             ) {
                 navController.popBackStack()
             }
@@ -89,7 +89,7 @@ fun CardDetailScreen(
         is LCE.Success -> {
             CardDetailContent(
                 navController = navController,
-                card = result.value
+                card = result.value,
             )
         }
     }
@@ -97,21 +97,24 @@ fun CardDetailScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardDetailContent(navController: NavController, card: Card) {
+fun CardDetailContent(
+    navController: NavController,
+    card: Card,
+) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding)
+            modifier = Modifier.defaultScreen(padding),
         ) {
             stickyHeader {
                 CustomAppBar(
                     navController = navController,
-                    content = { CardDetailHeader(card) }
+                    content = { CardDetailHeader(card) },
                 )
             }
 
             item {
                 CardInformationContent(
-                    card = card
+                    card = card,
                 )
             }
         }
@@ -123,28 +126,28 @@ fun CardDetailHeader(card: Card) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = card.cardSiteTitle(),
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         Text(
             text = card.cardTitle(),
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         Box(
             modifier =
-            Modifier
-                .size(Size20)
-                .background(
-                    color = card.getBorderColor(),
-                    shape = CircleShape
-                )
+                Modifier
+                    .size(Size20)
+                    .background(
+                        color = card.getBorderColor(),
+                        shape = CircleShape,
+                    ),
         )
     }
 }
@@ -154,128 +157,128 @@ fun CardInformationContent(card: Card) {
     ExpandableCard(title = stringResource(R.string.information), expanded = true) {
         SectionTag(
             title = stringResource(R.string.status),
-            value = card.getStatus()
+            value = card.getStatus(),
         )
 
         SectionTag(
             title = stringResource(R.string.created_date),
-            value = card.getCreationDate()
+            value = card.getCreationDate(),
         )
 
         SectionTag(
             title = stringResource(id = R.string.due_date),
             value =
-            if (card.dueDate.isExpired()) {
-                stringResource(id = R.string.expired)
-            } else {
-                card.dueDate
-            },
-            isErrorEnabled = card.dueDate.isExpired()
+                if (card.dueDate.isExpired()) {
+                    stringResource(id = R.string.expired)
+                } else {
+                    card.dueDate
+                },
+            isErrorEnabled = card.dueDate.isExpired(),
         )
         SectionTag(
             title = stringResource(R.string.preclassifier),
-            value = card.preclassifierValue()
+            value = card.preclassifierValue(),
         )
         SectionTag(
             title = stringResource(R.string.priority),
-            value = card.priorityValue()
+            value = card.priorityValue(),
         )
         SectionTag(
             title = stringResource(R.string.card_location),
-            value = card.cardLocation
+            value = card.cardLocation,
         )
         SectionTag(
             title = stringResource(id = R.string.created_by),
-            value = card.creatorName.orDefault()
+            value = card.creatorName.orDefault(),
         )
         SectionTag(
             title = stringResource(id = R.string.responsible),
-            value = card.responsableName.orDefault()
+            value = card.responsableName.orDefault(),
         )
         SectionTag(
             title = stringResource(id = R.string.mechanic),
-            value = card.mechanicName.orDefault()
+            value = card.mechanicName.orDefault(),
         )
         SectionTag(
             title = stringResource(id = R.string.comments),
-            value = card.commentsAtCardCreation.orDefault()
+            value = card.commentsAtCardCreation.orDefault(),
         )
     }
 
     ExpandableCard(title = stringResource(R.string.evidences)) {
         CardImageSection(
             title = stringResource(R.string.images),
-            evidences = card.evidences?.toImagesAtCreation().orEmpty()
+            evidences = card.evidences?.toImagesAtCreation().orEmpty(),
         )
 
         CardVideoSection(
             title = stringResource(R.string.videos),
-            evidences = card.evidences?.toVideosAtCreation().orEmpty()
+            evidences = card.evidences?.toVideosAtCreation().orEmpty(),
         )
 
         CardAudioSection(
             title = stringResource(R.string.audios),
-            evidences = card.evidences?.toAudiosAtCreation().orEmpty()
+            evidences = card.evidences?.toAudiosAtCreation().orEmpty(),
         )
     }
 
     ExpandableCard(title = stringResource(R.string.provisional_solution)) {
         SectionTag(
             title = stringResource(R.string.date),
-            value = card.validateProvisionalDate().orDefault()
+            value = card.validateProvisionalDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.user),
-            value = card.userProvisionalSolutionName.orDefault()
+            value = card.userProvisionalSolutionName.orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.comments),
-            value = card.commentsAtCardProvisionalSolution.orDefault()
+            value = card.commentsAtCardProvisionalSolution.orDefault(),
         )
 
         CardImageSection(
             title = stringResource(R.string.images_provisional_solution),
-            evidences = card.evidences?.toImagesAtProvisionalSolution().orEmpty()
+            evidences = card.evidences?.toImagesAtProvisionalSolution().orEmpty(),
         )
 
         CardVideoSection(
             title = stringResource(R.string.videos_provisional_solution),
-            evidences = card.evidences?.toVideosAtProvisionalSolution().orEmpty()
+            evidences = card.evidences?.toVideosAtProvisionalSolution().orEmpty(),
         )
 
         CardAudioSection(
             title = stringResource(R.string.audios_provisional_solution),
-            evidences = card.evidences?.toAudiosAtProvisionalSolution().orEmpty()
+            evidences = card.evidences?.toAudiosAtProvisionalSolution().orEmpty(),
         )
     }
 
     ExpandableCard(title = stringResource(R.string.definitive_solution)) {
         SectionTag(
             title = stringResource(R.string.date),
-            value = card.validateCloseDate().orDefault()
+            value = card.validateCloseDate().orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.user),
-            value = card.userDefinitiveSolutionName.orDefault()
+            value = card.userDefinitiveSolutionName.orDefault(),
         )
         SectionTag(
             title = stringResource(R.string.comments),
-            value = card.commentsAtCardDefinitiveSolution.orDefault()
+            value = card.commentsAtCardDefinitiveSolution.orDefault(),
         )
 
         CardImageSection(
             title = stringResource(R.string.images_definitive_solution),
-            evidences = card.evidences?.toImagesAtDefinitiveSolution().orEmpty()
+            evidences = card.evidences?.toImagesAtDefinitiveSolution().orEmpty(),
         )
 
         CardVideoSection(
             title = stringResource(R.string.videos_definitive_solution),
-            evidences = card.evidences?.toVideosAtDefinitiveSolution().orEmpty()
+            evidences = card.evidences?.toVideosAtDefinitiveSolution().orEmpty(),
         )
 
         CardAudioSection(
             title = stringResource(R.string.audios_definitive_solution),
-            evidences = card.evidences?.toAudiosAtDefinitiveSolution().orEmpty()
+            evidences = card.evidences?.toAudiosAtDefinitiveSolution().orEmpty(),
         )
     }
 
@@ -291,7 +294,7 @@ private fun CardDetailScreenPreview() {
         Scaffold(modifier = Modifier.fillMaxSize()) {
             CardDetailContent(
                 navController = rememberNavController(),
-                card = Card.mock()
+                card = Card.mock(),
             )
         }
     }

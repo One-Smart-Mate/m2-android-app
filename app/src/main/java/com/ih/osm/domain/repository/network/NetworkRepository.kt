@@ -42,17 +42,19 @@ interface NetworkRepository {
 
     suspend fun saveRemoteCard(card: CreateCardRequest): Card
 
-    suspend fun getRemoteCardsZone(superiorId: String, siteId: String): List<Card>
+    suspend fun getRemoteCardsZone(
+        superiorId: String,
+        siteId: String,
+    ): List<Card>
 
-    suspend fun saveRemoteDefinitiveSolution(
-        createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest
-    ): Card
+    suspend fun saveRemoteDefinitiveSolution(createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest): Card
 
-    suspend fun saveRemoteProvisionalSolution(
-        createProvisionalSolutionRequest: CreateProvisionalSolutionRequest
-    ): Card
+    suspend fun saveRemoteProvisionalSolution(createProvisionalSolutionRequest: CreateProvisionalSolutionRequest): Card
 
-    suspend fun getRemoteCardsLevelMachine(levelMachine: String, siteId: String): List<Card>
+    suspend fun getRemoteCardsLevelMachine(
+        levelMachine: String,
+        siteId: String,
+    ): List<Card>
 
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 }

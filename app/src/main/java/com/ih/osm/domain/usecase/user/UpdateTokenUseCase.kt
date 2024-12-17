@@ -9,15 +9,15 @@ interface UpdateTokenUseCase {
 }
 
 class UpdateTokenUseCaseImpl
-@Inject
-constructor(
-    private val authRepository: AuthRepository
-) : UpdateTokenUseCase {
-    override suspend fun invoke(token: String) {
-        authRepository.get()?.let {
-            authRepository.updateToken(
-                UpdateTokenRequest(userId = it.userId.toInt(), appToken = token)
-            )
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : UpdateTokenUseCase {
+        override suspend fun invoke(token: String) {
+            authRepository.get()?.let {
+                authRepository.updateToken(
+                    UpdateTokenRequest(userId = it.userId.toInt(), appToken = token),
+                )
+            }
         }
     }
-}

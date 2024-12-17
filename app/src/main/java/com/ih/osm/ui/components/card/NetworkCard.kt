@@ -32,30 +32,33 @@ import com.ih.osm.ui.utils.EMPTY
 fun NetworkCard(
     networkStatus: NetworkStatus,
     modifier: Modifier = Modifier,
-    textColor: Color = getColor()
+    textColor: Color = getColor(),
 ) {
     val context = LocalContext.current
     Row(
-        modifier = modifier
+        modifier = modifier,
     ) {
         Text(
             text = getNetworkStatus(networkStatus, context),
             style =
-            MaterialTheme.typography.labelSmall.copy(
-                color = textColor
-            ),
-            modifier = Modifier.padding(end = PaddingTinySmall)
+                MaterialTheme.typography.labelSmall.copy(
+                    color = textColor,
+                ),
+            modifier = Modifier.padding(end = PaddingTinySmall),
         )
         Icon(
             painter = painterResource(id = getNetworkStatusIcon(networkStatus)),
             contentDescription = EMPTY,
             tint = getNetworkStatusColor(networkStatus),
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(14.dp),
         )
     }
 }
 
-private fun getNetworkStatus(networkStatus: NetworkStatus, context: Context): String {
+private fun getNetworkStatus(
+    networkStatus: NetworkStatus,
+    context: Context,
+): String {
     return when (networkStatus) {
         WIFI_CONNECTED -> context.getString(R.string.wifi_connected)
         WIFI_DISCONNECTED -> context.getString(R.string.wifi_disconnected)
@@ -80,7 +83,7 @@ private fun getNetworkStatusColor(networkStatus: NetworkStatus): Color {
     return when (networkStatus) {
         WIFI_CONNECTED, DATA_CONNECTED -> Color.Green
         WIFI_DISCONNECTED,
-        DATA_DISCONNECTED
+        DATA_DISCONNECTED,
         -> Color.Red.copy(alpha = 0.4f)
         NO_INTERNET_ACCESS -> Color.Yellow.copy(alpha = 0.4f)
     }

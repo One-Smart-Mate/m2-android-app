@@ -1,6 +1,5 @@
 package com.ih.osm.domain.model
 
-import android.graphics.Color as ColorParser
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -33,6 +32,7 @@ import com.ih.osm.ui.utils.STORED_LOCAL
 import com.ih.osm.ui.utils.STORED_REMOTE
 import com.ih.osm.ui.utils.UNASSIGNED_CARDS
 import java.util.Date
+import android.graphics.Color as ColorParser
 
 data class Card(
     val id: String,
@@ -120,7 +120,7 @@ data class Card(
     val stored: String? = STORED_REMOTE,
     val creationDateFormatted: String? = null,
     val cardLocation: String,
-    val hasLocalSolutions: Boolean
+    val hasLocalSolutions: Boolean,
 ) {
     companion object {
         fun mock(): Card {
@@ -187,7 +187,7 @@ data class Card(
                 emptyList(),
                 STORED_LOCAL,
                 cardLocation = "Procesos/Mixer 1 /Bomba 1",
-                hasLocalSolutions = true
+                hasLocalSolutions = true,
             )
         }
 
@@ -203,7 +203,7 @@ data class Card(
             hasVideos: Int,
             hasAudios: Int,
             evidences: List<Evidence>,
-            uuid: String
+            uuid: String,
         ): Card {
             return Card(
                 id = EMPTY,
@@ -268,7 +268,7 @@ data class Card(
                 evidences = evidences,
                 stored = STORED_LOCAL,
                 cardLocation = EMPTY,
-                hasLocalSolutions = false
+                hasLocalSolutions = false,
             )
         }
     }
@@ -317,7 +317,10 @@ fun Card.getBorderColor(): Color {
     }
 }
 
-fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
+fun List<Card>.filterByStatus(
+    filter: String,
+    userId: String,
+): List<Card> {
     return when (filter) {
         ALL_OPEN_CARDS -> {
             this.filter {
@@ -333,7 +336,7 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                    ) &&
+                ) &&
                     it.creatorId == userId
             }
         }
@@ -344,7 +347,7 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                    ) &&
+                ) &&
                     it.mechanicId == userId
             }
         }
@@ -355,11 +358,11 @@ fun List<Card>.filterByStatus(filter: String, userId: String): List<Card> {
                     it.status == STATUS_A ||
                         it.status == STATUS_P ||
                         it.status == STATUS_V
-                    ) &&
+                ) &&
                     (
                         it.mechanicId == null ||
                             it.mechanicId == EMPTY
-                        )
+                    )
             }
         }
 
@@ -439,7 +442,7 @@ fun Card.toEntity(): CardEntity {
         updatedAt = this.updatedAt,
         deletedAt = this.deletedAt,
         stored = this.stored ?: STORED_REMOTE,
-        cardLocation = this.cardLocation
+        cardLocation = this.cardLocation,
     )
 }
 
@@ -452,12 +455,12 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardCreationDate = this.creationDate,
         nodeId = this.areaId.toInt(),
         priorityId =
-        if (this.priorityId.isNullOrBlank().not()) {
-            this.priorityId?.toInt()
-                .defaultIfNull(0)
-        } else {
-            0
-        },
+            if (this.priorityId.isNullOrBlank().not()) {
+                this.priorityId?.toInt()
+                    .defaultIfNull(0)
+            } else {
+                0
+            },
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
@@ -465,13 +468,13 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         comments = this.commentsAtCardCreation.orEmpty(),
         evidences = evidences,
         appSo = ANDROID_SO,
-        appVersion = BuildConfig.VERSION_NAME
+        appVersion = BuildConfig.VERSION_NAME,
     )
 }
 
 fun Card.getCreationDate(): String {
     return this.creationDateFormatted.defaultIfNull(
-        creationDate
+        creationDate,
     )
 }
 
@@ -522,4 +525,5 @@ fun Card.enableAssignMechanic(): Boolean {
 }
 
 fun Card.isLocalCard() = stored == STORED_LOCAL
+
 fun Card.isRemoteCard() = stored == STORED_REMOTE

@@ -142,7 +142,7 @@ data class CardEntity(
     @ColumnInfo(name = "stored")
     val stored: String?,
     @ColumnInfo(name = "card_location", defaultValue = EMPTY)
-    val cardLocation: String
+    val cardLocation: String,
 )
 
 fun CardEntity.validateDate(): String {
@@ -153,7 +153,10 @@ fun CardEntity.validateDate(): String {
     }
 }
 
-fun CardEntity.toDomain(evidences: List<Evidence> = emptyList(), hasLocalSolutions: Boolean): Card {
+fun CardEntity.toDomain(
+    evidences: List<Evidence> = emptyList(),
+    hasLocalSolutions: Boolean,
+): Card {
     return Card(
         id = this.cardId,
         siteCardId = this.siteCardId,
@@ -218,6 +221,6 @@ fun CardEntity.toDomain(evidences: List<Evidence> = emptyList(), hasLocalSolutio
         evidences = evidences,
         creationDateFormatted = validateDate(),
         cardLocation = this.cardLocation,
-        hasLocalSolutions = hasLocalSolutions
+        hasLocalSolutions = hasLocalSolutions,
     )
 }

@@ -27,23 +27,23 @@ fun <T> PullToRefreshLazyColumn(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
-    lazyListState: LazyListState = rememberLazyListState()
+    lazyListState: LazyListState = rememberLazyListState(),
 ) {
     val pullToRefreshState =
         rememberPullRefreshState(
             onRefresh = onRefresh,
-            refreshing = isRefreshing
+            refreshing = isRefreshing,
         )
     Box(
         modifier =
-        modifier
-            .pullRefresh(pullToRefreshState)
+            modifier
+                .pullRefresh(pullToRefreshState),
     ) {
         LazyColumn(
             state = lazyListState,
             modifier =
-            Modifier
-                .fillMaxSize()
+                Modifier
+                    .fillMaxSize(),
         ) {
             stickyHeader {
                 header()
@@ -61,9 +61,9 @@ fun <T> PullToRefreshLazyColumn(
         PullRefreshIndicator(
             state = pullToRefreshState,
             modifier =
-            Modifier
-                .align(Alignment.TopCenter),
-            refreshing = isRefreshing
+                Modifier
+                    .align(Alignment.TopCenter),
+            refreshing = isRefreshing,
         )
     }
 }

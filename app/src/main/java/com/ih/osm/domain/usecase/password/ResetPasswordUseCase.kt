@@ -9,11 +9,11 @@ interface ResetPasswordUseCase {
 }
 
 class ResetPasswordUseCaseImpl
-@Inject
-constructor(
-    private val authRepository: AuthRepository
-) : ResetPasswordUseCase {
-    override suspend fun invoke(request: RestorePasswordRequest) {
-        authRepository.resetPassword(request)
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+    ) : ResetPasswordUseCase {
+        override suspend fun invoke(request: RestorePasswordRequest) {
+            authRepository.resetPassword(request)
+        }
     }
-}

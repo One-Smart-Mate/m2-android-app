@@ -7,7 +7,10 @@ import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 
-fun getFileFromUri(context: Context, uri: Uri): File? {
+fun getFileFromUri(
+    context: Context,
+    uri: Uri,
+): File? {
     return when (uri.scheme) {
         "file" -> {
             // Directly handle file:// URI
@@ -21,7 +24,10 @@ fun getFileFromUri(context: Context, uri: Uri): File? {
     }
 }
 
-fun getFileFromContentUri(context: Context, uri: Uri): File? {
+fun getFileFromContentUri(
+    context: Context,
+    uri: Uri,
+): File? {
     var inputStream: InputStream? = null
     var outputStream: FileOutputStream? = null
     return try {
@@ -42,7 +48,10 @@ fun getFileFromContentUri(context: Context, uri: Uri): File? {
     }
 }
 
-fun getFileNameFromUri(context: Context, uri: Uri): String {
+fun getFileNameFromUri(
+    context: Context,
+    uri: Uri,
+): String {
     val cursor = context.contentResolver.query(uri, null, null, null, null)
     var fileName = "tempfile"
     cursor?.use {

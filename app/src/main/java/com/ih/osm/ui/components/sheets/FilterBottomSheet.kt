@@ -57,35 +57,38 @@ fun FiltersBottomSheet(onFilterChange: (String) -> Unit) {
 }
 
 @Composable
-fun FiltersBottomSheetContent(selection: String, onFilterChange: (String) -> Unit) {
+fun FiltersBottomSheetContent(
+    selection: String,
+    onFilterChange: (String) -> Unit,
+) {
     Column(
-        modifier = Modifier.padding(PaddingNormal)
+        modifier = Modifier.padding(PaddingNormal),
     ) {
         Text(
             text = stringResource(R.string.filters),
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold)
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         RadioGroup(
             modifier = Modifier.fillMaxWidth(),
             items =
-            listOf(
-                stringResource(R.string.all_open_cards),
-                stringResource(R.string.my_open_cards),
-                stringResource(R.string.assigned_cards),
-                stringResource(R.string.unassigned_cards),
-                stringResource(R.string.expired_cards),
-                stringResource(R.string.closed_cards)
-            ),
-            selection = selection
+                listOf(
+                    stringResource(R.string.all_open_cards),
+                    stringResource(R.string.my_open_cards),
+                    stringResource(R.string.assigned_cards),
+                    stringResource(R.string.unassigned_cards),
+                    stringResource(R.string.expired_cards),
+                    stringResource(R.string.closed_cards),
+                ),
+            selection = selection,
         ) {
             onFilterChange(it)
         }
         CustomSpacer()
         CustomButton(
             text = stringResource(R.string.clean_filters),
-            buttonType = ButtonType.OUTLINE
+            buttonType = ButtonType.OUTLINE,
         ) {
             onFilterChange(EMPTY)
         }

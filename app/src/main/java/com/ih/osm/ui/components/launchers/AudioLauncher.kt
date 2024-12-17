@@ -38,14 +38,17 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
+fun AudioLauncher(
+    maxRecordTime: Int,
+    onComplete: (uri: Uri) -> Unit,
+) {
     val context = LocalContext.current
     var file = context.getUriForFile(FileType.AUDIO)
     val androidAudioPlayer = AndroidAudioRecorder(context)
     val scope = rememberCoroutineScope()
     val permissionLauncher =
         rememberLauncherForActivityResult(
-            ActivityResultContracts.RequestPermission()
+            ActivityResultContracts.RequestPermission(),
         ) {
             if (it) {
                 androidAudioPlayer.start(file.second)
@@ -71,12 +74,16 @@ fun AudioLauncher(maxRecordTime: Int, onComplete: (uri: Uri) -> Unit) {
                 file = context.getUriForFile(FileType.AUDIO)
             }
         },
-        maxRecordTime = maxRecordTime
+        maxRecordTime = maxRecordTime,
     )
 }
 
 @Composable
-fun AudioContent(maxRecordTime: Int, onStart: () -> Unit, onStop: () -> Unit) {
+fun AudioContent(
+    maxRecordTime: Int,
+    onStart: () -> Unit,
+    onStop: () -> Unit,
+) {
     var timeLeft by remember { mutableIntStateOf(maxRecordTime) }
     var start by remember { mutableStateOf(false) }
 
@@ -93,17 +100,17 @@ fun AudioContent(maxRecordTime: Int, onStart: () -> Unit, onStop: () -> Unit) {
     }
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(),
     ) {
         Text(
             text = stringResource(R.string.recording_time, timeLeft),
             textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
         )
 
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             CardItemIcon(icon = painterResource(id = R.drawable.ic_smart_display)) {
                 start = true

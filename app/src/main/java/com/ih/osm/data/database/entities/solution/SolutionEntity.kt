@@ -15,5 +15,5 @@ data class SolutionEntity(
     @ColumnInfo(name = "comments")
     val comments: String,
     @ColumnInfo(name = "user_solution_id")
-    val userSolutionId: String
+    val userSolutionId: String,
 )

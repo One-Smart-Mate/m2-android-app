@@ -10,15 +10,15 @@ interface LogoutUseCase {
 }
 
 class LogoutUseCaseImpl
-@Inject
-constructor(
-    private val authRepository: AuthRepository,
-    private val cleanCatalogsUseCase: CleanCatalogsUseCase,
-    private val sharedPreferences: SharedPreferences
-) : LogoutUseCase {
-    override suspend fun invoke(): Int {
-        cleanCatalogsUseCase()
-        sharedPreferences.clearPreferences()
-        return authRepository.logout()
+    @Inject
+    constructor(
+        private val authRepository: AuthRepository,
+        private val cleanCatalogsUseCase: CleanCatalogsUseCase,
+        private val sharedPreferences: SharedPreferences,
+    ) : LogoutUseCase {
+        override suspend fun invoke(): Int {
+            cleanCatalogsUseCase()
+            sharedPreferences.clearPreferences()
+            return authRepository.logout()
+        }
     }
-}

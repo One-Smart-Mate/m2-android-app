@@ -27,36 +27,36 @@ import com.ih.osm.ui.utils.EMPTY
 fun LoadingScreen(text: String = EMPTY) {
     Box(
         modifier =
-        Modifier
-            .fillMaxSize()
-            .background(
-                color = MaterialTheme.colorScheme.primary
-            ),
-        contentAlignment = Alignment.Center
+            Modifier
+                .fillMaxSize()
+                .background(
+                    color = MaterialTheme.colorScheme.primary,
+                ),
+        contentAlignment = Alignment.Center,
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             CircularProgressIndicator(
-                color = getColor()
+                color = getColor(),
             )
             CustomSpacer()
             Box {
                 Text(
                     text = text,
                     modifier =
-                    Modifier
-                        .align(Alignment.Center),
+                        Modifier
+                            .align(Alignment.Center),
                     // Text composable does not take TextMotion as a parameter.
                     // Provide it via style argument but make sure that we are copying from current theme
                     style =
-                    LocalTextStyle.current.copy(
-                        textMotion = TextMotion.Animated,
-                        fontSize = 18.sp,
-                        color = getColor()
-                    )
+                        LocalTextStyle.current.copy(
+                            textMotion = TextMotion.Animated,
+                            fontSize = 18.sp,
+                            color = getColor(),
+                        ),
                 )
             }
         }
