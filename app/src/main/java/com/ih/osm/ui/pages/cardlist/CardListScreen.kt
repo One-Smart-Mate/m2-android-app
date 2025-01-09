@@ -105,9 +105,9 @@ fun CardListContent(
             stickyHeader {
                 Column(
                     modifier =
-                        Modifier.background(
-                            color = MaterialTheme.colorScheme.background,
-                        ),
+                    Modifier.background(
+                        color = MaterialTheme.colorScheme.background,
+                    ),
                 ) {
                     CustomAppBar(navController = navController, title = stringResource(R.string.anomalies_cards))
                     Box(

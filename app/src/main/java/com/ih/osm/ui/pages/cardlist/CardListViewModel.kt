@@ -17,72 +17,72 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CardListViewModel
-    @Inject
-    constructor(
-        private val getCardsUseCase: GetCardsUseCase,
-        private val getUserUseCase: GetUserUseCase,
-        @ApplicationContext private val context: Context,
-    ) : BaseViewModel<CardListViewModel.UiState>(UiState()) {
-        data class UiState(
-            val cards: List<Card> = emptyList(),
-            val isLoading: Boolean = true,
-            val message: String = EMPTY,
-            val user: User? = null,
-        )
+@Inject
+constructor(
+    private val getCardsUseCase: GetCardsUseCase,
+    private val getUserUseCase: GetUserUseCase,
+    @ApplicationContext private val context: Context,
+) : BaseViewModel<CardListViewModel.UiState>(UiState()) {
+    data class UiState(
+        val cards: List<Card> = emptyList(),
+        val isLoading: Boolean = true,
+        val message: String = EMPTY,
+        val user: User? = null,
+    )
 
-        fun load() {
-            handleGeCards()
-            handleGetUser()
-        }
+    fun load() {
+        handleGeCards()
+        handleGetUser()
+    }
 
-        private fun handleGeCards() {
-            viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardsUseCase(syncRemote = false) }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            cards = it.sortedByDescending { item -> item.siteCardId },
-                            isLoading = false,
-                            message = EMPTY,
-                        )
-                    }
-                }.onFailure {
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
-            }
-        }
-
-        private fun handleGetUser() {
-            viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getUserUseCase() }
-                }.onSuccess {
-                    setState { copy(user = it) }
-                }.onFailure {
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
-            }
-        }
-
-        fun handleFilterCards(filter: String) {
-            viewModelScope.launch {
-                val cards = getCardsUseCase(syncRemote = false)
-                val filteredCards =
-                    cards.filterByStatus(
-                        filter = filter.toCardFilter(context = context),
-                        userId = getState().user?.userId.orEmpty(),
+    private fun handleGeCards() {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                callUseCase { getCardsUseCase(syncRemote = false) }
+            }.onSuccess {
+                setState {
+                    copy(
+                        cards = it.sortedByDescending { item -> item.siteCardId },
+                        isLoading = false,
+                        message = EMPTY,
                     )
-                setState { copy(cards = filteredCards) }
-            }
-        }
-
-        private fun cleanScreenStates(message: String = EMPTY) {
-            setState {
-                copy(
-                    isLoading = false,
-                    message = message,
-                )
+                }
+            }.onFailure {
+                cleanScreenStates(it.localizedMessage.orEmpty())
             }
         }
     }
+
+    private fun handleGetUser() {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                callUseCase { getUserUseCase() }
+            }.onSuccess {
+                setState { copy(user = it) }
+            }.onFailure {
+                cleanScreenStates(it.localizedMessage.orEmpty())
+            }
+        }
+    }
+
+    fun handleFilterCards(filter: String)  {
+        viewModelScope.launch {
+            val cards = getCardsUseCase(syncRemote = false)
+            val filteredCards =
+                cards.filterByStatus(
+                    filter = filter.toCardFilter(context = context),
+                    userId = getState().user?.userId.orEmpty(),
+                )
+            setState { copy(cards = filteredCards) }
+        }
+    }
+
+    private fun cleanScreenStates(message: String = EMPTY) {
+        setState {
+            copy(
+                isLoading = false,
+                message = message,
+            )
+        }
+    }
+}
