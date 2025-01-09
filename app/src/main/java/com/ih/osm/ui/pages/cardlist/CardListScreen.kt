@@ -36,6 +36,7 @@ import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.card.CardItemListV2
+import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
@@ -67,6 +68,9 @@ fun CardListScreen(
                     }
                     is CardListAction.Detail -> {
                         navController.navigateToCardDetail(action.id)
+                    }
+                    is CardListAction.Filters -> {
+                        viewModel.handleFilterCards(action.filter)
                     }
                 }
             },
@@ -120,9 +124,9 @@ fun CardListContent(
 //                            ) {
 //                                //
 //                            }
-//                            FiltersBottomSheet(
-//                                onFilterChange
-//                            )
+                            FiltersBottomSheet { filter ->
+                                onAction(CardListAction.Filters(filter))
+                            }
                         }
                     }
                     CustomSpacer(space = SpacerSize.SMALL)

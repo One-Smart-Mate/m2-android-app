@@ -1,5 +1,6 @@
 package com.ih.osm.domain.model
 
+import android.content.Context
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,10 @@ import com.ih.osm.ui.utils.STATUS_V
 import com.ih.osm.ui.utils.STORED_LOCAL
 import com.ih.osm.ui.utils.STORED_REMOTE
 import com.ih.osm.ui.utils.UNASSIGNED_CARDS
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import android.graphics.Color as ColorParser
 
 data class Card(
@@ -317,6 +321,18 @@ fun Card.getBorderColor(): Color {
     }
 }
 
+fun String.toCardFilter(context: Context): String {
+    return when (this) {
+        context.getString(R.string.all_open_cards) -> ALL_OPEN_CARDS
+        context.getString(R.string.my_open_cards) -> MY_OPEN_CARDS
+        context.getString(R.string.assigned_cards) -> ASSIGNED_CARDS
+        context.getString(R.string.unassigned_cards) -> UNASSIGNED_CARDS
+        context.getString(R.string.expired_cards) -> EXPIRED_CARDS
+        context.getString(R.string.closed_cards) -> CLOSED_CARDS
+        else -> EMPTY
+    }
+}
+
 fun List<Card>.filterByStatus(
     filter: String,
     userId: String,
@@ -344,9 +360,7 @@ fun List<Card>.filterByStatus(
         ASSIGNED_CARDS -> {
             this.filter {
                 (
-                    it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
+                    it.status == STATUS_A
                 ) &&
                     it.mechanicId == userId
             }
@@ -355,19 +369,29 @@ fun List<Card>.filterByStatus(
         UNASSIGNED_CARDS -> {
             this.filter {
                 (
-                    it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
-                ) &&
-                    (
-                        it.mechanicId == null ||
-                            it.mechanicId == EMPTY
-                    )
+                    it.mechanicId == null ||
+                        it.mechanicId == EMPTY
+                )
             }
         }
 
         EXPIRED_CARDS -> {
-            this.filter { it.status == STATUS_V }
+            this.filter {
+                try {
+                    if (it.dueDate.isNullOrBlank()) {
+                        false
+                    } else {
+                        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val dueDate = dateFormat.parse(it.dueDate)
+                        val today = Calendar.getInstance().time
+
+                        dueDate != null && dueDate.before(today)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    false
+                }
+            }
         }
 
         CLOSED_CARDS -> {
