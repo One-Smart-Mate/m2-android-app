@@ -8,4 +8,6 @@ sealed class CardListAction {
     data object Create : CardListAction()
 
     data class Action(val action: CardItemSheetAction, val id: String) : CardListAction()
+
+    data class Filters(val filter: String) : CardListAction()
 }

@@ -1,5 +1,6 @@
 package com.ih.osm.domain.model
 
+import android.content.Context
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -31,7 +32,10 @@ import com.ih.osm.ui.utils.STATUS_V
 import com.ih.osm.ui.utils.STORED_LOCAL
 import com.ih.osm.ui.utils.STORED_REMOTE
 import com.ih.osm.ui.utils.UNASSIGNED_CARDS
+import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 import android.graphics.Color as ColorParser
 
 data class Card(
@@ -317,6 +321,18 @@ fun Card.getBorderColor(): Color {
     }
 }
 
+fun String.toCardFilter(context: Context): String {
+    return when (this) {
+        context.getString(R.string.all_open_cards) -> ALL_OPEN_CARDS
+        context.getString(R.string.my_open_cards) -> MY_OPEN_CARDS
+        context.getString(R.string.assigned_cards) -> ASSIGNED_CARDS
+        context.getString(R.string.unassigned_cards) -> UNASSIGNED_CARDS
+        context.getString(R.string.expired_cards) -> EXPIRED_CARDS
+        context.getString(R.string.closed_cards) -> CLOSED_CARDS
+        else -> EMPTY
+    }
+}
+
 fun List<Card>.filterByStatus(
     filter: String,
     userId: String,
@@ -325,49 +341,57 @@ fun List<Card>.filterByStatus(
         ALL_OPEN_CARDS -> {
             this.filter {
                 it.status == STATUS_A ||
-                    it.status == STATUS_P ||
-                    it.status == STATUS_V
+                        it.status == STATUS_P ||
+                        it.status == STATUS_V
             }
         }
 
         MY_OPEN_CARDS -> {
             this.filter {
                 (
-                    it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
-                ) &&
-                    it.creatorId == userId
+                        it.status == STATUS_A ||
+                                it.status == STATUS_P ||
+                                it.status == STATUS_V
+                        ) &&
+                        it.creatorId == userId
             }
         }
 
         ASSIGNED_CARDS -> {
             this.filter {
                 (
-                    it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
-                ) &&
-                    it.mechanicId == userId
+                        it.status == STATUS_A
+                        ) &&
+                        it.mechanicId == userId
             }
         }
 
         UNASSIGNED_CARDS -> {
             this.filter {
                 (
-                    it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
-                ) &&
-                    (
                         it.mechanicId == null ||
-                            it.mechanicId == EMPTY
-                    )
+                                it.mechanicId == EMPTY
+                        )
             }
         }
 
         EXPIRED_CARDS -> {
-            this.filter { it.status == STATUS_V }
+            this.filter {
+                try {
+                    if (it.dueDate.isNullOrBlank()) {
+                        false
+                    } else {
+                        val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                        val dueDate = dateFormat.parse(it.dueDate)
+                        val today = Calendar.getInstance().time
+
+                        dueDate != null && dueDate.before(today)
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    false
+                }
+            }
         }
 
         CLOSED_CARDS -> {
@@ -455,12 +479,12 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardCreationDate = this.creationDate,
         nodeId = this.areaId.toInt(),
         priorityId =
-            if (this.priorityId.isNullOrBlank().not()) {
-                this.priorityId?.toInt()
-                    .defaultIfNull(0)
-            } else {
-                0
-            },
+        if (this.priorityId.isNullOrBlank().not()) {
+            this.priorityId?.toInt()
+                .defaultIfNull(0)
+        } else {
+            0
+        },
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
@@ -508,16 +532,16 @@ fun Card.cardSiteTitle(): String {
 
 fun Card.enableProvisionalSolution(): Boolean {
     return this.userProvisionalSolutionId.isNullOrEmpty() ||
-        this.userProvisionalSolutionName.isNullOrBlank() ||
-        this.userAppProvisionalSolutionId.isNullOrBlank() ||
-        this.userAppProvisionalSolutionName.isNullOrBlank()
+            this.userProvisionalSolutionName.isNullOrBlank() ||
+            this.userAppProvisionalSolutionId.isNullOrBlank() ||
+            this.userAppProvisionalSolutionName.isNullOrBlank()
 }
 
 fun Card.enableDefinitiveSolution(): Boolean {
     return this.userDefinitiveSolutionId.isNullOrEmpty() ||
-        this.userDefinitiveSolutionName.isNullOrBlank() ||
-        this.userAppDefinitiveSolutionId.isNullOrBlank() ||
-        this.userAppDefinitiveSolutionName.isNullOrBlank()
+            this.userDefinitiveSolutionName.isNullOrBlank() ||
+            this.userAppDefinitiveSolutionId.isNullOrBlank() ||
+            this.userAppDefinitiveSolutionName.isNullOrBlank()
 }
 
 fun Card.enableAssignMechanic(): Boolean {
