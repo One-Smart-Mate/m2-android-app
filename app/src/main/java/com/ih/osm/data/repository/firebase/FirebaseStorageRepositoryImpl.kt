@@ -52,7 +52,7 @@ class FirebaseStorageRepositoryImpl
                 EvidenceType.VICL -> "VIDEO_CL_$timeStamp.mp4"
                 EvidenceType.AUCL -> "AUDIO_CL_$timeStamp.mp3"
                 EvidenceType.IMPS -> "IMAGE_PS_$timeStamp.jpg"
-                EvidenceType.AUPS -> "AUDIO_PS_$timeStamp.mp4"
+                EvidenceType.AUPS -> "AUDIO_PS_$timeStamp.mp3"
                 EvidenceType.VIPS -> "VIDEO_PS_$timeStamp.mp4"
             }
         }
