@@ -341,37 +341,37 @@ fun List<Card>.filterByStatus(
         ALL_OPEN_CARDS -> {
             this.filter {
                 it.status == STATUS_A ||
-                        it.status == STATUS_P ||
-                        it.status == STATUS_V
+                    it.status == STATUS_P ||
+                    it.status == STATUS_V
             }
         }
 
         MY_OPEN_CARDS -> {
             this.filter {
                 (
-                        it.status == STATUS_A ||
-                                it.status == STATUS_P ||
-                                it.status == STATUS_V
-                        ) &&
-                        it.creatorId == userId
+                    it.status == STATUS_A ||
+                        it.status == STATUS_P ||
+                        it.status == STATUS_V
+                ) &&
+                    it.creatorId == userId
             }
         }
 
         ASSIGNED_CARDS -> {
             this.filter {
                 (
-                        it.status == STATUS_A
-                        ) &&
-                        it.mechanicId == userId
+                    it.status == STATUS_A
+                ) &&
+                    it.mechanicId == userId
             }
         }
 
         UNASSIGNED_CARDS -> {
             this.filter {
                 (
-                        it.mechanicId == null ||
-                                it.mechanicId == EMPTY
-                        )
+                    it.mechanicId == null ||
+                        it.mechanicId == EMPTY
+                )
             }
         }
 
@@ -479,12 +479,12 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         cardCreationDate = this.creationDate,
         nodeId = this.areaId.toInt(),
         priorityId =
-        if (this.priorityId.isNullOrBlank().not()) {
-            this.priorityId?.toInt()
-                .defaultIfNull(0)
-        } else {
-            0
-        },
+            if (this.priorityId.isNullOrBlank().not()) {
+                this.priorityId?.toInt()
+                    .defaultIfNull(0)
+            } else {
+                0
+            },
         cardTypeValue = this.cardTypeValue?.lowercase().orEmpty(),
         cardTypeId = this.cardTypeId?.toInt().defaultIfNull(0),
         preclassifierId = this.preclassifierId.toInt(),
@@ -532,16 +532,16 @@ fun Card.cardSiteTitle(): String {
 
 fun Card.enableProvisionalSolution(): Boolean {
     return this.userProvisionalSolutionId.isNullOrEmpty() ||
-            this.userProvisionalSolutionName.isNullOrBlank() ||
-            this.userAppProvisionalSolutionId.isNullOrBlank() ||
-            this.userAppProvisionalSolutionName.isNullOrBlank()
+        this.userProvisionalSolutionName.isNullOrBlank() ||
+        this.userAppProvisionalSolutionId.isNullOrBlank() ||
+        this.userAppProvisionalSolutionName.isNullOrBlank()
 }
 
 fun Card.enableDefinitiveSolution(): Boolean {
     return this.userDefinitiveSolutionId.isNullOrEmpty() ||
-            this.userDefinitiveSolutionName.isNullOrBlank() ||
-            this.userAppDefinitiveSolutionId.isNullOrBlank() ||
-            this.userAppDefinitiveSolutionName.isNullOrBlank()
+        this.userDefinitiveSolutionName.isNullOrBlank() ||
+        this.userAppDefinitiveSolutionId.isNullOrBlank() ||
+        this.userAppDefinitiveSolutionName.isNullOrBlank()
 }
 
 fun Card.enableAssignMechanic(): Boolean {

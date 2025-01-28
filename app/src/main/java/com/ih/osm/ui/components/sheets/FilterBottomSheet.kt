@@ -67,20 +67,20 @@ fun FiltersBottomSheetContent(
         Text(
             text = stringResource(R.string.filters),
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold),
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
         RadioGroup(
             modifier = Modifier.fillMaxWidth(),
             items =
-            listOf(
-                stringResource(R.string.all_open_cards),
-                stringResource(R.string.my_open_cards),
-                stringResource(R.string.assigned_cards),
-                stringResource(R.string.unassigned_cards),
-                stringResource(R.string.expired_cards),
-                stringResource(R.string.closed_cards),
-            ),
+                listOf(
+                    stringResource(R.string.all_open_cards),
+                    stringResource(R.string.my_open_cards),
+                    stringResource(R.string.assigned_cards),
+                    stringResource(R.string.unassigned_cards),
+                    stringResource(R.string.expired_cards),
+                    stringResource(R.string.closed_cards),
+                ),
             selection = selection,
         ) {
             onFilterChange(it)
