@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -35,6 +36,8 @@ import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
+import com.ih.osm.ui.components.buttons.ButtonType
+import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
 import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.extensions.defaultScreen
@@ -43,6 +46,7 @@ import com.ih.osm.ui.navigation.navigateToCardSolution
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.pages.cardlist.action.CardListAction
 import com.ih.osm.ui.theme.OsmAppTheme
+import com.ih.osm.ui.theme.Size120
 import com.ih.osm.ui.utils.EMPTY
 
 @Composable
@@ -74,6 +78,7 @@ fun CardListScreen(
                     }
                 }
             },
+            viewModel = viewModel,
         )
     }
 
@@ -88,6 +93,7 @@ fun CardListContent(
     navController: NavController,
     cards: List<Card>,
     onAction: (CardListAction) -> Unit,
+    viewModel: CardListViewModel,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -105,9 +111,9 @@ fun CardListContent(
             stickyHeader {
                 Column(
                     modifier =
-                    Modifier.background(
-                        color = MaterialTheme.colorScheme.background,
-                    ),
+                        Modifier.background(
+                            color = MaterialTheme.colorScheme.background,
+                        ),
                 ) {
                     CustomAppBar(navController = navController, title = stringResource(R.string.anomalies_cards))
                     Box(
@@ -117,13 +123,13 @@ fun CardListContent(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End,
                         ) {
-//                            CustomButton(
-//                                text = stringResource(R.string.update_list),
-//                                modifier = Modifier.width(Size120),
-//                                buttonType = ButtonType.TEXT
-//                            ) {
-//                                //
-//                            }
+                            CustomButton(
+                                text = stringResource(R.string.update_list),
+                                modifier = Modifier.width(Size120),
+                                buttonType = ButtonType.TEXT,
+                            ) {
+                                viewModel.handleUpdateRemoteCardsAndSave()
+                            }
                             FiltersBottomSheet { filter ->
                                 onAction(CardListAction.Filters(filter))
                             }
