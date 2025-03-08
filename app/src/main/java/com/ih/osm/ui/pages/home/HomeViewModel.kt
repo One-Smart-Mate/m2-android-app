@@ -65,7 +65,10 @@ class HomeViewModel
                 is HomeAction.GetCards -> handleGetCards()
                 is HomeAction.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
                 is HomeAction.SyncRemoteCards -> handleSyncRemoteCards()
-                is HomeAction.SyncLocalCards -> handleSyncLocalCards(action.context)
+                is HomeAction.SyncLocalCards -> {
+                    Log.e("HomeViewModel", "Recibida acción para sincronizar tarjetas locales")
+                    handleSyncLocalCards(action.context)
+                }
             }
         }
 
@@ -76,6 +79,7 @@ class HomeViewModel
         }
 
         private fun handleSyncLocalCards(appContext: Context) {
+            Log.e("HomeViewModel", "Entrando a handleSyncLocalCards()")
             viewModelScope.launch {
                 val state = getState()
                 if (NetworkConnection.isConnected().not() ||
@@ -83,6 +87,7 @@ class HomeViewModel
                     state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
                     state.networkStatus == NetworkStatus.DATA_DISCONNECTED
                 ) {
+                    Log.e("HomeViewModel", "No hay conexión, mensaje: ${context.getString(R.string.please_connect_to_internet)}")
                     setState {
                         copy(
                             isLoading = false,
@@ -95,6 +100,12 @@ class HomeViewModel
                 if (state.networkStatus == NetworkStatus.DATA_CONNECTED &&
                     sharedPreferences.getNetworkPreference().isEmpty()
                 ) {
+                    Log.e(
+                        "HomeViewModel",
+                        "Datos móviles activos sin preferencia guardada, mensaje: : ${context.getString(
+                            R.string.network_preferences_allowed,
+                        )}",
+                    )
                     setState {
                         copy(
                             isLoading = false,
@@ -104,6 +115,7 @@ class HomeViewModel
                     }
                     return@launch
                 }
+                Log.e("HomeViewModel", "Enviando trajetas locales a sincronizar")
                 appContext.getActivity<MainActivity>()?.enqueueSyncCardsWork()
                 setState { copy(showSyncLocalCards = false) }
             }
@@ -214,6 +226,7 @@ class HomeViewModel
                     state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
                     state.networkStatus == NetworkStatus.DATA_DISCONNECTED
                 ) {
+                    Log.e("HomeViewModel", "No hay conexión, mensaje a mostrar: ${context.getString(R.string.please_connect_to_internet)}")
                     setState {
                         copy(
                             isLoading = false,
@@ -305,13 +318,15 @@ class HomeViewModel
 
         //
         private fun cleanScreenStates(message: String = EMPTY) {
+            Log.e("HomeViewModel", "Limpiando estados, mensaje: $message")
             setState {
                 copy(
                     isLoading = false,
-                    message = message,
+                    message = if (message.isNotEmpty()) message else getState().message,
                     isSyncing = false,
                 )
             }
+            Log.e("HomeViewModel", "Después de limpiar estados, mensaje: ${getState().message}")
         }
 
         private fun checkPreferences() {

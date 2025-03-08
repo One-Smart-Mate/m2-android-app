@@ -91,6 +91,7 @@ import com.ih.osm.ui.utils.CARD_ANOMALIES
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
@@ -122,6 +123,7 @@ fun HomeScreenV2(
                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
                     HomeActionClick.LOCAL_CARDS -> {
+                        Log.e("HomeScreenV2", "Intentando sincronizar tarjetas locales...")
                         viewModel.process(HomeAction.SyncLocalCards(context))
                     }
 
@@ -162,14 +164,14 @@ fun HomeScreenV2(
 //                } else if (state.isSyncing.not()) {
 //                  //  viewModel.process(HomeViewModel.Action.GetCards)
 //                }
-//                if (state.message.isNotEmpty() && state.isLoading.not()) {
-//                    scope.launch {
-//                        snackBarHostState.showSnackbar(
-//                            message = state.message
-//                        )
+                Log.e("Snackbar", "Recibido mensaje en UI: ${state.message}")
+                if (state.message.isNotEmpty() && state.isLoading.not()) {
+                    Log.e("Snackbar", "Mostrando Snackbar con mensaje: ${state.message}")
+                    scope.launch {
+                        snackBarHostState.showSnackbar(message = state.message)
+                    }
 //                       // viewModel.process(HomeViewModel.Action.ClearMessage)
-//                    }
-//                }
+                }
                 if (state.updateApp) {
                     context.getActivity<MainActivity>()
                         ?.showUpdateDialog()

@@ -86,7 +86,7 @@ class CreateCardViewModel
         fun process(action: CreateCardAction) {
             when (action) {
                 is CreateCardAction.SetCardType -> handleSetCardType(action.id)
-                is CreateCardAction.SetPreclassifier -> setState { copy(selectedPreclassifier = action.id) }
+                is CreateCardAction.SetPreclassifier -> handleSetPreclassifier(action.id)
                 is CreateCardAction.SetPriority -> handleSetPriority(action.id)
                 is CreateCardAction.SetLevel -> handleSetLevel(action.id, action.key)
                 is CreateCardAction.SetComment -> setState { copy(comment = action.comment) }
@@ -176,9 +176,15 @@ class CreateCardViewModel
                         comment = EMPTY,
                     )
                 }
-                handleGetPriorities()
                 handleGetPreclassifiers(id)
                 handleGetCardType(id)
+            }
+        }
+
+        private fun handleSetPreclassifier(id: String) {
+            viewModelScope.launch {
+                setState { copy(selectedPreclassifier = id, selectedPriority = EMPTY, priorityList = emptyList()) }
+                handleGetPriorities()
             }
         }
 
