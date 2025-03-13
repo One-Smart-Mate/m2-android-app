@@ -41,12 +41,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -181,22 +181,40 @@ fun AccountContent(
                                 onClick = { onAction(AccountAction.SetSwitch(true)) },
                                 colors =
                                     ButtonDefaults.buttonColors(
-                                        containerColor = if (checked) Color.Green else Color.Gray,
+                                        containerColor =
+                                            if (checked) {
+                                                colorResource(id = R.color.button_green)
+                                            } else {
+                                                colorResource(id = R.color.button_gray)
+                                            },
                                     ),
-                                modifier = Modifier.height(30.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.height(dimensionResource(id = R.dimen.button_height)),
+                                contentPadding =
+                                    PaddingValues(
+                                        horizontal = dimensionResource(id = R.dimen.button_padding_horizontal),
+                                        vertical = dimensionResource(id = R.dimen.button_padding_vertical),
+                                    ),
                             ) {
-                                Text("SI", style = MaterialTheme.typography.bodySmall)
+                                Text("YES", style = MaterialTheme.typography.bodySmall)
                             }
-                            Spacer(modifier = Modifier.width(4.dp))
+                            Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.button_spacing)))
                             Button(
                                 onClick = { onAction(AccountAction.SetSwitch(false)) },
                                 colors =
                                     ButtonDefaults.buttonColors(
-                                        containerColor = if (!checked) Color.Red else Color.Gray,
+                                        containerColor =
+                                            if (!checked) {
+                                                colorResource(id = R.color.button_red)
+                                            } else {
+                                                colorResource(id = R.color.button_gray)
+                                            },
                                     ),
-                                modifier = Modifier.height(30.dp),
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 4.dp),
+                                modifier = Modifier.height(dimensionResource(id = R.dimen.button_height)),
+                                contentPadding =
+                                    PaddingValues(
+                                        horizontal = dimensionResource(id = R.dimen.button_padding_horizontal),
+                                        vertical = dimensionResource(id = R.dimen.button_padding_vertical),
+                                    ),
                             ) {
                                 Text("NO", style = MaterialTheme.typography.bodySmall)
                             }

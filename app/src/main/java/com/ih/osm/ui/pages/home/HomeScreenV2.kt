@@ -123,7 +123,6 @@ fun HomeScreenV2(
                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
                     HomeActionClick.LOCAL_CARDS -> {
-                        Log.e("HomeScreenV2", "Intentando sincronizar tarjetas locales...")
                         viewModel.process(HomeAction.SyncLocalCards(context))
                     }
 
@@ -164,9 +163,7 @@ fun HomeScreenV2(
 //                } else if (state.isSyncing.not()) {
 //                  //  viewModel.process(HomeViewModel.Action.GetCards)
 //                }
-                Log.e("Snackbar", "Recibido mensaje en UI: ${state.message}")
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
-                    Log.e("Snackbar", "Mostrando Snackbar con mensaje: ${state.message}")
                     scope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
                     }

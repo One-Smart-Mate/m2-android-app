@@ -1,6 +1,5 @@
 package com.ih.osm.data.repository.cards
 
-import android.util.Log
 import com.ih.osm.data.database.dao.card.CardDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.model.CreateCardRequest
@@ -37,7 +36,6 @@ class CardRepositoryImpl
                     val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
                     it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
                 }.sortedBy { it.id }
-            Log.e("CardRepository", "Orden de subida: ${cards.map { it.id }}")
             return cards
         }
 
@@ -71,7 +69,6 @@ class CardRepositoryImpl
                         hasLocalSolutions = hasLocalSolutions.isNotEmpty(),
                     )
                 }.sortedBy { it.siteCardId }
-            Log.e("CardRepository", "Orden de subida local: ${sortedCards.map { it.siteCardId }}")
             return sortedCards
         }
 
