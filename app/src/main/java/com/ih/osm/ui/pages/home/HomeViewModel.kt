@@ -65,7 +65,9 @@ class HomeViewModel
                 is HomeAction.GetCards -> handleGetCards()
                 is HomeAction.SyncCatalogs -> handleSyncCatalogs(action.syncCatalogs)
                 is HomeAction.SyncRemoteCards -> handleSyncRemoteCards()
-                is HomeAction.SyncLocalCards -> handleSyncLocalCards(action.context)
+                is HomeAction.SyncLocalCards -> {
+                    handleSyncLocalCards(action.context)
+                }
             }
         }
 
@@ -308,7 +310,7 @@ class HomeViewModel
             setState {
                 copy(
                     isLoading = false,
-                    message = message,
+                    message = if (message.isNotEmpty()) message else getState().message,
                     isSyncing = false,
                 )
             }

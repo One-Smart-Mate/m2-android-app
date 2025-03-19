@@ -31,10 +31,12 @@ class CardRepositoryImpl
         }
 
         override suspend fun getAll(): List<Card> {
-            return dao.getAll().map {
-                val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
-                it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
-            }.sortedByDescending { it.id }
+            val cards =
+                dao.getAll().map {
+                    val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
+                    it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
+                }.sortedBy { it.id }
+            return cards
         }
 
         override suspend fun getLastCardId(): String? {
@@ -57,15 +59,17 @@ class CardRepositoryImpl
                     localCards.add(card)
                 }
             }
-            return localCards.toSet().map { cardEntity ->
-                val evidences =
-                    evidenceRepo.getAllByCard(cardEntity.uuid)
-                val hasLocalSolutions = solutionRepo.getAllByCard(cardEntity.uuid)
-                cardEntity.toDomain(
-                    evidences = evidences,
-                    hasLocalSolutions = hasLocalSolutions.isNotEmpty(),
-                )
-            }.sortedByDescending { it.siteCardId }
+            val sortedCards =
+                localCards.toSet().map { cardEntity ->
+                    val evidences =
+                        evidenceRepo.getAllByCard(cardEntity.uuid)
+                    val hasLocalSolutions = solutionRepo.getAllByCard(cardEntity.uuid)
+                    cardEntity.toDomain(
+                        evidences = evidences,
+                        hasLocalSolutions = hasLocalSolutions.isNotEmpty(),
+                    )
+                }.sortedBy { it.siteCardId }
+            return sortedCards
         }
 
         override suspend fun delete(uuid: String) {
