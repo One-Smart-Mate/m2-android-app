@@ -57,4 +57,6 @@ interface NetworkRepository {
     ): List<Card>
 
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
+
+    suspend fun logout(userId: Int)
 }
