@@ -47,10 +47,9 @@ class AuthRepositoryImpl
         }
 
         override suspend fun logout(): Int {
-            dao.getUser()?.let {
-                return dao.deleteUser(it)
-            }
-            return 0
+            val user = dao.getUser() ?: return 0
+            networkRepository.logout(user.userId.toInt())
+            return dao.deleteUser(user)
         }
 
         override suspend fun getSiteId(): String {

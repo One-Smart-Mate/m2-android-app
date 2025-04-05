@@ -204,4 +204,20 @@ class NetworkRepositoryImpl
                 return e.localizedMessage.orEmpty()
             }
         }
+
+        override suspend fun logout(userId: Int) {
+            val response =
+                try {
+                    apiService.logout(userId)
+                    true
+                } catch (e: Exception) {
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                    fileHelper.logException(e)
+                    throw e
+                }
+
+            if (!response) {
+                error("Error logging out of the server")
+            }
+        }
     }

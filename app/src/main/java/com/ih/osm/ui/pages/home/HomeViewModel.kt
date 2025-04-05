@@ -310,7 +310,7 @@ class HomeViewModel
             setState {
                 copy(
                     isLoading = false,
-                    message = if (message.isNotEmpty()) message else getState().message,
+                    message = message,
                     isSyncing = false,
                 )
             }

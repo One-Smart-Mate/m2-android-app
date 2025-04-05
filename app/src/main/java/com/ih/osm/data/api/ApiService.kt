@@ -116,4 +116,9 @@ interface ApiService {
     fun updateMechanic(
         @Body body: UpdateMechanicRequest,
     ): Call<Any>
+
+    @POST("users/logout/{userId}")
+    suspend fun logout(
+        @Path("userId") userId: Int,
+    )
 }
