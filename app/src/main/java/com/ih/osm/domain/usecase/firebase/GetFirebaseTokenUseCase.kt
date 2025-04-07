@@ -1,7 +1,7 @@
 package com.ih.osm.domain.usecase.firebase
 
-import android.util.Log
 import com.google.firebase.messaging.FirebaseMessaging
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.ui.utils.EMPTY
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
@@ -19,7 +19,7 @@ class GetFirebaseTokenUseCaseImpl
             return try {
                 firebaseMessaging.token.await()
             } catch (e: Exception) {
-                Log.e("test", "Exception ${e.localizedMessage}")
+                LoggerHelperManager.logException(e)
                 EMPTY
             }
         }

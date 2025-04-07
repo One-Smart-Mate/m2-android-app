@@ -158,24 +158,15 @@ fun HomeScreenV2(
             .flowWithLifecycle(lifecycle)
             .distinctUntilChanged()
             .collect {
-//                if (state.syncCatalogs && state.syncCompleted.not()) {
-//                  //  viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
-//                } else if (state.isSyncing.not()) {
-//                  //  viewModel.process(HomeViewModel.Action.GetCards)
-//                }
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
                     }
-//                       // viewModel.process(HomeViewModel.Action.ClearMessage)
                 }
                 if (state.updateApp) {
                     context.getActivity<MainActivity>()
                         ?.showUpdateDialog()
                 }
-//                if (!state.isLoading) {
-//                    viewModel.process(HomeAction.GetCards)
-//                }
             }
     }
 }

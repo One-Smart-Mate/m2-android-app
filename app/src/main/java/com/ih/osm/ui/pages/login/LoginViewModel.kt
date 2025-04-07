@@ -2,8 +2,9 @@ package com.ih.osm.ui.pages.login
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.domain.model.User
@@ -25,7 +26,6 @@ class LoginViewModel
         private val loginUseCase: LoginUseCase,
         private val saveUserUseCase: SaveUserUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-        private val fileHelper: FileHelper,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
         data class UiState(
@@ -72,9 +72,10 @@ class LoginViewModel
                 kotlin.runCatching {
                     callUseCase { loginUseCase(LoginRequest(email, password)) }
                 }.onSuccess {
-                    fileHelper.logUser(it)
+                    LoggerHelperManager.logUser(it)
                     handleSaveUser(it)
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     setState {
                         copy(
                             isLoading = false,
@@ -93,16 +94,18 @@ class LoginViewModel
                     handleSyncFirebaseToken()
                     setState { copy(isLoading = false, isAuthenticated = true) }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
                 }
             }
         }
 
-        private fun handleSyncFirebaseToken() {
-            viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { syncFirebaseTokenUseCase() }
-                }
+        private suspend fun handleSyncFirebaseToken() {
+            kotlin.runCatching {
+                callUseCase { syncFirebaseTokenUseCase() }
+            }.onFailure {
+                LoggerHelperManager.logException(it)
+                FirebaseCrashlytics.getInstance().recordException(it)
             }
         }
     }

@@ -26,7 +26,10 @@ import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
 import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
+import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.network.NetworkConnection
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.AppWorker
 import com.ih.osm.core.workmanager.WorkManagerUUID
 import com.ih.osm.ui.navigation.AppNavigation
@@ -34,16 +37,20 @@ import com.ih.osm.ui.pages.splash.SplashViewModel
 import com.ih.osm.ui.theme.OsmAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject
+    lateinit var fileHelper: FileHelper
+
     private val splashViewModel: SplashViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-
         Timber.plant(Timber.DebugTree())
+        initLogger()
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             checkNotificationPermissions()
         }
@@ -62,6 +69,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun initLogger() {
+        try {
+            LoggerHelperManager.initialize(fileHelper)
+        } catch (e: Exception) {
+            LoggerHelperManager.initialize(
+                FileHelper(
+                    context = baseContext,
+                    sharedPreferences = SharedPreferences(baseContext),
+                ),
+            )
+        }
+    }
+
     private fun observeNetworkChanges() {
         val networkRequest =
             NetworkRequest.Builder()
@@ -73,30 +93,6 @@ class MainActivity : ComponentActivity() {
         val connectivityManager =
             getSystemService(Context.CONNECTIVITY_SERVICE) as? ConnectivityManager
         connectivityManager?.requestNetwork(networkRequest, NetworkConnection.networkCallback)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun workRequest() {
-//        val uuid = WorkManagerUUID.get()
-//        uuid?.let {
-//            val workRequest = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-//                OneTimeWorkRequestBuilder<CardWorker>()
-//                    .setId(uuid)
-//                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-//                    .setBackoffCriteria(
-//                        backoffPolicy = BackoffPolicy.LINEAR,
-//                        duration = Duration.ofSeconds(5)
-//                    ).build()
-//            } else {
-//                OneTimeWorkRequestBuilder<CardWorker>()
-//                    .setId(uuid)
-//                    .setBackoffCriteria(
-//                        backoffPolicy = BackoffPolicy.LINEAR,
-//                        duration = Duration.ofSeconds(5)
-//                    ).build()
-//            }
-//            WorkManager.getInstance(this@MainActivity).enqueue(workRequest)
-//        }
     }
 
     fun enqueueSyncCardsWork() {

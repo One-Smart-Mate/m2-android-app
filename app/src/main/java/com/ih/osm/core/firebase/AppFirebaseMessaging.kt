@@ -5,6 +5,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.google.gson.Gson
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -49,6 +50,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
                     description = message.getDescription(),
                 )
             }
+            LoggerHelperManager.logNotification(message)
         } catch (e: Exception) {
             FirebaseCrashlytics.getInstance().recordException(e)
         }
@@ -57,6 +59,7 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
         sharedPreferences.saveFirebaseToken(token)
+        LoggerHelperManager.logToken(token)
     }
 }
 

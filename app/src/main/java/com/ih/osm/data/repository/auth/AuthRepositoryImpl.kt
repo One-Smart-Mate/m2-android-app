@@ -3,6 +3,7 @@ package com.ih.osm.data.repository.auth
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
@@ -10,6 +11,7 @@ import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.network.NetworkRepository
+import com.ih.osm.ui.utils.ANDROID_SO
 import javax.inject.Inject
 
 class AuthRepositoryImpl
@@ -48,7 +50,9 @@ class AuthRepositoryImpl
 
         override suspend fun logout(): Int {
             val user = dao.getUser() ?: return 0
-            networkRepository.logout(user.userId.toInt())
+            networkRepository.logout(
+                LogoutRequest(user.userId.toInt(), ANDROID_SO.uppercase()),
+            )
             return dao.deleteUser(user)
         }
 

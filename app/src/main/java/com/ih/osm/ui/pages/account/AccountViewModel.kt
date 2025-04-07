@@ -2,7 +2,7 @@ package com.ih.osm.ui.pages.account
 
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
@@ -21,7 +21,6 @@ class AccountViewModel
         private val logoutUseCase: LogoutUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
-        private val fileHelper: FileHelper,
     ) : BaseViewModel<AccountViewModel.UiState>(UiState()) {
         data class UiState(
             val logout: Boolean = false,
@@ -38,7 +37,7 @@ class AccountViewModel
 
         private fun getLogFile() {
             viewModelScope.launch {
-                val uri = fileHelper.getFileUri()
+                val uri = LoggerHelperManager.getLogFile()
                 setState { copy(uri = uri) }
             }
         }
@@ -71,13 +70,15 @@ class AccountViewModel
         }
 
         private fun handleLogout() {
+            setState { copy(isLoading = true) }
             viewModelScope.launch {
                 kotlin.runCatching {
                     callUseCase { logoutUseCase() }
                 }.onSuccess {
                     setState { copy(logout = true) }
                 }.onFailure {
-                    setState { copy(message = it.localizedMessage.orEmpty()) }
+                    LoggerHelperManager.logException(it)
+                    setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
                 }
             }
         }
@@ -90,6 +91,7 @@ class AccountViewModel
                 }.onSuccess {
                     setState { copy(isLoading = false, message = "Successfully sync!") }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
                 }
             }

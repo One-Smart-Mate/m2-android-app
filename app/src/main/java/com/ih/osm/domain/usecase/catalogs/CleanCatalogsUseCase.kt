@@ -1,6 +1,7 @@
 package com.ih.osm.domain.usecase.catalogs
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
@@ -39,6 +40,7 @@ class CleanCatalogsUseCaseImpl
                 solutionRepo.deleteAll()
                 true
             } catch (e: Exception) {
+                LoggerHelperManager.logException(e)
                 FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
                 false
             }

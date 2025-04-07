@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.cardlist
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.filterByStatus
@@ -48,6 +49,7 @@ class CardListViewModel
                         )
                     }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -66,6 +68,7 @@ class CardListViewModel
                         )
                     }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -78,6 +81,7 @@ class CardListViewModel
                 }.onSuccess {
                     setState { copy(user = it) }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }

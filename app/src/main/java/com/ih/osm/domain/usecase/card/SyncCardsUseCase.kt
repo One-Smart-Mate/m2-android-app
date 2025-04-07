@@ -1,8 +1,7 @@
 package com.ih.osm.domain.usecase.card
 
-import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.model.CreateEvidenceRequest
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
@@ -27,7 +26,6 @@ class SyncCardsUseCaseImpl
         private val firebaseStorageRepository: FirebaseStorageRepository,
         private val notificationManager: NotificationManager,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-        private val fileHelper: FileHelper,
         private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
         private val evidenceRepo: EvidenceRepository,
         private val solutionRepo: SolutionRepository,
@@ -37,14 +35,11 @@ class SyncCardsUseCaseImpl
 
             try {
                 val cardList = cardRepository.getAllLocal()
-                Log.e("test", "CardList -> ${cardList.isEmpty()}")
                 cardList.forEach { card ->
                     selectedCard = card
                     val evidences = mutableListOf<CreateEvidenceRequest>()
-                    Log.e("test", "Current card.. $card")
                     card.evidences?.forEach { evidence ->
                         val url = firebaseStorageRepository.uploadEvidence(evidence)
-                        Log.e("test", "saving evidence.. $url")
                         if (url.isNotEmpty()) {
                             evidences.add(CreateEvidenceRequest(evidence.type, url))
                             evidenceRepo.delete(evidence.id)
@@ -54,19 +49,17 @@ class SyncCardsUseCaseImpl
                     val remoteCard =
                         if (card.isLocalCard()) {
                             val cardRequest = card.toCardRequest(evidences)
-                            fileHelper.logCreateCardRequest(cardRequest)
-                            Log.e("test", "Current card request.. $cardRequest")
+                            LoggerHelperManager.logCreateCardRequest(cardRequest)
                             firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
                             val networkCard = cardRepository.saveRemote(cardRequest)
                             cardRepository.delete(card.uuid)
                             cardRepository.save(networkCard)
-                            fileHelper.logCreateCardRequestSuccess(networkCard)
+                            LoggerHelperManager.logCreateCardRequestSuccess(networkCard)
                             firebaseAnalyticsHelper.logCreateRemoteCard(networkCard)
                             networkCard
                         } else {
                             card
                         }
-                    Log.e("test", "Current card remote.. $remoteCard")
 
                     val solutions = solutionRepo.getAllByCard(card.uuid)
                     solutions.forEach {
@@ -85,15 +78,13 @@ class SyncCardsUseCaseImpl
                         )
                     }
                     solutionRepo.deleteAllByCard(card.uuid)
-                    Log.e("test", "saving card.. $remoteCard")
                     notificationManager.buildNotificationSuccessCard(remoteCard.siteCardId.toString())
                 }
             } catch (e: Exception) {
-                Log.e("test", "saving card exception.. ${e.localizedMessage}")
                 restoreEvidences(selectedCard)
+                LoggerHelperManager.logException(e)
                 firebaseAnalyticsHelper.logSyncCardException(e)
                 FirebaseCrashlytics.getInstance().recordException(e)
-                fileHelper.logException(e)
                 notificationManager.buildErrorNotification(e.localizedMessage.orEmpty())
             }
         }

@@ -13,6 +13,7 @@ import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
+import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.SolutionResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
@@ -117,8 +118,8 @@ interface ApiService {
         @Body body: UpdateMechanicRequest,
     ): Call<Any>
 
-    @POST("users/logout/{userId}")
+    @POST("users/logout")
     suspend fun logout(
-        @Path("userId") userId: Int,
+        @Body body: LogoutRequest,
     )
 }
