@@ -389,10 +389,12 @@ private fun HomeAppBarV2(
                 networkStatus = networkStatus,
                 textColor = getTextColor(),
                 modifier =
-                    Modifier.background(
-                        shape = RoundedCornerShape(Radius8),
-                        color = Color.Gray.copy(alpha = 0.1f),
-                    ).padding(PaddingTiny),
+                    Modifier
+                        .background(
+                            shape = RoundedCornerShape(Radius8),
+                            color = Color.Gray.copy(alpha = 0.1f),
+                        )
+                        .padding(PaddingTiny),
             )
         }
         CustomSpacer(space = SpacerSize.SMALL)

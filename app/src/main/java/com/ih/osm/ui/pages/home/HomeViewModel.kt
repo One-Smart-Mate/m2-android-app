@@ -73,6 +73,7 @@ class HomeViewModel
             checkNetworkStatus()
             val syncCatalogs = savedStateHandle.get<String>(ARG_SYNC_CATALOG).orEmpty()
             handleSyncCatalogs(syncCatalogs)
+            checkPreferences()
         }
 
         private fun handleSyncLocalCards(appContext: Context) {
@@ -181,13 +182,11 @@ class HomeViewModel
                         copy(
                             cards = cards,
                             showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
-                            showSyncRemoteCards = false,
                         )
                     }
                     if (hasLocalCards) {
                         checkLastUpdate()
                     }
-                    checkPreferences()
                     cleanScreenStates()
                 }.onFailure {
                     LoggerHelperManager.logException(it)
@@ -229,6 +228,7 @@ class HomeViewModel
                     }
                     return@launch
                 }
+                setState { copy(showSyncRemoteCards = false) }
                 handleGetCards(syncRemote = true)
             }
         }
@@ -333,8 +333,7 @@ class HomeViewModel
                             }
                         }
 
-                        else -> {
-                        }
+                        else -> { }
                     }
                 }
             }
