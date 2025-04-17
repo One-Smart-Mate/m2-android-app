@@ -1,6 +1,7 @@
 package com.ih.osm.core.file
 
 import android.content.Context
+import android.media.MediaMetadataRetriever
 import android.net.Uri
 import androidx.core.content.FileProvider
 import com.google.firebase.crashlytics.FirebaseCrashlytics
@@ -157,6 +158,19 @@ class FileHelper
                 }
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+
+        fun getDuration(uri: Uri): Long {
+            return try {
+                MediaMetadataRetriever().use { retriever ->
+                    retriever.setDataSource(context, uri)
+                    val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
+                    durationStr?.toLongOrNull() ?: 0L
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                0L
             }
         }
     }
