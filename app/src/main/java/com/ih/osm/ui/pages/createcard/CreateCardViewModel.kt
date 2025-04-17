@@ -102,6 +102,7 @@ class CreateCardViewModel
             viewModelScope.launch {
                 val state = getState()
                 val cardType = state.cardType
+
                 val errorMessage =
                     when (type) {
                         EvidenceType.IMCR -> {
@@ -115,19 +116,31 @@ class CreateCardViewModel
 
                         EvidenceType.VICR -> {
                             val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
+                            val maxVideoDuration = cardType?.videosDurationCreate.defaultIfNull(0) * 1000
                             if (state.evidences.toVideos().size == maxVideos) {
                                 context.getString(R.string.limit_videos)
                             } else {
-                                EMPTY
+                                val videoDuration = fileHelper.getDuration(uri)
+                                if (videoDuration > maxVideoDuration) {
+                                    context.getString(R.string.limit_video_duration)
+                                } else {
+                                    EMPTY
+                                }
                             }
                         }
 
                         EvidenceType.AUCR -> {
                             val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
+                            val maxAudioDuration = cardType?.audiosDurationCreate.defaultIfNull(0) * 1000
                             if (state.evidences.toAudios().size == maxAudios) {
                                 context.getString(R.string.limit_audios)
                             } else {
-                                EMPTY
+                                val audioduration = fileHelper.getDuration(uri)
+                                if (audioduration > maxAudioDuration) {
+                                    context.getString(R.string.limit_audio_duration)
+                                } else {
+                                    EMPTY
+                                }
                             }
                         }
 

@@ -113,19 +113,23 @@ class CardActionViewModel
 
                         EvidenceType.VICL, EvidenceType.VIPS -> {
                             val maxVideos = videoQuantity(actionType, cardType)
-                            if (state.evidences.toVideos().size == maxVideos) {
-                                context.getString(R.string.limit_videos)
-                            } else {
-                                EMPTY
+                            val maxVideoDuration = videoDuration(actionType, cardType) * 1000
+                            val duration = fileHelper.getDuration(uri)
+                            when {
+                                state.evidences.toVideos().size == maxVideos -> context.getString(R.string.limit_videos)
+                                duration > maxVideoDuration -> context.getString(R.string.limit_video_duration)
+                                else -> EMPTY
                             }
                         }
 
                         EvidenceType.AUCL, EvidenceType.AUPS -> {
                             val maxAudios = audiosQuantity(actionType, cardType)
-                            if (state.evidences.toAudios().size == maxAudios) {
-                                context.getString(R.string.limit_audios)
-                            } else {
-                                EMPTY
+                            val maxAudioDuration = audiosDuration(actionType, cardType)
+                            val duration = fileHelper.getDuration(uri)
+                            when {
+                                state.evidences.toAudios().size == maxAudios -> context.getString(R.string.limit_audios)
+                                duration > maxAudioDuration -> context.getString(R.string.limit_audio_duration)
+                                else -> EMPTY
                             }
                         }
 
@@ -177,6 +181,28 @@ class CardActionViewModel
             return when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.quantityAudiosPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.quantityAudiosClose
+                else -> 0
+            }.defaultIfNull(0)
+        }
+
+        private fun audiosDuration(
+            actionType: CardItemSheetAction,
+            cardType: CardType?,
+        ): Int {
+            return when (actionType) {
+                is CardItemSheetAction.ProvisionalSolution -> cardType?.audiosDurationPs
+                is CardItemSheetAction.DefinitiveSolution -> cardType?.audiosDurationClose
+                else -> 0
+            }.defaultIfNull(0)
+        }
+
+        private fun videoDuration(
+            actionType: CardItemSheetAction,
+            cardType: CardType?,
+        ): Int {
+            return when (actionType) {
+                is CardItemSheetAction.ProvisionalSolution -> cardType?.videosDurationPs
+                is CardItemSheetAction.DefinitiveSolution -> cardType?.videosDurationClose
                 else -> 0
             }.defaultIfNull(0)
         }
