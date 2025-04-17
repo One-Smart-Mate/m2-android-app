@@ -1,12 +1,13 @@
 package com.ih.osm.data.repository.network
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.api.ApiService
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
@@ -27,7 +28,6 @@ class NetworkRepositoryImpl
     @Inject
     constructor(
         private val apiService: ApiService,
-        private val fileHelper: FileHelper,
     ) : NetworkRepository {
         override suspend fun login(data: LoginRequest): User {
             val response = apiService.login(data).execute()
@@ -196,28 +196,22 @@ class NetworkRepositoryImpl
                 instance.setCustomKey("Custom_Error_API_Service ", message)
                 instance.log(message)
                 instance.recordException(Exception(data.toString()))
-                fileHelper.logException(Exception(data.toString()))
+                LoggerHelperManager.logException(Exception(data.toString()))
                 return message
             } catch (e: Exception) {
                 instance.recordException(e)
-                fileHelper.logException(e)
+                LoggerHelperManager.logException(e)
                 return e.localizedMessage.orEmpty()
             }
         }
 
-        override suspend fun logout(userId: Int) {
-            val response =
-                try {
-                    apiService.logout(userId)
-                    true
-                } catch (e: Exception) {
-                    FirebaseCrashlytics.getInstance().recordException(e)
-                    fileHelper.logException(e)
-                    throw e
-                }
-
-            if (!response) {
-                error("Error logging out of the server")
+        override suspend fun logout(body: LogoutRequest) {
+            try {
+                apiService.logout(body)
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+                LoggerHelperManager.logException(e)
+                error(e.localizedMessage.orEmpty())
             }
         }
     }

@@ -122,6 +122,19 @@ class FileHelper
             }
         }
 
+        fun logException(exception: String) {
+            try {
+                getLocalFile()?.let {
+                    it.appendText(
+                        "\n********************** Exception - ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************",
+                    )
+                    it.appendText("$exception\n")
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+
         fun logProvisionalSolution(provisionalSolutionRequest: CreateProvisionalSolutionRequest) {
             try {
                 getLocalFile()?.let {
@@ -171,6 +184,32 @@ class FileHelper
             } catch (e: Exception) {
                 FirebaseCrashlytics.getInstance().recordException(e)
                 0L
+            }
+        }
+
+        fun logNotification(data: Any) {
+            try {
+                getLocalFile()?.let {
+                    it.appendText(
+                        "\n********************** Notification ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************",
+                    )
+                    it.appendText("${Gson().toJson(data)}\n")
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
+            }
+        }
+
+        fun logToken(data: String) {
+            try {
+                getLocalFile()?.let {
+                    it.appendText(
+                        "\n********************** Token ${Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS} - $appVersion **********************",
+                    )
+                    it.appendText("$data\n")
+                }
+            } catch (e: Exception) {
+                FirebaseCrashlytics.getInstance().recordException(e)
             }
         }
     }

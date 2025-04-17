@@ -2,7 +2,7 @@ package com.ih.osm.ui.pages.carddetail
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
@@ -18,7 +18,6 @@ class CardDetailViewModel
     @Inject
     constructor(
         private val getCardDetailUseCase: GetCardDetailUseCase,
-        private val fileHelper: FileHelper,
         savedStateHandle: SavedStateHandle,
     ) : BaseViewModel<CardDetailViewModel.UiState>(UiState()) {
         data class UiState(
@@ -38,7 +37,7 @@ class CardDetailViewModel
                 }.onSuccess {
                     setState { copy(state = LCE.Success(it)) }
                 }.onFailure {
-                    fileHelper.logException(it)
+                    LoggerHelperManager.logException(it)
                     setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
                 }
             }

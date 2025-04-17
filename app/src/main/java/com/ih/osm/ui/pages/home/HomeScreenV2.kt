@@ -158,24 +158,15 @@ fun HomeScreenV2(
             .flowWithLifecycle(lifecycle)
             .distinctUntilChanged()
             .collect {
-//                if (state.syncCatalogs && state.syncCompleted.not()) {
-//                  //  viewModel.process(HomeViewModel.Action.SyncCatalogs(syncCatalogs))
-//                } else if (state.isSyncing.not()) {
-//                  //  viewModel.process(HomeViewModel.Action.GetCards)
-//                }
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
                     }
-//                       // viewModel.process(HomeViewModel.Action.ClearMessage)
                 }
                 if (state.updateApp) {
                     context.getActivity<MainActivity>()
                         ?.showUpdateDialog()
                 }
-//                if (!state.isLoading) {
-//                    viewModel.process(HomeAction.GetCards)
-//                }
             }
     }
 }
@@ -398,10 +389,12 @@ private fun HomeAppBarV2(
                 networkStatus = networkStatus,
                 textColor = getTextColor(),
                 modifier =
-                    Modifier.background(
-                        shape = RoundedCornerShape(Radius8),
-                        color = Color.Gray.copy(alpha = 0.1f),
-                    ).padding(PaddingTiny),
+                    Modifier
+                        .background(
+                            shape = RoundedCornerShape(Radius8),
+                            color = Color.Gray.copy(alpha = 0.1f),
+                        )
+                        .padding(PaddingTiny),
             )
         }
         CustomSpacer(space = SpacerSize.SMALL)

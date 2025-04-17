@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.domain.model.Card
@@ -45,7 +45,6 @@ class CardActionViewModel
         private val getCardDetailUseCase: GetCardDetailUseCase,
         private val getCardTypeUseCase: GetCardTypeUseCase,
         private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
-        private val fileHelper: FileHelper,
         private val notificationManager: NotificationManager,
         private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
         @ApplicationContext private val context: Context,
@@ -257,6 +256,7 @@ class CardActionViewModel
                     buildNotification()
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -299,7 +299,7 @@ class CardActionViewModel
                     buildNotification()
                     cleanScreenStates()
                 }.onFailure {
-                    fileHelper.logException(it)
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -348,6 +348,7 @@ class CardActionViewModel
                     setState { copy(card = it) }
                     handleGetCardType(it.cardTypeId.orEmpty())
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -365,6 +366,7 @@ class CardActionViewModel
                     }
                     handleGetEmployees()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -378,6 +380,7 @@ class CardActionViewModel
                     setState { copy(employeeList = it) }
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }

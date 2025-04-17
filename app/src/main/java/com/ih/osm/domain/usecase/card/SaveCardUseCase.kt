@@ -1,7 +1,6 @@
 package com.ih.osm.domain.usecase.card
 
-import android.util.Log
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
@@ -26,7 +25,6 @@ class SaveCardUseCaseImpl
     constructor(
         private val authRepo: AuthRepository,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-        private val fileHelper: FileHelper,
         private val cardRepo: CardRepository,
         private val cardTypeRepo: CardTypeRepository,
         private val preclassifierRepo: PreclassifierRepository,
@@ -48,7 +46,6 @@ class SaveCardUseCaseImpl
             if (hasData != null) {
                 uuid = UUID.randomUUID().toString()
             }
-            Log.e("test", "IDS -> $lastSiteCardId -- $lastCardId --- $uuid")
             val updatedCard =
                 card.copy(
                     id = lastCardId.defaultIfNull("0").toLong().plus(1).toString(),
@@ -68,14 +65,13 @@ class SaveCardUseCaseImpl
                     stored = STORED_LOCAL,
                     uuid = uuid,
                 )
-            fileHelper.logCreateCard(updatedCard)
             val id = cardRepo.save(updatedCard)
             card.evidences?.forEach {
                 evidenceRepo.save(it.copy(cardId = uuid))
             }
             firebaseAnalyticsHelper.logCreateCard(updatedCard)
-            Log.e("Card", "Card $updatedCard")
             notificationManager.buildNotificationSuccessCard()
+            LoggerHelperManager.logCreateCard(updatedCard)
             return id
         }
     }

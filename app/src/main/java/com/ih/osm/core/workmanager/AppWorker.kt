@@ -1,12 +1,11 @@
 package com.ih.osm.core.workmanager
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.ih.osm.R
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import dagger.assisted.Assisted
@@ -20,7 +19,6 @@ class AppWorker
         @Assisted workerParams: WorkerParameters,
         private val syncCardsUseCase: SyncCardsUseCase,
         private val notificationManager: NotificationManager,
-        private val fileHelper: FileHelper,
     ) : CoroutineWorker(appContext, workerParams) {
         override suspend fun doWork(): Result {
             return try {
@@ -37,8 +35,7 @@ class AppWorker
                 Result.success()
             } catch (e: Exception) {
                 // Log the error and retry or fail
-                fileHelper.logException(e)
-                Log.e("test", "Error here!")
+                LoggerHelperManager.logException(e)
                 e.printStackTrace()
                 Result.failure()
             }

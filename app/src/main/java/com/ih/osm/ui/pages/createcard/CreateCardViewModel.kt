@@ -5,7 +5,7 @@ import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.firebase.FirebaseNotificationType
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
@@ -53,7 +53,6 @@ class CreateCardViewModel
         private val getCardsZoneUseCase: GetCardsZoneUseCase,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
-        private val fileHelper: FileHelper,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
         data class UiState(
@@ -223,7 +222,6 @@ class CreateCardViewModel
             map[selectedKey] = firstList
             selectedMap[selectedKey.minus(1)] = id
             setState { copy(selectedLevelList = selectedMap, lastSelectedLevel = id) }
-            Log.e("Map", "Map List Key -> $selectedKey -- $id")
             return map
         }
 
@@ -259,6 +257,7 @@ class CreateCardViewModel
                     }
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -272,6 +271,7 @@ class CreateCardViewModel
                     setState { copy(cardTypeList = it.toNodeItemList()) }
                     handleGetLevels()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -285,6 +285,7 @@ class CreateCardViewModel
                     setState { copy(priorityList = it.toNodeItemCard()) }
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -299,6 +300,7 @@ class CreateCardViewModel
                     cleanScreenStates()
                     checkCatalogs()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -331,7 +333,7 @@ class CreateCardViewModel
                     cleanScreenStates()
                 }.onFailure {
                     Log.e("test", "Failure $it")
-                    fileHelper.logException(it)
+                    LoggerHelperManager.logException(it)
                     firebaseAnalyticsHelper.logCreateCardException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
@@ -353,6 +355,7 @@ class CreateCardViewModel
                         cleanScreenStates()
                     }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -367,6 +370,7 @@ class CreateCardViewModel
                     setState { copy(cardsZone = it) }
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }

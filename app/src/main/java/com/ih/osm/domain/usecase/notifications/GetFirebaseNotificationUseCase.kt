@@ -1,6 +1,7 @@
 package com.ih.osm.domain.usecase.notifications
 
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.firebase.FirebaseNotificationType
 import com.ih.osm.core.preferences.SharedPreferences
 import javax.inject.Inject
@@ -67,6 +68,7 @@ data class GetFirebaseNotificationUseCaseImpl
                     FirebaseNotificationType.UNKNOWN
                 }
             } catch (e: Exception) {
+                LoggerHelperManager.logException(e)
                 sharedPreferences.removeNotification()
                 FirebaseCrashlytics.getInstance().recordException(e)
                 FirebaseNotificationType.UNKNOWN

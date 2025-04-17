@@ -1,13 +1,12 @@
 package com.ih.osm.ui.pages.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.BuildConfig
 import com.ih.osm.MainActivity
 import com.ih.osm.R
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.firebase.FirebaseNotificationType
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.network.NetworkConnectionStatus
@@ -41,7 +40,6 @@ class HomeViewModel
         private val getCardsUseCase: GetCardsUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
-        private val fileHelper: FileHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
         @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
@@ -75,6 +73,7 @@ class HomeViewModel
             checkNetworkStatus()
             val syncCatalogs = savedStateHandle.get<String>(ARG_SYNC_CATALOG).orEmpty()
             handleSyncCatalogs(syncCatalogs)
+            checkPreferences()
         }
 
         private fun handleSyncLocalCards(appContext: Context) {
@@ -107,6 +106,7 @@ class HomeViewModel
                     return@launch
                 }
                 appContext.getActivity<MainActivity>()?.enqueueSyncCardsWork()
+                sharedPreferences.saveLastSyncDate()
                 setState { copy(showSyncLocalCards = false) }
             }
         }
@@ -155,13 +155,11 @@ class HomeViewModel
             }
         }
 
-        //
         private fun handleGetCatalogs() {
             viewModelScope.launch {
                 kotlin.runCatching {
                     callUseCase { syncCatalogsUseCase(syncCards = true) }
                 }.onSuccess {
-                    Log.e("test", "Fetch catalogs complete")
                     setState {
                         copy(
                             showSyncCatalogs = false,
@@ -169,7 +167,7 @@ class HomeViewModel
                     }
                     handleGetUser()
                 }.onFailure {
-                    fileHelper.logException(it)
+                    LoggerHelperManager.logException(it)
                 }
             }
         }
@@ -180,23 +178,18 @@ class HomeViewModel
                     callUseCase { getCardsUseCase(syncRemote = syncRemote) }
                 }.onSuccess { cards ->
                     val hasLocalCards = cards.toLocalCards().isNotEmpty()
-                    Log.e(
-                        "test",
-                        "Fetch cards complete wok in progress? ${WorkManagerUUID.checkIfNull()}",
-                    )
                     setState {
                         copy(
                             cards = cards,
                             showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
-                            showSyncRemoteCards = false,
                         )
                     }
                     if (hasLocalCards) {
                         checkLastUpdate()
                     }
-                    checkPreferences()
                     cleanScreenStates()
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -235,6 +228,7 @@ class HomeViewModel
                     }
                     return@launch
                 }
+                setState { copy(showSyncRemoteCards = false) }
                 handleGetCards(syncRemote = true)
             }
         }
@@ -259,10 +253,10 @@ class HomeViewModel
                 kotlin.runCatching {
                     callUseCase { getUserUseCase() }
                 }.onSuccess { user ->
-                    Log.e("test", "Fetch user complete")
                     handleGetCards()
                     setState { copy(user = user) }
                 }.onFailure {
+                    LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
                 }
             }
@@ -320,8 +314,6 @@ class HomeViewModel
             viewModelScope.launch {
                 kotlin.runCatching {
                     val firebaseNotifications = callUseCase { getFirebaseNotificationUseCase() }
-                    Log.e("test", "Firebase $firebaseNotifications")
-
                     when (firebaseNotifications) {
                         FirebaseNotificationType.SYNC_REMOTE_CATALOGS -> {
                             setState { copy(showSyncCatalogs = true) }
@@ -341,8 +333,7 @@ class HomeViewModel
                             }
                         }
 
-                        else -> {
-                        }
+                        else -> { }
                     }
                 }
             }

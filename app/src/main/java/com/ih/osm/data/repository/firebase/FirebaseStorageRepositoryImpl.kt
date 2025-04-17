@@ -1,11 +1,10 @@
 package com.ih.osm.data.repository.firebase
 
-import android.net.Uri
-import android.util.Log
+import androidx.core.net.toUri
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -22,7 +21,6 @@ class FirebaseStorageRepositoryImpl
     constructor(
         private val firebaseStorage: FirebaseStorage,
         private val getUserUseCase: GetUserUseCase,
-        private val fileHelper: FileHelper,
     ) : FirebaseStorageRepository {
         override suspend fun uploadEvidence(evidence: Evidence): String {
             return try {
@@ -31,12 +29,11 @@ class FirebaseStorageRepositoryImpl
                 val evidenceName = getEvidenceFileName(evidenceType)
                 val evidenceReference =
                     getEvidenceReference(evidenceType, evidenceName, evidence.cardId, siteId)
-                evidenceReference.putFile(Uri.parse(evidence.url)).await()
+                evidenceReference.putFile(evidence.url.toUri()).await()
                 val url = evidenceReference.downloadUrl.await()
-                Log.e("test", "Result image $url")
                 url.toString()
             } catch (e: Exception) {
-                fileHelper.logException(e)
+                LoggerHelperManager.logException(e)
                 FirebaseCrashlytics.getInstance().recordException(e)
                 EMPTY
             }
@@ -106,7 +103,7 @@ class FirebaseStorageRepositoryImpl
                 }
                 true
             } catch (e: Exception) {
-                fileHelper.logException(e)
+                LoggerHelperManager.logException(e)
                 FirebaseCrashlytics.getInstance().recordException(e)
                 false
             }

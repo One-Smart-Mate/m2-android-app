@@ -1,8 +1,7 @@
 package com.ih.osm.domain.usecase.card
 
-import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.ih.osm.core.file.FileHelper
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateEvidenceRequest
@@ -39,7 +38,6 @@ class SaveCardSolutionUseCaseImpl
     constructor(
         private val authRepo: AuthRepository,
         private val cardRepo: CardRepository,
-        private val fileHelper: FileHelper,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val employeeRepo: EmployeeRepository,
         private val evidenceRepo: EvidenceRepository,
@@ -95,10 +93,9 @@ class SaveCardSolutionUseCaseImpl
                                     evidences = remoteEvidences,
                                     comments = comments,
                                 )
-                            fileHelper.logDefinitiveSolution(request)
+                            LoggerHelperManager.logDefinitiveSolution(request)
                             card = solutionRepo.saveRemoteDefinitive(request)
                         }
-                        Log.e("Test", "Solution definitive card -> $card")
                         card?.let {
                             cardRepo.save(it)
                         }
@@ -128,10 +125,9 @@ class SaveCardSolutionUseCaseImpl
                                     evidences = remoteEvidences,
                                     comments = comments,
                                 )
-                            fileHelper.logProvisionalSolution(request)
+                            LoggerHelperManager.logProvisionalSolution(request)
                             card = solutionRepo.saveRemoteProvisional(request)
                         }
-                        Log.e("Test", "Solution provisional card $card")
                         card?.let {
                             cardRepo.save(it)
                         }
@@ -143,9 +139,9 @@ class SaveCardSolutionUseCaseImpl
                     }
                 }
             } catch (e: Exception) {
+                LoggerHelperManager.logException(e)
                 firebaseAnalyticsHelper.logSyncCardException(e)
                 FirebaseCrashlytics.getInstance().recordException(e)
-                fileHelper.logException(e)
                 null
             }
         }

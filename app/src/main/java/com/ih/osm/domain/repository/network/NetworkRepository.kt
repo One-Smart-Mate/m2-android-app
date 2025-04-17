@@ -4,6 +4,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
@@ -58,5 +59,5 @@ interface NetworkRepository {
 
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 
-    suspend fun logout(userId: Int)
+    suspend fun logout(body: LogoutRequest)
 }

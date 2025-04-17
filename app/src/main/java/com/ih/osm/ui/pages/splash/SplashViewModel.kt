@@ -1,15 +1,15 @@
 package com.ih.osm.ui.pages.splash
 
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.get
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
+import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -27,7 +27,9 @@ class SplashViewModel
         private val coroutineContext: CoroutineContext,
         private val getUserUseCase: GetUserUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-    ) : ViewModel() {
+    ) : BaseViewModel<SplashViewModel.UiState>(UiState) {
+        data object UiState
+
         private val _isAuthenticated = MutableStateFlow(false)
         val isAuthenticated = _isAuthenticated.asStateFlow()
 
@@ -51,6 +53,7 @@ class SplashViewModel
                     remoteConfig.fetchAndActivate().await()
                     handleGetUser()
                 } catch (e: Exception) {
+                    LoggerHelperManager.logException(e)
                     FirebaseCrashlytics.getInstance().recordException(e)
                     handleGetUser()
                 }
@@ -80,6 +83,8 @@ class SplashViewModel
             viewModelScope.launch(coroutineContext) {
                 kotlin.runCatching {
                     syncFirebaseTokenUseCase()
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
                 }
             }
         }

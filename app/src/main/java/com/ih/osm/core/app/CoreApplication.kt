@@ -7,7 +7,6 @@ import androidx.work.Configuration
 import androidx.work.ListenableWorker
 import androidx.work.WorkerFactory
 import androidx.work.WorkerParameters
-import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.workmanager.AppWorker
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
@@ -32,37 +31,12 @@ class CustomWorkerFactory
     constructor(
         private val syncCardsUseCase: SyncCardsUseCase,
         private val notificationManager: NotificationManager,
-        private val fileHelper: FileHelper,
     ) : WorkerFactory() {
         override fun createWorker(
             appContext: Context,
             workerClassName: String,
             workerParameters: WorkerParameters,
         ): ListenableWorker {
-            return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager, fileHelper)
+            return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager)
         }
     }
-
-// class CustomWorkerFactory
-// @Inject
-// constructor(
-//    private val getCardsUseCase: GetCardsUseCase,
-//    private val syncCardsUseCase: SyncCardsUseCase,
-//    private val coroutineContext: CoroutineContext,
-//    private val sharedPreferences: SharedPreferences
-// ) : WorkerFactory() {
-//    override fun createWorker(
-//        appContext: Context,
-//        workerClassName: String,
-//        workerParameters: WorkerParameters
-//    ): ListenableWorker {
-//        return CardWorker(
-//            appContext,
-//            workerParameters,
-//            getCardsUseCase,
-//            syncCardsUseCase,
-//            coroutineContext,
-//            sharedPreferences
-//        )
-//    }
-// }
