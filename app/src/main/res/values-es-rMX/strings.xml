@@ -78,6 +78,7 @@
     <string name="limit_audios">Limite de audios permitidos</string>
     <string name="limit_audio_duration">La duración del audio excede el límite permitido</string>
     <string name="limit_video_duration">La duración del video excede el límite permitido</string>
+    <string name="invalid_audio">El audio grabado es muy corto o inválido</string>
     <string name="saving_card">Guardando tarjeta…</string>
     <string name="user">Usuario</string>
     <string name="search_for_a_user">Buscar usuario…</string>

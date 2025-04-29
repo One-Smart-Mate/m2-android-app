@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.domain.model.Card
@@ -45,6 +46,7 @@ class CardActionViewModel
         private val getCardDetailUseCase: GetCardDetailUseCase,
         private val getCardTypeUseCase: GetCardTypeUseCase,
         private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
+        private val fileHelper: FileHelper,
         private val notificationManager: NotificationManager,
         private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
         @ApplicationContext private val context: Context,
@@ -127,6 +129,7 @@ class CardActionViewModel
                             val maxAudioDuration = audiosDuration(actionType, cardType)
                             val duration = fileHelper.getDuration(uri)
                             when {
+                                duration == 0L -> context.getString(R.string.invalid_audio)
                                 state.evidences.toAudios().size == maxAudios -> context.getString(R.string.limit_audios)
                                 duration > maxAudioDuration -> context.getString(R.string.limit_audio_duration)
                                 else -> EMPTY

@@ -78,6 +78,7 @@
     <string name="limit_audios">Limit of audios allowed for this card type</string>
     <string name="limit_audio_duration">Audio exceeds the allowed duration</string>
     <string name="limit_video_duration">Video exceeds the allowed duration</string>
+    <string name="invalid_audio">The recorded audio is too short or invalid</string>
     <string name="saving_card">Saving card…</string>
     <string name="user">User</string>
     <string name="search_for_a_user">Search for a user…</string>
