@@ -22,6 +22,7 @@ import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypeUseCase
+import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.card.actions.toCardItemSheetAction
@@ -43,6 +44,7 @@ class CardActionViewModel
     @Inject
     constructor(
         private val getEmployeesUseCase: GetEmployeesUseCase,
+        private val getEmployeesByRoleUseCase: GetEmployeesByRoleUseCase,
         private val getCardDetailUseCase: GetCardDetailUseCase,
         private val getCardTypeUseCase: GetCardTypeUseCase,
         private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
@@ -378,7 +380,7 @@ class CardActionViewModel
         private fun handleGetEmployees() {
             viewModelScope.launch {
                 kotlin.runCatching {
-                    callUseCase { getEmployeesUseCase() }
+                    callUseCase { getEmployeesByRoleUseCase("mechanic") }
                 }.onSuccess {
                     setState { copy(employeeList = it) }
                     cleanScreenStates()

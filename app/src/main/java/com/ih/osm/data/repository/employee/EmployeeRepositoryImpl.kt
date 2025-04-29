@@ -35,4 +35,9 @@ class EmployeeRepositoryImpl
             val siteId = authRepository.getSiteId()
             return networkRepository.getRemoteEmployees(siteId)
         }
+
+        override suspend fun getByRole(roleName: String): List<Employee> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteEmployeesByRole(siteId, roleName)
+        }
     }

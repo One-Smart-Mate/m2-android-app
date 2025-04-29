@@ -84,6 +84,18 @@ class NetworkRepositoryImpl
             }
         }
 
+        override suspend fun getRemoteEmployeesByRole(
+            siteId: String,
+            roleName: String,
+        ): List<Employee> {
+            val response = apiService.getEmployeesByRole(siteId, roleName).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
         override suspend fun getRemoteLevels(siteId: String): List<Level> {
             val response = apiService.getLevels(siteId).execute()
             return if (response.isSuccessful && response.body() != null) {
