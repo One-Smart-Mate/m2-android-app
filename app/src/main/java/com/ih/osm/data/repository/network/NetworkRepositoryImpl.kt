@@ -7,6 +7,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
@@ -18,7 +19,6 @@ import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
-import com.ih.osm.domain.model.User
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
 import retrofit2.Response
@@ -29,10 +29,10 @@ class NetworkRepositoryImpl
     constructor(
         private val apiService: ApiService,
     ) : NetworkRepository {
-        override suspend fun login(data: LoginRequest): User {
+        override suspend fun login(data: LoginRequest): LoginResponse {
             val response = apiService.login(data).execute()
             return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+                response.body()!!
             } else {
                 error(response.getErrorMessage())
             }

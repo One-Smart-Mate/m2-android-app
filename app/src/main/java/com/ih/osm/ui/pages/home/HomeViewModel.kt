@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.home
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.BuildConfig
@@ -30,6 +31,9 @@ import com.ih.osm.ui.utils.LOAD_CATALOGS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,6 +83,30 @@ class HomeViewModel
         private fun handleSyncLocalCards(appContext: Context) {
             viewModelScope.launch {
                 val state = getState()
+
+                val dueDateString = sharedPreferences.getDueDate()
+                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+                val dueDate =
+                    try {
+                        sdf.parse(dueDateString)
+                    } catch (e: Exception) {
+                        null
+                    }
+
+                val today = Date()
+
+                if (dueDate != null && dueDate.before(today)) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.cards_cannot_be_uploaded),
+                            showSyncLocalCards = true,
+                        )
+                    }
+                    return@launch
+                }
+
                 if (NetworkConnection.isConnected().not() ||
                     state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
                     state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||

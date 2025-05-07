@@ -4,6 +4,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
@@ -14,10 +15,9 @@ import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
-import com.ih.osm.domain.model.User
 
 interface NetworkRepository {
-    suspend fun login(data: LoginRequest): User
+    suspend fun login(data: LoginRequest): LoginResponse
 
     suspend fun sendRestorePasswordCode(data: RestorePasswordRequest)
 

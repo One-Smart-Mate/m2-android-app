@@ -1,12 +1,15 @@
 package com.ih.osm.ui.pages.login
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.network.NetworkConnection
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCase
@@ -26,6 +29,7 @@ class LoginViewModel
         private val loginUseCase: LoginUseCase,
         private val saveUserUseCase: SaveUserUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+        private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
         data class UiState(
@@ -71,9 +75,11 @@ class LoginViewModel
 
                 kotlin.runCatching {
                     callUseCase { loginUseCase(LoginRequest(email, password)) }
-                }.onSuccess {
-                    LoggerHelperManager.logUser(it)
-                    handleSaveUser(it)
+                }.onSuccess { loginResponse ->
+                    val user = loginResponse.toDomain()
+                    LoggerHelperManager.logUser(user)
+                    sharedPreferences.saveDueDate(loginResponse.data.dueDate ?: EMPTY)
+                    handleSaveUser(user)
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState {
