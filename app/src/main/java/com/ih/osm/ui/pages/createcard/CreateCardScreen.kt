@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,6 +40,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -96,30 +100,42 @@ fun CreateCardScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     if (state.isLoading) {
         LoadingScreen(state.message)
     } else {
-        CreateCardContent(
-            navController = navController,
-            cardTypeList = state.cardTypeList,
-            selectedCardType = state.selectedCardType,
-            preclassifierList = state.preclassifierList,
-            selectedPreclassifier = state.selectedPreclassifier,
-            priorityList = state.priorityList,
-            selectedPriority = state.selectedPriority,
-            levelList = state.nodeLevelList,
-            selectedLevelList = state.selectedLevelList,
-            lastLevelCompleted = state.lastLevelCompleted,
-            evidences = state.evidences,
-            audioDuration = state.audioDuration,
-            cardsZone = state.cardsZone,
-            coroutineScope = scope,
-            lazyColumState = lazyState,
-            onAction = { action ->
-                viewModel.process(action)
-            },
-        )
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectTapGestures(onTap = {
+                            focusManager.clearFocus()
+                        })
+                    },
+        ) {
+            CreateCardContent(
+                navController = navController,
+                cardTypeList = state.cardTypeList,
+                selectedCardType = state.selectedCardType,
+                preclassifierList = state.preclassifierList,
+                selectedPreclassifier = state.selectedPreclassifier,
+                priorityList = state.priorityList,
+                selectedPriority = state.selectedPriority,
+                levelList = state.nodeLevelList,
+                selectedLevelList = state.selectedLevelList,
+                lastLevelCompleted = state.lastLevelCompleted,
+                evidences = state.evidences,
+                audioDuration = state.audioDuration,
+                cardsZone = state.cardsZone,
+                coroutineScope = scope,
+                lazyColumState = lazyState,
+                onAction = { action ->
+                    viewModel.process(action)
+                },
+            )
+        }
     }
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -172,7 +188,10 @@ fun CreateCardContent(
 ) {
     Scaffold { padding ->
         LazyColumn(
-            modifier = Modifier.defaultScreen(padding),
+            modifier =
+                Modifier
+                    .defaultScreen(padding)
+                    .imePadding(),
             state = lazyColumState,
         ) {
             stickyHeader {

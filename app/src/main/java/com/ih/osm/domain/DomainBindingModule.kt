@@ -24,6 +24,8 @@ import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
+import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
+import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCaseImpl
 import com.ih.osm.domain.usecase.firebase.GetFirebaseTokenUseCase
@@ -149,4 +151,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindUpdateCardMechanicUseCase(updateCardMechanicUseCaseImpl: UpdateCardMechanicUseCaseImpl): UpdateCardMechanicUseCase
+
+    @Binds
+    fun bindGetEmployeesByRoleUseCase(getEmployeesByRoleUseCaseImpl: GetEmployeesByRoleUseCaseImpl): GetEmployeesByRoleUseCase
 }

@@ -122,4 +122,10 @@ interface ApiService {
     suspend fun logout(
         @Body body: LogoutRequest,
     )
+
+    @GET("users/site/{siteId}/role/{roleName}")
+    fun getEmployeesByRole(
+        @Path("siteId") siteId: String,
+        @Path("roleName") roleName: String,
+    ): Call<GetEmployeesResponse>
 }

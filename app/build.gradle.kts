@@ -22,12 +22,12 @@ android {
         }
     }
     namespace = "com.ih.osm"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.ih.osm"
         minSdk = 24
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 24
         versionName = "1.0.19"
 

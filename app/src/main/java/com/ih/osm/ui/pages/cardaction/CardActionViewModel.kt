@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.domain.model.Card
@@ -21,6 +22,7 @@ import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypeUseCase
+import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.card.actions.toCardItemSheetAction
@@ -42,9 +44,11 @@ class CardActionViewModel
     @Inject
     constructor(
         private val getEmployeesUseCase: GetEmployeesUseCase,
+        private val getEmployeesByRoleUseCase: GetEmployeesByRoleUseCase,
         private val getCardDetailUseCase: GetCardDetailUseCase,
         private val getCardTypeUseCase: GetCardTypeUseCase,
         private val saveCardSolutionUseCase: SaveCardSolutionUseCase,
+        private val fileHelper: FileHelper,
         private val notificationManager: NotificationManager,
         private val updateCardMechanicUseCase: UpdateCardMechanicUseCase,
         @ApplicationContext private val context: Context,
@@ -127,6 +131,7 @@ class CardActionViewModel
                             val maxAudioDuration = audiosDuration(actionType, cardType)
                             val duration = fileHelper.getDuration(uri)
                             when {
+                                duration == 0L -> context.getString(R.string.invalid_audio)
                                 state.evidences.toAudios().size == maxAudios -> context.getString(R.string.limit_audios)
                                 duration > maxAudioDuration -> context.getString(R.string.limit_audio_duration)
                                 else -> EMPTY
@@ -375,7 +380,7 @@ class CardActionViewModel
         private fun handleGetEmployees() {
             viewModelScope.launch {
                 kotlin.runCatching {
-                    callUseCase { getEmployeesUseCase() }
+                    callUseCase { getEmployeesByRoleUseCase("mechanic") }
                 }.onSuccess {
                     setState { copy(employeeList = it) }
                     cleanScreenStates()

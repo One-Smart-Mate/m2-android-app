@@ -31,6 +31,11 @@ interface NetworkRepository {
 
     suspend fun getRemoteEmployees(siteId: String): List<Employee>
 
+    suspend fun getRemoteEmployeesByRole(
+        siteId: String,
+        roleName: String,
+    ): List<Employee>
+
     suspend fun getRemoteLevels(siteId: String): List<Level>
 
     suspend fun getRemotePreclassifiers(siteId: String): List<Preclassifier>

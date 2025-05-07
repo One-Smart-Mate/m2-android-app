@@ -10,4 +10,6 @@ interface EmployeeRepository {
     suspend fun getAll(): List<Employee>
 
     suspend fun getAllRemote(): List<Employee>
+
+    suspend fun getByRole(roleName: String): List<Employee>
 }

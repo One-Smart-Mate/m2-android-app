@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
@@ -53,6 +54,7 @@ class CreateCardViewModel
         private val getCardsZoneUseCase: GetCardsZoneUseCase,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
+        private val fileHelper: FileHelper,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
         data class UiState(
@@ -116,7 +118,8 @@ class CreateCardViewModel
 
                         EvidenceType.VICR -> {
                             val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
-                            val maxVideoDuration = cardType?.videosDurationCreate.defaultIfNull(0) * 1000
+                            val maxVideoDuration =
+                                cardType?.videosDurationCreate.defaultIfNull(0) * 1000
                             if (state.evidences.toVideos().size == maxVideos) {
                                 context.getString(R.string.limit_videos)
                             } else {
@@ -131,16 +134,15 @@ class CreateCardViewModel
 
                         EvidenceType.AUCR -> {
                             val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
-                            val maxAudioDuration = cardType?.audiosDurationCreate.defaultIfNull(0) * 1000
-                            if (state.evidences.toAudios().size == maxAudios) {
-                                context.getString(R.string.limit_audios)
-                            } else {
-                                val audioduration = fileHelper.getDuration(uri)
-                                if (audioduration > maxAudioDuration) {
-                                    context.getString(R.string.limit_audio_duration)
-                                } else {
-                                    EMPTY
-                                }
+                            val maxAudioDuration =
+                                cardType?.audiosDurationCreate.defaultIfNull(0) * 1000
+                            val audioDuration = fileHelper.getDuration(uri)
+
+                            when {
+                                audioDuration == 0L -> context.getString(R.string.invalid_audio)
+                                state.evidences.toAudios().size == maxAudios -> context.getString(R.string.limit_audios)
+                                audioDuration > maxAudioDuration -> context.getString(R.string.limit_audio_duration)
+                                else -> EMPTY
                             }
                         }
 
@@ -195,7 +197,13 @@ class CreateCardViewModel
 
         private fun handleSetPreclassifier(id: String) {
             viewModelScope.launch {
-                setState { copy(selectedPreclassifier = id, selectedPriority = EMPTY, priorityList = emptyList()) }
+                setState {
+                    copy(
+                        selectedPreclassifier = id,
+                        selectedPriority = EMPTY,
+                        priorityList = emptyList(),
+                    )
+                }
                 handleGetPriorities()
             }
         }
