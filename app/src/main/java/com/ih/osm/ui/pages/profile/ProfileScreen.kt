@@ -52,6 +52,7 @@ fun ProfileScreen(
             ProfileContent(
                 navController = navController,
                 user = result.value,
+                subscriptionText = state.subscriptionText,
             )
         }
         is LCE.Fail -> {
@@ -67,6 +68,7 @@ fun ProfileScreen(
 fun ProfileContent(
     navController: NavController,
     user: User,
+    subscriptionText: String,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -140,6 +142,20 @@ fun ProfileContent(
                         Text(text = user.email)
                     },
                 )
+
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.subscription)) },
+                    leadingContent = {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_subscriptions),
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    trailingContent = {
+                        Text(text = subscriptionText)
+                    },
+                )
             }
         }
     }
@@ -152,7 +168,7 @@ fun ProfileContent(
 private fun ProfilePreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            ProfileContent(rememberNavController(), User.mockUser())
+            ProfileContent(rememberNavController(), User.mockUser(), subscriptionText = "App subscription 5 days")
         }
     }
 }
