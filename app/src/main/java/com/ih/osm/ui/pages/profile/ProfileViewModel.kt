@@ -1,12 +1,15 @@
 package com.ih.osm.ui.pages.profile
 
+import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.ih.osm.R
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.ui.LCE
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,6 +22,7 @@ class ProfileViewModel
     constructor(
         private val getUserUseCase: GetUserUseCase,
         private val sharedPreferences: SharedPreferences,
+        @ApplicationContext private val context: Context,
     ) : BaseViewModel<ProfileViewModel.UiState>(UiState()) {
         data class UiState(
             val state: LCE<User> = LCE.Loading,
@@ -38,7 +42,7 @@ class ProfileViewModel
                     user?.let {
                         val dueDateString = sharedPreferences.getDueDate()
                         val remainingDays = calculateRemainingDays(dueDateString)
-                        val subscriptionText = "App subscription $remainingDays days"
+                        val subscriptionText = context.getString(R.string.subscription_remaining_days, remainingDays)
                         setState {
                             copy(
                                 state = LCE.Success(it),

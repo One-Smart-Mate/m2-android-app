@@ -192,6 +192,7 @@
     <string name="record_video">Grabando video</string>
     <string name="full_name">Nombre completo</string>
     <string name="subscription">Suscripción</string>
+    <string name="subscription_remaining_days">Suscripción de la app %1$d días</string>
 
     <string name="sync_cards_title">Tarjetas</string>
     <string name="sync_cards_start">Empezando sincronización de las tarjetas</string>

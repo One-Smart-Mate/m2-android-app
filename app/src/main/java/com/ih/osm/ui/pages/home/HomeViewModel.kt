@@ -1,7 +1,6 @@
 package com.ih.osm.ui.pages.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.BuildConfig
@@ -83,24 +82,12 @@ class HomeViewModel
         private fun handleSyncLocalCards(appContext: Context) {
             viewModelScope.launch {
                 val state = getState()
-
-                val dueDateString = sharedPreferences.getDueDate()
-                val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-
-                val dueDate =
-                    try {
-                        sdf.parse(dueDateString)
-                    } catch (e: Exception) {
-                        null
-                    }
-
-                val today = Date()
-
-                if (dueDate != null && dueDate.before(today)) {
+                val (isExpired, errorMessage) = isSubscriptionExpired(context)
+                if(isExpired) {
                     setState {
                         copy(
                             isLoading = false,
-                            message = context.getString(R.string.cards_cannot_be_uploaded),
+                            message = errorMessage.orEmpty(),
                             showSyncLocalCards = true,
                         )
                     }
@@ -138,6 +125,26 @@ class HomeViewModel
                 setState { copy(showSyncLocalCards = false) }
             }
         }
+
+    private fun isSubscriptionExpired(context: Context): Pair<Boolean, String?> {
+        val dueDateString = sharedPreferences.getDueDate()
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        val dueDate =
+            try {
+                sdf.parse(dueDateString)
+            } catch (e: Exception) {
+                null
+            }
+
+        val today = Date()
+
+        return if (dueDate != null && dueDate.before(today)) {
+            true to context.getString(R.string.cards_cannot_be_uploaded)
+        } else {
+            false to null
+        }
+    }
 
         private fun handleSyncCatalogs(syncCatalogs: String) {
             if (syncCatalogs == LOAD_CATALOGS) {

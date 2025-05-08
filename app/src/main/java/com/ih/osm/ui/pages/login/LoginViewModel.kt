@@ -1,7 +1,6 @@
 package com.ih.osm.ui.pages.login
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
@@ -78,7 +77,7 @@ class LoginViewModel
                 }.onSuccess { loginResponse ->
                     val user = loginResponse.toDomain()
                     LoggerHelperManager.logUser(user)
-                    sharedPreferences.saveDueDate(loginResponse.data.dueDate ?: EMPTY)
+                    sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
                     handleSaveUser(user)
                 }.onFailure {
                     LoggerHelperManager.logException(it)
