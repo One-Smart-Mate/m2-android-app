@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -147,7 +148,7 @@ fun ProfileContent(
                     headlineContent = { Text(stringResource(R.string.subscription)) },
                     leadingContent = {
                         Icon(
-                            painter = painterResource(id = R.drawable.ic_subscriptions),
+                            imageVector = Icons.Default.DateRange,
                             contentDescription = stringResource(R.string.empty),
                         )
                     },
