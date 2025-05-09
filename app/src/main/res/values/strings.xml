@@ -98,6 +98,7 @@
     <string name="create_card">Create card</string>
     <string name="contact_support">Contact support</string>
     <string name="sync_cards">Sync local cards</string>
+    <string name="cards_cannot_be_uploaded">Newly created cards cannot be uploaded</string>
     <string name="anomalies_cards">Anomalies cards</string>
     <string name="behaviour_cards">Behaviour cards</string>
     <string name="upload_cards">Uploading local cards…</string>
@@ -191,6 +192,8 @@
 
     <string name="record_video">Record video</string>
     <string name="full_name">Full name</string>
+    <string name="subscription">Subscription</string>
+    <string name="subscription_remaining_days">App subscription %1$d days</string>
 
     <string name="sync_cards_title">Cards</string>
     <string name="sync_cards_start">Starting the cards synchronization</string>

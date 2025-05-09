@@ -3,6 +3,7 @@ package com.ih.osm.data.repository.auth
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.entities.toDomain
 import com.ih.osm.data.model.LoginRequest
+import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateTokenRequest
@@ -20,7 +21,7 @@ class AuthRepositoryImpl
         private val dao: UserDao,
         private val networkRepository: NetworkRepository,
     ) : AuthRepository {
-        override suspend fun login(data: LoginRequest): User {
+        override suspend fun login(data: LoginRequest): LoginResponse {
             return networkRepository.login(data)
         }
 

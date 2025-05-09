@@ -30,6 +30,9 @@ import com.ih.osm.ui.utils.LOAD_CATALOGS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,6 +82,18 @@ class HomeViewModel
         private fun handleSyncLocalCards(appContext: Context) {
             viewModelScope.launch {
                 val state = getState()
+                val (isExpired, errorMessage) = isSubscriptionExpired(context)
+                if(isExpired) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = errorMessage.orEmpty(),
+                            showSyncLocalCards = true,
+                        )
+                    }
+                    return@launch
+                }
+
                 if (NetworkConnection.isConnected().not() ||
                     state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
                     state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
@@ -110,6 +125,26 @@ class HomeViewModel
                 setState { copy(showSyncLocalCards = false) }
             }
         }
+
+    private fun isSubscriptionExpired(context: Context): Pair<Boolean, String?> {
+        val dueDateString = sharedPreferences.getDueDate()
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+
+        val dueDate =
+            try {
+                sdf.parse(dueDateString)
+            } catch (e: Exception) {
+                null
+            }
+
+        val today = Date()
+
+        return if (dueDate != null && dueDate.before(today)) {
+            true to context.getString(R.string.cards_cannot_be_uploaded)
+        } else {
+            false to null
+        }
+    }
 
         private fun handleSyncCatalogs(syncCatalogs: String) {
             if (syncCatalogs == LOAD_CATALOGS) {

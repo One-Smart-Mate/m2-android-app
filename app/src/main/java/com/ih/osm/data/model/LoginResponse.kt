@@ -30,6 +30,7 @@ data class UserWrapper(
     val companyId: String,
     val companyName: String,
     val sites: List<Site>,
+    val dueDate: String?,
 )
 
 data class Site(

@@ -23,6 +23,7 @@ class SharedPreferences
             private const val FIREBASE_TOKEN_PREFERENCES = "firebase_token"
             private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
             private const val NOTIFICATION_APP_VERSION = "app_version"
+            private const val DUE_DATE_PREFERENCES = "due_date"
         }
 
         init {
@@ -136,5 +137,18 @@ class SharedPreferences
 
         fun getAppVersion(): String {
             return sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
+        }
+
+        fun saveDueDate(dueDate: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(DUE_DATE_PREFERENCES, dueDate)
+                    commit()
+                }
+            }
+        }
+
+        fun getDueDate(): String {
+            return sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
         }
     }

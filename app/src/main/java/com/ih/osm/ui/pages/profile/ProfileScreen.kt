@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
@@ -52,6 +53,7 @@ fun ProfileScreen(
             ProfileContent(
                 navController = navController,
                 user = result.value,
+                subscriptionText = state.subscriptionText,
             )
         }
         is LCE.Fail -> {
@@ -67,6 +69,7 @@ fun ProfileScreen(
 fun ProfileContent(
     navController: NavController,
     user: User,
+    subscriptionText: String,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -140,6 +143,20 @@ fun ProfileContent(
                         Text(text = user.email)
                     },
                 )
+
+                ListItem(
+                    headlineContent = { Text(stringResource(R.string.subscription)) },
+                    leadingContent = {
+                        Icon(
+                            imageVector = Icons.Default.DateRange,
+                            contentDescription = stringResource(R.string.empty),
+                        )
+                    },
+                    tonalElevation = PaddingNormal,
+                    trailingContent = {
+                        Text(text = subscriptionText)
+                    },
+                )
             }
         }
     }
@@ -152,7 +169,7 @@ fun ProfileContent(
 private fun ProfilePreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            ProfileContent(rememberNavController(), User.mockUser())
+            ProfileContent(rememberNavController(), User.mockUser(), subscriptionText = "App subscription 5 days")
         }
     }
 }

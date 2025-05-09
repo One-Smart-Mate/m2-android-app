@@ -1,12 +1,12 @@
 package com.ih.osm.domain.usecase.login
 
 import com.ih.osm.data.model.LoginRequest
-import com.ih.osm.domain.model.User
+import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.domain.repository.auth.AuthRepository
 import javax.inject.Inject
 
 interface LoginUseCase {
-    suspend operator fun invoke(data: LoginRequest): User
+    suspend operator fun invoke(data: LoginRequest): LoginResponse
 }
 
 class LoginUseCaseImpl
@@ -14,7 +14,7 @@ class LoginUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : LoginUseCase {
-        override suspend fun invoke(data: LoginRequest): User {
+        override suspend fun invoke(data: LoginRequest): LoginResponse {
             return authRepository.login(data)
         }
     }
