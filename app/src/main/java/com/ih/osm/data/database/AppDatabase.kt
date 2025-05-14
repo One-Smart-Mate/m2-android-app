@@ -33,7 +33,7 @@ import com.ih.osm.data.database.entities.solution.SolutionEntity
         EmployeeEntity::class,
         SolutionEntity::class,
     ],
-    version = 4,
+    version = 5,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao

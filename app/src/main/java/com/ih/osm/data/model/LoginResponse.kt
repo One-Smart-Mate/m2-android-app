@@ -1,5 +1,6 @@
 package com.ih.osm.data.model
 
+import com.google.gson.annotations.SerializedName
 import com.ih.osm.domain.model.User
 
 data class LoginResponse(val data: UserWrapper, val status: Int, val message: String)
@@ -31,6 +32,8 @@ data class UserWrapper(
     val companyName: String,
     val sites: List<Site>,
     val dueDate: String?,
+    @SerializedName("app_history")
+    val appHistory: Int,
 )
 
 data class Site(

@@ -214,10 +214,10 @@ private fun HomeContent(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
-            stickyHeader {
-                user?.let {
+            if (user != null) {
+                stickyHeader {
                     HomeAppBarV2(
-                        user = it,
+                        user = user,
                         padding = padding.calculateTopPadding(),
                         networkStatus = networkStatus,
                     )
@@ -425,15 +425,17 @@ private fun HomeAppBarV2(
                 )
             }
             CustomSpacer()
-            LazyRow {
-                items(user.roles) {
-                    Box(modifier = Modifier.padding(horizontal = 2.dp)) {
-                        CustomTag(
-                            title = it,
-                            tagSize = TagSize.SMALL,
-                            tagType = TagType.OUTLINE,
-                            invertedColors = false,
-                        )
+            if (user.roles.isNotEmpty()) {
+                LazyRow {
+                    items(user.roles) {
+                        Box(modifier = Modifier.padding(horizontal = 2.dp)) {
+                            CustomTag(
+                                title = it,
+                                tagSize = TagSize.SMALL,
+                                tagType = TagType.OUTLINE,
+                                invertedColors = false,
+                            )
+                        }
                     }
                 }
             }

@@ -15,6 +15,7 @@ import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.pages.login.action.LoginAction
+import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -73,7 +74,7 @@ class LoginViewModel
                 val password = getState().password
 
                 kotlin.runCatching {
-                    callUseCase { loginUseCase(LoginRequest(email, password)) }
+                    callUseCase { loginUseCase(LoginRequest(email, password, ANDROID_SO.uppercase())) }
                 }.onSuccess { loginResponse ->
                     val user = loginResponse.toDomain()
                     LoggerHelperManager.logUser(user)

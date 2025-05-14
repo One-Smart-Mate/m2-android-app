@@ -1,5 +1,6 @@
 package com.ih.osm.data.repository.cards
 
+import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.database.dao.card.CardDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.model.CreateCardRequest
@@ -25,8 +26,12 @@ class CardRepositoryImpl
         private val authRepo: AuthRepository,
     ) : CardRepository {
         override suspend fun saveAll(cards: List<Card>) {
-            cards.forEach {
-                dao.insert(it.toEntity())
+            try {
+                cards.forEach {
+                    dao.insert(it.toEntity())
+                }
+            } catch (e: Exception) {
+                LoggerHelperManager.logException(e)
             }
         }
 
