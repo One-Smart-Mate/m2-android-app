@@ -9,6 +9,7 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
+import com.ih.osm.data.model.UserCiltData
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Employee
@@ -65,4 +66,6 @@ interface NetworkRepository {
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 
     suspend fun logout(body: LogoutRequest)
+
+    suspend fun getUserCiltData(userId: String): UserCiltData
 }

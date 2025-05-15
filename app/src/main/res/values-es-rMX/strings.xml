@@ -198,5 +198,7 @@
     <string name="sync_cards_start">Empezando sincronización de las tarjetas</string>
     <string name="sync_cards_complete">Sincronización completa</string>
 
-
+    <string name="cilt_routine">Rutina CILT</string>
+    <string name="view_assigned_cilt_routines">Ver tus rutinas CILT asignadas</string>
+    <string name="download_cilt">Descargar CILT\'s</string>
 </resources>

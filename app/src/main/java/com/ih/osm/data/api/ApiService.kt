@@ -1,5 +1,6 @@
 package com.ih.osm.data.api
 
+import com.ih.osm.data.model.ApiResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -128,4 +129,9 @@ interface ApiService {
         @Path("siteId") siteId: String,
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
+
+    @GET("cilt-mstr/user/{userId}")
+    fun getUserCiltData(
+        @Path("userId") userId: String,
+    ): Call<ApiResponse>
 }

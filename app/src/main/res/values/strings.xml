@@ -199,4 +199,8 @@
     <string name="sync_cards_start">Starting the cards synchronization</string>
     <string name="sync_cards_complete">Cards sync completed</string>
 
+    <string name="cilt_routine">CILT Routine</string>
+    <string name="view_assigned_cilt_routines">View your assigned CILT routines</string>
+    <string name="download_cilt">Download CILT\'s</string>
+
 </resources>

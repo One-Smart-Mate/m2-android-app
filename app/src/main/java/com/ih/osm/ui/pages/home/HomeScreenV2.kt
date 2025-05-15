@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Settings
@@ -78,6 +80,7 @@ import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.extensions.headerContent
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
+import com.ih.osm.ui.navigation.navigateToCiltRoutine
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -132,6 +135,9 @@ fun HomeScreenV2(
 
                     HomeActionClick.NAVIGATION -> {
                         navController.navigateToCardList(CARD_ANOMALIES)
+                    }
+
+                    HomeActionClick.CILT_ROUTINE -> {
                     }
                 }
             },
@@ -300,6 +306,16 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
+
+                HomeSectionCardItem(
+                    title = stringResource(R.string.cilt_routine),
+                    icon = Icons.Outlined.CheckCircle,
+                    description = stringResource(R.string.view_assigned_cilt_routines),
+                ) {
+                    user?.userId?.let { userId ->
+                        navController.navigateToCiltRoutine(userId)
+                    }
+                }
             }
         }
     }
@@ -310,6 +326,7 @@ enum class HomeActionClick {
     LOCAL_CARDS,
     REMOTE_CARDS,
     NAVIGATION,
+    CILT_ROUTINE,
 }
 
 @Composable

@@ -15,6 +15,7 @@ import com.ih.osm.ui.pages.account.AccountScreen
 import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
+import com.ih.osm.ui.pages.cilt.CiltRoutineScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
@@ -128,6 +129,15 @@ fun AppNavigation(startDestination: String) {
         ) {
             RestoreAccountScreen(navController = navController)
         }
+
+        composable(
+            route = "${Screen.CiltRoutine.route}/{userId}",
+            arguments = listOf(navArgument("userId") { type = NavType.StringType }),
+        ) {
+                backStackEntry ->
+            val userId = backStackEntry.arguments?.getString("userId").orEmpty()
+            CiltRoutineScreen(navController = navController, userId = userId)
+        }
     }
 }
 
@@ -189,4 +199,8 @@ fun NavController.navigateToQrScanner() {
 
 fun NavController.navigateToRestoreAccount() {
     navigate(Screen.RestoreAccount.route)
+}
+
+fun NavController.navigateToCiltRoutine(userId: String) {
+    navigate("${Screen.CiltRoutine.route}/$userId")
 }

@@ -35,6 +35,8 @@ private object Route {
     const val QR_SCANNER = "qr-scanner"
 
     const val RESTORE_ACCOUNT = "restore-account"
+
+    const val CILT_ROUTINE = "cilt-routine"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -61,4 +63,6 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object QrScanner : Screen(Route.QR_SCANNER)
 
     data object RestoreAccount : Screen(Route.RESTORE_ACCOUNT)
+
+    data object CiltRoutine : Screen(Route.CILT_ROUTINE)
 }

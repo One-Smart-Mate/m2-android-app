@@ -12,6 +12,7 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
+import com.ih.osm.data.model.UserCiltData
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
@@ -224,6 +225,16 @@ class NetworkRepositoryImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 LoggerHelperManager.logException(e)
                 error(e.localizedMessage.orEmpty())
+            }
+        }
+
+        override suspend fun getUserCiltData(userId: String): UserCiltData {
+            val response = apiService.getUserCiltData(userId).execute()
+            val body = response.body()
+            return if (response.isSuccessful && body?.data != null) {
+                body.data
+            } else {
+                error(response.getErrorMessage())
             }
         }
     }
