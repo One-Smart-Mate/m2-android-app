@@ -4,9 +4,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.FileProvider
+import androidx.core.graphics.toColorInt
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.BuildConfig
 import java.io.File
 import java.text.SimpleDateFormat
@@ -76,4 +80,14 @@ enum class FileType {
     IMAGE,
     VIDEO,
     AUDIO,
+}
+
+@Composable
+fun getColorFromHex(color: String): Color {
+    return try {
+        return Color("#$color".toColorInt())
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        MaterialTheme.colorScheme.secondary
+    }
 }

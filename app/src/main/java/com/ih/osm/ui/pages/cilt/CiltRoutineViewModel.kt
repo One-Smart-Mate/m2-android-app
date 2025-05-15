@@ -2,10 +2,9 @@ package com.ih.osm.ui.pages.cilt
 
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.app.LoggerHelperManager
-import com.ih.osm.data.model.UserCiltData
-import com.ih.osm.domain.usecase.cilt.GetUserCiltDataUseCase
+import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
-import com.ih.osm.ui.pages.cardlist.CardListViewModel.UiState
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -15,24 +14,23 @@ import javax.inject.Inject
 class CiltRoutineViewModel
     @Inject
     constructor(
-        private val getUserCiltDataUseCase: GetUserCiltDataUseCase,
+        private val getCiltsUseCase: GetCiltsUseCase,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
         data class UiState(
-            val userCiltData: UserCiltData? = null,
-            val isLoading: Boolean = true,
+            val ciltData: CiltData? = null,
+            val isLoading: Boolean = false,
             val message: String = EMPTY,
         )
 
-        fun loadUserCiltData(userId: String) {
+        fun handleGetCilts() {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
-
                 kotlin.runCatching {
-                    callUseCase { getUserCiltDataUseCase(userId) }
+                    callUseCase { getCiltsUseCase() }
                 }.onSuccess { data ->
                     setState {
                         copy(
-                            userCiltData = data,
+                            ciltData = data,
                             isLoading = false,
                             message = EMPTY,
                         )
@@ -41,7 +39,7 @@ class CiltRoutineViewModel
                     LoggerHelperManager.logException(it)
                     setState {
                         copy(
-                            userCiltData = null,
+                            ciltData = null,
                             isLoading = false,
                             message = it.localizedMessage.orEmpty(),
                         )

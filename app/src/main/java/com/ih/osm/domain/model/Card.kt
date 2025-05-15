@@ -1,11 +1,8 @@
 package com.ih.osm.domain.model
 
 import android.content.Context
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.gson.annotations.SerializedName
 import com.ih.osm.BuildConfig
 import com.ih.osm.R
@@ -36,7 +33,6 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
-import android.graphics.Color as ColorParser
 
 data class Card(
     val id: String,
@@ -308,16 +304,6 @@ fun Card.getStatus(): String {
         STATUS_P, STATUS_A, STATUS_V -> stringResource(id = R.string.open)
         STATUS_R, STATUS_C -> stringResource(id = R.string.closed)
         else -> stringResource(id = R.string.open)
-    }
-}
-
-@Composable
-fun Card.getBorderColor(): Color {
-    return try {
-        return Color(ColorParser.parseColor("#$cardTypeColor"))
-    } catch (e: Exception) {
-        FirebaseCrashlytics.getInstance().recordException(e)
-        MaterialTheme.colorScheme.secondary
     }
 }
 

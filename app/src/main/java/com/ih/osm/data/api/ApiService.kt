@@ -1,6 +1,5 @@
 package com.ih.osm.data.api
 
-import com.ih.osm.data.model.ApiResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -8,6 +7,7 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
+import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
@@ -131,7 +131,7 @@ interface ApiService {
     ): Call<GetEmployeesResponse>
 
     @GET("cilt-mstr/user/{userId}")
-    fun getUserCiltData(
+    fun getCilts(
         @Path("userId") userId: String,
-    ): Call<ApiResponse>
+    ): Call<GetCiltResponse>
 }

@@ -312,9 +312,7 @@ private fun HomeContent(
                     icon = Icons.Outlined.CheckCircle,
                     description = stringResource(R.string.view_assigned_cilt_routines),
                 ) {
-                    user?.userId?.let { userId ->
-                        navController.navigateToCiltRoutine(userId)
-                    }
+                    navController.navigateToCiltRoutine()
                 }
             }
         }

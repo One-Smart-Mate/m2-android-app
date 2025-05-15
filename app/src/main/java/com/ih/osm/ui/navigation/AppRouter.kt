@@ -64,5 +64,5 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
 
     data object RestoreAccount : Screen(Route.RESTORE_ACCOUNT)
 
-    data object CiltRoutine : Screen(Route.CILT_ROUTINE)
+    data object Cilt : Screen(Route.CILT_ROUTINE)
 }

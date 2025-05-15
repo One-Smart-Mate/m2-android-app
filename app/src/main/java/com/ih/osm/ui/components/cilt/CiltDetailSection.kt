@@ -9,10 +9,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.ih.osm.data.model.UserCiltData
+import com.ih.osm.domain.model.CiltData
 
 @Composable
-fun CiltDetailSection(data: UserCiltData) {
+fun CiltDetailSection(data: CiltData) {
     Column(modifier = Modifier.padding(16.dp)) {
         data.positions.forEach { position ->
             Text("Posición: ${position.name}", style = MaterialTheme.typography.titleSmall)

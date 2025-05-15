@@ -1,5 +1,7 @@
 package com.ih.osm.ui.pages.cilt
 
+import android.annotation.SuppressLint
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -8,25 +10,50 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
+import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.mockCiltData
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
+import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.pages.cilt.action.CiltAction
+import com.ih.osm.ui.theme.OsmAppTheme
 
 @Composable
-fun CiltRoutineScreen(
+fun CiltScreen(
     navController: NavController,
-    userId: String,
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    if (state.isLoading) {
+        LoadingScreen()
+    } else {
+        CiltContent(
+            navController = navController,
+            data = state.ciltData,
+        ) { action ->
+            when (action) {
+                CiltAction.GetCilts -> viewModel.handleGetCilts()
+            }
+        }
+    }
+}
+
+@Composable
+fun CiltContent(
+    navController: NavController,
+    data: CiltData?,
+    onAction: (CiltAction) -> Unit,
+) {
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
@@ -45,36 +72,37 @@ fun CiltRoutineScreen(
                 Column(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 32.dp),
+                            .fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Button(onClick = {
-                        viewModel.loadUserCiltData(userId)
+                        onAction(CiltAction.GetCilts)
                     }) {
                         Text(stringResource(R.string.download_cilt))
                     }
                 }
             }
 
-            if (!state.isLoading && state.userCiltData != null) {
+            if (data != null) {
                 item {
-                    CiltDetailSection(state.userCiltData!!)
+                    CiltDetailSection(data)
                 }
             }
+        }
+    }
+}
 
-            if (state.isLoading) {
-                item {
-                    Box(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
+@Preview(showBackground = true, name = "light")
+@Composable
+private fun CiltScreenPreview() {
+    OsmAppTheme {
+        Scaffold(modifier = Modifier.fillMaxSize()) {
+            CiltContent(
+                navController = rememberNavController(),
+                data = mockCiltData(),
+            ) {
             }
         }
     }

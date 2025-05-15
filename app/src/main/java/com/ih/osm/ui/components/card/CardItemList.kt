@@ -29,13 +29,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.ih.osm.R
+import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.enableAssignMechanic
 import com.ih.osm.domain.model.enableDefinitiveSolution
 import com.ih.osm.domain.model.enableProvisionalSolution
-import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
 import com.ih.osm.domain.model.isClosed
@@ -59,127 +59,6 @@ import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
 import com.ih.osm.ui.theme.Size20
-
-// @Composable
-// fun CardItemList(
-//    card: Card,
-//    isActionsEnabled: Boolean = true,
-//    onClick: () -> Unit,
-//    onSolutionClick: (String) -> Unit
-// ) {
-//    var showSolutionBottomSheet by remember {
-//        mutableStateOf(false)
-//    }
-//    Card(
-//        modifier =
-//        Modifier
-//            .fillMaxWidth()
-//            .padding(PaddingNormal),
-//        onClick = {
-//            onClick()
-//        }
-//    ) {
-//        Column(
-//            modifier = Modifier.padding(PaddingSmall)
-//        ) {
-//            Row(
-//                modifier = Modifier.fillMaxWidth(),
-//                horizontalArrangement = Arrangement.Center,
-//                verticalAlignment = Alignment.CenterVertically
-//            ) {
-//                Text(
-//                    text = card.cardTitle(),
-//                    style =
-//                    MaterialTheme.typography.titleLarge
-//                        .copy(fontWeight = FontWeight.Bold),
-//                    textAlign = TextAlign.Center
-//                )
-//
-//                Box(
-//                    modifier =
-//                    Modifier
-//                        .padding(start = 5.dp)
-//                        .size(20.dp)
-//                        .background(
-//                            color = card.getBorderColor(),
-//                            shape = CircleShape
-//                        )
-//                )
-//            }
-//
-//            CardItemEvidence(
-//                showCamera = card.evidenceImageCreation > 0,
-//                showVideo = card.evidenceVideoCreation > 0,
-//                showVoice = card.evidenceAudioCreation > 0
-//            )
-//
-//            AnimatedVisibility(visible = card.stored == STORED_LOCAL) {
-//                CustomTag(
-//                    title = stringResource(R.string.local_card),
-//                    tagSize = TagSize.SMALL,
-//                    tagType = TagType.OUTLINE
-//                )
-//            }
-//
-//            SectionTag(
-//                title = stringResource(id = R.string.status),
-//                value = card.getStatus()
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.type_card),
-//                value = card.cardTypeName.orEmpty()
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.type_of_problem),
-//                value = card.preclassifierValue()
-//            )
-//            SectionTag(
-//                title = stringResource(R.string.priority),
-//                value = card.priorityValue()
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.area),
-//                value = card.areaName
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.created_by),
-//                value = card.creatorName
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.date),
-//                value = card.getCreationDate()
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.due_date),
-//                value = card.dueDate
-//            )
-//
-//            CustomSpacer()
-//            AnimatedVisibility(visible = card.isClosed().not() && isActionsEnabled) {
-//                CustomButton(
-//                    text = stringResource(R.string.actions),
-//                    buttonType = ButtonType.OUTLINE
-//                ) {
-//                    showSolutionBottomSheet = true
-//                }
-//            }
-//        }
-//    }
-//    if (showSolutionBottomSheet) {
-//        SolutionBottomSheet(
-//            onSolutionClick = {
-//                showSolutionBottomSheet = false
-//                onSolutionClick(it)
-//            },
-//            onDismissRequest = {
-//                showSolutionBottomSheet = false
-//            },
-//            showProvisionalSolution = card.enableProvisionalSolution(),
-//            showDefinitiveSolution = card.enableDefinitiveSolution(),
-//            showAssignCard = card.enableAssignMechanic()
-//        )
-//    }
-// }
 
 @Composable
 fun CardItemEvidence(
@@ -210,31 +89,6 @@ fun CardItemEvidence(
         }
     }
 }
-//
-// @Composable
-// fun CardSectionItemList(card: Card) {
-//    Card(
-//        modifier = Modifier.padding(PaddingTinySmall),
-//        border = BorderStroke(Size1, getInvertedColor())
-//    ) {
-//        Column(
-//            modifier = Modifier.padding(PaddingSmall)
-//        ) {
-//            Text(
-//                text = "${card.cardTypeName} ${card.siteCardId}",
-//                style =
-//                MaterialTheme.typography.titleLarge
-//                    .copy(fontWeight = FontWeight.Bold),
-//                textAlign = TextAlign.Center,
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//            SectionTag(
-//                title = stringResource(id = R.string.area),
-//                value = card.areaName
-//            )
-//        }
-//    }
-// }
 
 @Composable
 fun CardItemListV2(
@@ -280,7 +134,7 @@ fun CardItemListV2(
                         Modifier
                             .size(Size20)
                             .background(
-                                color = card.getBorderColor(),
+                                color = getColorFromHex(card.cardTypeColor),
                                 shape = CircleShape,
                             ),
                 )
