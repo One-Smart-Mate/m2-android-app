@@ -8,24 +8,40 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.ui.components.ExpandableCard
+import com.ih.osm.ui.components.SectionTag
 
 @Composable
 fun CiltDetailSection(data: CiltData) {
     Column(modifier = Modifier.padding(16.dp)) {
         data.positions.forEach { position ->
-            Text("Posición: ${position.name}", style = MaterialTheme.typography.titleSmall)
-            Spacer(modifier = Modifier.height(8.dp))
-
             position.ciltMasters.forEach { cilt ->
-                Text("Rutina: ${cilt.ciltName}", style = MaterialTheme.typography.titleMedium)
-                Text("Descripción: ${cilt.ciltDescription}")
-                Text("Creó: ${cilt.creatorName}")
-                Text("Revisó: ${cilt.reviewerName}")
-                Text("Autorizó: ${cilt.approvedByName}")
-                Text("Fecha última actualización: ${cilt.updatedAt ?: "N/A"}")
-                Text("Status: ${cilt.status}")
+                Text(
+                    text = "Posición: ${position.name}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                )
+                Text(
+                    text = "Rutina: ${cilt.ciltName}",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                )
+                ExpandableCard(title = "Detalles", expanded = true) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        SectionTag(title = "Descripción", value = cilt.ciltDescription)
+                        SectionTag(title = "Creó", value = cilt.creatorName)
+                        SectionTag(title = "Revisó", value = cilt.reviewerName)
+                        SectionTag(title = "Autorizó", value = cilt.approvedByName)
+                        SectionTag(
+                            title = "Fecha última actualización",
+                            value = cilt.updatedAt ?: "N/A",
+                        )
+                        SectionTag(title = "Status", value = cilt.status)
+                    }
+                }
+
+                CiltDiagramSection(imageUrl = cilt.urlImgLayout)
 
                 Spacer(modifier = Modifier.height(8.dp))
 
