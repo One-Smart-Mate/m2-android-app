@@ -15,6 +15,7 @@ import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
@@ -224,6 +225,16 @@ class NetworkRepositoryImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 LoggerHelperManager.logException(e)
                 error(e.localizedMessage.orEmpty())
+            }
+        }
+
+        override suspend fun getCilts(userId: String): CiltData {
+            val response = apiService.getCilts(userId).execute()
+            val body = response.body()
+            return if (response.isSuccessful && body?.data != null) {
+                body.toDomain()
+            } else {
+                error(response.getErrorMessage())
             }
         }
     }

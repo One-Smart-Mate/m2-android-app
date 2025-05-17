@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
@@ -17,8 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -30,10 +27,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.LCE
+import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
-import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
 import com.ih.osm.domain.model.preclassifierValue
@@ -145,7 +142,7 @@ fun CardDetailHeader(card: Card) {
                 Modifier
                     .size(Size20)
                     .background(
-                        color = card.getBorderColor(),
+                        color = getColorFromHex(card.cardTypeColor),
                         shape = CircleShape,
                     ),
         )

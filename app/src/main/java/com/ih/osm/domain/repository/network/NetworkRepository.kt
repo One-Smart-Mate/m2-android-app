@@ -11,6 +11,7 @@ import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
@@ -65,4 +66,6 @@ interface NetworkRepository {
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
 
     suspend fun logout(body: LogoutRequest)
+
+    suspend fun getCilts(userId: String): CiltData
 }

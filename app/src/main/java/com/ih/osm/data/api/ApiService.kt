@@ -7,6 +7,7 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
+import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
@@ -128,4 +129,9 @@ interface ApiService {
         @Path("siteId") siteId: String,
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
+
+    @GET("cilt-mstr/user/{userId}")
+    fun getCilts(
+        @Path("userId") userId: String,
+    ): Call<GetCiltResponse>
 }
