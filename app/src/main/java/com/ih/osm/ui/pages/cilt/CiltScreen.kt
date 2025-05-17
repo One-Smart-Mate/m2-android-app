@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -22,10 +23,13 @@ import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
+import com.ih.osm.ui.components.buttons.ButtonType
+import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.OsmAppTheme
+import com.ih.osm.ui.theme.Size200
 
 @Composable
 fun CiltScreen(
@@ -41,9 +45,11 @@ fun CiltScreen(
             navController = navController,
             data = state.ciltData,
         ) { action ->
+            /*
             when (action) {
                 CiltAction.GetCilts -> viewModel.handleGetCilts()
             }
+             */
         }
     }
 }
@@ -69,18 +75,31 @@ fun CiltContent(
             }
 
             item {
-                Column(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    Button(onClick = {
-                        onAction(CiltAction.GetCilts)
-                    }) {
-                        Text(stringResource(R.string.download_cilt))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                    ) {
+                        CustomButton(
+                            text = stringResource(R.string.download_third_party_cilt),
+                            modifier = Modifier.width(Size200),
+                            buttonType = ButtonType.DEFAULT,
+                        ) {
+                            //
+                        }
+                        CustomButton(
+                            text = stringResource(R.string.non_programmable_cilts),
+                            modifier = Modifier.width(Size200),
+                            buttonType = ButtonType.DEFAULT,
+                        ) {
+                            //
+                        }
                     }
                 }
+
+                CustomSpacer(space = SpacerSize.SMALL)
             }
 
             if (data != null) {

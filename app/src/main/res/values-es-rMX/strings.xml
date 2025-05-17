@@ -200,5 +200,7 @@
 
     <string name="cilt_routine">Rutina CILT</string>
     <string name="view_assigned_cilt_routines">Ver tus rutinas CILT asignadas</string>
-    <string name="download_cilt">Descargar CILT\'s</string>
+    <string name="download_cilts">Descargar CILT\'s</string>
+    <string name="download_third_party_cilt">Descargar CILT de terceros</string>
+    <string name="non_programmable_cilts">CILT\'s no programables</string>
 </resources>

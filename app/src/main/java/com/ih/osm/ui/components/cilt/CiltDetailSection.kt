@@ -1,9 +1,8 @@
 package com.ih.osm.ui.components.cilt
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -16,42 +15,44 @@ import com.ih.osm.ui.components.SectionTag
 
 @Composable
 fun CiltDetailSection(data: CiltData) {
-    Column(modifier = Modifier.padding(16.dp)) {
-        data.positions.forEach { position ->
-            position.ciltMasters.forEach { cilt ->
-                Text(
-                    text = "Posición: ${position.name}",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+    data.positions.forEach { position ->
+        position.ciltMasters.forEach { cilt ->
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = "Posición: ${position.name}",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            )
+            Text(
+                text = "Rutina: ${cilt.ciltName}",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            )
+            Text(
+                text = "Descripción: ${cilt.ciltDescription}",
+                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+            )
+            ExpandableCard(title = "Detalles", expanded = true) {
+                SectionTag(title = "Creó", value = cilt.creatorName)
+                SectionTag(title = "Revisó", value = cilt.reviewerName)
+                SectionTag(title = "Autorizó", value = cilt.approvedByName)
+                SectionTag(
+                    title = "Fecha última actualización",
+                    value = cilt.updatedAt ?: "N/A",
                 )
-                Text(
-                    text = "Rutina: ${cilt.ciltName}",
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                )
-                ExpandableCard(title = "Detalles", expanded = true) {
-                    Column(modifier = Modifier.padding(8.dp)) {
-                        SectionTag(title = "Descripción", value = cilt.ciltDescription)
-                        SectionTag(title = "Creó", value = cilt.creatorName)
-                        SectionTag(title = "Revisó", value = cilt.reviewerName)
-                        SectionTag(title = "Autorizó", value = cilt.approvedByName)
-                        SectionTag(
-                            title = "Fecha última actualización",
-                            value = cilt.updatedAt ?: "N/A",
-                        )
-                        SectionTag(title = "Status", value = cilt.status)
-                    }
-                }
-
-                CiltDiagramSection(imageUrl = cilt.urlImgLayout)
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                cilt.sequences.forEachIndexed { index, sequence ->
-                    SequenceCard(sequence = sequence, index = index + 1)
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
+                SectionTag(title = "Status", value = cilt.status)
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            CiltDiagramSection(imageUrl = cilt.urlImgLayout)
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            cilt.sequences.forEachIndexed { index, sequence ->
+                SequenceCard(sequence = sequence, index = index + 1)
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
     }
 }

@@ -16,13 +16,18 @@ class CiltRoutineViewModel
     constructor(
         private val getCiltsUseCase: GetCiltsUseCase,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
+
+        init {
+            handleGetCilts()
+        }
+
         data class UiState(
             val ciltData: CiltData? = null,
             val isLoading: Boolean = false,
             val message: String = EMPTY,
         )
 
-        fun handleGetCilts() {
+        private fun handleGetCilts() {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
                 kotlin.runCatching {
