@@ -9,12 +9,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.SectionTag
 
 @Composable
-fun CiltDetailSection(data: CiltData) {
+fun CiltDetailSection(
+    data: CiltData,
+    navController: NavController,
+) {
     data.positions.forEach { position ->
         position.ciltMasters.forEach { cilt ->
             HorizontalDivider()
@@ -48,7 +52,11 @@ fun CiltDetailSection(data: CiltData) {
             Spacer(modifier = Modifier.height(8.dp))
 
             cilt.sequences.forEachIndexed { index, sequence ->
-                SequenceCard(sequence = sequence, index = index + 1)
+                SequenceCard(
+                    sequence = sequence,
+                    index = index + 1,
+                    navController = navController,
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }

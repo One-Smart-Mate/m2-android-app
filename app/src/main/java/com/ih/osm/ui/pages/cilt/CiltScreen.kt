@@ -104,7 +104,10 @@ fun CiltContent(
 
             if (data != null) {
                 item {
-                    CiltDetailSection(data)
+                    CiltDetailSection(
+                        data = data,
+                        navController = navController,
+                    )
                 }
             }
         }

@@ -3,6 +3,7 @@ package com.ih.osm.ui.pages.cilt
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.utils.EMPTY
@@ -16,7 +17,6 @@ class CiltRoutineViewModel
     constructor(
         private val getCiltsUseCase: GetCiltsUseCase,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
-
         init {
             handleGetCilts()
         }
@@ -51,5 +51,12 @@ class CiltRoutineViewModel
                     }
                 }
             }
+        }
+
+        fun getSequenceById(sequenceId: Int): Sequence? {
+            return state.value.ciltData?.positions
+                ?.flatMap { it.ciltMasters }
+                ?.flatMap { it.sequences }
+                ?.find { it.id == sequenceId }
         }
     }
