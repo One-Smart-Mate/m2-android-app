@@ -1,8 +1,10 @@
 package com.ih.osm.domain.repository.network
 
+import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -67,5 +69,7 @@ interface NetworkRepository {
 
     suspend fun logout(body: LogoutRequest)
 
-    suspend fun getCilts(userId: String): CiltData
+    suspend fun getCilts(body: GetCiltsRequest): CiltData
+
+    suspend fun createEvidence(body: CiltEvidenceRequest)
 }

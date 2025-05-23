@@ -1,5 +1,7 @@
 package com.ih.osm.data.repository.cilt
 
+import com.ih.osm.data.model.CiltEvidenceRequest
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cilt.CiltRepository
@@ -12,8 +14,11 @@ data class CiltRepositoryImpl
         private val networkRepository: NetworkRepository,
         private val authRepo: AuthRepository,
     ) : CiltRepository {
-        override suspend fun getCilts(): CiltData {
-            val userId = authRepo.get()?.userId.orEmpty()
-            return networkRepository.getCilts(userId)
+        override suspend fun getCilts(body: GetCiltsRequest): CiltData {
+            return networkRepository.getCilts(body)
+        }
+
+        override suspend fun createEvidence(body: CiltEvidenceRequest) {
+            networkRepository.createEvidence(body)
         }
     }

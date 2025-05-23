@@ -7,7 +7,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +28,6 @@ import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.OsmAppTheme
-import com.ih.osm.ui.theme.Size200
 
 @Composable
 fun CiltScreen(
@@ -40,6 +38,12 @@ fun CiltScreen(
 
     if (state.isLoading) {
         LoadingScreen()
+    } else if (!state.message.isNullOrEmpty()) {
+        Text(
+            text = "Error: ${state.message}",
+            modifier = Modifier.padding(16.dp),
+            color = MaterialTheme.colorScheme.error,
+        )
     } else {
         CiltContent(
             navController = navController,
@@ -80,18 +84,18 @@ fun CiltContent(
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                        horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         CustomButton(
                             text = stringResource(R.string.download_third_party_cilt),
-                            modifier = Modifier.width(Size200),
+                            modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
                         ) {
                             //
                         }
                         CustomButton(
                             text = stringResource(R.string.non_programmable_cilts),
-                            modifier = Modifier.width(Size200),
+                            modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
                         ) {
                             //
