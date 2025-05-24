@@ -78,6 +78,7 @@ import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.extensions.headerContent
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
+import com.ih.osm.ui.navigation.navigateToOplList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -132,6 +133,9 @@ fun HomeScreenV2(
 
                     HomeActionClick.NAVIGATION -> {
                         navController.navigateToCardList(CARD_ANOMALIES)
+                    }
+                    HomeActionClick.OPL_NAVIGATION -> {
+                        navController.navigateToOplList(EMPTY)
                     }
                 }
             },
@@ -300,6 +304,17 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
+
+                CustomSpacer()
+
+                // OPL Section
+                HomeSectionCardItem(
+                    title = "OPL - One Point Lesson",
+                    icon = Icons.Outlined.Settings,
+                    description = "Gestiona las lecciones de un punto",
+                ) {
+                    onClick(HomeActionClick.OPL_NAVIGATION)
+                }
             }
         }
     }
@@ -310,6 +325,7 @@ enum class HomeActionClick {
     LOCAL_CARDS,
     REMOTE_CARDS,
     NAVIGATION,
+    OPL_NAVIGATION,
 }
 
 @Composable
