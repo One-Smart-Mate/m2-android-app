@@ -1,0 +1,103 @@
+package com.ih.osm.domain.model
+
+data class CiltData(
+    val userInfo: UserInfo,
+    val positions: List<Position>,
+)
+
+data class UserInfo(
+    val id: String,
+    val name: String,
+    val email: String,
+)
+
+data class Position(
+    val id: Int,
+    val name: String,
+    val siteName: String,
+    val areaName: String,
+    val ciltMasters: List<CiltMaster>,
+)
+
+data class CiltMaster(
+    val id: Int,
+    val siteId: Int,
+    val positionId: Int,
+    val ciltName: String,
+    val ciltDescription: String,
+    val creatorName: String,
+    val reviewerName: String,
+    val approvedByName: String,
+    val urlImgLayout: String?,
+    val updatedAt: String?,
+    val status: String,
+    val sequences: List<Sequence>,
+)
+
+data class Sequence(
+    val id: Int,
+    val siteId: Int,
+    val siteName: String,
+    val areaId: Int,
+    val areaName: String,
+    val positionId: Int,
+    val positionName: String,
+    val ciltMstrId: Int,
+    val ciltMstrName: String,
+    val frecuencyId: Int,
+    val frecuencyCode: String,
+    val levelId: Int,
+    val levelName: String,
+    val ciltTypeId: Int,
+    val ciltTypeName: String,
+    val secuenceList: String,
+    val secuenceColor: String,
+    val toolsRequired: String,
+    val standardTime: Int,
+    val standardOk: String,
+    val referenceOplSopId: Int,
+    val remediationOplSopId: String,
+    val stoppageReason: Int,
+    val machineStopped: Int,
+    val referencePoint: String?,
+    val order: Int,
+    val status: String,
+    val executions: List<Execution>,
+)
+
+data class Execution(
+    val id: Int,
+    val siteId: Int,
+    val positionId: Int,
+    val ciltId: Int,
+    val ciltSequenceId: Int,
+    val levelId: Int,
+    val route: String,
+    val userId: Int,
+    val userWhoExecutedId: Int,
+    val secuenceSchedule: String,
+    val secuenceStart: String,
+    val secuenceStop: String,
+    val duration: Int,
+    val realDuration: Int,
+    val standardOk: String,
+    val initialParameter: String,
+    val evidenceAtCreation: Int,
+    val finalParameter: String,
+    val evidenceAtFinal: Int,
+    val nok: Int,
+    val stoppageReason: Int,
+    val machineStopped: Int,
+    val amTagId: Int,
+    val referencePoint: String,
+    val secuenceList: String,
+    val secuenceColor: String,
+    val ciltTypeId: Int,
+    val ciltTypeName: String,
+    val referenceOplSopId: Int,
+    val remediationOplSopId: String,
+    val toolsRequired: String,
+    val selectableWithoutProgramming: Int,
+    val status: String,
+    val updatedAt: String,
+)

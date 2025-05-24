@@ -15,6 +15,8 @@ import com.ih.osm.ui.pages.account.AccountScreen
 import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.pages.carddetail.CardDetailScreen
 import com.ih.osm.ui.pages.cardlist.CardListScreen
+import com.ih.osm.ui.pages.cilt.CiltDetailScreen
+import com.ih.osm.ui.pages.cilt.CiltScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
@@ -47,20 +49,6 @@ fun AppNavigation(startDestination: String) {
         composable(Screen.Login.route) {
             LoginScreen(navController = navController)
         }
-//        composable(
-//            Screen.Home.route,
-//            arguments =
-//            listOf(
-//                navArgument(ARG_SYNC_CATALOG) {
-//                    type = NavType.StringType
-//                    nullable = true
-//                    defaultValue = EMPTY
-//                }
-//            )
-//        ) {
-//            val syncCatalogs = it.arguments?.getString(ARG_SYNC_CATALOG).orEmpty()
-//            HomeScreen(navController = navController, syncCatalogs = syncCatalogs)
-//        }
 
         composable(
             Screen.HomeV2.route,
@@ -128,6 +116,26 @@ fun AppNavigation(startDestination: String) {
         ) {
             RestoreAccountScreen(navController = navController)
         }
+
+        composable(
+            route = Screen.Cilt.route,
+        ) {
+            CiltScreen(navController = navController)
+        }
+
+        composable(
+            route = Screen.CiltDetail.route,
+            arguments =
+                listOf(
+                    navArgument("sequenceId") {
+                        type = NavType.IntType
+                    },
+                ),
+        ) {
+                backStackEntry ->
+            val sequenceId = backStackEntry.arguments?.getInt("sequenceId") ?: 0
+            CiltDetailScreen(sequenceId = sequenceId, navController = navController)
+        }
     }
 }
 
@@ -189,4 +197,12 @@ fun NavController.navigateToQrScanner() {
 
 fun NavController.navigateToRestoreAccount() {
     navigate(Screen.RestoreAccount.route)
+}
+
+fun NavController.navigateToCiltRoutine() {
+    navigate(Screen.Cilt.route)
+}
+
+fun NavController.navigateToCiltDetail(sequenceId: Int) {
+    navigate(Screen.CiltDetail.createRoute(sequenceId))
 }
