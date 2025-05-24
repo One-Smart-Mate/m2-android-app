@@ -8,6 +8,7 @@ import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
 import com.ih.osm.data.repository.level.LevelRepositoryImpl
 import com.ih.osm.data.repository.network.NetworkRepositoryImpl
+import com.ih.osm.data.repository.opl.OplRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
 import com.ih.osm.data.repository.priority.PriorityRepositoryImpl
 import com.ih.osm.data.repository.solution.SolutionRepositoryImpl
@@ -19,6 +20,7 @@ import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.repository.level.LevelRepository
 import com.ih.osm.domain.repository.network.NetworkRepository
+import com.ih.osm.domain.repository.opl.OplRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.PriorityRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
@@ -62,4 +64,7 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindSolutionRepository(solutionRepositoryImpl: SolutionRepositoryImpl): SolutionRepository
+
+    @Binds
+    fun bindOplRepository(oplRepositoryImpl: OplRepositoryImpl): OplRepository
 }

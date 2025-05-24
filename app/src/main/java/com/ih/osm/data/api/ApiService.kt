@@ -9,6 +9,7 @@ import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
+import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
 import com.ih.osm.data.model.LoginRequest
@@ -128,4 +129,9 @@ interface ApiService {
         @Path("siteId") siteId: String,
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
+
+    @GET("opl-mstr/level/{levelId}")
+    fun getOplsByLevel(
+        @Path("levelId") levelId: String,
+    ): Call<GetOplsResponse>
 }

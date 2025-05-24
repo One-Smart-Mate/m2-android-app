@@ -35,6 +35,9 @@ private object Route {
     const val QR_SCANNER = "qr-scanner"
 
     const val RESTORE_ACCOUNT = "restore-account"
+
+    const val OPL_LIST_PATH = "opl-list"
+    const val OPL_LIST = "$OPL_LIST_PATH/{$ARG_CARD_FILTER}"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -61,4 +64,6 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object QrScanner : Screen(Route.QR_SCANNER)
 
     data object RestoreAccount : Screen(Route.RESTORE_ACCOUNT)
+
+    data object OplList : Screen(Route.OPL_LIST, Route.OPL_LIST_PATH)
 }

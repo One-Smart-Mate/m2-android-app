@@ -19,6 +19,7 @@ import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
+import com.ih.osm.ui.pages.opllist.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
@@ -128,6 +129,13 @@ fun AppNavigation(startDestination: String) {
         ) {
             RestoreAccountScreen(navController = navController)
         }
+
+        composable(
+            Screen.OplList.route,
+            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
+        ) {
+            OplListScreen(navController = navController)
+        }
     }
 }
 
@@ -189,4 +197,8 @@ fun NavController.navigateToQrScanner() {
 
 fun NavController.navigateToRestoreAccount() {
     navigate(Screen.RestoreAccount.route)
+}
+
+fun NavController.navigateToOplList(filter: String = EMPTY) {
+    navigate("${Screen.OplList.path}/$filter")
 }
