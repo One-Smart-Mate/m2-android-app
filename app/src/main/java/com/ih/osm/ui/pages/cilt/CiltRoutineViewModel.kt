@@ -1,6 +1,5 @@
 package com.ih.osm.ui.pages.cilt
 
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.model.CiltEvidenceRequest
@@ -79,6 +78,9 @@ class CiltRoutineViewModel
                     }
                 }
             }
+        }
+
+        private fun startSequence() {
         }
 
         fun getSequenceById(sequenceId: Int): Sequence? {

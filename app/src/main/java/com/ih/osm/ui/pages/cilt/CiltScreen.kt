@@ -1,7 +1,5 @@
 package com.ih.osm.ui.pages.cilt
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -9,15 +7,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
-import com.ih.osm.domain.model.mockCiltData
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
@@ -27,7 +22,6 @@ import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.pages.cilt.action.CiltAction
-import com.ih.osm.ui.theme.OsmAppTheme
 
 @Composable
 fun CiltScreen(
@@ -113,22 +107,6 @@ fun CiltContent(
                         navController = navController,
                     )
                 }
-            }
-        }
-    }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-@Preview(showBackground = true, name = "light")
-@Composable
-private fun CiltScreenPreview() {
-    OsmAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {
-            CiltContent(
-                navController = rememberNavController(),
-                data = mockCiltData(),
-            ) {
             }
         }
     }

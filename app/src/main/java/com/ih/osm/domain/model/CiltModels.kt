@@ -37,177 +37,67 @@ data class CiltMaster(
 data class Sequence(
     val id: Int,
     val siteId: Int,
+    val siteName: String,
+    val areaId: Int,
+    val areaName: String,
     val positionId: Int,
+    val positionName: String,
     val ciltMstrId: Int,
+    val ciltMstrName: String,
+    val frecuencyId: Int,
+    val frecuencyCode: String,
+    val levelId: Int,
     val levelName: String,
+    val ciltTypeId: Int,
     val ciltTypeName: String,
     val secuenceList: String,
     val secuenceColor: String,
     val toolsRequired: String,
     val standardTime: Int,
     val standardOk: String,
+    val referenceOplSopId: Int,
+    val remediationOplSopId: Int,
     val stoppageReason: Int,
     val machineStopped: Int,
     val referencePoint: String?,
+    val order: Int,
     val status: String,
     val executions: List<Execution>,
 )
 
 data class Execution(
     val id: Int,
+    val siteId: Int,
+    val positionId: Int,
+    val ciltId: Int,
+    val ciltSequenceId: Int,
+    val levelId: Int,
+    val route: String,
+    val userId: Int,
+    val userWhoExecutedId: Int,
+    val secuenceSchedule: String,
     val secuenceStart: String,
     val secuenceStop: String,
     val duration: Int,
+    val realDuration: Int,
+    val standardOk: String,
     val initialParameter: String,
+    val evidenceAtCreation: Int,
     val finalParameter: String,
+    val evidenceAtFinal: Int,
+    val nok: Int,
+    val stoppageReason: Int,
+    val machineStopped: Int,
+    val amTagId: Int,
+    val referencePoint: String,
+    val secuenceList: String,
+    val secuenceColor: String,
+    val ciltTypeId: Int,
+    val ciltTypeName: String,
+    val referenceOplSopId: Int,
+    val remediationOplSopId: Int,
+    val toolsRequired: String,
+    val selectableWithoutProgramming: Int,
+    val status: String,
+    val updatedAt: String,
 )
-
-// MOCK data
-
-/*
-fun mockCiltData(): CiltData {
-    return CiltData(
-        userInfo =
-            UserInfo(
-                id = "1",
-                name = "John Doe",
-                email = "john.doe@example.com",
-            ),
-        positions =
-            listOf(
-                Position(
-                    id = 101,
-                    name = "Operator",
-                    siteName = "Main Plant",
-                    areaName = "Assembly",
-                    ciltMasters =
-                        listOf(
-                            CiltMaster(
-                                id = 1001,
-                                siteId = 1,
-                                positionId = 101,
-                                ciltName = "CILT-001",
-                                ciltDescription = "Main assembly CILT",
-                                creatorName = "Alice",
-                                reviewerName = "Bob",
-                                approvedByName = "Carol",
-                                urlImgLayout = "https://example.com/layout.png",
-                                updatedAt = "2025-05-10T02:33:00.000Z",
-                                status = "APPROVED",
-                                sequences =
-                                    listOf(
-                                        Sequence(
-                                            id = 2001,
-                                            levelName = "Level 1",
-                                            ciltTypeName = "Type A",
-                                            secuenceList = "Step 1, Step 2, Step 3",
-                                            secuenceColor = "#FF0000",
-                                            toolsRequired = "Wrench, Screwdriver",
-                                            standardOk = "Yes",
-                                            standardTime = 25,
-                                            stoppageReason = 0,
-                                            machineStopped = 1,
-                                            referencePoint = "Point A",
-                                            status = "COMPLETED",
-                                            executions =
-                                                listOf(
-                                                    Execution(
-                                                        id = 3001,
-                                                        secuenceStart = "2025-05-15T10:05:00Z",
-                                                        secuenceStop = "2025-05-15T10:10:00Z",
-                                                        duration = 5,
-                                                        initialParameter = "Param A",
-                                                        finalParameter = "Param B",
-                                                    ),
-                                                    Execution(
-                                                        id = 3002,
-                                                        secuenceStart = "2025-05-15T10:15:00Z",
-                                                        secuenceStop = "2025-05-15T10:20:00Z",
-                                                        duration = 5,
-                                                        initialParameter = "Param C",
-                                                        finalParameter = "Param D",
-                                                    ),
-                                                ),
-                                        ),
-                                    ),
-                            ),
-                        ),
-                ),
-            ),
-    )
-}
- */
-fun mockCiltData(): CiltData {
-    return CiltData(
-        userInfo =
-            UserInfo(
-                id = "1",
-                name = "John Doe",
-                email = "john.doe@example.com",
-            ),
-        positions =
-            listOf(
-                Position(
-                    id = 101,
-                    name = "Operator",
-                    siteName = "Main Plant",
-                    areaName = "Assembly",
-                    ciltMasters =
-                        listOf(
-                            CiltMaster(
-                                id = 1001,
-                                siteId = 1,
-                                positionId = 101,
-                                ciltName = "CILT-001",
-                                ciltDescription = "Main assembly CILT",
-                                creatorName = "Alice",
-                                reviewerName = "Bob",
-                                approvedByName = "Carol",
-                                urlImgLayout = "https://example.com/layout.png",
-                                updatedAt = "2025-05-10T02:33:00.000Z",
-                                status = "APPROVED",
-                                sequences =
-                                    listOf(
-                                        Sequence(
-                                            id = 2001,
-                                            siteId = 1,
-                                            positionId = 101,
-                                            ciltMstrId = 1001,
-                                            levelName = "Level 1",
-                                            ciltTypeName = "Type A",
-                                            secuenceList = "Step 1, Step 2, Step 3",
-                                            secuenceColor = "#FF0000",
-                                            toolsRequired = "Wrench, Screwdriver",
-                                            standardTime = 25,
-                                            standardOk = "Yes",
-                                            stoppageReason = 0,
-                                            machineStopped = 1,
-                                            referencePoint = "Point A",
-                                            status = "COMPLETED",
-                                            executions =
-                                                listOf(
-                                                    Execution(
-                                                        id = 3001,
-                                                        secuenceStart = "2025-05-15T10:05:00Z",
-                                                        secuenceStop = "2025-05-15T10:10:00Z",
-                                                        duration = 5,
-                                                        initialParameter = "Param A",
-                                                        finalParameter = "Param B",
-                                                    ),
-                                                    Execution(
-                                                        id = 3002,
-                                                        secuenceStart = "2025-05-15T10:15:00Z",
-                                                        secuenceStop = "2025-05-15T10:20:00Z",
-                                                        duration = 5,
-                                                        initialParameter = "Param C",
-                                                        finalParameter = "Param D",
-                                                    ),
-                                                ),
-                                        ),
-                                    ),
-                            ),
-                        ),
-                ),
-            ),
-    )
-}

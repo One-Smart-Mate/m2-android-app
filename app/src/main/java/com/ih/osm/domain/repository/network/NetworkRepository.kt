@@ -9,6 +9,7 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
@@ -18,6 +19,7 @@ import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.SequenceExecutionData
 
 interface NetworkRepository {
     suspend fun login(data: LoginRequest): LoginResponse
@@ -70,6 +72,8 @@ interface NetworkRepository {
     suspend fun logout(body: LogoutRequest)
 
     suspend fun getCilts(body: GetCiltsRequest): CiltData
+
+    suspend fun updateSequenceExecution(body: SequenceExecutionRequest): SequenceExecutionData
 
     suspend fun createEvidence(body: CiltEvidenceRequest)
 }

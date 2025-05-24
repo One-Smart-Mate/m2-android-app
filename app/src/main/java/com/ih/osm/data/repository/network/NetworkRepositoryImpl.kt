@@ -12,6 +12,7 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
@@ -22,6 +23,7 @@ import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.SequenceExecutionData
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
 import retrofit2.Response
@@ -232,6 +234,16 @@ class NetworkRepositoryImpl
 
         override suspend fun getCilts(body: GetCiltsRequest): CiltData {
             val response = apiService.getCilts(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun updateSequenceExecution(body: SequenceExecutionRequest): SequenceExecutionData {
+            val response = apiService.updateSequenceExecution(body).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()

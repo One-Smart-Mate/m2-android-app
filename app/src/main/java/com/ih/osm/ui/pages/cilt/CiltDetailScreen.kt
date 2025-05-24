@@ -1,13 +1,10 @@
 package com.ih.osm.ui.pages.cilt
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -30,20 +27,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.domain.model.Sequence
-import com.ih.osm.domain.model.mockCiltData
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.extensions.defaultScreen
-import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.Size20
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -338,26 +332,5 @@ fun InfoItem(
             text = value,
             style = MaterialTheme.typography.bodyLarge,
         )
-    }
-}
-
-private val mockSequence =
-    mockCiltData()
-        .positions.first()
-        .ciltMasters.first()
-        .sequences.first()
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-@Preview(showBackground = true, name = "light")
-@Composable
-private fun CiltDetailScreenPreview() {
-    OsmAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {
-            SequenceDetailContent(
-                sequence = mockSequence,
-                onAddEvidence = {},
-            )
-        }
     }
 }
