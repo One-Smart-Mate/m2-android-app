@@ -309,9 +309,9 @@ private fun HomeContent(
 
                 // OPL Section
                 HomeSectionCardItem(
-                    title = "OPL - One Point Lesson",
+                    title = "OPL",
                     icon = Icons.Outlined.Settings,
-                    description = "Gestiona las lecciones de un punto",
+                    description = "",
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }

@@ -9,8 +9,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,18 +24,13 @@ import com.ih.osm.R
 import com.ih.osm.domain.model.NodeCardItem
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.ui.components.*
-import com.ih.osm.ui.components.buttons.ButtonType
-import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.opl.OplItemCard
-import com.ih.osm.ui.components.sheets.FiltersBottomSheet
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.pages.createcard.SectionItemCard
 import com.ih.osm.ui.pages.opllist.action.OplListAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
-import com.ih.osm.ui.theme.Size120
-import com.ih.osm.ui.utils.EMPTY
 
 @Composable
 fun OplListScreen(
@@ -46,35 +39,25 @@ fun OplListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    if (state.isLoading) {
-        CircularProgressIndicator()
-    } else {
-        OplListContent(
-            navController = navController,
-            oplList = state.filteredOplList,
-            levelList = state.nodeLevelList,
-            selectedLevelList = state.selectedLevelList,
-            onAction = { action ->
-                when (action) {
-                    is OplListAction.Detail -> {
-                        // TODO: Navegar a detalle de OPL
-                    }
-                    is OplListAction.Create -> {
-                        // TODO: Navegar a crear OPL
-                    }
-                    is OplListAction.Filters -> {
-                        viewModel.handleAction(action)
-                    }
-                    is OplListAction.UpdateList -> {
-                        viewModel.handleAction(action)
-                    }
-                    is OplListAction.SetLevel -> {
-                        viewModel.handleAction(action)
-                    }
+    OplListContent(
+        navController = navController,
+        oplList = state.filteredOplList,
+        levelList = state.nodeLevelList,
+        selectedLevelList = state.selectedLevelList,
+        onAction = { action ->
+            when (action) {
+                is OplListAction.Detail -> {
+                    // TODO: Navegar a detalle de OPL
                 }
-            },
-        )
-    }
+                is OplListAction.SetLevel -> {
+                    viewModel.handleAction(action)
+                }
+                else -> {
+                    // Otras acciones no implementadas
+                }
+            }
+        },
+    )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -86,17 +69,7 @@ fun OplListContent(
     selectedLevelList: Map<Int, String>,
     onAction: (OplListAction) -> Unit,
 ) {
-    Scaffold(
-        floatingActionButton = {
-            FloatingActionButton(
-                onClick = {
-                    onAction(OplListAction.Create)
-                },
-            ) {
-                Icon(Icons.Filled.Add, contentDescription = EMPTY)
-            }
-        },
-    ) { padding ->
+    Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
         ) {
@@ -110,28 +83,8 @@ fun OplListContent(
                 ) {
                     CustomAppBar(
                         navController = navController,
-                        title = "OPL - One Point Lesson",
+                        title = "OPL",
                     )
-
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.End,
-                        ) {
-                            CustomButton(
-                                text = stringResource(R.string.update_list),
-                                modifier = Modifier.width(Size120),
-                                buttonType = ButtonType.TEXT,
-                            ) {
-                                onAction(OplListAction.UpdateList)
-                            }
-                            FiltersBottomSheet { filter ->
-                                onAction(OplListAction.Filters(filter))
-                            }
-                        }
-                    }
                     CustomSpacer(space = SpacerSize.SMALL)
                 }
             }
@@ -193,7 +146,6 @@ fun OplListContent(
                 }
 
                 item {
-                    CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                     CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 }
             }

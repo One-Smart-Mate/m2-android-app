@@ -26,7 +26,7 @@ class OplListViewModel
         data class UiState(
             val oplList: List<Opl> = emptyList(),
             val filteredOplList: List<Opl> = emptyList(),
-            val isLoading: Boolean = true,
+            val isLoading: Boolean = false,
             val message: String = EMPTY,
             val currentFilter: String = EMPTY,
             val levelList: List<NodeCardItem> = emptyList(),
@@ -81,7 +81,6 @@ class OplListViewModel
                             isLoading = false,
                         )
                     }
-                    // No cargar OPLs estáticos al inicio
                 }.onFailure {
                     setState {
                         copy(
@@ -141,7 +140,6 @@ class OplListViewModel
 
         private fun handleGetOplsByLevel(levelId: String) {
             viewModelScope.launch {
-                setState { copy(isLoading = true, message = "Cargando OPLs...") }
                 kotlin.runCatching {
                     callUseCase { getOplsByLevelUseCase(levelId) }
                 }.onSuccess { oplList ->
@@ -149,7 +147,6 @@ class OplListViewModel
                         copy(
                             oplList = oplList,
                             filteredOplList = applyFilter(oplList, currentFilter),
-                            isLoading = false,
                             message = EMPTY,
                         )
                     }
@@ -158,7 +155,6 @@ class OplListViewModel
                         copy(
                             oplList = emptyList(),
                             filteredOplList = emptyList(),
-                            isLoading = false,
                             message = "Error al cargar OPLs: ${exception.localizedMessage}",
                         )
                     }
@@ -168,7 +164,6 @@ class OplListViewModel
 
         private fun handleUpdateOplList() {
             viewModelScope.launch {
-                setState { copy(isLoading = true, message = "Actualizando lista...") }
                 // Recargar desde el nivel seleccionado actual
                 val currentSelectedLevel = getState().selectedLevelList.values.lastOrNull()
                 if (currentSelectedLevel?.isNotEmpty() == true) {
@@ -178,7 +173,6 @@ class OplListViewModel
                         copy(
                             oplList = emptyList(),
                             filteredOplList = emptyList(),
-                            isLoading = false,
                             message = "Selecciona un nivel para ver OPLs",
                         )
                     }
