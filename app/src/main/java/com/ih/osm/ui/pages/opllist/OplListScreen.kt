@@ -47,7 +47,7 @@ fun OplListScreen(
         onAction = { action ->
             when (action) {
                 is OplListAction.Detail -> {
-                    // TODO: Navegar a detalle de OPL
+                    // No se necesita navegación, los detalles se muestran en la misma pantalla
                 }
                 is OplListAction.SetLevel -> {
                     viewModel.handleAction(action)
@@ -140,7 +140,7 @@ fun OplListContent(
                     OplItemCard(
                         opl = opl,
                         onClick = {
-                            onAction(OplListAction.Detail(opl.id))
+                            // No se necesita acción adicional, el card maneja su propio estado expandido
                         },
                     )
                 }
