@@ -47,13 +47,11 @@ fun OplListScreen(
         onAction = { action ->
             when (action) {
                 is OplListAction.Detail -> {
-                    // No se necesita navegación, los detalles se muestran en la misma pantalla
                 }
                 is OplListAction.SetLevel -> {
                     viewModel.handleAction(action)
                 }
                 else -> {
-                    // Otras acciones no implementadas
                 }
             }
         },

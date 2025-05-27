@@ -130,7 +130,7 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @GET("opl-mstr/level/{levelId}")
+    @GET("opl-levels/level/{levelId}")
     fun getOplsByLevel(
         @Path("levelId") levelId: String,
     ): Call<GetOplsResponse>

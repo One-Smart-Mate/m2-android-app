@@ -1,5 +1,4 @@
 package com.ih.osm.ui.components.opl
-
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -7,16 +6,13 @@ import androidx.compose.animation.core.spring
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
@@ -39,10 +35,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.OplDetail
 import com.ih.osm.ui.components.CustomSpacer
@@ -51,17 +47,19 @@ import com.ih.osm.ui.components.SpacerDirection
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.TagSize
 import com.ih.osm.ui.components.TagType
-import com.ih.osm.ui.components.evidence.PreviewVideo
-import com.ih.osm.ui.components.images.PreviewImage
+import com.ih.osm.ui.components.card.CardAudioSection
+import com.ih.osm.ui.components.card.CardImageSection
+import com.ih.osm.ui.components.card.CardPdfSection
+import com.ih.osm.ui.components.card.CardVideoSection
 import com.ih.osm.ui.extensions.getTextColor
-import com.ih.osm.ui.pages.createcard.PhotoCardItem
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
 import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.Radius8
-import com.ih.osm.ui.theme.Size100
-import com.ih.osm.ui.theme.Size150
-import com.ih.osm.ui.utils.EMPTY
+import com.ih.osm.ui.utils.AUDIO_CREATION
+import com.ih.osm.ui.utils.IMG_CREATION
+import com.ih.osm.ui.utils.STATUS_A
+import com.ih.osm.ui.utils.VIDEO_CREATION
 
 @Composable
 fun OplItemCard(
@@ -329,12 +327,6 @@ private fun OplDetailItem(
     detail: OplDetail,
     modifier: Modifier = Modifier,
 ) {
-    var imageUrl by remember { mutableStateOf(EMPTY) }
-    var openImage by remember { mutableStateOf(false) }
-    var videoUrl by remember { mutableStateOf(EMPTY) }
-    var openVideo by remember { mutableStateOf(false) }
-    val uriHandler = LocalUriHandler.current
-
     Column(modifier = modifier) {
         Row(
             modifier =
@@ -347,7 +339,7 @@ private fun OplDetailItem(
                     .padding(PaddingSmall),
             verticalAlignment = Alignment.Top,
         ) {
-// Número del paso en un círculo
+            // Número del paso en un círculo
             Box(
                 modifier =
                     Modifier
@@ -399,110 +391,77 @@ private fun OplDetailItem(
             }
         }
 
-// Mostrar media si existe
-        if (detail.mediaUrl.isNotEmpty()) {
+        // Mostrar media si existe según el tipo
+        if (detail.mediaUrl.isNotEmpty() && detail.type != "texto") {
             CustomSpacer(space = SpacerSize.TINY)
 
-            when {
-                detail.mediaUrl.endsWith(".jpg", true) ||
-                    detail.mediaUrl.endsWith(".jpeg", true) ||
-                    detail.mediaUrl.endsWith(".png", true) ||
-                    detail.mediaUrl.endsWith(".webp", true) -> {
-// Mostrar imagen
-                    PhotoCardItem(
-                        model = detail.mediaUrl,
-                        showIcon = false,
-                        modifier =
-                            Modifier
-                                .width(Size150)
-                                .height(Size100)
-                                .clickable {
-                                    imageUrl = detail.mediaUrl
-                                    openImage = true
-                                },
+            when (detail.type) {
+                "imagen" -> {
+                    // Mostrar imagen usando CardImageSection
+                    val imageEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, IMG_CREATION)
+                    CardImageSection(
+                        title = "",
+                        evidences = imageEvidences,
                     )
                 }
-                detail.mediaUrl.endsWith(".mp4", true) ||
-                    detail.mediaUrl.endsWith(".mov", true) ||
-                    detail.mediaUrl.endsWith(".avi", true) -> {
-                    // Mostrar video
-                    PhotoCardItem(
-                        model = detail.mediaUrl,
-                        showIcon = false,
-                        modifier =
-                            Modifier
-                                .width(Size150)
-                                .height(Size100)
-                                .clickable {
-                                    videoUrl = detail.mediaUrl
-                                    openVideo = true
-                                },
+                "video" -> {
+                    // Mostrar video usando CardVideoSection
+                    val videoEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, VIDEO_CREATION)
+                    CardVideoSection(
+                        title = "",
+                        evidences = videoEvidences,
                     )
                 }
-                detail.mediaUrl.endsWith(".pdf", true) -> {
-                    // Mostrar link de PDF
-                    Row(
-                        modifier =
-                            Modifier
-                                .clickable {
-                                    uriHandler.openUri(detail.mediaUrl)
-                                }
-                                .padding(PaddingSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "📄",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(end = 4.dp),
-                        )
-                        Text(
-                            text = "Ver PDF",
-                            style =
-                                MaterialTheme.typography.bodySmall.copy(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Medium,
-                                ),
-                        )
-                    }
+                "audio" -> {
+                    // Mostrar audio usando CardAudioSection
+                    val audioEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, AUDIO_CREATION)
+                    CardAudioSection(
+                        title = "",
+                        evidences = audioEvidences,
+                    )
+                }
+                "pdf" -> {
+                    // Mostrar PDF usando CardPdfSection
+                    val pdfEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, "PDF")
+                    CardPdfSection(
+                        title = "",
+                        evidences = pdfEvidences,
+                    )
                 }
                 else -> {
-                    // Otro tipo de archivo - abrir en navegador
-                    Row(
-                        modifier =
-                            Modifier
-                                .clickable {
-                                    uriHandler.openUri(detail.mediaUrl)
-                                }
-                                .padding(PaddingSmall),
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Text(
-                            text = "📎",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(end = 4.dp),
-                        )
-                        Text(
-                            text = "Ver archivo adjunto",
-                            style =
-                                MaterialTheme.typography.bodySmall.copy(
-                                    color = MaterialTheme.colorScheme.primary,
-                                    fontWeight = FontWeight.Medium,
-                                ),
+                    // Otro tipo de archivo o tipo no reconocido
+                    if (detail.mediaUrl.isNotEmpty()) {
+                        // Usar CardPdfSection como fallback para archivos genéricos
+                        val fileEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, "FILE")
+                        CardPdfSection(
+                            title = "",
+                            evidences = fileEvidences,
                         )
                     }
                 }
             }
         }
-
-        // Previews
-        PreviewImage(openImage = openImage, model = imageUrl) {
-            openImage = false
-            imageUrl = EMPTY
-        }
-
-        PreviewVideo(openVideo = openVideo, url = videoUrl) {
-            videoUrl = EMPTY
-            openVideo = false
-        }
     }
+}
+
+// Helper function to create evidences from media URL
+private fun createEvidencesFromMediaUrl(
+    mediaUrl: String,
+    evidenceType: String,
+): List<Evidence> {
+    if (mediaUrl.isEmpty()) return emptyList()
+
+    return listOf(
+        Evidence(
+            id = mediaUrl.hashCode().toString(),
+            cardId = "",
+            siteId = "",
+            url = mediaUrl,
+            type = evidenceType,
+            status = STATUS_A,
+            createdAt = null,
+            updatedAt = null,
+            deletedAt = null,
+        ),
+    )
 }
