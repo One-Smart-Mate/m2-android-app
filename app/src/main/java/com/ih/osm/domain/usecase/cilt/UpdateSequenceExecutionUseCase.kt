@@ -5,15 +5,15 @@ import com.ih.osm.domain.model.SequenceExecutionData
 import com.ih.osm.domain.repository.cilt.CiltRepository
 import javax.inject.Inject
 
-interface SequenceExecutionUseCase {
+interface UpdateSequenceExecutionUseCase {
     suspend operator fun invoke(body: SequenceExecutionRequest): SequenceExecutionData
 }
 
-class SequenceExecutionUseCaseImpl
+class UpdateSequenceExecutionUseCaseImpl
     @Inject
     constructor(
         private val repository: CiltRepository,
-    ) : SequenceExecutionUseCase {
+    ) : UpdateSequenceExecutionUseCase {
         override suspend fun invoke(body: SequenceExecutionRequest): SequenceExecutionData {
             return repository.updateSequenceExecution(body)
         }

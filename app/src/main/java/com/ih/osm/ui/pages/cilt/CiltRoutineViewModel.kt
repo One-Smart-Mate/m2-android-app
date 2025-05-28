@@ -7,7 +7,7 @@ import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.repository.auth.AuthRepository
-import com.ih.osm.domain.usecase.cilt.CreateEvidenceUseCase
+import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.utils.EMPTY
@@ -23,7 +23,7 @@ class CiltRoutineViewModel
     @Inject
     constructor(
         private val getCiltsUseCase: GetCiltsUseCase,
-        private val createEvidenceUseCase: CreateEvidenceUseCase,
+        private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
         private val authRepository: AuthRepository,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
         init {
@@ -94,7 +94,7 @@ class CiltRoutineViewModel
             viewModelScope.launch {
                 setState { copy(isCreatingEvidence = true, createEvidenceMessage = EMPTY) }
                 kotlin.runCatching {
-                    createEvidenceUseCase(request)
+                    createCiltEvidenceUseCase(request)
                 }.onSuccess {
                     setState {
                         copy(

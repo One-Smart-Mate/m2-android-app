@@ -28,8 +28,8 @@ import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCaseImpl
-import com.ih.osm.domain.usecase.cilt.SequenceExecutionUseCase
-import com.ih.osm.domain.usecase.cilt.SequenceExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCase
+import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -166,8 +166,8 @@ interface DomainBindingModule {
 
     @Binds
     fun bindUpdateSequenceExecutionDataUseCase(
-        updateSequenceExecutionDataUseCaseImpl: SequenceExecutionUseCaseImpl,
-    ): SequenceExecutionUseCase
+        updateSequenceExecutionDataUseCaseImpl: UpdateSequenceExecutionUseCaseImpl,
+    ): UpdateSequenceExecutionUseCase
 
     @Binds
     fun bindCiltRepository(ciltRepositoryImpl: CiltRepositoryImpl): CiltRepository

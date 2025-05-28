@@ -15,7 +15,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.ih.osm.R
 import com.ih.osm.ui.components.images.PreviewImage
 import com.ih.osm.ui.pages.createcard.PhotoCardItem
 import com.ih.osm.ui.theme.Size200
@@ -23,7 +25,7 @@ import com.ih.osm.ui.theme.Size250
 
 @Composable
 fun CiltDiagramSection(
-    title: String = "Diagrama de la máquina",
+    title: String = stringResource(R.string.machine_diagram),
     imageUrl: String?,
 ) {
     var openImage by remember { mutableStateOf(false) }

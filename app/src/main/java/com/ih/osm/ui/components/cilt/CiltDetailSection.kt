@@ -7,9 +7,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.SectionTag
@@ -25,26 +27,26 @@ fun CiltDetailSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Posición: ${position.name}",
+                text = stringResource(R.string.position_label, position.name),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                text = "Rutina: ${cilt.ciltName}",
+                text = stringResource(R.string.routine_label, cilt.ciltName),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                text = "Descripción: ${cilt.ciltDescription}",
+                text = stringResource(R.string.description_label, cilt.ciltDescription),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
-            ExpandableCard(title = "Detalles", expanded = true) {
-                SectionTag(title = "Creó", value = cilt.creatorName)
-                SectionTag(title = "Revisó", value = cilt.reviewerName)
-                SectionTag(title = "Autorizó", value = cilt.approvedByName)
+            ExpandableCard(title = stringResource(R.string.cilt_details), expanded = true) {
+                SectionTag(title = stringResource(R.string.cilt_created_by), value = cilt.creatorName)
+                SectionTag(title = stringResource(R.string.cilt_reviewed_by), value = cilt.reviewerName)
+                SectionTag(title = stringResource(R.string.cilt_approved_by), value = cilt.approvedByName)
                 SectionTag(
-                    title = "Fecha última actualización",
-                    value = cilt.updatedAt ?: "N/A",
+                    title = stringResource(R.string.last_updated),
+                    value = cilt.updatedAt ?: stringResource(R.string.not_available),
                 )
-                SectionTag(title = "Status", value = cilt.status)
+                SectionTag(title = stringResource(R.string.cilt_status), value = cilt.status)
             }
 
             CiltDiagramSection(imageUrl = cilt.urlImgLayout)

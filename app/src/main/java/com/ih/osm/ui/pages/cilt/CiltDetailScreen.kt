@@ -26,10 +26,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.domain.model.Sequence
@@ -125,11 +127,11 @@ fun SequenceDetailContent(
     var evidenceUriString by remember { mutableStateOf<String?>(null) }
 
     ExpandableCard(
-        title = "Detalles de la secuencia",
+        title = stringResource(R.string.details_title),
         expanded = true,
     ) {
-        InfoItem(label = "Tipo", value = sequence.ciltTypeName)
-        InfoItem(label = "Duración", value = sequence.standardTime.toString())
+        InfoItem(label = stringResource(R.string.type_label), value = sequence.ciltTypeName)
+        InfoItem(label = stringResource(R.string.duration_label), value = sequence.standardTime.toString())
         if (sequence.machineStopped == 1) {
             Box(
                 modifier =
@@ -140,7 +142,7 @@ fun SequenceDetailContent(
                         .padding(12.dp),
             ) {
                 Text(
-                    text = "⚠ Ejecutar con máquina detenida",
+                    text = stringResource(R.string.stoppage_required),
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFFB71C1C),
                     style = MaterialTheme.typography.bodyLarge,
@@ -156,7 +158,7 @@ fun SequenceDetailContent(
                         .padding(12.dp),
             ) {
                 Text(
-                    text = "No es necesario detener la máquina",
+                    text = stringResource(R.string.stoppage_not_required),
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF424242),
                     style = MaterialTheme.typography.bodyLarge,
@@ -173,13 +175,13 @@ fun SequenceDetailContent(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text("Iniciar secuencia")
+            Text(stringResource(R.string.start_sequence))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Pasos a seguir:",
+            text = stringResource(R.string.steps_to_follow),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )
@@ -189,12 +191,15 @@ fun SequenceDetailContent(
 
         Spacer(modifier = Modifier.height(12.dp))
 
-        InfoItem(label = "Referencia", value = sequence.referencePoint ?: "N/A")
+        InfoItem(
+            label = stringResource(R.string.reference_label),
+            value = sequence.referencePoint ?: stringResource(R.string.not_available),
+        )
 
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "Listado de herramientas:",
+            text = stringResource(R.string.tools_list),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )
@@ -204,7 +209,7 @@ fun SequenceDetailContent(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        InfoItem(label = "Parámetro Ok", value = sequence.standardOk)
+        InfoItem(label = stringResource(R.string.parameter_ok), value = sequence.standardOk)
 
         Spacer(modifier = Modifier.height(8.dp))
 
@@ -215,7 +220,7 @@ fun SequenceDetailContent(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text("Ver OPL o SOP")
+            Text(stringResource(R.string.view_opl_sop))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -223,7 +228,7 @@ fun SequenceDetailContent(
         OutlinedTextField(
             value = parameterFound,
             onValueChange = { parameterFound = it },
-            label = { Text("Parámetro encontrado") },
+            label = { Text(stringResource(R.string.parameter_found)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -260,7 +265,7 @@ fun SequenceDetailContent(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text("Ver OPL o SOP de remediación")
+            Text(stringResource(R.string.view_remediation))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -268,7 +273,7 @@ fun SequenceDetailContent(
         OutlinedTextField(
             value = finalParameter,
             onValueChange = { finalParameter = it },
-            label = { Text("Parámetro final si se aplicó remediación") },
+            label = { Text(stringResource(R.string.final_parameter)) },
             modifier = Modifier.fillMaxWidth(),
         )
 
@@ -287,8 +292,8 @@ fun SequenceDetailContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         InfoItem(
-            label = "Motivo de paro",
-            value = if (sequence.stoppageReason == 1) "Sí" else "No",
+            label = stringResource(R.string.stop_reason_label),
+            value = if (sequence.stoppageReason == 1) stringResource(R.string.stop_reason_yes) else stringResource(R.string.stop_reason_no),
         )
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -300,7 +305,7 @@ fun SequenceDetailContent(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text("NOK Generar tarjeta AM")
+            Text(stringResource(R.string.generate_am_card))
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -312,7 +317,7 @@ fun SequenceDetailContent(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text("Terminar secuencia")
+            Text(stringResource(R.string.finish_sequence))
         }
     }
 }

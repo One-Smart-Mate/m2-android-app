@@ -4,7 +4,7 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.domain.repository.cilt.CiltRepository
 import javax.inject.Inject
 
-class CreateEvidenceUseCase
+class CreateCiltEvidenceUseCase
     @Inject
     constructor(
         private val repository: CiltRepository,
