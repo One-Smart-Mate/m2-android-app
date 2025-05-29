@@ -132,7 +132,6 @@ fun AppNavigation(startDestination: String) {
 
         composable(
             Screen.OplList.route,
-            arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
         ) {
             OplListScreen(navController = navController)
         }
@@ -199,6 +198,6 @@ fun NavController.navigateToRestoreAccount() {
     navigate(Screen.RestoreAccount.route)
 }
 
-fun NavController.navigateToOplList(filter: String = EMPTY) {
-    navigate("${Screen.OplList.path}/$filter")
+fun NavController.navigateToOplList() {
+    navigate(Screen.OplList.route)
 }

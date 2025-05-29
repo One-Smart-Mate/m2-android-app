@@ -26,7 +26,6 @@ class OplListViewModel
     ) : BaseViewModel<OplListViewModel.UiState>(UiState()) {
         data class UiState(
             val oplList: List<Opl> = emptyList(),
-            val filteredOplList: List<Opl> = emptyList(),
             val isLoading: Boolean = false,
             val message: String = EMPTY,
             val currentFilter: String = EMPTY,
@@ -44,10 +43,7 @@ class OplListViewModel
         fun handleAction(action: OplListAction) {
             when (action) {
                 is OplListAction.UpdateList -> handleUpdateOplList()
-                is OplListAction.Filters -> handleFilterOpl(action.filter)
                 is OplListAction.SetLevel -> handleSetLevel(action.id, action.key)
-                OplListAction.Create -> TODO()
-                is OplListAction.Detail -> TODO()
             }
         }
 
@@ -57,14 +53,9 @@ class OplListViewModel
                     callUseCase { getLevelsUseCase() }
                 }.onSuccess { levels ->
                     val levelList = levels.toNodeItemList()
-                    println("DEBUG OPL - Total levels received: ${levelList.size}")
-                    levelList.forEach { level ->
-                        println("DEBUG OPL - Level: id=${level.id}, name=${level.name}, superiorId=${level.superiorId}")
-                    }
 
                     // Initialize the first level with root elements (superiorId = "0")
                     val rootLevels = levelList.filter { it.superiorId == "0" }
-                    println("DEBUG OPL - Root levels found: ${rootLevels.size}")
 
                     val initialNodeLevelList =
                         if (rootLevels.isNotEmpty()) {
@@ -72,8 +63,6 @@ class OplListViewModel
                         } else {
                             emptyMap()
                         }
-
-                    println("DEBUG OPL - Initial node level list: $initialNodeLevelList")
 
                     setState {
                         copy(
@@ -147,7 +136,6 @@ class OplListViewModel
                     setState {
                         copy(
                             oplList = oplList,
-                            filteredOplList = applyFilter(oplList, currentFilter),
                             message = EMPTY,
                         )
                     }
@@ -155,8 +143,11 @@ class OplListViewModel
                     setState {
                         copy(
                             oplList = emptyList(),
-                            filteredOplList = emptyList(),
-                            message = context.getString(R.string.error_loading_opls, exception.localizedMessage),
+                            message =
+                                context.getString(
+                                    R.string.error_loading_opls,
+                                    exception.localizedMessage,
+                                ),
                         )
                     }
                 }
@@ -173,40 +164,10 @@ class OplListViewModel
                     setState {
                         copy(
                             oplList = emptyList(),
-                            filteredOplList = emptyList(),
                             message = context.getString(R.string.select_level),
                         )
                     }
                 }
-            }
-        }
-
-        private fun handleFilterOpl(filter: String) {
-            viewModelScope.launch {
-                val filteredList = applyFilter(getState().oplList, filter)
-                setState {
-                    copy(
-                        filteredOplList = filteredList,
-                        currentFilter = filter,
-                    )
-                }
-            }
-        }
-
-        private fun applyFilter(
-            oplList: List<Opl>,
-            filter: String,
-        ): List<Opl> {
-            return when (filter.lowercase()) {
-                "todo", "all", "" -> oplList
-                "seguridad" -> oplList.filter { it.title.contains("Seguridad", ignoreCase = true) }
-                "mantenimiento" -> oplList.filter { it.title.contains("Mantenimiento", ignoreCase = true) }
-                "calidad" -> oplList.filter { it.title.contains("Calidad", ignoreCase = true) }
-                else ->
-                    oplList.filter {
-                        it.title.contains(filter, ignoreCase = true) ||
-                            it.objetive.contains(filter, ignoreCase = true)
-                    }
             }
         }
     }

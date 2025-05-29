@@ -123,6 +123,7 @@ fun HomeScreenV2(
                     HomeActionClick.CATALOGS -> {
                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
+
                     HomeActionClick.LOCAL_CARDS -> {
                         viewModel.process(HomeAction.SyncLocalCards(context))
                     }
@@ -134,8 +135,9 @@ fun HomeScreenV2(
                     HomeActionClick.NAVIGATION -> {
                         navController.navigateToCardList(CARD_ANOMALIES)
                     }
+
                     HomeActionClick.OPL_NAVIGATION -> {
-                        navController.navigateToOplList(EMPTY)
+                        navController.navigateToOplList()
                     }
                 }
             },

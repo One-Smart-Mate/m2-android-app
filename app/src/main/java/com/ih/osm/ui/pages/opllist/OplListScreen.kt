@@ -41,18 +41,12 @@ fun OplListScreen(
 
     OplListContent(
         navController = navController,
-        oplList = state.filteredOplList,
+        oplList = state.oplList,
         levelList = state.nodeLevelList,
         selectedLevelList = state.selectedLevelList,
         onAction = { action ->
-            when (action) {
-                is OplListAction.Detail -> {
-                }
-                is OplListAction.SetLevel -> {
-                    viewModel.handleAction(action)
-                }
-                else -> {
-                }
+            if (action is OplListAction.SetLevel) {
+                viewModel.handleAction(action)
             }
         },
     )

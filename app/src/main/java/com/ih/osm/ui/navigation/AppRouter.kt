@@ -37,7 +37,7 @@ private object Route {
     const val RESTORE_ACCOUNT = "restore-account"
 
     const val OPL_LIST_PATH = "opl-list"
-    const val OPL_LIST = "$OPL_LIST_PATH/{$ARG_CARD_FILTER}"
+    const val OPL_LIST = OPL_LIST_PATH
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {

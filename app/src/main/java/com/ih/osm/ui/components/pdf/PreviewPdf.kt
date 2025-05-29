@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
@@ -163,7 +164,7 @@ private fun PdfViewerContent(
                         }
                         else -> File(pdfUrl)
                     }
-                if (!file.exists() || !file.canRead()) throw Exception("Archivo no legible")
+                if (!file.exists() || !file.canRead()) throw Exception(context.getString(R.string.pdf_file_unreadable))
 
                 val fd = ParcelFileDescriptor.open(file, ParcelFileDescriptor.MODE_READ_ONLY)
                 val renderer = PdfRenderer(fd)
@@ -190,6 +191,7 @@ private fun PdfViewerContent(
                 error = context.getString(R.string.pdf_loading_error, e.localizedMessage)
                 isLoading = false
                 Log.e(TAG, "Error cargando PDF", e)
+                FirebaseCrashlytics.getInstance().recordException(e)
             }
         }
     }
