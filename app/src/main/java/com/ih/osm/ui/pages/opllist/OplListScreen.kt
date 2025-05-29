@@ -81,7 +81,7 @@ fun OplListContent(
                 ) {
                     CustomAppBar(
                         navController = navController,
-                        title = "OPL",
+                        title = stringResource(id = R.string.opl_screen_title),
                     )
                     CustomSpacer(space = SpacerSize.SMALL)
                 }
@@ -114,7 +114,7 @@ fun OplListContent(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                text = "No se encontraron OPLs",
+                                text = stringResource(id = R.string.opl_list_empty_title),
                                 style =
                                     MaterialTheme.typography.bodyLarge
                                         .copy(
@@ -123,7 +123,7 @@ fun OplListContent(
                             )
                             CustomSpacer()
                             Text(
-                                text = "Selecciona un nivel para ver los OPLs disponibles",
+                                text = stringResource(id = R.string.opl_list_empty_subtitle),
                                 style =
                                     MaterialTheme.typography.bodyMedium
                                         .copy(
@@ -138,7 +138,7 @@ fun OplListContent(
                     OplItemCard(
                         opl = opl,
                         onClick = {
-                            // No se necesita acción adicional, el card maneja su propio estado expandido
+                            // No additional action needed, the card manages its own expanded state
                         },
                     )
                 }

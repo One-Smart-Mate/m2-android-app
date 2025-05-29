@@ -16,13 +16,13 @@ class OplRepositoryImpl
         }
 
         override suspend fun getByLevel(levelId: String): List<Opl> {
-            // Por ahora retornamos lista vacía para datos locales
-            // Se puede implementar posteriormente con DAO local si es necesario
+            // For now, we return an empty list for local data
+            // It can be implemented later with a local DAO if necessary
             return emptyList()
         }
 
         override suspend fun saveAll(opls: List<Opl>) {
-            // Se puede implementar posteriormente con DAO local si es necesario
+            // It can be implemented later with a local DAO if necessary
             try {
                 // dao.insertAll(opls.map { it.toEntity() })
             } catch (e: Exception) {
@@ -31,11 +31,11 @@ class OplRepositoryImpl
         }
 
         override suspend fun getAll(): List<Opl> {
-            // Se puede implementar posteriormente con DAO local si es necesario
+            // It can be implemented later with a local DAO if necessary
             return emptyList()
         }
 
         override suspend fun deleteAll() {
-            // Se puede implementar posteriormente con DAO local si es necesario
+            // It can be implemented later with a local DAO if necessary
         }
     }

@@ -199,4 +199,27 @@
     <string name="sync_cards_start">Starting the cards synchronization</string>
     <string name="sync_cards_complete">Cards sync completed</string>
 
+    <string name="opl_screen_title">OPL</string>
+    <string name="opl_list_empty_title">No OPLs found</string>
+    <string name="opl_list_empty_subtitle">Select a level to view available OPLs</string>
+    <string name="pdf_preview">PDF preview</string>
+    <string name="pdf_label">PDF</string>
+    <string name="document">Document</string>
+    <string name="pdf">PDF</string>
+    <string name="file">File</string>
+    <string name="tap_to_open">Tap to open</string>
+    <string name="steps_of_opl">OPL Steps:</string>
+    <string name="no_steps_defined">No steps defined for this OPL</string>
+    <string name="opl_created_by">Created by: %1$s</string>
+    <string name="opl_reviewed_by">Reviewed by: %1$s</string>
+    <string name="expand">Expand</string>
+    <string name="collapse">Collapse</string>
+    <string name="steps">steps</string>
+    <string name="pdf_loading">Loading...</string>
+    <string name="pdf_page_count">Page %1$d of %2$d</string>
+    <string name="pdf_close">Close</string>
+    <string name="pdf_page">Page %1$d</string>
+    <string name="pdf_loading_error">Error loading PDF: %1$s</string>
+    <string name="error_loading_opls">Error loading OPLs: %1$s</string>
+    <string name="select_level">Select a level to view OPLs</string>
 </resources>

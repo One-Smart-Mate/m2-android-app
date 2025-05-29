@@ -44,10 +44,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ih.osm.R
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
@@ -102,7 +104,7 @@ fun CardPdfSection(
             }
         }
 
-        // Preview del PDF
+        // PDF Preview
         PreviewPdf(
             openPdf = openPdf,
             pdfUrl = selectedPdfUrl,
@@ -129,7 +131,7 @@ fun PdfCardItem(
     var isLoading by remember(pdfUrl) { mutableStateOf(false) }
     var hasError by remember(pdfUrl) { mutableStateOf(false) }
 
-    // Solo intentar renderizar si es PDF y la API lo soporta
+    // Only attempt to render if it's a PDF and the API supports it
     LaunchedEffect(pdfUrl) {
         if (isPdf && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP && pdfBitmap == null) {
             isLoading = true
@@ -140,7 +142,7 @@ fun PdfCardItem(
                     val file =
                         when {
                             pdfUrl.startsWith("http://") || pdfUrl.startsWith("https://") -> {
-                                // Descargar archivo desde URL
+                                // Download file from URL
                                 val tempFile = File(context.cacheDir, "temp_pdf_${pdfUrl.hashCode()}.pdf")
                                 if (!tempFile.exists()) {
                                     val url = URL(pdfUrl)
@@ -166,7 +168,7 @@ fun PdfCardItem(
                                 File(Uri.parse(pdfUrl).path ?: "")
                             }
                             else -> {
-                                // Asumir que es una ruta local
+                                // Assume it's a local path
                                 File(pdfUrl)
                             }
                         }
@@ -184,12 +186,12 @@ fun PdfCardItem(
                             if (renderer.pageCount > 0) {
                                 val page = renderer.openPage(0)
 
-                                // Calcular el tamaño del bitmap manteniendo la proporción
+                                // Calculate the bitmap size maintaining the aspect ratio
                                 val scale = 200f / page.width.coerceAtLeast(page.height)
                                 val scaledWidth = (page.width * scale).toInt()
                                 val scaledHeight = (page.height * scale).toInt()
 
-                                // Crear bitmap con el tamaño escalado
+                                // Create the bitmap with the scaled size
                                 val bitmap =
                                     Bitmap.createBitmap(
                                         scaledWidth,
@@ -197,10 +199,10 @@ fun PdfCardItem(
                                         Bitmap.Config.ARGB_8888,
                                     )
 
-                                // Fondo blanco para el PDF
+                                // White background for the PDF
                                 bitmap.eraseColor(android.graphics.Color.WHITE)
 
-                                // Renderizar la página en el bitmap
+                                // Render the page onto the bitmap
                                 page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
 
                                 pdfBitmap = bitmap
@@ -224,7 +226,7 @@ fun PdfCardItem(
         }
     }
 
-    // Limpiar recursos cuando el composable se destruya
+    // Clean up resources when the composable is destroyed
     DisposableEffect(pdfUrl) {
         onDispose {
             pdfBitmap?.recycle()
@@ -247,7 +249,7 @@ fun PdfCardItem(
         ) {
             when {
                 isLoading -> {
-                    // Mostrar indicador de carga
+                    // Show loading indicator
                     CircularProgressIndicator(
                         modifier = Modifier.size(48.dp),
                         color = iconColor,
@@ -255,7 +257,7 @@ fun PdfCardItem(
                     )
                 }
                 pdfBitmap != null && !hasError -> {
-                    // Mostrar vista previa del PDF
+                    // Show PDF preview
                     Column(
                         modifier = Modifier.fillMaxSize(),
                     ) {
@@ -270,12 +272,12 @@ fun PdfCardItem(
                         ) {
                             Image(
                                 bitmap = pdfBitmap!!.asImageBitmap(),
-                                contentDescription = "Vista previa PDF",
+                                contentDescription = stringResource(id = R.string.pdf_preview),
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit,
                             )
 
-                            // Indicador de PDF en la esquina
+                            // PDF indicator in the corner
                             Box(
                                 modifier =
                                     Modifier
@@ -288,7 +290,7 @@ fun PdfCardItem(
                                         .padding(horizontal = 6.dp, vertical = 2.dp),
                             ) {
                                 Text(
-                                    text = "PDF",
+                                    text = stringResource(id = R.string.pdf_label),
                                     style =
                                         MaterialTheme.typography.labelSmall.copy(
                                             color = Color.White,
@@ -298,7 +300,7 @@ fun PdfCardItem(
                             }
                         }
 
-                        // Nombre del archivo en la parte inferior
+                        // File name at the bottom
                         Box(
                             modifier =
                                 Modifier
@@ -319,7 +321,7 @@ fun PdfCardItem(
                                 when {
                                     fileName.endsWith(".pdf", ignoreCase = true) ->
                                         fileName.removeSuffix(".pdf").removeSuffix(".PDF")
-                                    fileName.isEmpty() -> "Documento"
+                                    fileName.isEmpty() -> stringResource(id = R.string.document)
                                     else -> fileName.substringBeforeLast(".")
                                 }
 
@@ -339,7 +341,7 @@ fun PdfCardItem(
                     }
                 }
                 else -> {
-                    // Mostrar icono por defecto
+                    // Show default icon
                     PdfDefaultView(
                         isPdf = isPdf,
                         fileName = fileName,
@@ -367,7 +369,7 @@ private fun PdfDefaultView(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {
-        // Icono de PDF o archivo
+        // PDF or file icon
         Box(
             modifier =
                 Modifier
@@ -380,7 +382,7 @@ private fun PdfDefaultView(
         ) {
             Icon(
                 imageVector = if (isPdf) Icons.Default.AddCircle else Icons.Default.Info,
-                contentDescription = if (isPdf) "PDF" else "Archivo",
+                contentDescription = if (isPdf) stringResource(id = R.string.pdf) else stringResource(id = R.string.file),
                 modifier = Modifier.size(48.dp),
                 tint = iconColor,
             )
@@ -388,12 +390,12 @@ private fun PdfDefaultView(
 
         CustomSpacer()
 
-        // Nombre del archivo
+        // File name
         val displayName =
             when {
                 fileName.endsWith(".pdf", ignoreCase = true) ->
                     fileName.removeSuffix(".pdf").removeSuffix(".PDF")
-                fileName.isEmpty() -> "Documento"
+                fileName.isEmpty() -> stringResource(id = R.string.document)
                 else -> fileName.substringBeforeLast(".")
             }
 
@@ -412,7 +414,7 @@ private fun PdfDefaultView(
 
         CustomSpacer(space = SpacerSize.SMALL)
 
-        // Texto indicativo
+        // Descriptive text
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
@@ -433,7 +435,7 @@ private fun PdfDefaultView(
             )
             CustomSpacer(space = SpacerSize.TINY)
             Text(
-                text = "Tocar para abrir",
+                text = stringResource(id = R.string.tap_to_open),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
                         color = MaterialTheme.colorScheme.primary,

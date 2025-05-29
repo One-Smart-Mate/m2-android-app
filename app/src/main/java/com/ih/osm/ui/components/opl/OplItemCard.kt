@@ -35,9 +35,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.ih.osm.R
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.OplDetail
@@ -78,7 +80,7 @@ fun OplItemCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = {
             isExpanded = !isExpanded
-            // Removido onClick() para evitar navegación
+            // Removed onClick() to prevent navigation
         },
     ) {
         Column(
@@ -94,7 +96,7 @@ fun OplItemCard(
                             ),
                     ),
         ) {
-            // Header con título y tipo
+            // Header with title and type
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -111,7 +113,7 @@ fun OplItemCard(
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
                     )
-                    // Removí el ID del OPL
+                    // Removed the OPL ID
                 }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -129,7 +131,14 @@ fun OplItemCard(
                     ) {
                         Icon(
                             imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                            contentDescription = if (isExpanded) "Contraer" else "Expandir",
+                            contentDescription =
+                                if (isExpanded) {
+                                    stringResource(
+                                        id = R.string.collapse,
+                                    )
+                                } else {
+                                    stringResource(id = R.string.expand)
+                                },
                             tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(28.dp),
                         )
@@ -139,7 +148,7 @@ fun OplItemCard(
 
             CustomSpacer()
 
-            // Objetivo
+            // Objective
             Row(
                 verticalAlignment = Alignment.Top,
             ) {
@@ -164,7 +173,7 @@ fun OplItemCard(
 
             CustomSpacer()
 
-            // Información del creador y revisor
+            // Creator and reviewer information
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -181,7 +190,7 @@ fun OplItemCard(
                     )
                     CustomSpacer(direction = SpacerDirection.HORIZONTAL, space = SpacerSize.TINY)
                     Text(
-                        text = "Creado por: ${opl.creatorName}",
+                        text = stringResource(id = R.string.opl_created_by, opl.creatorName),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
@@ -192,7 +201,7 @@ fun OplItemCard(
                 }
             }
 
-            // Detalles count y fecha
+            // Details count and date
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -208,7 +217,7 @@ fun OplItemCard(
                             .padding(horizontal = PaddingSmall, vertical = PaddingTiny),
                 ) {
                     Text(
-                        text = "${opl.details.size} pasos",
+                        text = "${opl.details.size} ${stringResource(id = R.string.steps)}",
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.primary,
@@ -226,7 +235,7 @@ fun OplItemCard(
                 )
             }
 
-            // Indicador de revisor si existe
+            // Reviewer indicator if exists
             if (opl.reviewerName.isNotEmpty()) {
                 CustomSpacer(space = SpacerSize.TINY)
                 Row(
@@ -244,7 +253,7 @@ fun OplItemCard(
                         )
                         CustomSpacer(direction = SpacerDirection.HORIZONTAL, space = SpacerSize.TINY)
                         Text(
-                            text = "Revisado por: ${opl.reviewerName}",
+                            text = stringResource(id = R.string.opl_reviewed_by, opl.reviewerName),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
                                     color = Color(0xFF4CAF50),
@@ -255,7 +264,7 @@ fun OplItemCard(
                 }
             }
 
-            // Sección expandible de detalles
+            // Expandable details section
             AnimatedVisibility(
                 visible = isExpanded,
                 enter =
@@ -277,7 +286,7 @@ fun OplItemCard(
 
                     if (opl.details.isNotEmpty()) {
                         Text(
-                            text = "Pasos del OPL:",
+                            text = stringResource(id = R.string.steps_of_opl),
                             style =
                                 MaterialTheme.typography.titleSmall.copy(
                                     fontWeight = FontWeight.Bold,
@@ -308,7 +317,7 @@ fun OplItemCard(
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(
-                                text = "No hay pasos definidos para este OPL",
+                                text = stringResource(id = R.string.no_steps_defined),
                                 style =
                                     MaterialTheme.typography.bodyMedium.copy(
                                         color = getTextColor().copy(alpha = 0.6f),
@@ -339,7 +348,7 @@ private fun OplDetailItem(
                     .padding(PaddingSmall),
             verticalAlignment = Alignment.Top,
         ) {
-            // Número del paso en un círculo
+            // Step number inside a circle
             Box(
                 modifier =
                     Modifier
@@ -391,13 +400,13 @@ private fun OplDetailItem(
             }
         }
 
-        // Mostrar media si existe según el tipo
+        // Show media if exists based on type
         if (detail.mediaUrl.isNotEmpty() && detail.type != "texto") {
             CustomSpacer(space = SpacerSize.TINY)
 
             when (detail.type) {
                 "imagen" -> {
-                    // Mostrar imagen usando CardImageSection
+                    // Show image using CardImageSection
                     val imageEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, IMG_CREATION)
                     CardImageSection(
                         title = "",
@@ -405,7 +414,7 @@ private fun OplDetailItem(
                     )
                 }
                 "video" -> {
-                    // Mostrar video usando CardVideoSection
+                    // Show video using CardVideoSection
                     val videoEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, VIDEO_CREATION)
                     CardVideoSection(
                         title = "",
@@ -413,7 +422,7 @@ private fun OplDetailItem(
                     )
                 }
                 "audio" -> {
-                    // Mostrar audio usando CardAudioSection
+                    // Show audio using CardAudioSection
                     val audioEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, AUDIO_CREATION)
                     CardAudioSection(
                         title = "",
@@ -421,7 +430,7 @@ private fun OplDetailItem(
                     )
                 }
                 "pdf" -> {
-                    // Mostrar PDF usando CardPdfSection
+                    // Show PDF using CardPdfSection
                     val pdfEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, "PDF")
                     CardPdfSection(
                         title = "",
@@ -429,9 +438,9 @@ private fun OplDetailItem(
                     )
                 }
                 else -> {
-                    // Otro tipo de archivo o tipo no reconocido
+                    // Other file type or unrecognized type
                     if (detail.mediaUrl.isNotEmpty()) {
-                        // Usar CardPdfSection como fallback para archivos genéricos
+                        // Use CardPdfSection as fallback for generic files
                         val fileEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, "FILE")
                         CardPdfSection(
                             title = "",

@@ -3,7 +3,7 @@ package com.ih.osm.domain.model
 data class Opl(
     val id: Int,
     val title: String,
-    // Cambiado para coincidir con la API
+    // Changed to match the API
     val objetive: String,
     val creatorId: Int,
     val creatorName: String,
@@ -11,9 +11,9 @@ data class Opl(
     val reviewerId: Int,
     val reviewerName: String,
     val oplType: String,
-    // Cambiado a String para evitar problemas de parsing
+    // Changed to string to avoid parsing issues
     val createdAt: String,
-    // Cambiado a String para evitar problemas de parsing
+    // Changed to string to avoid parsing issues
     val updatedAt: String,
     val deletedAt: String? = null,
     val details: List<OplDetail> = emptyList(),

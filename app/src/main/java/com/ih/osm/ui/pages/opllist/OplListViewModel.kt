@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.opllist
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
+import com.ih.osm.R
 import com.ih.osm.domain.model.NodeCardItem
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.toNodeItemList
@@ -61,7 +62,7 @@ class OplListViewModel
                         println("DEBUG OPL - Level: id=${level.id}, name=${level.name}, superiorId=${level.superiorId}")
                     }
 
-                    // Inicializar el primer nivel con elementos raíz (superiorId = "0")
+                    // Initialize the first level with root elements (superiorId = "0")
                     val rootLevels = levelList.filter { it.superiorId == "0" }
                     println("DEBUG OPL - Root levels found: ${rootLevels.size}")
 
@@ -127,7 +128,7 @@ class OplListViewModel
                 val newKey = key.plus(1)
                 val list = getLevelById(id, newKey)
                 checkLastLevelSection(id)
-                // Cargar OPLs para el nivel seleccionado
+                // Load OPLs for the selected level
                 handleGetOplsByLevel(id)
                 setState { copy(nodeLevelList = list) }
             }
@@ -155,7 +156,7 @@ class OplListViewModel
                         copy(
                             oplList = emptyList(),
                             filteredOplList = emptyList(),
-                            message = "Error al cargar OPLs: ${exception.localizedMessage}",
+                            message = context.getString(R.string.error_loading_opls, exception.localizedMessage),
                         )
                     }
                 }
@@ -164,7 +165,7 @@ class OplListViewModel
 
         private fun handleUpdateOplList() {
             viewModelScope.launch {
-                // Recargar desde el nivel seleccionado actual
+                // Reload from the current selected level
                 val currentSelectedLevel = getState().selectedLevelList.values.lastOrNull()
                 if (currentSelectedLevel?.isNotEmpty() == true) {
                     handleGetOplsByLevel(currentSelectedLevel)
@@ -173,7 +174,7 @@ class OplListViewModel
                         copy(
                             oplList = emptyList(),
                             filteredOplList = emptyList(),
-                            message = "Selecciona un nivel para ver OPLs",
+                            message = context.getString(R.string.select_level),
                         )
                     }
                 }

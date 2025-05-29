@@ -33,11 +33,13 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import com.ih.osm.R
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
@@ -87,21 +89,21 @@ private fun PdfViewerContent(
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    // Valores para zoom y pan
+    // Values for zoom and pan
     var scale by remember { mutableStateOf(1f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
     var containerSize by remember { mutableStateOf(IntSize.Zero) }
 
-    // Control de transformaciones
+    // Transformation control
     val transformState =
         rememberTransformableState { zoomChange, panChange, _ ->
-            // Ajusta zoom y lo clampa
+            // Adjusts zoom and clamps it
             val newScale = (scale * zoomChange).coerceIn(1f, 5f)
-            // Calcula límites tras escala
+            // Calculates limits after scaling
             val maxX = (containerSize.width * (newScale - 1f)) / 2f
             val maxY = (containerSize.height * (newScale - 1f)) / 2f
 
-            // Actualiza scale y offset con clamp
+            // Updates scale and offset with clamping
             scale = newScale
             offset =
                 Offset(
@@ -110,7 +112,7 @@ private fun PdfViewerContent(
                 )
         }
 
-    // Conexión nestedScroll para scroll con rueda o swipe
+    // NestedScroll connection for wheel or swipe scrollling
     val nestedScrollConn =
         remember {
             object : NestedScrollConnection {
@@ -119,7 +121,7 @@ private fun PdfViewerContent(
                     source: NestedScrollSource,
                 ): Offset {
                     if (scale > 1f) {
-                        // Los mismos límites de pan
+                        // Same pan limits
                         val maxX = (containerSize.width * (scale - 1f)) / 2f
                         val maxY = (containerSize.height * (scale - 1f)) / 2f
                         offset =
@@ -134,7 +136,7 @@ private fun PdfViewerContent(
             }
         }
 
-    // Carga de páginas PDF
+    // PDF page loading
     LaunchedEffect(pdfUrl) {
         withContext(Dispatchers.IO) {
             try {
@@ -185,7 +187,7 @@ private fun PdfViewerContent(
                 pdfPages = pages
                 isLoading = false
             } catch (e: Exception) {
-                error = "Error al cargar PDF: ${e.localizedMessage}"
+                error = context.getString(R.string.pdf_loading_error, e.localizedMessage)
                 isLoading = false
                 Log.e(TAG, "Error cargando PDF", e)
             }
@@ -216,17 +218,26 @@ private fun PdfViewerContent(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = if (totalPages > 0) "Página ${currentPage + 1} de $totalPages" else "Cargando…",
+                        text =
+                            if (totalPages > 0) {
+                                stringResource(
+                                    id = R.string.pdf_page_count,
+                                    currentPage + 1,
+                                    totalPages,
+                                )
+                            } else {
+                                stringResource(id = R.string.pdf_loading)
+                            },
                         color = getTextColor(),
                         style = MaterialTheme.typography.bodyMedium,
                     )
                     IconButton(onClick = onDismiss) {
-                        Icon(Icons.Default.Close, contentDescription = "Cerrar", tint = getTextColor())
+                        Icon(Icons.Default.Close, contentDescription = stringResource(id = R.string.pdf_close), tint = getTextColor())
                     }
                 }
             }
 
-            // Contenido con zoom, scroll vertical y horizontal dentro de límites
+            // Content with zoom, vertical and horizontal scroll within limits
             Box(
                 Modifier
                     .fillMaxSize()
@@ -298,7 +309,7 @@ private fun ZoomablePdfPage(
         Box(Modifier.background(Color.White)) {
             Image(
                 bitmap = bitmap.asImageBitmap(),
-                contentDescription = "Página $pageNumber",
+                contentDescription = stringResource(id = R.string.pdf_page, pageNumber),
                 contentScale = ContentScale.FillWidth,
                 modifier = Modifier.fillMaxWidth(),
             )
