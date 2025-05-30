@@ -81,6 +81,7 @@ import com.ih.osm.ui.extensions.headerContent
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToCiltRoutine
+import com.ih.osm.ui.navigation.navigateToOplList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -125,6 +126,7 @@ fun HomeScreenV2(
                     HomeActionClick.CATALOGS -> {
                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
+
                     HomeActionClick.LOCAL_CARDS -> {
                         viewModel.process(HomeAction.SyncLocalCards(context))
                     }
@@ -138,6 +140,12 @@ fun HomeScreenV2(
                     }
 
                     HomeActionClick.CILT_ROUTINE -> {
+
+                    }
+
+                    HomeActionClick.OPL_NAVIGATION -> {
+                        navController.navigateToOplList()
+
                     }
                 }
             },
@@ -314,6 +322,17 @@ private fun HomeContent(
                 ) {
                     navController.navigateToCiltRoutine()
                 }
+
+                CustomSpacer()
+
+                // OPL Section
+                HomeSectionCardItem(
+                    title = "OPL",
+                    icon = Icons.Outlined.Settings,
+                    description = "",
+                ) {
+                    onClick(HomeActionClick.OPL_NAVIGATION)
+                }
             }
         }
     }
@@ -325,6 +344,7 @@ enum class HomeActionClick {
     REMOTE_CARDS,
     NAVIGATION,
     CILT_ROUTINE,
+    OPL_NAVIGATION,
 }
 
 @Composable

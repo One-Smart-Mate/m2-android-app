@@ -21,6 +21,7 @@ import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.SequenceExecutionData
@@ -201,6 +202,15 @@ class NetworkRepositoryImpl
         override suspend fun updateRemoteMechanic(body: UpdateMechanicRequest) {
             val response = apiService.updateMechanic(body).execute()
             if (!response.isSuccessful && response.body() == null) {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteOplsByLevel(levelId: String): List<Opl> {
+            val response = apiService.getOplsByLevel(levelId).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
                 error(response.getErrorMessage())
             }
         }

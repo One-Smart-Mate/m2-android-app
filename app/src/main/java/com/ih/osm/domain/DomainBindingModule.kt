@@ -46,6 +46,8 @@ import com.ih.osm.domain.usecase.logout.LogoutUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCaseImpl
+import com.ih.osm.domain.usecase.opl.GetOplsByLevelUseCase
+import com.ih.osm.domain.usecase.opl.GetOplsByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.password.ResetPasswordUseCase
 import com.ih.osm.domain.usecase.password.ResetPasswordUseCaseImpl
 import com.ih.osm.domain.usecase.password.SendRestorePasswordCodeUseCase
@@ -171,4 +173,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindCiltRepository(ciltRepositoryImpl: CiltRepositoryImpl): CiltRepository
+
+    @Binds
+    fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
 }

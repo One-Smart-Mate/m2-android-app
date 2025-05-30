@@ -17,6 +17,7 @@ import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
 import com.ih.osm.domain.model.SequenceExecutionData
@@ -68,6 +69,8 @@ interface NetworkRepository {
     ): List<Card>
 
     suspend fun updateRemoteMechanic(body: UpdateMechanicRequest)
+
+    suspend fun getRemoteOplsByLevel(levelId: String): List<Opl>
 
     suspend fun logout(body: LogoutRequest)
 

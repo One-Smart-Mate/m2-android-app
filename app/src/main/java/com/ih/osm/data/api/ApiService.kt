@@ -12,6 +12,7 @@ import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
+import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
 import com.ih.osm.data.model.LoginRequest
@@ -148,4 +149,9 @@ interface ApiService {
     fun createEvidence(
         @Body body: CiltEvidenceRequest,
     ): Call<Void>
+
+    @GET("opl-levels/level/{levelId}")
+    fun getOplsByLevel(
+        @Path("levelId") levelId: String,
+    ): Call<GetOplsResponse>
 }
