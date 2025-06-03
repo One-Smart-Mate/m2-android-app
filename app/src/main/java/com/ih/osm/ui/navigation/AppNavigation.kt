@@ -54,13 +54,13 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.HomeV2.route,
             arguments =
-            listOf(
-                navArgument(ARG_SYNC_CATALOG) {
-                    type = NavType.StringType
-                    nullable = true
-                    defaultValue = EMPTY
-                },
-            ),
+                listOf(
+                    navArgument(ARG_SYNC_CATALOG) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = EMPTY
+                    },
+                ),
         ) {
             HomeScreenV2(navController = navController)
         }
@@ -85,10 +85,10 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.Solution.route,
             arguments =
-            listOf(
-                navArgument(ARG_CARD_ID) { type = NavType.StringType },
-                navArgument(ARG_ACTION_TYPE) { type = NavType.StringType },
-            ),
+                listOf(
+                    navArgument(ARG_CARD_ID) { type = NavType.StringType },
+                    navArgument(ARG_ACTION_TYPE) { type = NavType.StringType },
+                ),
         ) {
             CardActionScreen(navController = navController)
         }
@@ -127,11 +127,11 @@ fun AppNavigation(startDestination: String) {
         composable(
             route = Screen.CiltDetail.route,
             arguments =
-            listOf(
-                navArgument("sequenceId") {
-                    type = NavType.IntType
-                },
-            ),
+                listOf(
+                    navArgument("sequenceId") {
+                        type = NavType.IntType
+                    },
+                ),
         ) { backStackEntry ->
             val sequenceId = backStackEntry.arguments?.getInt("sequenceId") ?: 0
             CiltDetailScreen(sequenceId = sequenceId, navController = navController)

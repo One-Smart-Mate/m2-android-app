@@ -94,7 +94,7 @@ fun CiltDetailHeader(sequence: Sequence) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = sequence.levelName,
+            text = sequence.siteName,
             style =
                 MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
@@ -241,6 +241,7 @@ fun SequenceDetailContent(
             contentAlignment = Alignment.Center,
         ) {
             CameraLauncher { uri ->
+                /*
                 evidenceUriString = uri.toString()
 
                 val evidenceRequest =
@@ -253,6 +254,8 @@ fun SequenceDetailContent(
                         createdAt = getCurrentTimestamp(),
                     )
                 onAddEvidence(evidenceRequest)
+
+                 */
             }
         }
 
@@ -329,7 +332,7 @@ fun InfoItem(
 ) {
     Row(modifier = Modifier.padding(vertical = 2.dp)) {
         Text(
-            text = "$label: ",
+            text = "$label ",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
         )

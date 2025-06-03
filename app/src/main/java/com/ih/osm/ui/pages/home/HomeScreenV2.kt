@@ -140,12 +140,10 @@ fun HomeScreenV2(
                     }
 
                     HomeActionClick.CILT_ROUTINE -> {
-
                     }
 
                     HomeActionClick.OPL_NAVIGATION -> {
                         navController.navigateToOplList()
-
                     }
                 }
             },
@@ -323,13 +321,11 @@ private fun HomeContent(
                     navController.navigateToCiltRoutine()
                 }
 
-                CustomSpacer()
-
                 // OPL Section
                 HomeSectionCardItem(
                     title = "OPL",
                     icon = Icons.Outlined.Settings,
-                    description = "",
+                    description = "Ver manuales OPL",
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }

@@ -60,7 +60,7 @@ fun SequenceCard(
                         .copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                text = sequence.levelName,
+                text = sequence.siteName,
                 style =
                     MaterialTheme.typography.titleMedium
                         .copy(fontWeight = FontWeight.Bold),
