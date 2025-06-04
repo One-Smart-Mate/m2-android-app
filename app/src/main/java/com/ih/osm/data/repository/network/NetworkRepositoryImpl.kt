@@ -3,22 +3,28 @@ package com.ih.osm.data.repository.network
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.api.ApiService
+import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.SequenceExecutionData
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
 import retrofit2.Response
@@ -200,6 +206,15 @@ class NetworkRepositoryImpl
             }
         }
 
+        override suspend fun getRemoteOplsByLevel(levelId: String): List<Opl> {
+            val response = apiService.getOplsByLevel(levelId).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
         private fun <T> Response<T>.getErrorMessage(): String {
             val instance = FirebaseCrashlytics.getInstance()
             try {
@@ -224,6 +239,33 @@ class NetworkRepositoryImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 LoggerHelperManager.logException(e)
                 error(e.localizedMessage.orEmpty())
+            }
+        }
+
+        override suspend fun getCilts(body: GetCiltsRequest): CiltData {
+            val response = apiService.getCilts(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun updateSequenceExecution(body: SequenceExecutionRequest): SequenceExecutionData {
+            val response = apiService.updateSequenceExecution(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun createEvidence(body: CiltEvidenceRequest) {
+            val response = apiService.createEvidence(body).execute()
+            if (!response.isSuccessful) {
+                error(response.getErrorMessage())
             }
         }
     }

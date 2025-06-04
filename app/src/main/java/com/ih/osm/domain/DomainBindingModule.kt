@@ -1,5 +1,7 @@
 package com.ih.osm.domain
 
+import com.ih.osm.data.repository.cilt.CiltRepositoryImpl
+import com.ih.osm.domain.repository.cilt.CiltRepository
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardsLevelMachineUseCase
@@ -24,6 +26,10 @@ import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
+import com.ih.osm.domain.usecase.cilt.GetCiltsUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCase
+import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -40,6 +46,8 @@ import com.ih.osm.domain.usecase.logout.LogoutUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCaseImpl
+import com.ih.osm.domain.usecase.opl.GetOplsByLevelUseCase
+import com.ih.osm.domain.usecase.opl.GetOplsByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.password.ResetPasswordUseCase
 import com.ih.osm.domain.usecase.password.ResetPasswordUseCaseImpl
 import com.ih.osm.domain.usecase.password.SendRestorePasswordCodeUseCase
@@ -154,4 +162,18 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetEmployeesByRoleUseCase(getEmployeesByRoleUseCaseImpl: GetEmployeesByRoleUseCaseImpl): GetEmployeesByRoleUseCase
+
+    @Binds
+    fun bindGetUserCiltDataUseCase(getUserCiltDataUseCaseImpl: GetCiltsUseCaseImpl): GetCiltsUseCase
+
+    @Binds
+    fun bindUpdateSequenceExecutionDataUseCase(
+        updateSequenceExecutionDataUseCaseImpl: UpdateSequenceExecutionUseCaseImpl,
+    ): UpdateSequenceExecutionUseCase
+
+    @Binds
+    fun bindCiltRepository(ciltRepositoryImpl: CiltRepositoryImpl): CiltRepository
+
+    @Binds
+    fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
 }

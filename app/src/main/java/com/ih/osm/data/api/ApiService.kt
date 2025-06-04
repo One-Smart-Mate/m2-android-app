@@ -1,5 +1,6 @@
 package com.ih.osm.data.api
 
+import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -7,14 +8,19 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
+import com.ih.osm.data.model.GetCiltResponse
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
+import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SequenceExecutionRequest
+import com.ih.osm.data.model.SequenceExecutionResponse
 import com.ih.osm.data.model.SolutionResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
@@ -128,4 +134,24 @@ interface ApiService {
         @Path("siteId") siteId: String,
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
+
+    @POST("cilt-mstr/user")
+    fun getCilts(
+        @Body body: GetCiltsRequest,
+    ): Call<GetCiltResponse>
+
+    @POST("/cilt-sequences-executions/update")
+    fun updateSequenceExecution(
+        @Body body: SequenceExecutionRequest,
+    ): Call<SequenceExecutionResponse>
+
+    @POST("cilt-sequences-evidences/create")
+    fun createEvidence(
+        @Body body: CiltEvidenceRequest,
+    ): Call<Void>
+
+    @GET("opl-levels/level/{levelId}")
+    fun getOplsByLevel(
+        @Path("levelId") levelId: String,
+    ): Call<GetOplsResponse>
 }

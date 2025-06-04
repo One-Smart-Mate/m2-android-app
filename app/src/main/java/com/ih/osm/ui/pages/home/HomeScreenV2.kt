@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Settings
@@ -78,6 +80,8 @@ import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.extensions.headerContent
 import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
+import com.ih.osm.ui.navigation.navigateToCiltRoutine
+import com.ih.osm.ui.navigation.navigateToOplList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -122,6 +126,7 @@ fun HomeScreenV2(
                     HomeActionClick.CATALOGS -> {
                         viewModel.process(HomeAction.SyncCatalogs(LOAD_CATALOGS))
                     }
+
                     HomeActionClick.LOCAL_CARDS -> {
                         viewModel.process(HomeAction.SyncLocalCards(context))
                     }
@@ -132,6 +137,14 @@ fun HomeScreenV2(
 
                     HomeActionClick.NAVIGATION -> {
                         navController.navigateToCardList(CARD_ANOMALIES)
+                    }
+
+                    HomeActionClick.CILT_ROUTINE -> {
+                        navController.navigateToCiltRoutine()
+                    }
+
+                    HomeActionClick.OPL_NAVIGATION -> {
+                        navController.navigateToOplList()
                     }
                 }
             },
@@ -300,6 +313,23 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
+
+                HomeSectionCardItem(
+                    title = stringResource(R.string.cilt_routine),
+                    icon = Icons.Outlined.CheckCircle,
+                    description = stringResource(R.string.view_cilt_routines),
+                ) {
+                    onClick(HomeActionClick.CILT_ROUTINE)
+                }
+
+                // OPL Section
+                HomeSectionCardItem(
+                    title = stringResource(R.string.docs_title),
+                    icon = Icons.Outlined.Settings,
+                    description = stringResource(R.string.opl_sop_documents),
+                ) {
+                    onClick(HomeActionClick.OPL_NAVIGATION)
+                }
             }
         }
     }
@@ -310,6 +340,8 @@ enum class HomeActionClick {
     LOCAL_CARDS,
     REMOTE_CARDS,
     NAVIGATION,
+    CILT_ROUTINE,
+    OPL_NAVIGATION,
 }
 
 @Composable

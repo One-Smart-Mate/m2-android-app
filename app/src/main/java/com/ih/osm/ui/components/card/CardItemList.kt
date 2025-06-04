@@ -29,13 +29,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.ih.osm.R
+import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.cardSiteTitle
 import com.ih.osm.domain.model.cardTitle
 import com.ih.osm.domain.model.enableAssignMechanic
 import com.ih.osm.domain.model.enableDefinitiveSolution
 import com.ih.osm.domain.model.enableProvisionalSolution
-import com.ih.osm.domain.model.getBorderColor
 import com.ih.osm.domain.model.getCreationDate
 import com.ih.osm.domain.model.getStatus
 import com.ih.osm.domain.model.isClosed
@@ -210,7 +210,7 @@ fun CardItemEvidence(
         }
     }
 }
-//
+
 // @Composable
 // fun CardSectionItemList(card: Card) {
 //    Card(
@@ -280,7 +280,7 @@ fun CardItemListV2(
                         Modifier
                             .size(Size20)
                             .background(
-                                color = card.getBorderColor(),
+                                color = getColorFromHex(card.cardTypeColor),
                                 shape = CircleShape,
                             ),
                 )

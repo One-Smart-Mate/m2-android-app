@@ -7,6 +7,7 @@ const val ARG_SYNC_CATALOG = "arg_sync_catalogs"
 const val ARG_SOLUTION = "arg_solution"
 const val ARG_CARD_FILTER = "arg_card_filter"
 const val ARG_ACTION_TYPE = "arg_action_type"
+const val ARG_SEQUENCE_ID = "sequenceId"
 
 private object Route {
     const val LOGIN = "login"
@@ -35,6 +36,13 @@ private object Route {
     const val QR_SCANNER = "qr-scanner"
 
     const val RESTORE_ACCOUNT = "restore-account"
+
+    const val CILT_ROUTINE = "cilt-routine"
+    const val CILT_DETAIL_PATH = "cilt-detail"
+    const val CILT_DETAIL = "$CILT_DETAIL_PATH/{$ARG_SEQUENCE_ID}"
+
+    const val OPL_LIST_PATH = "opl-list"
+    const val OPL_LIST = OPL_LIST_PATH
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -61,4 +69,12 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     data object QrScanner : Screen(Route.QR_SCANNER)
 
     data object RestoreAccount : Screen(Route.RESTORE_ACCOUNT)
+
+    data object Cilt : Screen(Route.CILT_ROUTINE)
+
+    data object CiltDetail : Screen(Route.CILT_DETAIL, Route.CILT_DETAIL_PATH) {
+        fun createRoute(sequenceId: Int) = "$path/$sequenceId"
+    }
+
+    data object OplList : Screen(Route.OPL_LIST, Route.OPL_LIST_PATH)
 }
