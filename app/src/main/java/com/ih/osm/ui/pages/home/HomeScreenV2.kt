@@ -140,6 +140,7 @@ fun HomeScreenV2(
                     }
 
                     HomeActionClick.CILT_ROUTINE -> {
+                        navController.navigateToCiltRoutine()
                     }
 
                     HomeActionClick.OPL_NAVIGATION -> {
@@ -316,16 +317,16 @@ private fun HomeContent(
                 HomeSectionCardItem(
                     title = stringResource(R.string.cilt_routine),
                     icon = Icons.Outlined.CheckCircle,
-                    description = stringResource(R.string.view_assigned_cilt_routines),
+                    description = stringResource(R.string.view_cilt_routines),
                 ) {
-                    navController.navigateToCiltRoutine()
+                    onClick(HomeActionClick.CILT_ROUTINE)
                 }
 
                 // OPL Section
                 HomeSectionCardItem(
-                    title = "OPL",
+                    title = stringResource(R.string.docs_title),
                     icon = Icons.Outlined.Settings,
-                    description = "Ver manuales OPL",
+                    description = stringResource(R.string.opl_sop_documents),
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }

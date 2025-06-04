@@ -198,8 +198,10 @@
     <string name="sync_cards_start">Empezando sincronización de las tarjetas</string>
     <string name="sync_cards_complete">Sincronización completa</string>
 
+    <string name="docs_title">Docs</string>
+    <string name="opl_sop_documents">Documentos OPL y SOP</string>
     <string name="cilt_routine">Rutina CILT</string>
-    <string name="view_assigned_cilt_routines">Ver tus rutinas CILT asignadas</string>
+    <string name="view_cilt_routines">Ver rutinas CILT</string>
     <string name="download_cilts">Descargar CILT\'s</string>
     <string name="download_third_party_cilt">Descargar CILT de terceros</string>
     <string name="non_programmable_cilts">CILT\'s no programables</string>

@@ -199,8 +199,10 @@
     <string name="sync_cards_start">Starting the cards synchronization</string>
     <string name="sync_cards_complete">Cards sync completed</string>
 
+    <string name="docs_title">Docs</string>
+    <string name="opl_sop_documents">OPL and SOP documents</string>
     <string name="cilt_routine">CILT Routine</string>
-    <string name="view_assigned_cilt_routines">View your assigned CILT routines</string>
+    <string name="view_cilt_routines">View CILT routines</string>
     <string name="download_cilts">Download CILT\'s</string>
     <string name="download_third_party_cilt">Download third-party CILT</string>
     <string name="non_programmable_cilts">Non-programmable CILT\'s</string>

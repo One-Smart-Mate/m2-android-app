@@ -43,7 +43,7 @@ fun SectionTag(
                 direction = SpacerDirection.HORIZONTAL,
                 space = SpacerSize.TINY,
             )
-            CustomTag(title = value, tagSize = TagSize.SMALL, isErrorEnabled = isErrorEnabled)
+            CustomTag(title = value, tagSize = TagSize.DEFAULT, isErrorEnabled = isErrorEnabled)
         }
     }
 }
