@@ -5,10 +5,12 @@ import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
+import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,6 +25,7 @@ class CiltRoutineViewModel
     @Inject
     constructor(
         private val getCiltsUseCase: GetCiltsUseCase,
+        private val getOplByIdUseCase: GetOplByIdUseCase,
         private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
         private val authRepository: AuthRepository,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
@@ -36,6 +39,8 @@ class CiltRoutineViewModel
             val message: String = EMPTY,
             val isCreatingEvidence: Boolean = false,
             val createEvidenceMessage: String = EMPTY,
+            val opl: Opl? = null,
+            val remediationOpl: Opl? = null,
         )
 
         private fun handleGetCilts() {
@@ -76,6 +81,32 @@ class CiltRoutineViewModel
                             message = it.localizedMessage.orEmpty(),
                         )
                     }
+                }
+            }
+        }
+
+        fun getOplById(id: String) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getOplByIdUseCase(id) }
+                }.onSuccess { opl ->
+                    setState { copy(opl = opl) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState { copy(message = "No se pudo cargar el OPL: ${it.localizedMessage}") }
+                }
+            }
+        }
+
+        fun getRemediationOplById(id: String) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getOplByIdUseCase(id) }
+                }.onSuccess { opl ->
+                    setState { copy(remediationOpl = opl) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState { copy(message = "No se pudo cargar el OPL de remediación: ${it.localizedMessage}") }
                 }
             }
         }

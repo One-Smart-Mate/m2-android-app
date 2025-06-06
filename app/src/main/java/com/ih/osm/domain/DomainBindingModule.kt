@@ -28,8 +28,12 @@ import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCaseImpl
-import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCase
-import com.ih.osm.domain.usecase.cilt.UpdateSequenceExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
+import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
+import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
+import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -167,12 +171,16 @@ interface DomainBindingModule {
     fun bindGetUserCiltDataUseCase(getUserCiltDataUseCaseImpl: GetCiltsUseCaseImpl): GetCiltsUseCase
 
     @Binds
-    fun bindUpdateSequenceExecutionDataUseCase(
-        updateSequenceExecutionDataUseCaseImpl: UpdateSequenceExecutionUseCaseImpl,
-    ): UpdateSequenceExecutionUseCase
+    fun bindCiltRepository(ciltRepositoryImpl: CiltRepositoryImpl): CiltRepository
 
     @Binds
-    fun bindCiltRepository(ciltRepositoryImpl: CiltRepositoryImpl): CiltRepository
+    fun bindGetOplByIdUseCase(getOplByIdUseCaseImpl: GetOplByIdUseCaseImpl): GetOplByIdUseCase
+
+    @Binds
+    fun bindStartSequenceExecutionUseCase(startExecutionUseCaseImpl: StartSequenceExecutionUseCaseImpl): StartSequenceExecutionUseCase
+
+    @Binds
+    fun bindStopSequenceExecutionUseCase(stopExecutionSequenceUseCaseImpl: StopSequenceExecutionUseCaseImpl): StopSequenceExecutionUseCase
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase

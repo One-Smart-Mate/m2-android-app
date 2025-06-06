@@ -32,7 +32,6 @@ import com.ih.osm.ui.navigation.navigateToCiltDetail
 @Composable
 fun SequenceCard(
     sequence: Sequence,
-    index: Int,
     navController: NavController,
 ) {
     Card(
@@ -50,35 +49,39 @@ fun SequenceCard(
                 Modifier
                     .fillMaxWidth()
                     .padding(dimensionResource(id = R.dimen.content_padding)),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Text(
-                text = stringResource(R.string.sequence, index),
+                text = sequence.order.toString(),
                 style =
                     MaterialTheme.typography.titleMedium
                         .copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                text = sequence.siteName,
+                text = sequence.ciltTypeName,
                 style =
                     MaterialTheme.typography.titleMedium
                         .copy(fontWeight = FontWeight.Bold),
             )
-            Box(
-                modifier =
-                    Modifier
-                        .size(dimensionResource(id = R.dimen.circle_shape_size))
-                        .background(
-                            color = getColorFromHex(sequence.secuenceColor),
-                            shape = CircleShape,
-                        ),
-            )
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.view_details),
-                tint = MaterialTheme.colorScheme.onSurface,
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Box(
+                    modifier =
+                        Modifier
+                            .size(dimensionResource(id = R.dimen.circle_shape_size))
+                            .background(
+                                color = getColorFromHex(sequence.secuenceColor),
+                                shape = CircleShape,
+                            ),
+                )
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.view_details),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                )
+            }
         }
     }
 }
