@@ -1,6 +1,6 @@
 package com.ih.osm.data.model
 
-data class StopSequenceExecutionRequest (
+data class StopSequenceExecutionRequest(
     val id: Int,
     val stopDate: String,
     val initialParameter: String,

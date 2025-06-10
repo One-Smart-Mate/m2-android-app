@@ -200,7 +200,7 @@
 
     <string name="docs_title">Docs</string>
     <string name="opl_sop_documents">Documentos OPL y SOP</string>
-    <string name="cilt_routine">Rutina CILT</string>
+    <string name="cilt_routine">Rutina CILT/LILA</string>
     <string name="view_cilt_routines">Ver rutinas CILT</string>
     <string name="download_cilts">Descargar CILT\'s</string>
     <string name="download_third_party_cilt">Descargar CILT de terceros</string>
@@ -242,6 +242,7 @@
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Diagrama de la máquina</string>
     <string name="no_cilt_data">No hay rutinas CILT disponibles</string>
+    <string name="parameter_ok_question">"¿Parámetro OK?"</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>

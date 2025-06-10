@@ -6,13 +6,14 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Opl
+import com.ih.osm.domain.model.SequenceExecution
 
 interface CiltRepository {
     suspend fun getCilts(body: GetCiltsRequest): CiltData
 
-    suspend fun startSequenceExecution(body: StartSequenceExecutionRequest)
+    suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution
 
-    suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest)
+    suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution
 
     suspend fun createEvidence(body: CiltEvidenceRequest)
 

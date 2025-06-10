@@ -17,6 +17,7 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -38,6 +39,7 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.stopMachine
+import com.ih.osm.domain.model.stoppageReason
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.LoadingScreen
@@ -85,6 +87,30 @@ fun CiltDetailScreen(
                         SequenceDetailContent(
                             sequence = sequence,
                             onAddEvidence = { viewModel.createEvidence(it) },
+                            onStartExecution = { executionId ->
+                                viewModel.startSequenceExecution(
+                                    executionId,
+                                )
+                            },
+                            onStopExecution = {
+                                    executionId,
+                                    initialParameter,
+                                    evidenceAtCreation,
+                                    finalParameter,
+                                    evidenceAtFinal,
+                                    nok,
+                                    amTagId,
+                                ->
+                                viewModel.stopSequenceExecution(
+                                    executionId = executionId,
+                                    initialParameter = initialParameter,
+                                    evidenceAtCreation = evidenceAtCreation,
+                                    finalParameter = finalParameter,
+                                    evidenceAtFinal = evidenceAtFinal,
+                                    nok = nok,
+                                    amTagId = amTagId,
+                                )
+                            },
                             opl = opl,
                             getOplById = { viewModel.getOplById(it) },
                             remediationOpl = remediationOpl,
@@ -105,7 +131,7 @@ fun CiltDetailHeader(sequence: Sequence) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = sequence.ciltTypeName,
+            text = sequence.executions.first().ciltTypeName,
             style =
                 MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
@@ -115,7 +141,7 @@ fun CiltDetailHeader(sequence: Sequence) {
                 Modifier
                     .size(Size20)
                     .background(
-                        color = getColorFromHex(sequence.secuenceColor),
+                        color = getColorFromHex(sequence.executions.first().secuenceColor),
                         shape = CircleShape,
                     ),
         )
@@ -126,6 +152,16 @@ fun CiltDetailHeader(sequence: Sequence) {
 fun SequenceDetailContent(
     sequence: Sequence,
     onAddEvidence: (CiltEvidenceRequest) -> Unit,
+    onStartExecution: (Int) -> Unit,
+    onStopExecution: (
+        executionId: Int,
+        initialParameter: String,
+        evidenceAtCreation: Boolean,
+        finalParameter: String,
+        evidenceAtFinal: Boolean,
+        nok: Boolean,
+        amTagId: Int,
+    ) -> Unit,
     opl: Opl?,
     getOplById: (String) -> Unit,
     remediationOpl: Opl?,
@@ -140,11 +176,13 @@ fun SequenceDetailContent(
     var parameterFound by remember { mutableStateOf("") }
     var finalParameter by remember { mutableStateOf("") }
     var evidenceUriString by remember { mutableStateOf<String?>(null) }
+    var amTagId by remember { mutableStateOf<String?>(null) }
+    var isParameterOk by remember { mutableStateOf(true) }
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
     InfoItem(
         label = stringResource(R.string.duration_label),
-        value = sequence.standardTime.toString(),
+        value = sequence.executions.firstOrNull()?.duration.toString(),
     )
 
     Box(
@@ -153,7 +191,10 @@ fun SequenceDetailContent(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .background(
-                    if (sequence.stopMachine()) {
+                    if (sequence.executions
+                            .first()
+                            .stopMachine()
+                    ) {
                         Color(0xFFB71C1C)
                     } else {
                         Color(0xFFEEEEEE)
@@ -164,7 +205,7 @@ fun SequenceDetailContent(
     ) {
         Text(
             text =
-                if (sequence.stopMachine()) {
+                if (sequence.executions.first().stopMachine()) {
                     stringResource(
                         R.string.stoppage_required,
                     )
@@ -182,7 +223,7 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.stop_reason_label),
         value =
-            if (sequence.stoppageReason == 1) {
+            if (sequence.executions.first().stoppageReason()) {
                 stringResource(R.string.stop_reason_yes)
             } else {
                 stringResource(
@@ -193,14 +234,18 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(12.dp))
 
-    Button(
-        onClick = {},
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-    ) {
-        Text(stringResource(R.string.start_sequence))
+    val executionId = sequence.executions.firstOrNull()?.id
+
+    if (executionId != null) {
+        Button(
+            onClick = { onStartExecution(executionId) },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+        ) {
+            Text(stringResource(R.string.start_sequence))
+        }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -210,7 +255,7 @@ fun SequenceDetailContent(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
     )
-    sequence.secuenceList.split("\n").forEach { step ->
+    sequence.executions.firstOrNull()?.secuenceList?.split("\n")?.forEach { step ->
         Text("• ${step.trim()}", style = MaterialTheme.typography.bodyLarge)
     }
 
@@ -218,7 +263,9 @@ fun SequenceDetailContent(
 
     InfoItem(
         label = stringResource(R.string.reference_label),
-        value = sequence.referencePoint ?: stringResource(R.string.not_available),
+        value =
+            sequence.executions.firstOrNull()?.referencePoint
+                ?: stringResource(R.string.not_available),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -228,13 +275,18 @@ fun SequenceDetailContent(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
     )
-    sequence.toolsRequired.split("\n").forEach { tool ->
+    sequence.executions.firstOrNull()?.toolsRequiered?.split("\n")?.forEach { tool ->
         Text("• ${tool.trim()}", style = MaterialTheme.typography.bodyLarge)
     }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    InfoItem(label = stringResource(R.string.parameter_ok), value = sequence.standardOk)
+    InfoItem(
+        label = stringResource(R.string.parameter_ok),
+        value =
+            sequence.executions.firstOrNull()?.standardOk
+                ?: stringResource(R.string.not_available),
+    )
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -266,8 +318,8 @@ fun SequenceDetailContent(
         label = stringResource(R.string.parameter_found),
         placeholder = stringResource(R.string.enter_parameter_found),
         icon = Icons.Outlined.Menu,
-    ) {
-    }
+        onChange = { parameterFound = it },
+    )
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -325,8 +377,8 @@ fun SequenceDetailContent(
         label = stringResource(R.string.final_parameter),
         placeholder = stringResource(R.string.enter_final_parameter),
         icon = Icons.Outlined.Menu,
-    ) {
-    }
+        onChange = { finalParameter = it },
+    )
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -342,26 +394,61 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Button(
-        onClick = {},
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(top = 4.dp),
+                .padding(vertical = 8.dp),
     ) {
-        Text(stringResource(R.string.generate_am_card))
+        Text(
+            text = stringResource(R.string.parameter_ok_question),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier.weight(1f),
+        )
+        Switch(
+            checked = isParameterOk,
+            onCheckedChange = { isParameterOk = it },
+        )
     }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Button(
-        onClick = {},
-        modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
-    ) {
-        Text(stringResource(R.string.finish_sequence))
+    if (!isParameterOk) {
+        Button(
+            onClick = {},
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+        ) {
+            Text(stringResource(R.string.generate_am_card))
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    if (executionId != null) {
+        Button(
+            onClick = {
+                onStopExecution(
+                    executionId,
+                    parameterFound,
+                    false,
+                    finalParameter,
+                    false,
+                    !isParameterOk,
+                    0,
+                )
+            },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+        ) {
+            Text(stringResource(R.string.finish_sequence))
+        }
     }
 }
 

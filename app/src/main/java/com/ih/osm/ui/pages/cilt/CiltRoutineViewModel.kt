@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
+import com.ih.osm.data.model.StartSequenceExecutionRequest
+import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
@@ -11,6 +13,8 @@ import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
+import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
+import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,6 +22,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -27,6 +32,8 @@ class CiltRoutineViewModel
         private val getCiltsUseCase: GetCiltsUseCase,
         private val getOplByIdUseCase: GetOplByIdUseCase,
         private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
+        private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
+        private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
         private val authRepository: AuthRepository,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
         init {
@@ -111,7 +118,57 @@ class CiltRoutineViewModel
             }
         }
 
-        private fun startSequence() {
+        fun startSequenceExecution(executionId: Int) {
+            viewModelScope.launch {
+                val startDate = getCurrentDateTime()
+                val request =
+                    StartSequenceExecutionRequest(
+                        id = executionId,
+                        startDate = startDate,
+                    )
+                kotlin.runCatching {
+                    callUseCase { startSequenceExecutionUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = "Secuencia iniciada correctamente") }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState { copy(message = "Error al iniciar la secuencia: ${it.localizedMessage}") }
+                }
+            }
+        }
+
+        fun stopSequenceExecution(
+            executionId: Int,
+            initialParameter: String,
+            evidenceAtCreation: Boolean,
+            finalParameter: String,
+            evidenceAtFinal: Boolean,
+            nok: Boolean,
+            amTagId: Int,
+        ) {
+            viewModelScope.launch {
+                val stopDate = getCurrentDateTime()
+                val request =
+                    StopSequenceExecutionRequest(
+                        id = executionId,
+                        stopDate = stopDate,
+                        initialParameter = initialParameter,
+                        evidenceAtCreation = evidenceAtCreation,
+                        finalParameter = finalParameter,
+                        evidenceAtFinal = evidenceAtFinal,
+                        nok = nok,
+                        amTagId = amTagId,
+                    )
+
+                kotlin.runCatching {
+                    callUseCase { stopSequenceExecutionUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = "Secuencia finalizada correctamente") }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState { copy(message = "Error al finalizar la secuencia: ${it.localizedMessage}") }
+                }
+            }
         }
 
         fun getSequenceById(sequenceId: Int): Sequence? {
@@ -147,6 +204,12 @@ class CiltRoutineViewModel
 
         private fun getCurrentDate(): String {
             val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            return sdf.format(Date())
+        }
+
+        private fun getCurrentDateTime(): String {
+            val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            sdf.timeZone = TimeZone.getTimeZone("UTC")
             return sdf.format(Date())
         }
     }

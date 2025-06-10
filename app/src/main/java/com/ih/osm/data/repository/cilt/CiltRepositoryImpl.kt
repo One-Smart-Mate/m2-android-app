@@ -6,6 +6,7 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Opl
+import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cilt.CiltRepository
 import com.ih.osm.domain.repository.network.NetworkRepository
@@ -21,12 +22,12 @@ data class CiltRepositoryImpl
             return networkRepository.getCilts(body)
         }
 
-        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest) {
-            networkRepository.startSequenceExecution(body)
+        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution {
+            return networkRepository.startSequenceExecution(body)
         }
 
-        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest) {
-            networkRepository.stopSequenceExecution(body)
+        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution {
+            return networkRepository.stopSequenceExecution(body)
         }
 
         override suspend fun createEvidence(body: CiltEvidenceRequest) {

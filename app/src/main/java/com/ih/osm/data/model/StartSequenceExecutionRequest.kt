@@ -1,6 +1,6 @@
 package com.ih.osm.data.model
 
-data class StartSequenceExecutionRequest (
+data class StartSequenceExecutionRequest(
     val id: Int,
-    val startDate: String
+    val startDate: String,
 )

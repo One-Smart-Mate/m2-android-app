@@ -22,6 +22,9 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.SolutionResponse
 import com.ih.osm.data.model.StartSequenceExecutionRequest
+import com.ih.osm.data.model.StartSequenceExecutionResponse
+import com.ih.osm.data.model.StopSequenceExecutionRequest
+import com.ih.osm.data.model.StopSequenceExecutionResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import retrofit2.Call
@@ -148,12 +151,12 @@ interface ApiService {
     @PUT("/cilt-sequences-executions/start")
     fun startSequenceExecution(
         @Body body: StartSequenceExecutionRequest,
-    ): Call<Void>
+    ): Call<StartSequenceExecutionResponse>
 
     @PUT("/cilt-sequences-executions/stop")
     fun stopSequenceExecution(
         @Body body: StopSequenceExecutionRequest,
-    ): Call<Void>
+    ): Call<StopSequenceExecutionResponse>
 
     @POST("cilt-sequences-evidences/create")
     fun createEvidence(

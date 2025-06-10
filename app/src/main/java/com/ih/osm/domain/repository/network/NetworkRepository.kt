@@ -21,6 +21,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.SequenceExecution
 
 interface NetworkRepository {
     suspend fun login(data: LoginRequest): LoginResponse
@@ -78,9 +79,9 @@ interface NetworkRepository {
 
     suspend fun getOplById(id: String): Opl
 
-    suspend fun startSequenceExecution(body: StartSequenceExecutionRequest)
+    suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution
 
-    suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest)
+    suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution
 
     suspend fun createEvidence(body: CiltEvidenceRequest)
 }

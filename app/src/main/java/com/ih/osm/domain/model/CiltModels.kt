@@ -73,8 +73,12 @@ data class Sequence(
     val executions: List<Execution>,
 )
 
-fun Sequence.stopMachine(): Boolean {
-    return this.machineStopped == 1
+fun Execution.stopMachine(): Boolean {
+    return this.machineStopped == true
+}
+
+fun Execution.stoppageReason(): Boolean {
+    return this.stoppageReason == true
 }
 
 data class Execution(
@@ -101,14 +105,14 @@ data class Execution(
     val stoppageReason: Boolean?,
     val machineStopped: Boolean?,
     val amTagId: Int,
-    val referencePoint: String,
+    val referencePoint: String?,
     val secuenceList: String,
     val secuenceColor: String,
     val ciltTypeId: Int,
     val ciltTypeName: String,
     val referenceOplSopId: Int,
     val remediationOplSopId: String,
-    val toolsRequired: String,
+    val toolsRequiered: String,
     val selectableWithoutProgramming: Boolean,
     val status: String,
     val createdAt: String,

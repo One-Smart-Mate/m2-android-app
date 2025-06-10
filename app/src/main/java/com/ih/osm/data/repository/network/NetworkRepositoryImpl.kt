@@ -25,6 +25,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
 import retrofit2.Response
@@ -262,7 +263,7 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest) {
+        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution {
             val response = apiService.startSequenceExecution(body).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
@@ -272,7 +273,7 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest) {
+        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution {
             val response = apiService.stopSequenceExecution(body).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
