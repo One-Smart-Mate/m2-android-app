@@ -242,16 +242,17 @@
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Diagrama de la máquina</string>
     <string name="no_cilt_data">No hay rutinas CILT disponibles</string>
-    <string name="parameter_ok_question">"¿Parámetro OK?"</string>
-    <string name="error_user_id_not_found">"Error: No se pudo obtener el ID del usuario"</string>
-    <string name="error_loading_cilts">"Error al cargar los CILTS: %1$s"</string>
-    <string name="error_loading_cilts_opls">"No se pudo cargar el OPL: %1$s"</string>
-    <string name="error_loading_remediation_opl">"No se pudo cargar el OPL de remediación: %1$s"</string>
-    <string name="sequence_started_successfully">"Secuencia iniciada correctamente"</string>
-    <string name="error_starting_sequence">"Error al iniciar la secuencia: %1$s"</string>
-    <string name="sequence_stopped_successfully">"Secuencia finalizada correctamente"</string>
-    <string name="error_stopping_sequence">"Error al finalizar la secuencia: %1$s"</string>
-    <string name="evidence_created_successfully">"Evidencia creada correctamente"</string>
+    <string name="parameter_ok_question">¿Parámetro OK?</string>
+    <string name="error_user_id_not_found">Error: No se pudo obtener el ID del usuario</string>
+    <string name="error_loading_cilts">Error al cargar los CILTS: %1$s</string>
+    <string name="error_loading_cilts_opls">No se pudo cargar el OPL: %1$s</string>
+    <string name="error_loading_remediation_opl">No se pudo cargar el OPL de remediación: %1$s</string>
+    <string name="sequence_started_successfully">Secuencia iniciada correctamente</string>
+    <string name="error_starting_sequence">Error al iniciar la secuencia: %1$s</string>
+    <string name="sequence_stopped_successfully">Secuencia finalizada correctamente</string>
+    <string name="error_stopping_sequence">Error al finalizar la secuencia: %1$s</string>
+    <string name="evidence_created_successfully">Evidencia creada correctamente</string>
+    <string name="error_creating_evidence">Error al crear la evidencia: %1$s</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>

@@ -244,15 +244,16 @@
     <string name="machine_diagram">Machine Diagram</string>
     <string name="no_cilt_data">No CILT routines available</string>
     <string name="parameter_ok_question">"Parameter OK?"</string>
-    <string name="error_user_id_not_found">"Error: Unable to retrieve user ID"</string>
-    <string name="error_loading_cilts">"Failed to load CILTS: %1$s"</string>
-    <string name="error_loading_cilts_opls">"Failed to load OPL: %1$s"</string>
-    <string name="error_loading_remediation_opl">"Failed to load remediation OPL: %1$s"</string>
-    <string name="sequence_started_successfully">"Sequence started successfully"</string>
-    <string name="error_starting_sequence">"Error starting sequence: %1$s"</string>
-    <string name="sequence_stopped_successfully">"Sequence stopped successfully"</string>
-    <string name="error_stopping_sequence">"Error stopping sequence: %1$s"</string>
-    <string name="evidence_created_successfully">"Evidence created successfully"</string>
+    <string name="error_user_id_not_found">Error: Unable to retrieve user ID</string>
+    <string name="error_loading_cilts">Failed to load CILTS: %1$s</string>
+    <string name="error_loading_cilts_opls">Failed to load OPL: %1$s</string>
+    <string name="error_loading_remediation_opl">Failed to load remediation OPL: %1$s</string>
+    <string name="sequence_started_successfully">Sequence started successfully</string>
+    <string name="error_starting_sequence">Error starting sequence: %1$s</string>
+    <string name="sequence_stopped_successfully">Sequence stopped successfully</string>
+    <string name="error_stopping_sequence">Error stopping sequence: %1$s</string>
+    <string name="evidence_created_successfully">Evidence created successfully</string>
+    <string name="error_creating_evidence">Error creating evidence: %1$s</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>

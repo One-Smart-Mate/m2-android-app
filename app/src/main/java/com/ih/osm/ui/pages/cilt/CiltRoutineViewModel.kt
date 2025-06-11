@@ -201,34 +201,45 @@ constructor(
         }
     }
 
+    fun createEvidence(
+        siteId: Int,
+        positionId: Int,
+        ciltId: Int,
+        ciltExecutionsEvidencesId: Int,
+        evidenceUrl: String
+    ) {
+        viewModelScope.launch {
+            val currentTime = getCurrentDateTimeUtc()
+            val request = CiltEvidenceRequest(
+                siteId = siteId,
+                positionId = positionId,
+                ciltId = ciltId,
+                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                evidenceUrl = evidenceUrl,
+                createdAt = currentTime
+            )
+            kotlin.runCatching {
+                callUseCase { createCiltEvidenceUseCase(request) }
+            }.onSuccess {
+                setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
+            }.onFailure {
+                LoggerHelperManager.logException(it)
+                setState {
+                    copy(
+                        message = context.getString(
+                            R.string.error_creating_evidence,
+                            it.localizedMessage.orEmpty()
+                        )
+                    )
+                }
+            }
+        }
+    }
+
     fun getSequenceById(sequenceId: Int): Sequence? {
         return state.value.ciltData?.positions
             ?.flatMap { it.ciltMasters }
             ?.flatMap { it.sequences }
             ?.find { it.id == sequenceId }
-    }
-
-    fun createEvidence(request: CiltEvidenceRequest) {
-        viewModelScope.launch {
-            setState { copy(isCreatingEvidence = true, createEvidenceMessage = EMPTY) }
-            kotlin.runCatching {
-                createCiltEvidenceUseCase(request)
-            }.onSuccess {
-                setState {
-                    copy(
-                        isCreatingEvidence = false,
-                        createEvidenceMessage = context.getString(R.string.evidence_created_successfully),
-                    )
-                }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        isCreatingEvidence = false,
-                        createEvidenceMessage = it.localizedMessage.orEmpty(),
-                    )
-                }
-            }
-        }
     }
 }

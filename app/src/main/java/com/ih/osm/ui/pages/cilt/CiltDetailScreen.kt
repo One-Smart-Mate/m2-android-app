@@ -105,6 +105,15 @@ fun CiltDetailScreen(
                                     amTagId = amTagId,
                                 )
                             },
+                            onCreateEvidence = { siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
+                                viewModel.createEvidence(
+                                    siteId = siteId,
+                                    positionId = positionId,
+                                    ciltId = ciltId,
+                                    ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                                    evidenceUrl = evidenceUrl
+                                )
+                            },
                             opl = opl,
                             getOplById = { viewModel.getOplById(it) },
                             remediationOpl = remediationOpl,
@@ -127,17 +136,17 @@ fun CiltDetailHeader(sequence: Sequence) {
         Text(
             text = sequence.executions.first().ciltTypeName,
             style =
-                MaterialTheme.typography.titleLarge
-                    .copy(fontWeight = FontWeight.Bold),
+            MaterialTheme.typography.titleLarge
+                .copy(fontWeight = FontWeight.Bold),
         )
         Box(
             modifier =
-                Modifier
-                    .size(Size20)
-                    .background(
-                        color = getColorFromHex(sequence.executions.first().secuenceColor),
-                        shape = CircleShape,
-                    ),
+            Modifier
+                .size(Size20)
+                .background(
+                    color = getColorFromHex(sequence.executions.first().secuenceColor),
+                    shape = CircleShape,
+                ),
         )
     }
 }
@@ -154,6 +163,13 @@ fun SequenceDetailContent(
         evidenceAtFinal: Boolean,
         nok: Boolean,
         amTagId: Int,
+    ) -> Unit,
+    onCreateEvidence: (
+        siteId: Int,
+        positionId: Int,
+        ciltId: Int,
+        ciltExecutionsEvidencesId: Int,
+        evidenceUrl: String
     ) -> Unit,
     opl: Opl?,
     getOplById: (String) -> Unit,
@@ -172,31 +188,31 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(
-                    if (sequence.executions
-                            .first()
-                            .stopMachine()
-                    ) {
-                        Color(0xFFB71C1C)
-                    } else {
-                        Color(0xFFEEEEEE)
-                    },
-                    shape = RoundedCornerShape(8.dp),
-                )
-                .padding(12.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .background(
+                if (sequence.executions
+                        .first()
+                        .stopMachine()
+                ) {
+                    Color(0xFFB71C1C)
+                } else {
+                    Color(0xFFEEEEEE)
+                },
+                shape = RoundedCornerShape(8.dp),
+            )
+            .padding(12.dp),
     ) {
         Text(
             text =
-                if (sequence.executions.first().stopMachine()) {
-                    stringResource(
-                        R.string.stoppage_required,
-                    )
-                } else {
-                    stringResource(R.string.stoppage_not_required)
-                },
+            if (sequence.executions.first().stopMachine()) {
+                stringResource(
+                    R.string.stoppage_required,
+                )
+            } else {
+                stringResource(R.string.stoppage_not_required)
+            },
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             style = MaterialTheme.typography.bodyLarge,
@@ -208,13 +224,13 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.stop_reason_label),
         value =
-            if (sequence.executions.first().stoppageReason()) {
-                stringResource(R.string.stop_reason_yes)
-            } else {
-                stringResource(
-                    R.string.stop_reason_no,
-                )
-            },
+        if (sequence.executions.first().stoppageReason()) {
+            stringResource(R.string.stop_reason_yes)
+        } else {
+            stringResource(
+                R.string.stop_reason_no,
+            )
+        },
     )
 
     Spacer(modifier = Modifier.height(12.dp))
@@ -225,9 +241,9 @@ fun SequenceDetailContent(
         Button(
             onClick = { onStartExecution(executionId) },
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.start_sequence))
         }
@@ -249,8 +265,8 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.reference_label),
         value =
-            sequence.executions.firstOrNull()?.referencePoint
-                ?: stringResource(R.string.not_available),
+        sequence.executions.firstOrNull()?.referencePoint
+            ?: stringResource(R.string.not_available),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -269,8 +285,8 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.parameter_ok),
         value =
-            sequence.executions.firstOrNull()?.standardOk
-                ?: stringResource(R.string.not_available),
+        sequence.executions.firstOrNull()?.standardOk
+            ?: stringResource(R.string.not_available),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -283,9 +299,9 @@ fun SequenceDetailContent(
                 getOplById(oplId)
             },
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.view_opl_sop))
         }
@@ -310,11 +326,21 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth(),
+        Modifier
+            .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        CameraLauncher {
+        CameraLauncher { imageUri ->
+            val execution = sequence.executions.firstOrNull()
+            if (execution != null) {
+                onCreateEvidence(
+                    execution.siteId,
+                    execution.positionId,
+                    execution.ciltId,
+                    execution.id,
+                    imageUri.toString()
+                )
+            }
         }
     }
 
@@ -328,9 +354,9 @@ fun SequenceDetailContent(
                 getRemediationOplById(oplRemediationId)
             },
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.view_remediation))
         }
@@ -355,8 +381,8 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-            Modifier
-                .fillMaxWidth(),
+        Modifier
+            .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
         CameraLauncher {
@@ -368,9 +394,9 @@ fun SequenceDetailContent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp),
+        Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
     ) {
         Text(
             text = stringResource(R.string.parameter_ok_question),
@@ -390,9 +416,9 @@ fun SequenceDetailContent(
         Button(
             onClick = {},
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.generate_am_card))
         }
@@ -414,9 +440,9 @@ fun SequenceDetailContent(
                 )
             },
             modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.finish_sequence))
         }
