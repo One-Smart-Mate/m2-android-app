@@ -4,7 +4,9 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
+import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.auth.AuthRepository
@@ -30,8 +32,12 @@ data class CiltRepositoryImpl
             return networkRepository.stopSequenceExecution(body)
         }
 
-        override suspend fun createEvidence(body: CiltEvidenceRequest) {
-            networkRepository.createEvidence(body)
+        override suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence {
+            return networkRepository.createEvidence(body)
+        }
+
+        override suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence {
+            return networkRepository.updateEvidence(body)
         }
 
         override suspend fun getOplById(id: String): Opl {

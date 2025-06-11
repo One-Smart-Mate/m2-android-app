@@ -26,6 +26,8 @@ import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
+import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
@@ -34,6 +36,8 @@ import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCase
+import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -181,6 +185,12 @@ interface DomainBindingModule {
 
     @Binds
     fun bindStopSequenceExecutionUseCase(stopExecutionSequenceUseCaseImpl: StopSequenceExecutionUseCaseImpl): StopSequenceExecutionUseCase
+
+    @Binds
+    fun bindCreateCiltEvidenceUseCase(createCiltEvidenceUseCaseImpl: CreateCiltEvidenceUseCaseImpl): CreateCiltEvidenceUseCase
+
+    @Binds
+    fun bindUpdateCiltEvidenceUseCase(updateCiltEvidenceUseCaseImpl: UpdateCiltEvidenceUseCaseImpl): UpdateCiltEvidenceUseCase
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase

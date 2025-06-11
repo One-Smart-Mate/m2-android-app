@@ -35,7 +35,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
-import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.stopMachine
@@ -47,10 +46,6 @@ import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.theme.Size20
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
-import java.util.TimeZone
 
 @Composable
 fun CiltDetailScreen(
@@ -86,7 +81,6 @@ fun CiltDetailScreen(
                     item {
                         SequenceDetailContent(
                             sequence = sequence,
-                            onAddEvidence = { viewModel.createEvidence(it) },
                             onStartExecution = { executionId ->
                                 viewModel.startSequenceExecution(
                                     executionId,
@@ -151,7 +145,6 @@ fun CiltDetailHeader(sequence: Sequence) {
 @Composable
 fun SequenceDetailContent(
     sequence: Sequence,
-    onAddEvidence: (CiltEvidenceRequest) -> Unit,
     onStartExecution: (Int) -> Unit,
     onStopExecution: (
         executionId: Int,
@@ -167,16 +160,8 @@ fun SequenceDetailContent(
     remediationOpl: Opl?,
     getRemediationOplById: (String) -> Unit,
 ) {
-    fun getCurrentTimestamp(): String {
-        val sdf = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
-        sdf.timeZone = TimeZone.getTimeZone("UTC")
-        return sdf.format(Date())
-    }
-
     var parameterFound by remember { mutableStateOf("") }
     var finalParameter by remember { mutableStateOf("") }
-    var evidenceUriString by remember { mutableStateOf<String?>(null) }
-    var amTagId by remember { mutableStateOf<String?>(null) }
     var isParameterOk by remember { mutableStateOf(true) }
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
@@ -329,21 +314,7 @@ fun SequenceDetailContent(
                 .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        CameraLauncher { uri ->
-            /*
-            evidenceUriString = uri.toString()
-
-            val evidenceRequest =
-                CiltEvidenceRequest(
-                    siteId = sequence.siteId,
-                    positionId = sequence.positionId,
-                    ciltId = sequence.ciltMstrId,
-                    ciltExecutionsEvidencesId = sequence.executions.firstOrNull()?.id ?: 0,
-                    evidenceUrl = evidenceUriString!!,
-                    createdAt = getCurrentTimestamp(),
-                )
-            onAddEvidence(evidenceRequest)
-             */
+        CameraLauncher {
         }
     }
 

@@ -11,11 +11,13 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
+import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
@@ -83,5 +85,7 @@ interface NetworkRepository {
 
     suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution
 
-    suspend fun createEvidence(body: CiltEvidenceRequest)
+    suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
+
+    suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence
 }

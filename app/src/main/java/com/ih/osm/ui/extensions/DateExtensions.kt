@@ -9,6 +9,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 
 const val EEEE = "EEEE"
 const val DD = "dd"
@@ -21,6 +22,8 @@ const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.ss'Z'"
 const val NORMAL_FORMAT = "yyyy-MM-dd HH:mm:ss"
 const val SIMPLE_DATE_FORMAT = "yyyy-MM-dd"
 const val TIME_STAMP_FORMAT = "yyyyMMdd_HHmmss"
+const val DD_MM_YYYY_HH_MM = "dd-MM-yyyy HH:mm"
+const val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 val Date.YYYY_MM_DD_HH_MM_SS: String
     get() = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
@@ -110,4 +113,38 @@ fun String.isExpired(): Boolean {
     val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
     val todayDate = Calendar.getInstance().time
     return dueDate?.before(todayDate).defaultIfNull(false)
+}
+
+fun String?.fromIsoToFormattedDate(
+    inputPattern: String = ISO,
+    outputPattern: String = DD_MM_YYYY_HH_MM,
+): String {
+    if (this.isNullOrBlank()) return ""
+
+    return try {
+        val inputFormat =
+            SimpleDateFormat(inputPattern, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+
+        val date = inputFormat.parse(this) ?: return ""
+        val outputFormat =
+            SimpleDateFormat(outputPattern, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+
+        outputFormat.format(date)
+    } catch (e: Exception) {
+        ""
+    }
+}
+
+fun getCurrentDate(): String {
+    return SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
+}
+
+fun getCurrentDateTimeUtc(): String {
+    val sdf = SimpleDateFormat(ISO, Locale.US)
+    sdf.timeZone = TimeZone.getTimeZone("UTC")
+    return sdf.format(Date())
 }

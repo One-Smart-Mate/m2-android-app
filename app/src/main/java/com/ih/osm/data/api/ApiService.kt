@@ -1,6 +1,7 @@
 package com.ih.osm.data.api
 
 import com.ih.osm.data.model.CiltEvidenceRequest
+import com.ih.osm.data.model.CiltEvidenceResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -25,6 +26,8 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StartSequenceExecutionResponse
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionResponse
+import com.ih.osm.data.model.UpdateCiltEvidenceRequest
+import com.ih.osm.data.model.UpdateCiltEvidenceResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import retrofit2.Call
@@ -161,7 +164,12 @@ interface ApiService {
     @POST("cilt-sequences-evidences/create")
     fun createEvidence(
         @Body body: CiltEvidenceRequest,
-    ): Call<Void>
+    ): Call<CiltEvidenceResponse>
+
+    @PUT("/cilt-sequences-evidences/update")
+    fun updateEvidence(
+        @Body body: UpdateCiltEvidenceRequest,
+    ): Call<UpdateCiltEvidenceResponse>
 
     @GET("opl-levels/level/{levelId}")
     fun getOplsByLevel(
