@@ -114,6 +114,16 @@ fun CiltDetailScreen(
                                     evidenceUrl = evidenceUrl
                                 )
                             },
+                            onUpdateEvidence = { id, siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
+                                viewModel.updateEvidence(
+                                    id = id,
+                                    siteId = siteId,
+                                    positionId = positionId,
+                                    ciltId = ciltId,
+                                    ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                                    evidenceUrl = evidenceUrl
+                                )
+                            },
                             opl = opl,
                             getOplById = { viewModel.getOplById(it) },
                             remediationOpl = remediationOpl,
@@ -165,6 +175,14 @@ fun SequenceDetailContent(
         amTagId: Int,
     ) -> Unit,
     onCreateEvidence: (
+        siteId: Int,
+        positionId: Int,
+        ciltId: Int,
+        ciltExecutionsEvidencesId: Int,
+        evidenceUrl: String
+    ) -> Unit,
+    onUpdateEvidence: (
+        id: Int,
         siteId: Int,
         positionId: Int,
         ciltId: Int,
@@ -385,7 +403,18 @@ fun SequenceDetailContent(
             .fillMaxWidth(),
         contentAlignment = Alignment.Center,
     ) {
-        CameraLauncher {
+        CameraLauncher { imageUri ->
+            val execution = sequence.executions.firstOrNull()
+            if (execution != null) {
+                onUpdateEvidence(
+                    execution.id,
+                    execution.siteId,
+                    execution.positionId,
+                    execution.ciltId,
+                    execution.id,
+                    imageUri.toString()
+                )
+            }
         }
     }
 
