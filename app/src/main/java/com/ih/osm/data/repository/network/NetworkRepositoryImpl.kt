@@ -12,19 +12,22 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
-import com.ih.osm.data.model.SequenceExecutionRequest
+import com.ih.osm.data.model.StartSequenceExecutionRequest
+import com.ih.osm.data.model.StopSequenceExecutionRequest
+import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
-import com.ih.osm.domain.model.SequenceExecutionData
+import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
 import retrofit2.Response
@@ -252,8 +255,8 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun updateSequenceExecution(body: SequenceExecutionRequest): SequenceExecutionData {
-            val response = apiService.updateSequenceExecution(body).execute()
+        override suspend fun getOplById(id: String): Opl {
+            val response = apiService.getOplById(id).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
@@ -262,9 +265,42 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun createEvidence(body: CiltEvidenceRequest) {
+        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution {
+            val response = apiService.startSequenceExecution(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution {
+            val response = apiService.stopSequenceExecution(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence {
             val response = apiService.createEvidence(body).execute()
-            if (!response.isSuccessful) {
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence {
+            val response = apiService.updateEvidence(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
                 error(response.getErrorMessage())
             }
         }

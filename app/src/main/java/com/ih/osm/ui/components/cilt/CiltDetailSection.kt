@@ -15,6 +15,8 @@ import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.SectionTag
+import com.ih.osm.ui.extensions.fromIsoToFormattedDate
+import com.ih.osm.ui.extensions.isExpired
 
 @Composable
 fun CiltDetailSection(
@@ -39,12 +41,17 @@ fun CiltDetailSection(
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             ExpandableCard(title = stringResource(R.string.cilt_details), expanded = true) {
+                SectionTag(
+                    title = stringResource(R.string.cilt_due_date),
+                    value = cilt.ciltDueDate.fromIsoToFormattedDate(),
+                    isErrorEnabled = cilt.ciltDueDate.isExpired(),
+                )
                 SectionTag(title = stringResource(R.string.cilt_created_by), value = cilt.creatorName)
                 SectionTag(title = stringResource(R.string.cilt_reviewed_by), value = cilt.reviewerName)
                 SectionTag(title = stringResource(R.string.cilt_approved_by), value = cilt.approvedByName)
                 SectionTag(
-                    title = stringResource(R.string.last_updated),
-                    value = cilt.updatedAt ?: stringResource(R.string.not_available),
+                    title = stringResource(R.string.last_used),
+                    value = cilt.dateOfLastUsed.fromIsoToFormattedDate().ifBlank { stringResource(R.string.not_available) },
                 )
                 SectionTag(title = stringResource(R.string.cilt_status), value = cilt.status)
             }
@@ -56,7 +63,6 @@ fun CiltDetailSection(
             cilt.sequences.forEachIndexed { index, sequence ->
                 SequenceCard(
                     sequence = sequence,
-                    index = index + 1,
                     navController = navController,
                 )
                 Spacer(modifier = Modifier.height(16.dp))

@@ -1,6 +1,7 @@
 package com.ih.osm.data.api
 
 import com.ih.osm.data.model.CiltEvidenceRequest
+import com.ih.osm.data.model.CiltEvidenceResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
@@ -12,6 +13,7 @@ import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
+import com.ih.osm.data.model.GetOplByIdResponse
 import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
@@ -19,9 +21,13 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
-import com.ih.osm.data.model.SequenceExecutionRequest
-import com.ih.osm.data.model.SequenceExecutionResponse
 import com.ih.osm.data.model.SolutionResponse
+import com.ih.osm.data.model.StartSequenceExecutionRequest
+import com.ih.osm.data.model.StartSequenceExecutionResponse
+import com.ih.osm.data.model.StopSequenceExecutionRequest
+import com.ih.osm.data.model.StopSequenceExecutionResponse
+import com.ih.osm.data.model.UpdateCiltEvidenceRequest
+import com.ih.osm.data.model.UpdateCiltEvidenceResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import retrofit2.Call
@@ -140,15 +146,30 @@ interface ApiService {
         @Body body: GetCiltsRequest,
     ): Call<GetCiltResponse>
 
-    @POST("/cilt-sequences-executions/update")
-    fun updateSequenceExecution(
-        @Body body: SequenceExecutionRequest,
-    ): Call<SequenceExecutionResponse>
+    @GET("/opl-mstr/{id}")
+    fun getOplById(
+        @Path("id") id: String,
+    ): Call<GetOplByIdResponse>
+
+    @PUT("/cilt-sequences-executions/start")
+    fun startSequenceExecution(
+        @Body body: StartSequenceExecutionRequest,
+    ): Call<StartSequenceExecutionResponse>
+
+    @PUT("/cilt-sequences-executions/stop")
+    fun stopSequenceExecution(
+        @Body body: StopSequenceExecutionRequest,
+    ): Call<StopSequenceExecutionResponse>
 
     @POST("cilt-sequences-evidences/create")
     fun createEvidence(
         @Body body: CiltEvidenceRequest,
-    ): Call<Void>
+    ): Call<CiltEvidenceResponse>
+
+    @PUT("/cilt-sequences-evidences/update")
+    fun updateEvidence(
+        @Body body: UpdateCiltEvidenceRequest,
+    ): Call<UpdateCiltEvidenceResponse>
 
     @GET("opl-levels/level/{levelId}")
     fun getOplsByLevel(

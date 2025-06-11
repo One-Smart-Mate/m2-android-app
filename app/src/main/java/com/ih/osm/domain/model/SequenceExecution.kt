@@ -1,10 +1,6 @@
 package com.ih.osm.domain.model
 
-data class SequenceExecutionData(
-    val executionInfo: ExecutionInfo,
-)
-
-data class ExecutionInfo(
+data class SequenceExecution(
     val id: Int,
     val siteId: Int,
     val positionId: Int,
@@ -15,18 +11,18 @@ data class ExecutionInfo(
     val userId: Int,
     val userWhoExecutedId: Int,
     val secuenceSchedule: String,
-    val secuenceStart: String,
-    val secuenceStop: String,
+    val secuenceStart: String?,
+    val secuenceStop: String?,
     val duration: Int,
-    val realDuration: Int,
+    val realDuration: Int?,
     val standardOk: String,
-    val initialParameter: String,
-    val evidenceAtCreation: Int,
-    val finalParameter: String,
-    val evidenceAtFinal: Int,
-    val nok: Int,
-    val stoppageReason: Int,
-    val machineStopped: Int,
+    val initialParameter: String?,
+    val evidenceAtCreation: Boolean?,
+    val finalParameter: String?,
+    val evidenceAtFinal: Boolean?,
+    val nok: Boolean,
+    val stoppageReason: Boolean,
+    val machineStopped: Boolean,
     val amTagId: Int,
     val referencePoint: String,
     val secuenceList: String,
@@ -34,11 +30,11 @@ data class ExecutionInfo(
     val ciltTypeId: Int,
     val ciltTypeName: String,
     val referenceOplSopId: Int,
-    val remediationOplSopId: String,
+    val remediationOplSopId: Int,
     val toolsRequiered: String,
-    val selectableWithoutProgramming: Int,
+    val selectableWithoutProgramming: Boolean,
     val status: String,
     val createdAt: String,
     val updatedAt: String,
-    val deletedAt: String,
+    val deletedAt: String?,
 )

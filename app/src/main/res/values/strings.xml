@@ -201,7 +201,7 @@
 
     <string name="docs_title">Docs</string>
     <string name="opl_sop_documents">OPL and SOP documents</string>
-    <string name="cilt_routine">CILT Routine</string>
+    <string name="cilt_routine">CILT/LILA Routine</string>
     <string name="view_cilt_routines">View CILT routines</string>
     <string name="download_cilts">Download CILT\'s</string>
     <string name="download_third_party_cilt">Download third-party CILT</string>
@@ -210,16 +210,17 @@
     <string name="routine_label">Routine: %1$s</string>
     <string name="description_label">Description: %1$s</string>
     <string name="cilt_details">Details</string>
+    <string name="cilt_due_date">Due date</string>
     <string name="cilt_created_by">Created by</string>
     <string name="cilt_reviewed_by">Reviewed by</string>
     <string name="cilt_approved_by">Approved by</string>
-    <string name="last_updated">Last updated</string>
+    <string name="last_used">Last used</string>
     <string name="cilt_status">Status</string>
     <string name="sequence">Sequence %1$d</string>
     <string name="view_details">View Details</string>
     <string name="not_available">N/A</string>
     <string name="details_title">Sequence details</string>
-    <string name="type_label">Type:</string>
+    <string name="code_label">Code:</string>
     <string name="duration_label">Duration:</string>
     <string name="stoppage_required">⚠ Must be executed with machine stopped</string>
     <string name="stoppage_not_required">No need to stop the machine</string>
@@ -230,7 +231,9 @@
     <string name="parameter_ok">Parameter Ok:</string>
     <string name="view_opl_sop">View OPL or SOP</string>
     <string name="parameter_found">Found parameter</string>
+    <string name="enter_parameter_found">Enter the found parameter</string>
     <string name="final_parameter">Final parameter</string>
+    <string name="enter_final_parameter">Enter the final parameter</string>
     <string name="view_remediation">View remediation OPL or SOP</string>
     <string name="stop_reason_label">Stoppage reason:</string>
     <string name="stop_reason_yes">Yes</string>
@@ -240,6 +243,17 @@
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Machine Diagram</string>
     <string name="no_cilt_data">No CILT routines available</string>
+    <string name="parameter_ok_question">"Parameter OK?"</string>
+    <string name="error_user_id_not_found">Error: Unable to retrieve user ID</string>
+    <string name="error_loading_cilts">Failed to load CILTS: %1$s</string>
+    <string name="error_loading_cilts_opls">Failed to load OPL: %1$s</string>
+    <string name="error_loading_remediation_opl">Failed to load remediation OPL: %1$s</string>
+    <string name="sequence_started_successfully">Sequence started successfully</string>
+    <string name="error_starting_sequence">Error starting sequence: %1$s</string>
+    <string name="sequence_stopped_successfully">Sequence stopped successfully</string>
+    <string name="error_stopping_sequence">Error stopping sequence: %1$s</string>
+    <string name="evidence_created_successfully">Evidence created successfully</string>
+    <string name="error_creating_evidence">Error creating evidence: %1$s</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>
