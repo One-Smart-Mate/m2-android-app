@@ -380,7 +380,12 @@ class CardActionViewModel
         private fun handleGetEmployees() {
             viewModelScope.launch {
                 kotlin.runCatching {
-                    callUseCase { getEmployeesByRoleUseCase("mechanic") }
+                    val actionType = getState().actionType
+                    if (actionType == CardItemSheetAction.AssignMechanic) {
+                        callUseCase { getEmployeesByRoleUseCase("mechanic") }
+                    } else {
+                        callUseCase { getEmployeesUseCase() }
+                    }
                 }.onSuccess {
                     setState { copy(employeeList = it) }
                     cleanScreenStates()

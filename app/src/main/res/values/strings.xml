@@ -98,7 +98,7 @@
     <string name="create_card">Create card</string>
     <string name="contact_support">Contact support</string>
     <string name="sync_cards">Sync local cards</string>
-    <string name="cards_cannot_be_uploaded">Newly created cards cannot be uploaded</string>
+    <string name="cards_cannot_be_uploaded">Subscription expired</string>
     <string name="anomalies_cards">Anomalies cards</string>
     <string name="behaviour_cards">Behaviour cards</string>
     <string name="upload_cards">Uploading local cards…</string>
