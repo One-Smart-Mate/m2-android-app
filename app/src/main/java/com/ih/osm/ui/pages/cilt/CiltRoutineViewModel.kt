@@ -30,254 +30,262 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CiltRoutineViewModel
-@Inject
-constructor(
-    private val getCiltsUseCase: GetCiltsUseCase,
-    private val getOplByIdUseCase: GetOplByIdUseCase,
-    private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
-    private val updateCiltEvidenceUseCase: UpdateCiltEvidenceUseCase,
-    private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
-    private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
-    private val authRepository: AuthRepository,
-    @ApplicationContext private val context: Context,
-) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
-    init {
-        handleGetCilts()
-    }
-
-    data class UiState(
-        val ciltData: CiltData? = null,
-        val isLoading: Boolean = false,
-        val message: String = EMPTY,
-        val isCreatingEvidence: Boolean = false,
-        val createEvidenceMessage: String = EMPTY,
-        val opl: Opl? = null,
-        val remediationOpl: Opl? = null,
-    )
-
-    private fun handleGetCilts() {
-        viewModelScope.launch {
-            setState { copy(isLoading = true) }
-
-            val userId = authRepository.get()?.userId?.toIntOrNull()
-            val date = getCurrentDate()
-
-            if (userId == null) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.error_user_id_not_found),
-                    )
-                }
-                return@launch
-            }
-
-            val body = GetCiltsRequest(userId, date)
-
-            kotlin.runCatching {
-                callUseCase { getCiltsUseCase(body) }
-            }.onSuccess { data ->
-                setState {
-                    copy(
-                        ciltData = data,
-                        isLoading = false,
-                        message = EMPTY,
-                    )
-                }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        ciltData = null,
-                        isLoading = false,
-                        message = it.localizedMessage.orEmpty(),
-                    )
-                }
-            }
+    @Inject
+    constructor(
+        private val getCiltsUseCase: GetCiltsUseCase,
+        private val getOplByIdUseCase: GetOplByIdUseCase,
+        private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
+        private val updateCiltEvidenceUseCase: UpdateCiltEvidenceUseCase,
+        private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
+        private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
+        private val authRepository: AuthRepository,
+        @ApplicationContext private val context: Context,
+    ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
+        init {
+            handleGetCilts()
         }
-    }
 
-    fun getOplById(id: String) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getOplByIdUseCase(id) }
-            }.onSuccess { opl ->
-                setState { copy(opl = opl) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_loading_opls,
-                            it.localizedMessage.orEmpty()
+        data class UiState(
+            val ciltData: CiltData? = null,
+            val isLoading: Boolean = false,
+            val message: String = EMPTY,
+            val isCreatingEvidence: Boolean = false,
+            val createEvidenceMessage: String = EMPTY,
+            val opl: Opl? = null,
+            val remediationOpl: Opl? = null,
+        )
+
+        private fun handleGetCilts() {
+            viewModelScope.launch {
+                setState { copy(isLoading = true) }
+
+                val userId = authRepository.get()?.userId?.toIntOrNull()
+                val date = getCurrentDate()
+
+                if (userId == null) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.error_user_id_not_found),
                         )
-                    )
+                    }
+                    return@launch
                 }
-            }
-        }
-    }
 
-    fun getRemediationOplById(id: String) {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getOplByIdUseCase(id) }
-            }.onSuccess { opl ->
-                setState { copy(remediationOpl = opl) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_loading_remediation_opl,
-                            it.localizedMessage.orEmpty()
+                val body = GetCiltsRequest(userId, date)
+
+                kotlin.runCatching {
+                    callUseCase { getCiltsUseCase(body) }
+                }.onSuccess { data ->
+                    setState {
+                        copy(
+                            ciltData = data,
+                            isLoading = false,
+                            message = EMPTY,
                         )
-                    )
-                }
-            }
-        }
-    }
-
-    fun startSequenceExecution(executionId: Int) {
-        viewModelScope.launch {
-            val startDate = getCurrentDateTimeUtc()
-            val request =
-                StartSequenceExecutionRequest(
-                    id = executionId,
-                    startDate = startDate,
-                )
-            kotlin.runCatching {
-                callUseCase { startSequenceExecutionUseCase(request) }
-            }.onSuccess {
-                setState { copy(message = context.getString(R.string.sequence_started_successfully)) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_starting_sequence,
-                            it.localizedMessage.orEmpty()
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            ciltData = null,
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
                         )
-                    )
+                    }
                 }
             }
         }
-    }
 
-    fun stopSequenceExecution(
-        executionId: Int,
-        initialParameter: String,
-        evidenceAtCreation: Boolean,
-        finalParameter: String,
-        evidenceAtFinal: Boolean,
-        nok: Boolean,
-        amTagId: Int,
-    ) {
-        viewModelScope.launch {
-            val stopDate = getCurrentDateTimeUtc()
-            val request =
-                StopSequenceExecutionRequest(
-                    id = executionId,
-                    stopDate = stopDate,
-                    initialParameter = initialParameter,
-                    evidenceAtCreation = evidenceAtCreation,
-                    finalParameter = finalParameter,
-                    evidenceAtFinal = evidenceAtFinal,
-                    nok = nok,
-                    amTagId = amTagId,
-                )
-
-            kotlin.runCatching {
-                callUseCase { stopSequenceExecutionUseCase(request) }
-            }.onSuccess {
-                setState { copy(message = context.getString(R.string.sequence_stopped_successfully)) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_stopping_sequence,
-                            it.localizedMessage.orEmpty()
+        fun getOplById(id: String) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getOplByIdUseCase(id) }
+                }.onSuccess { opl ->
+                    setState { copy(opl = opl) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_loading_opls,
+                                    it.localizedMessage.orEmpty(),
+                                ),
                         )
-                    )
+                    }
                 }
             }
         }
-    }
 
-    fun createEvidence(
-        siteId: Int,
-        positionId: Int,
-        ciltId: Int,
-        ciltExecutionsEvidencesId: Int,
-        evidenceUrl: String
-    ) {
-        viewModelScope.launch {
-            val currentTime = getCurrentDateTimeUtc()
-            val request = CiltEvidenceRequest(
-                siteId = siteId,
-                positionId = positionId,
-                ciltId = ciltId,
-                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                evidenceUrl = evidenceUrl,
-                createdAt = currentTime
-            )
-            kotlin.runCatching {
-                callUseCase { createCiltEvidenceUseCase(request) }
-            }.onSuccess {
-                setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_creating_evidence,
-                            it.localizedMessage.orEmpty()
+        fun getRemediationOplById(id: String) {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getOplByIdUseCase(id) }
+                }.onSuccess { opl ->
+                    setState { copy(remediationOpl = opl) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_loading_remediation_opl,
+                                    it.localizedMessage.orEmpty(),
+                                ),
                         )
-                    )
+                    }
                 }
             }
         }
-    }
 
-    fun updateEvidence(
-        id: Int,
-        siteId: Int,
-        positionId: Int,
-        ciltId: Int,
-        ciltExecutionsEvidencesId: Int,
-        evidenceUrl: String
-    ) {
-        viewModelScope.launch {
-            val request = UpdateCiltEvidenceRequest(
-                id = id,
-                siteId = siteId,
-                positionId = positionId,
-                ciltId = ciltId,
-                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                evidenceUrl = evidenceUrl,
-            )
-            kotlin.runCatching {
-                callUseCase { updateCiltEvidenceUseCase(request) }
-            }.onSuccess {
-                setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(
-                        message = context.getString(
-                            R.string.error_creating_evidence,
-                            it.localizedMessage.orEmpty()
+        fun startSequenceExecution(executionId: Int) {
+            viewModelScope.launch {
+                val startDate = getCurrentDateTimeUtc()
+                val request =
+                    StartSequenceExecutionRequest(
+                        id = executionId,
+                        startDate = startDate,
+                    )
+                kotlin.runCatching {
+                    callUseCase { startSequenceExecutionUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = context.getString(R.string.sequence_started_successfully)) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_starting_sequence,
+                                    it.localizedMessage.orEmpty(),
+                                ),
                         )
-                    )
+                    }
                 }
             }
         }
-    }
 
-    fun getSequenceById(sequenceId: Int): Sequence? {
-        return state.value.ciltData?.positions
-            ?.flatMap { it.ciltMasters }
-            ?.flatMap { it.sequences }
-            ?.find { it.id == sequenceId }
+        fun stopSequenceExecution(
+            executionId: Int,
+            initialParameter: String,
+            evidenceAtCreation: Boolean,
+            finalParameter: String,
+            evidenceAtFinal: Boolean,
+            nok: Boolean,
+            amTagId: Int,
+        ) {
+            viewModelScope.launch {
+                val stopDate = getCurrentDateTimeUtc()
+                val request =
+                    StopSequenceExecutionRequest(
+                        id = executionId,
+                        stopDate = stopDate,
+                        initialParameter = initialParameter,
+                        evidenceAtCreation = evidenceAtCreation,
+                        finalParameter = finalParameter,
+                        evidenceAtFinal = evidenceAtFinal,
+                        nok = nok,
+                        amTagId = amTagId,
+                    )
+
+                kotlin.runCatching {
+                    callUseCase { stopSequenceExecutionUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = context.getString(R.string.sequence_stopped_successfully)) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_stopping_sequence,
+                                    it.localizedMessage.orEmpty(),
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+
+        fun createEvidence(
+            siteId: Int,
+            positionId: Int,
+            ciltId: Int,
+            ciltExecutionsEvidencesId: Int,
+            evidenceUrl: String,
+        ) {
+            viewModelScope.launch {
+                val currentTime = getCurrentDateTimeUtc()
+                val request =
+                    CiltEvidenceRequest(
+                        siteId = siteId,
+                        positionId = positionId,
+                        ciltId = ciltId,
+                        ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                        evidenceUrl = evidenceUrl,
+                        createdAt = currentTime,
+                    )
+                kotlin.runCatching {
+                    callUseCase { createCiltEvidenceUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_creating_evidence,
+                                    it.localizedMessage.orEmpty(),
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+
+        fun updateEvidence(
+            id: Int,
+            siteId: Int,
+            positionId: Int,
+            ciltId: Int,
+            ciltExecutionsEvidencesId: Int,
+            evidenceUrl: String,
+        ) {
+            viewModelScope.launch {
+                val request =
+                    UpdateCiltEvidenceRequest(
+                        id = id,
+                        siteId = siteId,
+                        positionId = positionId,
+                        ciltId = ciltId,
+                        ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                        evidenceUrl = evidenceUrl,
+                    )
+                kotlin.runCatching {
+                    callUseCase { updateCiltEvidenceUseCase(request) }
+                }.onSuccess {
+                    setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            message =
+                                context.getString(
+                                    R.string.error_creating_evidence,
+                                    it.localizedMessage.orEmpty(),
+                                ),
+                        )
+                    }
+                }
+            }
+        }
+
+        fun getSequenceById(sequenceId: Int): Sequence? {
+            return state.value.ciltData?.positions
+                ?.flatMap { it.ciltMasters }
+                ?.flatMap { it.sequences }
+                ?.find { it.id == sequenceId }
+        }
     }
-}

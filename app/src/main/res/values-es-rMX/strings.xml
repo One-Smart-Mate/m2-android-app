@@ -97,7 +97,7 @@
     <string name="create_card">Crear tarjeta</string>
     <string name="contact_support">Contactar soporte técnico</string>
     <string name="sync_cards">Sincronizar tarjetas locales</string>
-    <string name="cards_cannot_be_uploaded">No se pueden subir las nuevas tarjetas creadas</string>
+    <string name="cards_cannot_be_uploaded">Venció la suscripción</string>
     <string name="anomalies_cards">Tarjetas Anomalías</string>
     <string name="behaviour_cards">Tarjetas Comportamiento</string>
     <string name="upload_cards">Subiendo tarjetas locales…</string>
