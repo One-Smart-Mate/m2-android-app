@@ -45,6 +45,7 @@ import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.Size20
 
 @Composable
@@ -81,6 +82,7 @@ fun CiltDetailScreen(
                     item {
                         SequenceDetailContent(
                             sequence = sequence,
+                            navController = navController,
                             onStartExecution = { executionId ->
                                 viewModel.startSequenceExecution(
                                     executionId,
@@ -164,6 +166,7 @@ fun CiltDetailHeader(sequence: Sequence) {
 @Composable
 fun SequenceDetailContent(
     sequence: Sequence,
+    navController: NavController,
     onStartExecution: (Int) -> Unit,
     onStopExecution: (
         executionId: Int,
@@ -197,6 +200,8 @@ fun SequenceDetailContent(
     var parameterFound by remember { mutableStateOf("") }
     var finalParameter by remember { mutableStateOf("") }
     var isParameterOk by remember { mutableStateOf(true) }
+    var isEvidenceAtCreation by remember {mutableStateOf(false)}
+    var isEvidenceAtFinal by remember {mutableStateOf(false)}
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
     InfoItem(
@@ -358,6 +363,7 @@ fun SequenceDetailContent(
                     execution.id,
                     imageUri.toString(),
                 )
+                isEvidenceAtCreation = true
             }
         }
     }
@@ -414,6 +420,7 @@ fun SequenceDetailContent(
                     execution.id,
                     imageUri.toString(),
                 )
+                isEvidenceAtFinal = true
             }
         }
     }
@@ -443,7 +450,7 @@ fun SequenceDetailContent(
 
     if (!isParameterOk) {
         Button(
-            onClick = {},
+            onClick = {navController.navigateToCreateCard()},
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -461,9 +468,9 @@ fun SequenceDetailContent(
                 onStopExecution(
                     executionId,
                     parameterFound,
-                    false,
+                    isEvidenceAtCreation,
                     finalParameter,
-                    false,
+                    isEvidenceAtFinal,
                     !isParameterOk,
                     0,
                 )
