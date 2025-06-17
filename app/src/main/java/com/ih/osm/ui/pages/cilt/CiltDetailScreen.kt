@@ -200,8 +200,8 @@ fun SequenceDetailContent(
     var parameterFound by remember { mutableStateOf("") }
     var finalParameter by remember { mutableStateOf("") }
     var isParameterOk by remember { mutableStateOf(true) }
-    var isEvidenceAtCreation by remember {mutableStateOf(false)}
-    var isEvidenceAtFinal by remember {mutableStateOf(false)}
+    var isEvidenceAtCreation by remember { mutableStateOf(false) }
+    var isEvidenceAtFinal by remember { mutableStateOf(false) }
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
     InfoItem(
@@ -450,7 +450,7 @@ fun SequenceDetailContent(
 
     if (!isParameterOk) {
         Button(
-            onClick = {navController.navigateToCreateCard()},
+            onClick = { navController.navigateToCreateCard() },
             modifier =
                 Modifier
                     .fillMaxWidth()

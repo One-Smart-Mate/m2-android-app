@@ -94,7 +94,7 @@ class CardListViewModel
                     cards.filterByStatus(
                         filter = filter.toCardFilter(context = context),
                         userId = getState().user?.userId.orEmpty(),
-                    )
+                    ).sortedByDescending { it.siteCardId }
                 setState { copy(cards = filteredCards) }
             }
         }
