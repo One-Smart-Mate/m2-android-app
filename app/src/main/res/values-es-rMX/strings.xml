@@ -224,6 +224,7 @@
     <string name="stoppage_required">⚠ Es forzoso ejecutar con máquina detenida</string>
     <string name="stoppage_not_required">No es necesario detener la máquina</string>
     <string name="start_sequence">Iniciar secuencia</string>
+    <string name="sequence_started">Secuencia iniciada</string>
     <string name="steps_to_follow">Pasos a seguir:</string>
     <string name="reference_label">Referencia:</string>
     <string name="tools_list">Listado de herramientas:</string>
@@ -239,6 +240,7 @@
     <string name="stop_reason_no">No</string>
     <string name="generate_am_card">NOK Generar tarjeta AM</string>
     <string name="finish_sequence">Terminar secuencia</string>
+    <string name="sequence_finished">Secuencia terminada</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Diagrama de la máquina</string>
     <string name="no_cilt_data">No hay rutinas CILT disponibles</string>

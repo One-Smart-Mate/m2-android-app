@@ -42,6 +42,8 @@ import com.ih.osm.domain.model.stoppageReason
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.LoadingScreen
+import com.ih.osm.ui.components.buttons.ButtonType
+import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
@@ -202,6 +204,8 @@ fun SequenceDetailContent(
     var isParameterOk by remember { mutableStateOf(true) }
     var isEvidenceAtCreation by remember { mutableStateOf(false) }
     var isEvidenceAtFinal by remember { mutableStateOf(false) }
+    var isStarted by remember { mutableStateOf(false) }
+    var isFinished by remember { mutableStateOf(false) }
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
     InfoItem(
@@ -261,15 +265,14 @@ fun SequenceDetailContent(
     val executionId = sequence.executions.firstOrNull()?.id
 
     if (executionId != null) {
-        Button(
-            onClick = { onStartExecution(executionId) },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-        ) {
-            Text(stringResource(R.string.start_sequence))
-        }
+        CustomButton(
+            text = if (isStarted) stringResource(R.string.sequence_started) else (stringResource(R.string.start_sequence)),
+            buttonType = if (isStarted) ButtonType.OUTLINE else ButtonType.DEFAULT,
+            onClick = {
+                onStartExecution(executionId)
+                isStarted = true
+            },
+        )
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -463,7 +466,9 @@ fun SequenceDetailContent(
     Spacer(modifier = Modifier.height(8.dp))
 
     if (executionId != null) {
-        Button(
+        CustomButton(
+            text = if (isFinished) stringResource(R.string.sequence_finished) else stringResource(R.string.finish_sequence),
+            buttonType = if (isFinished) ButtonType.OUTLINE else ButtonType.DEFAULT,
             onClick = {
                 onStopExecution(
                     executionId,
@@ -474,14 +479,9 @@ fun SequenceDetailContent(
                     !isParameterOk,
                     0,
                 )
+                isFinished = true
             },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-        ) {
-            Text(stringResource(R.string.finish_sequence))
-        }
+        )
     }
 }
 

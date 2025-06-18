@@ -225,6 +225,7 @@
     <string name="stoppage_required">⚠ Must be executed with machine stopped</string>
     <string name="stoppage_not_required">No need to stop the machine</string>
     <string name="start_sequence">Start sequence</string>
+    <string name="sequence_started">Sequence started</string>
     <string name="steps_to_follow">Steps to follow:</string>
     <string name="reference_label">Reference:</string>
     <string name="tools_list">Tool list:</string>
@@ -240,6 +241,7 @@
     <string name="stop_reason_no">No</string>
     <string name="generate_am_card">NOK Generate AM card</string>
     <string name="finish_sequence">Finish sequence</string>
+    <string name="sequence_finished">Sequence finished</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Machine Diagram</string>
     <string name="no_cilt_data">No CILT routines available</string>
