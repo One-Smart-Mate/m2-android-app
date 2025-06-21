@@ -3,6 +3,7 @@ package com.ih.osm.ui.pages.cilt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,11 +16,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -49,6 +53,7 @@ import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.Size20
+import kotlinx.coroutines.delay
 
 @Composable
 fun CiltDetailScreen(
@@ -206,12 +211,42 @@ fun SequenceDetailContent(
     var isEvidenceAtFinal by remember { mutableStateOf(false) }
     var isStarted by remember { mutableStateOf(false) }
     var isFinished by remember { mutableStateOf(false) }
+    var elapsedTime by remember { mutableStateOf(0) }
+    val totalDuration = sequence.executions.firstOrNull()?.duration ?: 0
+    val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
+
+    LaunchedEffect(isStarted) {
+        while (isStarted) {
+            delay(1000L)
+            elapsedTime += 1
+        }
+    }
 
     InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
-    InfoItem(
-        label = stringResource(R.string.duration_label),
-        value = sequence.executions.firstOrNull()?.duration.toString(),
-    )
+
+    val specialWarning = sequence.executions.firstOrNull()?.specialWarning
+
+    if (specialWarning != null) {
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .background(Color.Yellow, shape = RoundedCornerShape(8.dp))
+                    .padding(12.dp),
+        ) {
+            Text(
+                text = stringResource(R.string.special_warning, specialWarning),
+                fontWeight = FontWeight.Bold,
+                color = Color.Black,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     Box(
         modifier =
@@ -248,20 +283,6 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    InfoItem(
-        label = stringResource(R.string.stop_reason_label),
-        value =
-            if (sequence.executions.first().stoppageReason()) {
-                stringResource(R.string.stop_reason_yes)
-            } else {
-                stringResource(
-                    R.string.stop_reason_no,
-                )
-            },
-    )
-
-    Spacer(modifier = Modifier.height(12.dp))
-
     val executionId = sequence.executions.firstOrNull()?.id
 
     if (executionId != null) {
@@ -277,6 +298,49 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+    InfoItem(
+        label = stringResource(R.string.duration_label),
+        value = sequence.executions.firstOrNull()?.duration.toString(),
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+    ) {
+        Text(
+            text = String.format("%02d:%02d", elapsedTime / 60, elapsedTime % 60),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+        )
+    }
+
+    Spacer(modifier = Modifier.height(4.dp))
+
+    LinearProgressIndicator(
+        progress = progress.coerceIn(0f, 1f),
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+                .clip(RoundedCornerShape(4.dp)),
+        color = MaterialTheme.colorScheme.primary,
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    InfoItem(
+        label = stringResource(R.string.reference_label),
+        value =
+            sequence.executions.firstOrNull()?.referencePoint
+                ?: stringResource(R.string.not_available),
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
     Text(
         text = stringResource(R.string.steps_to_follow),
         style = MaterialTheme.typography.titleMedium,
@@ -285,15 +349,6 @@ fun SequenceDetailContent(
     sequence.executions.firstOrNull()?.secuenceList?.split("\n")?.forEach { step ->
         Text("• ${step.trim()}", style = MaterialTheme.typography.bodyLarge)
     }
-
-    Spacer(modifier = Modifier.height(12.dp))
-
-    InfoItem(
-        label = stringResource(R.string.reference_label),
-        value =
-            sequence.executions.firstOrNull()?.referencePoint
-                ?: stringResource(R.string.not_available),
-    )
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -314,29 +369,6 @@ fun SequenceDetailContent(
             sequence.executions.firstOrNull()?.standardOk
                 ?: stringResource(R.string.not_available),
     )
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    val oplId = sequence.executions.firstOrNull()?.referenceOplSopId?.toString()
-
-    if (opl == null && oplId != null) {
-        Button(
-            onClick = {
-                getOplById(oplId)
-            },
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp),
-        ) {
-            Text(stringResource(R.string.view_opl_sop))
-        }
-    }
-
-    opl?.let {
-        Spacer(modifier = Modifier.height(8.dp))
-        OplItemCard(opl = it, onClick = {})
-    }
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -373,23 +405,23 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    val oplRemediationId = sequence.executions.firstOrNull()?.remediationOplSopId
+    val oplId = sequence.executions.firstOrNull()?.referenceOplSopId?.toString()
 
-    if (remediationOpl == null && oplRemediationId != null) {
+    if (opl == null && oplId != null) {
         Button(
             onClick = {
-                getRemediationOplById(oplRemediationId)
+                getOplById(oplId)
             },
             modifier =
                 Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
         ) {
-            Text(stringResource(R.string.view_remediation))
+            Text(stringResource(R.string.view_opl_sop))
         }
     }
 
-    remediationOpl?.let {
+    opl?.let {
         Spacer(modifier = Modifier.height(8.dp))
         OplItemCard(opl = it, onClick = {})
     }
@@ -430,6 +462,29 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+    val oplRemediationId = sequence.executions.firstOrNull()?.remediationOplSopId
+
+    if (remediationOpl == null && oplRemediationId != null) {
+        Button(
+            onClick = {
+                getRemediationOplById(oplRemediationId)
+            },
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
+        ) {
+            Text(stringResource(R.string.view_remediation))
+        }
+    }
+
+    remediationOpl?.let {
+        Spacer(modifier = Modifier.height(8.dp))
+        OplItemCard(opl = it, onClick = {})
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
@@ -461,6 +516,20 @@ fun SequenceDetailContent(
         ) {
             Text(stringResource(R.string.generate_am_card))
         }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        InfoItem(
+            label = stringResource(R.string.stop_reason_label),
+            value =
+                if (sequence.executions.first().stoppageReason()) {
+                    stringResource(R.string.stop_reason_yes)
+                } else {
+                    stringResource(
+                        R.string.stop_reason_no,
+                    )
+                },
+        )
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -480,6 +549,7 @@ fun SequenceDetailContent(
                     0,
                 )
                 isFinished = true
+                isStarted = false
             },
         )
     }

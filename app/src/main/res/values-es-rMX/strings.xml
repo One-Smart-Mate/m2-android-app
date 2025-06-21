@@ -226,12 +226,12 @@
     <string name="start_sequence">Iniciar secuencia</string>
     <string name="sequence_started">Secuencia iniciada</string>
     <string name="steps_to_follow">Pasos a seguir:</string>
-    <string name="reference_label">Referencia:</string>
-    <string name="tools_list">Listado de herramientas:</string>
+    <string name="reference_label">Punto de referencia:</string>
+    <string name="tools_list">Herramientas requeridas:</string>
     <string name="parameter_ok">Parámetro Ok:</string>
     <string name="view_opl_sop">Ver OPL o SOP</string>
-    <string name="parameter_found">Parámetro encontrado</string>
-    <string name="enter_parameter_found">Ingrese el parámetro encontrado</string>
+    <string name="parameter_found">Parámetro inicial</string>
+    <string name="enter_parameter_found">Ingrese el parámetro inicial</string>
     <string name="final_parameter">Parámetro final</string>
     <string name="enter_final_parameter">Ingrese el parámetro final</string>
     <string name="view_remediation">Ver OPL o SOP de remediación</string>
@@ -255,6 +255,7 @@
     <string name="error_stopping_sequence">Error al finalizar la secuencia: %1$s</string>
     <string name="evidence_created_successfully">Evidencia creada correctamente</string>
     <string name="error_creating_evidence">Error al crear la evidencia: %1$s</string>
+    <string name="special_warning">Aviso importante: %1$s</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>
