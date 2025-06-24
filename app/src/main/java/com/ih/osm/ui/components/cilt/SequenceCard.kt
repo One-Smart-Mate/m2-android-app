@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -12,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,10 +25,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Sequence
+import com.ih.osm.ui.extensions.toHourFromIso
+import com.ih.osm.ui.extensions.toMinutesAndSeconds
 import com.ih.osm.ui.navigation.navigateToCiltDetail
 
 @Composable
@@ -43,45 +48,109 @@ fun SequenceCard(
                     vertical = dimensionResource(id = R.dimen.card_padding_vertical),
                 )
                 .clickable { navController.navigateToCiltDetail(sequence.id) },
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = MaterialTheme.shapes.medium,
     ) {
-        Row(
-            modifier =
-                Modifier
-                    .fillMaxWidth()
-                    .padding(dimensionResource(id = R.dimen.content_padding)),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Text(
-                text = sequence.order.toString(),
-                style =
-                    MaterialTheme.typography.titleMedium
-                        .copy(fontWeight = FontWeight.Bold),
-            )
-            Text(
-                text = sequence.ciltTypeName,
-                style =
-                    MaterialTheme.typography.titleMedium
-                        .copy(fontWeight = FontWeight.Bold),
-            )
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(end = 32.dp),
             ) {
-                Box(
+                Row(
                     modifier =
                         Modifier
-                            .size(dimensionResource(id = R.dimen.circle_shape_size))
-                            .background(
-                                color = getColorFromHex(sequence.secuenceColor),
-                                shape = CircleShape,
-                            ),
-                )
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.view_details),
-                    tint = MaterialTheme.colorScheme.onSurface,
-                )
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.content_padding)),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = sequence.executions.firstOrNull()?.siteExecutionId.toString(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        text = sequence.ciltTypeName,
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(dimensionResource(id = R.dimen.circle_shape_size))
+                                .background(
+                                    color = getColorFromHex(sequence.secuenceColor),
+                                    shape = CircleShape,
+                                ),
+                    )
+                }
+
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.content_padding)),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = sequence.executions.firstOrNull()?.secuenceSchedule.toHourFromIso(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        text = sequence.executions.firstOrNull()?.secuenceStart.toHourFromIso(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        text =
+                            sequence.executions.firstOrNull()?.realDuration?.toMinutesAndSeconds()
+                                ?: "0 s",
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
+
+                Row(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(dimensionResource(id = R.dimen.content_padding)),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text = "STATUS",
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        text = "NOK",
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                }
             }
+
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = stringResource(R.string.view_details),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier =
+                    Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 8.dp),
+            )
         }
     }
 }

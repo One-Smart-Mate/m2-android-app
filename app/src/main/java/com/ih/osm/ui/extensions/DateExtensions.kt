@@ -148,3 +148,36 @@ fun getCurrentDateTimeUtc(): String {
     sdf.timeZone = TimeZone.getTimeZone("UTC")
     return sdf.format(Date())
 }
+
+fun String?.toHourFromIso(): String {
+    if (this.isNullOrBlank()) return EMPTY
+
+    return try {
+        val isoFormat =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val date = isoFormat.parse(this)
+
+        val outputFormat =
+            SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+                timeZone = TimeZone.getDefault()
+            }
+
+        date?.let { outputFormat.format(it) } ?: EMPTY
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        EMPTY
+    }
+}
+
+fun Int.toMinutesAndSeconds(): String {
+    if (this <= 0) return "0 s"
+    val minutes = this / 60
+    val seconds = this % 60
+    return when {
+        minutes > 0 && seconds > 0 -> "$minutes min $seconds s"
+        minutes > 0 -> "$minutes min"
+        else -> "$seconds s"
+    }
+}

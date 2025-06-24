@@ -29,46 +29,57 @@ fun CiltDetailSection(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(R.string.position_label, position.name),
+                text = stringResource(R.string.routine_label, cilt.ciltName),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
-                text = stringResource(R.string.routine_label, cilt.ciltName),
+                text = stringResource(R.string.position_label, position.name),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
             Text(
                 text = stringResource(R.string.description_label, cilt.ciltDescription),
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
             )
-            ExpandableCard(title = stringResource(R.string.cilt_details), expanded = true) {
+            ExpandableCard(title = stringResource(R.string.cilt_details), expanded = false) {
                 SectionTag(
                     title = stringResource(R.string.cilt_due_date),
                     value = cilt.ciltDueDate.fromIsoToFormattedDate(),
                     isErrorEnabled = cilt.ciltDueDate.isExpired(),
                 )
-                SectionTag(title = stringResource(R.string.cilt_created_by), value = cilt.creatorName)
-                SectionTag(title = stringResource(R.string.cilt_reviewed_by), value = cilt.reviewerName)
-                SectionTag(title = stringResource(R.string.cilt_approved_by), value = cilt.approvedByName)
+                SectionTag(
+                    title = stringResource(R.string.cilt_created_by),
+                    value = cilt.creatorName,
+                )
+                SectionTag(
+                    title = stringResource(R.string.cilt_reviewed_by),
+                    value = cilt.reviewerName,
+                )
+                SectionTag(
+                    title = stringResource(R.string.cilt_approved_by),
+                    value = cilt.approvedByName,
+                )
                 SectionTag(
                     title = stringResource(R.string.last_used),
-                    value = cilt.dateOfLastUsed.fromIsoToFormattedDate().ifBlank { stringResource(R.string.not_available) },
+                    value =
+                        cilt.dateOfLastUsed.fromIsoToFormattedDate()
+                            .ifBlank { stringResource(R.string.not_available) },
                 )
                 SectionTag(title = stringResource(R.string.cilt_status), value = cilt.status)
-            }
 
-            CiltDiagramSection(imageUrl = cilt.urlImgLayout)
+                Spacer(modifier = Modifier.height(24.dp))
 
-            Spacer(modifier = Modifier.height(8.dp))
+                CiltDiagramSection(imageUrl = cilt.urlImgLayout)
 
-            cilt.sequences.forEachIndexed { index, sequence ->
-                SequenceCard(
-                    sequence = sequence,
-                    navController = navController,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
+
+                cilt.sequences.forEachIndexed { index, sequence ->
+                    SequenceCard(
+                        sequence = sequence,
+                        navController = navController,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
         }
-
-        Spacer(modifier = Modifier.height(24.dp))
     }
 }

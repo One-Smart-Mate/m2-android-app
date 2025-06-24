@@ -114,6 +114,13 @@ fun CiltContent(
                         horizontalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
                         CustomButton(
+                            text = stringResource(R.string.update_cilts),
+                            modifier = Modifier.weight(1f),
+                            buttonType = ButtonType.DEFAULT,
+                        ) {
+                            //
+                        }
+                        CustomButton(
                             text = stringResource(R.string.download_third_party_cilt),
                             modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,

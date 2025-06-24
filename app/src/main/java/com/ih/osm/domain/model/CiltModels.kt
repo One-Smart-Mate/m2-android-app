@@ -84,6 +84,7 @@ fun Execution.stoppageReason(): Boolean {
 data class Execution(
     val id: Int,
     val siteId: Int,
+    val siteExecutionId: Int,
     val positionId: Int,
     val ciltId: Int,
     val ciltSequenceId: Int,
