@@ -207,9 +207,9 @@
     <string name="update_cilts">Update</string>
     <string name="download_third_party_cilt">Third-party CILT</string>
     <string name="non_programmable_cilts">Non-programmable CILT\'s</string>
-    <string name="position_label">Position: %1$s</string>
-    <string name="routine_label">Routine: %1$s</string>
-    <string name="description_label">Description: %1$s</string>
+    <string name="position_label">Position</string>
+    <string name="routine_label">Routine</string>
+    <string name="description_label">Description</string>
     <string name="cilt_details">Details</string>
     <string name="cilt_due_date">Due date</string>
     <string name="cilt_created_by">Created by</string>
@@ -258,6 +258,9 @@
     <string name="evidence_created_successfully">Evidence created successfully</string>
     <string name="error_creating_evidence">Error creating evidence: %1$s</string>
     <string name="special_warning">Important notice: %1$s</string>
+    <string name="nok">NOK</string>
+    <string name="days_remaining_singular">%1$d day left before this routine expires</string>
+    <string name="days_remaining_plural">%1$d days left before this routine expires</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>

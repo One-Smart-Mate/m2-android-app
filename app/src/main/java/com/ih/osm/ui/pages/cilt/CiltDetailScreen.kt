@@ -373,10 +373,13 @@ fun SequenceDetailContent(
     Spacer(modifier = Modifier.height(8.dp))
 
     CustomTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier.fillMaxWidth(),
+        // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.parameter_found),
         placeholder = stringResource(R.string.enter_parameter_found),
         icon = Icons.Outlined.Menu,
+        // onChange = { if (isStarted) parameterFound = it },
         onChange = { parameterFound = it },
     )
 
@@ -386,6 +389,7 @@ fun SequenceDetailContent(
         modifier =
             Modifier
                 .fillMaxWidth(),
+        // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
         CameraLauncher { imageUri ->
@@ -429,10 +433,13 @@ fun SequenceDetailContent(
     Spacer(modifier = Modifier.height(8.dp))
 
     CustomTextField(
-        modifier = Modifier.fillMaxWidth(),
+        modifier =
+            Modifier.fillMaxWidth(),
+        // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.final_parameter),
         placeholder = stringResource(R.string.enter_final_parameter),
         icon = Icons.Outlined.Menu,
+        // onChange = { if (isStarted) finalParameter = it },
         onChange = { finalParameter = it },
     )
 
@@ -442,6 +449,7 @@ fun SequenceDetailContent(
         modifier =
             Modifier
                 .fillMaxWidth(),
+        // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
         CameraLauncher { imageUri ->
@@ -501,6 +509,7 @@ fun SequenceDetailContent(
         Switch(
             checked = isParameterOk,
             onCheckedChange = { isParameterOk = it },
+            // enabled = isStarted,
         )
     }
 
@@ -509,6 +518,7 @@ fun SequenceDetailContent(
     if (!isParameterOk) {
         Button(
             onClick = { navController.navigateToCreateCard() },
+            // enabled = isStarted,
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -539,18 +549,23 @@ fun SequenceDetailContent(
             text = if (isFinished) stringResource(R.string.sequence_finished) else stringResource(R.string.finish_sequence),
             buttonType = if (isFinished) ButtonType.OUTLINE else ButtonType.DEFAULT,
             onClick = {
-                onStopExecution(
-                    executionId,
-                    parameterFound,
-                    isEvidenceAtCreation,
-                    finalParameter,
-                    isEvidenceAtFinal,
-                    !isParameterOk,
-                    0,
-                )
-                isFinished = true
-                isStarted = false
+                // if (isStarted && !isFinished) {
+                if (isStarted) {
+                    onStopExecution(
+                        executionId,
+                        parameterFound,
+                        isEvidenceAtCreation,
+                        finalParameter,
+                        isEvidenceAtFinal,
+                        !isParameterOk,
+                        0,
+                    )
+                    isFinished = true
+                    isStarted = false
+                    // navController.popBackStack()
+                }
             },
+            // enabled = isStarted
         )
     }
 }

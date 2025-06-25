@@ -181,3 +181,20 @@ fun Int.toMinutesAndSeconds(): String {
         else -> "$seconds s"
     }
 }
+
+fun calculateRemainingDaysFromIso(dueDateString: String): Int {
+    return try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val dueDate = sdf.parse(dueDateString)
+        val today = Date()
+
+        val diffInMillis = dueDate.time - today.time
+        (diffInMillis / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        0
+    }
+}

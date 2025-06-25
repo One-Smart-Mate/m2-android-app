@@ -133,12 +133,25 @@ fun SequenceCard(
                             MaterialTheme.typography.titleMedium
                                 .copy(fontWeight = FontWeight.Bold),
                     )
-                    Text(
-                        text = "NOK",
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
+                    if (sequence.executions.firstOrNull()?.nok == true) {
+                        Box(
+                            modifier =
+                                Modifier
+                                    .background(
+                                        color = MaterialTheme.colorScheme.error,
+                                        shape = MaterialTheme.shapes.small,
+                                    )
+                                    .padding(horizontal = 12.dp, vertical = 4.dp),
+                        ) {
+                            Text(
+                                text = stringResource(R.string.nok),
+                                color = MaterialTheme.colorScheme.onError,
+                                style =
+                                    MaterialTheme.typography.titleMedium
+                                        .copy(fontWeight = FontWeight.Bold),
+                            )
+                        }
+                    }
                 }
             }
 
