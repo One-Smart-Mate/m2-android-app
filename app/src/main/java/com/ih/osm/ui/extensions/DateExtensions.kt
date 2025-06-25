@@ -31,9 +31,13 @@ val Date.YYYY_MM_DD_HH_MM_SS: String
 val Date.DayMonthWithTimeZone: String
     get() = SimpleDateFormat(EEE_MMM_DD_HH_MM_A, Locale.getDefault()).format(this)
 
-fun String.toDate(format: String): Date? {
-    return SimpleDateFormat(format, Locale.getDefault())
-        .parse(this)
+fun String.toDate(
+    format: String,
+    timeZone: TimeZone = TimeZone.getDefault(),
+): Date? {
+    return SimpleDateFormat(format, Locale.getDefault()).apply {
+        this.timeZone = timeZone
+    }.parse(this)
 }
 
 fun Date.toCalendar(): Calendar {
@@ -113,6 +117,13 @@ fun String.isExpired(): Boolean {
     val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
     val todayDate = Calendar.getInstance().time
     return dueDate?.before(todayDate).defaultIfNull(false)
+}
+
+fun String.isCardExpired(referenceDateString: String): Boolean {
+    if (this.isEmpty() || this.isBlank()) return false
+    val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
+    val referenceDate = referenceDateString.toDate(ISO, TimeZone.getTimeZone("UTC"))
+    return dueDate?.before(referenceDate).defaultIfNull(false)
 }
 
 fun String?.fromIsoToFormattedDate(
