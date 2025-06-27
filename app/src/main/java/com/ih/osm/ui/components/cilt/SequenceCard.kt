@@ -87,6 +87,12 @@ fun SequenceCard(
                                     shape = CircleShape,
                                 ),
                     )
+                    Text(
+                        text = sequence.executions.firstOrNull()?.secuenceSchedule.toHourFromIso(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
                 }
 
                 Row(
@@ -97,26 +103,25 @@ fun SequenceCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = sequence.executions.firstOrNull()?.secuenceSchedule.toHourFromIso(),
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    Text(
-                        text = sequence.executions.firstOrNull()?.secuenceStart.toHourFromIso(),
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    Text(
-                        text =
-                            sequence.executions.firstOrNull()?.realDuration?.toMinutesAndSeconds()
-                                ?: "0 s",
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
+                    if (sequence.executions.firstOrNull()?.secuenceStart != null) {
+                        Text(
+                            text = sequence.executions.firstOrNull()?.secuenceStart.toHourFromIso(),
+                            style =
+                                MaterialTheme.typography.titleMedium
+                                    .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
+                    if (sequence.executions.firstOrNull()?.realDuration != null) {
+                        Text(
+                            text =
+                                sequence.executions.firstOrNull()?.realDuration?.toMinutesAndSeconds()
+                                    ?: "0 s",
+                            style =
+                                MaterialTheme.typography.titleMedium
+                                    .copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
                 }
 
                 Row(

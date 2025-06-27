@@ -88,6 +88,18 @@ fun CiltDetailSection(
                         expanded = false,
                     ) {
                         SectionTag(
+                            title = stringResource(R.string.cilt_created_by),
+                            value = cilt.creatorName,
+                        )
+                        SectionTag(
+                            title = stringResource(R.string.cilt_reviewed_by),
+                            value = cilt.reviewerName,
+                        )
+                        SectionTag(
+                            title = stringResource(R.string.cilt_approved_by),
+                            value = cilt.approvedByName,
+                        )
+                        SectionTag(
                             title = stringResource(R.string.cilt_due_date),
                             value = cilt.ciltDueDate.fromIsoToFormattedDate(),
                             isErrorEnabled = cilt.ciltDueDate.isExpired(),
@@ -107,28 +119,6 @@ fun CiltDetailSection(
                                 modifier = Modifier.padding(4.dp),
                             )
                         }
-                        SectionTag(
-                            title = stringResource(R.string.cilt_created_by),
-                            value = cilt.creatorName,
-                        )
-                        SectionTag(
-                            title = stringResource(R.string.cilt_reviewed_by),
-                            value = cilt.reviewerName,
-                        )
-                        SectionTag(
-                            title = stringResource(R.string.cilt_approved_by),
-                            value = cilt.approvedByName,
-                        )
-                        SectionTag(
-                            title = stringResource(R.string.last_used),
-                            value =
-                                cilt.dateOfLastUsed.fromIsoToFormattedDate()
-                                    .ifBlank { stringResource(R.string.not_available) },
-                        )
-                        SectionTag(
-                            title = stringResource(R.string.cilt_status),
-                            value = cilt.status,
-                        )
 
                         Spacer(modifier = Modifier.height(24.dp))
 

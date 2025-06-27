@@ -19,6 +19,9 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,15 +30,21 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
@@ -51,9 +60,12 @@ import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.extensions.fromIsoToNormalDate
 import com.ih.osm.ui.navigation.navigateToCreateCard
-import com.ih.osm.ui.theme.Size20
+import com.ih.osm.ui.theme.PaddingToolbar
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 
 @Composable
 fun CiltDetailScreen(
@@ -62,86 +74,110 @@ fun CiltDetailScreen(
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsState()
+    val snackBarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     val isLoading = state.isLoading
 
     val sequence = viewModel.getSequenceById(sequenceId)
+
     val opl = state.opl
     val remediationOpl = state.remediationOpl
 
-    when {
-        isLoading -> {
-            LoadingScreen()
-        }
+    if (isLoading) {
+        LoadingScreen()
+        return
+    }
 
-        sequence != null -> {
-            Scaffold { padding ->
-                LazyColumn(
-                    modifier = Modifier.defaultScreen(padding),
-                ) {
-                    stickyHeader {
-                        CustomAppBar(
-                            navController = navController,
-                            content = { CiltDetailHeader(sequence) },
-                        )
-                    }
+    if (sequence != null) {
+        Scaffold { padding ->
+            LazyColumn(
+                modifier = Modifier.defaultScreen(padding),
+            ) {
+                stickyHeader {
+                    CustomAppBar(
+                        navController = navController,
+                        content = { CiltDetailHeader(sequence) },
+                    )
+                }
 
-                    item {
-                        SequenceDetailContent(
-                            sequence = sequence,
-                            navController = navController,
-                            onStartExecution = { executionId ->
-                                viewModel.startSequenceExecution(
-                                    executionId,
-                                )
-                            },
-                            onStopExecution = {
-                                    executionId,
-                                    initialParameter,
-                                    evidenceAtCreation,
-                                    finalParameter,
-                                    evidenceAtFinal,
-                                    nok,
-                                    amTagId,
-                                ->
-                                viewModel.stopSequenceExecution(
-                                    executionId = executionId,
-                                    initialParameter = initialParameter,
-                                    evidenceAtCreation = evidenceAtCreation,
-                                    finalParameter = finalParameter,
-                                    evidenceAtFinal = evidenceAtFinal,
-                                    nok = nok,
-                                    amTagId = amTagId,
-                                )
-                            },
-                            onCreateEvidence = { siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
-                                viewModel.createEvidence(
-                                    siteId = siteId,
-                                    positionId = positionId,
-                                    ciltId = ciltId,
-                                    ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                                    evidenceUrl = evidenceUrl,
-                                )
-                            },
-                            onUpdateEvidence = { id, siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
-                                viewModel.updateEvidence(
-                                    id = id,
-                                    siteId = siteId,
-                                    positionId = positionId,
-                                    ciltId = ciltId,
-                                    ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                                    evidenceUrl = evidenceUrl,
-                                )
-                            },
-                            opl = opl,
-                            getOplById = { viewModel.getOplById(it) },
-                            remediationOpl = remediationOpl,
-                            getRemediationOplById = { viewModel.getRemediationOplById(it) },
-                        )
-                    }
+                item {
+                    SequenceDetailContent(
+                        sequence = sequence,
+                        navController = navController,
+                        onStartExecution = { executionId ->
+                            viewModel.startSequenceExecution(
+                                executionId,
+                            )
+                        },
+                        onStopExecution = {
+                                executionId,
+                                initialParameter,
+                                evidenceAtCreation,
+                                finalParameter,
+                                evidenceAtFinal,
+                                nok,
+                                amTagId,
+                            ->
+                            viewModel.stopSequenceExecution(
+                                executionId = executionId,
+                                initialParameter = initialParameter,
+                                evidenceAtCreation = evidenceAtCreation,
+                                finalParameter = finalParameter,
+                                evidenceAtFinal = evidenceAtFinal,
+                                nok = nok,
+                                amTagId = amTagId,
+                            )
+                        },
+                        onCreateEvidence = { siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
+                            viewModel.createEvidence(
+                                siteId = siteId,
+                                positionId = positionId,
+                                ciltId = ciltId,
+                                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                                evidenceUrl = evidenceUrl,
+                            )
+                        },
+                        onUpdateEvidence = { id, siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
+                            viewModel.updateEvidence(
+                                id = id,
+                                siteId = siteId,
+                                positionId = positionId,
+                                ciltId = ciltId,
+                                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                                evidenceUrl = evidenceUrl,
+                            )
+                        },
+                        opl = opl,
+                        getOplById = { viewModel.getOplById(it) },
+                        remediationOpl = remediationOpl,
+                        getRemediationOplById = { viewModel.getRemediationOplById(it) },
+                    )
                 }
             }
         }
+        LaunchedEffect(viewModel) {
+            snapshotFlow { state }
+                .flowWithLifecycle(lifecycle)
+                .distinctUntilChanged()
+                .collect {
+                    if (state.message.isNotEmpty() && !state.isLoading) {
+                        coroutineScope.launch {
+                            snackBarHostState.showSnackbar(message = state.message)
+                        }
+                    }
+                }
+        }
+    }
+
+    SnackbarHost(hostState = snackBarHostState) {
+        Snackbar(
+            snackbarData = it,
+            containerColor = MaterialTheme.colorScheme.error,
+            contentColor = Color.White,
+            modifier = Modifier.padding(top = PaddingToolbar),
+        )
     }
 }
 
@@ -157,15 +193,6 @@ fun CiltDetailHeader(sequence: Sequence) {
             style =
                 MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
-        )
-        Box(
-            modifier =
-                Modifier
-                    .size(Size20)
-                    .background(
-                        color = getColorFromHex(sequence.executions.first().secuenceColor),
-                        shape = CircleShape,
-                    ),
         )
     }
 }
@@ -222,7 +249,78 @@ fun SequenceDetailContent(
         }
     }
 
-    InfoItem(label = stringResource(R.string.code_label), value = sequence.frecuencyCode)
+    Column(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+    ) {
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = stringResource(R.string.execution_date_time_label),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text =
+                        sequence.executions.firstOrNull()?.secuenceSchedule.fromIsoToNormalDate(),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = stringResource(R.string.cilt_type_name_label),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Text(
+                    text =
+                        sequence.executions.firstOrNull()?.ciltTypeName ?: stringResource(
+                            R.string.not_available,
+                        ),
+                    style = MaterialTheme.typography.bodyLarge,
+                )
+            }
+
+            Column(horizontalAlignment = Alignment.Start) {
+                Text(
+                    text = stringResource(R.string.execution_color_label),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                )
+                Box(
+                    modifier =
+                        Modifier
+                            .size(dimensionResource(id = R.dimen.circle_shape_size))
+                            .background(
+                                color =
+                                    getColorFromHex(
+                                        sequence.executions.firstOrNull()?.secuenceColor
+                                            ?: stringResource(R.string.not_available),
+                                    ),
+                                shape = CircleShape,
+                            ),
+                )
+            }
+        }
+    }
+
+    Text(
+        text = stringResource(R.string.route_label),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.SemiBold,
+    )
+    Text(
+        text =
+            sequence.executions.firstOrNull()?.route ?: stringResource(
+                R.string.not_available,
+            ),
+        style = MaterialTheme.typography.bodyLarge,
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
 
     val specialWarning = sequence.executions.firstOrNull()?.specialWarning
 
@@ -283,28 +381,6 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    val executionId = sequence.executions.firstOrNull()?.id
-
-    if (executionId != null) {
-        CustomButton(
-            text = if (isStarted) stringResource(R.string.sequence_started) else (stringResource(R.string.start_sequence)),
-            buttonType = if (isStarted) ButtonType.OUTLINE else ButtonType.DEFAULT,
-            onClick = {
-                onStartExecution(executionId)
-                isStarted = true
-            },
-        )
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    InfoItem(
-        label = stringResource(R.string.duration_label),
-        value = sequence.executions.firstOrNull()?.duration.toString(),
-    )
-
-    Spacer(modifier = Modifier.height(8.dp))
-
     Column(
         modifier =
             Modifier
@@ -313,7 +389,11 @@ fun SequenceDetailContent(
     ) {
         Text(
             text = String.format("%02d:%02d", elapsedTime / 60, elapsedTime % 60),
-            style = MaterialTheme.typography.bodyLarge,
+            style =
+                MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
     }
@@ -328,6 +408,51 @@ fun SequenceDetailContent(
                 .height(12.dp)
                 .clip(RoundedCornerShape(4.dp)),
         color = MaterialTheme.colorScheme.primary,
+    )
+
+    Spacer(modifier = Modifier.height(20.dp))
+
+    val executionId = sequence.executions.firstOrNull()?.id
+
+    if (executionId != null && !isStarted) {
+        CustomButton(
+            text = stringResource(R.string.start_sequence),
+            buttonType = ButtonType.DEFAULT,
+            onClick = {
+                onStartExecution(executionId)
+                isStarted = true
+            },
+        )
+    }
+
+    if (executionId != null && isStarted) {
+        CustomButton(
+            text = stringResource(R.string.finish_sequence),
+            buttonType = ButtonType.DEFAULT,
+            onClick = {
+                // if (isStarted && !isFinished) {
+                if (isStarted) {
+                    onStopExecution(
+                        executionId,
+                        parameterFound,
+                        isEvidenceAtCreation,
+                        finalParameter,
+                        isEvidenceAtFinal,
+                        !isParameterOk,
+                        0,
+                    )
+                    isFinished = true
+                    // isStarted = false
+                }
+            },
+        )
+    }
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    InfoItem(
+        label = stringResource(R.string.duration_label),
+        value = sequence.executions.firstOrNull()?.duration.toString(),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -539,33 +664,6 @@ fun SequenceDetailContent(
                         R.string.stop_reason_no,
                     )
                 },
-        )
-    }
-
-    Spacer(modifier = Modifier.height(8.dp))
-
-    if (executionId != null) {
-        CustomButton(
-            text = if (isFinished) stringResource(R.string.sequence_finished) else stringResource(R.string.finish_sequence),
-            buttonType = if (isFinished) ButtonType.OUTLINE else ButtonType.DEFAULT,
-            onClick = {
-                // if (isStarted && !isFinished) {
-                if (isStarted) {
-                    onStopExecution(
-                        executionId,
-                        parameterFound,
-                        isEvidenceAtCreation,
-                        finalParameter,
-                        isEvidenceAtFinal,
-                        !isParameterOk,
-                        0,
-                    )
-                    isFinished = true
-                    isStarted = false
-                    // navController.popBackStack()
-                }
-            },
-            // enabled = isStarted
         )
     }
 }

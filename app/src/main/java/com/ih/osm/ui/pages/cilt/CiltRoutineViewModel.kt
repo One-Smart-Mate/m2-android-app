@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.cilt
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
@@ -283,9 +284,12 @@ class CiltRoutineViewModel
         }
 
         fun getSequenceById(sequenceId: Int): Sequence? {
-            return state.value.ciltData?.positions
-                ?.flatMap { it.ciltMasters }
-                ?.flatMap { it.sequences }
-                ?.find { it.id == sequenceId }
+            val execution =
+                state.value.ciltData?.positions
+                    ?.flatMap { it.ciltMasters }
+                    ?.flatMap { it.sequences }
+                    ?.find { it.id == sequenceId }
+            Log.e("test", "Execution $execution")
+            return execution
         }
     }

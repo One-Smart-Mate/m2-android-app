@@ -150,6 +150,28 @@ fun String?.fromIsoToFormattedDate(
     }
 }
 
+fun String?.fromIsoToNormalDate(): String {
+    if (this.isNullOrBlank()) return EMPTY
+
+    return try {
+        val isoFormat =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val date = isoFormat.parse(this)
+
+        val outputFormat =
+            SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).apply {
+                timeZone = TimeZone.getDefault()
+            }
+
+        date?.let { outputFormat.format(it) } ?: EMPTY
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        EMPTY
+    }
+}
+
 fun getCurrentDate(): String {
     return SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 }
