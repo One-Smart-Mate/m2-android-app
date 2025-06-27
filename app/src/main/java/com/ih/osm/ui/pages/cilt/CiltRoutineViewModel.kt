@@ -9,7 +9,6 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
@@ -19,7 +18,6 @@ import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
-import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getCurrentDate
 import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
@@ -36,7 +34,6 @@ class CiltRoutineViewModel
         private val getCiltsUseCase: GetCiltsUseCase,
         private val getOplByIdUseCase: GetOplByIdUseCase,
         private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
-        private val updateCiltEvidenceUseCase: UpdateCiltEvidenceUseCase,
         private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
         private val authRepository: AuthRepository,
@@ -210,62 +207,19 @@ class CiltRoutineViewModel
         }
 
         fun createEvidence(
-            siteId: Int,
-            positionId: Int,
-            ciltId: Int,
-            ciltExecutionsEvidencesId: Int,
+            executionId: Int,
             evidenceUrl: String,
         ) {
             viewModelScope.launch {
                 val currentTime = getCurrentDateTimeUtc()
                 val request =
                     CiltEvidenceRequest(
-                        siteId = siteId,
-                        positionId = positionId,
-                        ciltId = ciltId,
-                        ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                        executionId = executionId,
                         evidenceUrl = evidenceUrl,
                         createdAt = currentTime,
                     )
                 kotlin.runCatching {
                     callUseCase { createCiltEvidenceUseCase(request) }
-                }.onSuccess {
-                    setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_creating_evidence,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                        )
-                    }
-                }
-            }
-        }
-
-        fun updateEvidence(
-            id: Int,
-            siteId: Int,
-            positionId: Int,
-            ciltId: Int,
-            ciltExecutionsEvidencesId: Int,
-            evidenceUrl: String,
-        ) {
-            viewModelScope.launch {
-                val request =
-                    UpdateCiltEvidenceRequest(
-                        id = id,
-                        siteId = siteId,
-                        positionId = positionId,
-                        ciltId = ciltId,
-                        ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                        evidenceUrl = evidenceUrl,
-                    )
-                kotlin.runCatching {
-                    callUseCase { updateCiltEvidenceUseCase(request) }
                 }.onSuccess {
                     setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
                 }.onFailure {

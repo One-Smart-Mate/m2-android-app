@@ -130,22 +130,9 @@ fun CiltDetailScreen(
                                 amTagId = amTagId,
                             )
                         },
-                        onCreateEvidence = { siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
+                        onCreateEvidence = { executionId, evidenceUrl ->
                             viewModel.createEvidence(
-                                siteId = siteId,
-                                positionId = positionId,
-                                ciltId = ciltId,
-                                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
-                                evidenceUrl = evidenceUrl,
-                            )
-                        },
-                        onUpdateEvidence = { id, siteId, positionId, ciltId, ciltExecutionsEvidencesId, evidenceUrl ->
-                            viewModel.updateEvidence(
-                                id = id,
-                                siteId = siteId,
-                                positionId = positionId,
-                                ciltId = ciltId,
-                                ciltExecutionsEvidencesId = ciltExecutionsEvidencesId,
+                                executionId = executionId,
                                 evidenceUrl = evidenceUrl,
                             )
                         },
@@ -212,18 +199,7 @@ fun SequenceDetailContent(
         amTagId: Int,
     ) -> Unit,
     onCreateEvidence: (
-        siteId: Int,
-        positionId: Int,
-        ciltId: Int,
-        ciltExecutionsEvidencesId: Int,
-        evidenceUrl: String,
-    ) -> Unit,
-    onUpdateEvidence: (
-        id: Int,
-        siteId: Int,
-        positionId: Int,
-        ciltId: Int,
-        ciltExecutionsEvidencesId: Int,
+        executionId: Int,
         evidenceUrl: String,
     ) -> Unit,
     opl: Opl?,
@@ -521,9 +497,6 @@ fun SequenceDetailContent(
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
                 onCreateEvidence(
-                    execution.siteId,
-                    execution.positionId,
-                    execution.ciltId,
                     execution.id,
                     imageUri.toString(),
                 )
@@ -580,11 +553,7 @@ fun SequenceDetailContent(
         CameraLauncher { imageUri ->
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
-                onUpdateEvidence(
-                    execution.id,
-                    execution.siteId,
-                    execution.positionId,
-                    execution.ciltId,
+                onCreateEvidence(
                     execution.id,
                     imageUri.toString(),
                 )

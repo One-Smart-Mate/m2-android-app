@@ -5,7 +5,7 @@ data class CiltSequenceEvidence(
     val siteId: Int,
     val positionId: Int,
     val ciltId: Int,
-    val ciltExecutionsEvidencesId: Int,
+    val ciltSequencesExecutionsId: Int,
     val evidenceUrl: String,
     val createdAt: String,
     val updatedAt: String?,

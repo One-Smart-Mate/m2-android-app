@@ -36,8 +36,6 @@ import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCaseImpl
-import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCase
-import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -188,9 +186,6 @@ interface DomainBindingModule {
 
     @Binds
     fun bindCreateCiltEvidenceUseCase(createCiltEvidenceUseCaseImpl: CreateCiltEvidenceUseCaseImpl): CreateCiltEvidenceUseCase
-
-    @Binds
-    fun bindUpdateCiltEvidenceUseCase(updateCiltEvidenceUseCaseImpl: UpdateCiltEvidenceUseCaseImpl): UpdateCiltEvidenceUseCase
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase

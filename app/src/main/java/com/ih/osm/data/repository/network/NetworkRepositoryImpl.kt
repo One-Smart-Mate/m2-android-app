@@ -14,7 +14,6 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
@@ -287,16 +286,6 @@ class NetworkRepositoryImpl
 
         override suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence {
             val response = apiService.createEvidence(body).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody?.data != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence {
-            val response = apiService.updateEvidence(body).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()

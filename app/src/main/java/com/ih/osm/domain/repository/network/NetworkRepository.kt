@@ -11,7 +11,6 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
@@ -86,6 +85,4 @@ interface NetworkRepository {
     suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution
 
     suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
-
-    suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence
 }

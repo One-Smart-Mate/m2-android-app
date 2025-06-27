@@ -26,8 +26,6 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StartSequenceExecutionResponse
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionResponse
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import retrofit2.Call
@@ -161,15 +159,10 @@ interface ApiService {
         @Body body: StopSequenceExecutionRequest,
     ): Call<StopSequenceExecutionResponse>
 
-    @POST("cilt-sequences-evidences/create")
+    @POST("cilt-sequences-executions/evidence/create")
     fun createEvidence(
         @Body body: CiltEvidenceRequest,
     ): Call<CiltEvidenceResponse>
-
-    @PUT("/cilt-sequences-evidences/update")
-    fun updateEvidence(
-        @Body body: UpdateCiltEvidenceRequest,
-    ): Call<UpdateCiltEvidenceResponse>
 
     @GET("opl-levels/level/{levelId}")
     fun getOplsByLevel(
