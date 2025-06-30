@@ -86,6 +86,12 @@ fun CiltDetailScreen(
     val opl = state.opl
     val remediationOpl = state.remediationOpl
 
+    LaunchedEffect(state.isSequenceFinished) {
+        if (state.isSequenceFinished) {
+            navController.popBackStack()
+        }
+    }
+
     if (isLoading) {
         LoadingScreen()
         return
@@ -419,7 +425,6 @@ fun SequenceDetailContent(
                         0,
                     )
                     isFinished = true
-                    navController.popBackStack()
                     // isStarted = false
                 }
             },

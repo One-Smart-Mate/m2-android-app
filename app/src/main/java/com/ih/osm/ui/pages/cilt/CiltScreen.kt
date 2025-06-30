@@ -51,6 +51,11 @@ fun CiltScreen(
         viewModel.handleGetCilts()
     }
 
+    LaunchedEffect(state.isSequenceFinished) {
+        viewModel.handleGetCilts()
+        viewModel.resetSequenceFinishedFlag()
+    }
+
     if (state.isLoading) {
         LoadingScreen()
     } else {

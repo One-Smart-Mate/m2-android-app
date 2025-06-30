@@ -58,6 +58,7 @@ class CiltRoutineViewModel
             val createEvidenceMessage: String = EMPTY,
             val opl: Opl? = null,
             val remediationOpl: Opl? = null,
+            val isSequenceFinished: Boolean = false,
         )
 
         fun handleGetCilts() {
@@ -198,6 +199,9 @@ class CiltRoutineViewModel
                     callUseCase { stopSequenceExecutionUseCase(request) }
                 }.onSuccess {
                     notificationManager.buildNotificationSequenceFinished()
+                    setState {
+                        copy(isSequenceFinished = true)
+                    }
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState {
@@ -268,5 +272,9 @@ class CiltRoutineViewModel
                     ?.find { it.id == sequenceId }
             Log.e("test", "Execution $execution")
             return execution
+        }
+
+        fun resetSequenceFinishedFlag() {
+            setState { copy(isSequenceFinished = false) }
         }
     }
