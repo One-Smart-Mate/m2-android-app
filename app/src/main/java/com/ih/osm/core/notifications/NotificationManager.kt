@@ -186,4 +186,18 @@ class NotificationManager
                 ),
             )
         }
+
+        fun buildNotificationSequenceStarted() {
+            buildNotification(
+                title = context.getString(R.string.sequence_started),
+                description = context.getString(R.string.sequence_started_successfully),
+            )
+        }
+
+        fun buildNotificationSequenceFinished() {
+            buildNotification(
+                title = context.getString(R.string.sequence_finished),
+                description = context.getString(R.string.sequence_stopped_successfully),
+            )
+        }
     }

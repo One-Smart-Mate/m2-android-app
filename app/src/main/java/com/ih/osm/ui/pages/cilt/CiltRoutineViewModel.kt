@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
@@ -40,6 +41,7 @@ class CiltRoutineViewModel
         private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
         private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
+        private val notificationManager: NotificationManager,
         private val authRepository: AuthRepository,
         private val firebaseStorageRepository: FirebaseStorageRepository,
         @ApplicationContext private val context: Context,
@@ -153,7 +155,7 @@ class CiltRoutineViewModel
                 kotlin.runCatching {
                     callUseCase { startSequenceExecutionUseCase(request) }
                 }.onSuccess {
-                    setState { copy(message = context.getString(R.string.sequence_started_successfully)) }
+                    notificationManager.buildNotificationSequenceStarted()
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState {
@@ -195,7 +197,7 @@ class CiltRoutineViewModel
                 kotlin.runCatching {
                     callUseCase { stopSequenceExecutionUseCase(request) }
                 }.onSuccess {
-                    setState { copy(message = context.getString(R.string.sequence_stopped_successfully)) }
+                    notificationManager.buildNotificationSequenceFinished()
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState {

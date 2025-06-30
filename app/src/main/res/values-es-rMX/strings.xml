@@ -245,7 +245,7 @@
     <string name="stop_reason_no">No</string>
     <string name="generate_am_card">NOK Generar tarjeta AM</string>
     <string name="finish_sequence">Terminar secuencia</string>
-    <string name="sequence_finished">Secuencia terminada</string>
+    <string name="sequence_finished">Secuencia completada</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Diagrama de la máquina</string>
     <string name="no_cilt_data">No hay rutinas CILT disponibles</string>
@@ -254,9 +254,9 @@
     <string name="error_loading_cilts">Error al cargar los CILTS: %1$s</string>
     <string name="error_loading_cilts_opls">No se pudo cargar el OPL: %1$s</string>
     <string name="error_loading_remediation_opl">No se pudo cargar el OPL de remediación: %1$s</string>
-    <string name="sequence_started_successfully">Secuencia iniciada correctamente</string>
+    <string name="sequence_started_successfully">Secuencia iniciada exitosamente</string>
     <string name="error_starting_sequence">Error al iniciar la secuencia: %1$s</string>
-    <string name="sequence_stopped_successfully">Secuencia finalizada correctamente</string>
+    <string name="sequence_stopped_successfully">Secuencia completada exitosamente</string>
     <string name="error_stopping_sequence">Error al finalizar la secuencia: %1$s</string>
     <string name="evidence_created_successfully">Evidencia creada correctamente</string>
     <string name="error_creating_evidence">Error al crear la evidencia: %1$s</string>

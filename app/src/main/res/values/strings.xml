@@ -246,7 +246,7 @@
     <string name="stop_reason_no">No</string>
     <string name="generate_am_card">NOK Generate AM card</string>
     <string name="finish_sequence">Finish sequence</string>
-    <string name="sequence_finished">Sequence finished</string>
+    <string name="sequence_finished">Sequence completed</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Machine Diagram</string>
     <string name="no_cilt_data">No CILT routines available</string>
@@ -257,7 +257,7 @@
     <string name="error_loading_remediation_opl">Failed to load remediation OPL: %1$s</string>
     <string name="sequence_started_successfully">Sequence started successfully</string>
     <string name="error_starting_sequence">Error starting sequence: %1$s</string>
-    <string name="sequence_stopped_successfully">Sequence stopped successfully</string>
+    <string name="sequence_stopped_successfully">Sequence completed successfully</string>
     <string name="error_stopping_sequence">Error stopping sequence: %1$s</string>
     <string name="evidence_created_successfully">Evidence created successfully</string>
     <string name="error_creating_evidence">Error creating evidence: %1$s</string>
