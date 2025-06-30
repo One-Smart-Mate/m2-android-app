@@ -1,5 +1,6 @@
 package com.ih.osm.ui.pages.cilt
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -130,10 +131,10 @@ fun CiltDetailScreen(
                                 amTagId = amTagId,
                             )
                         },
-                        onCreateEvidence = { executionId, evidenceUrl ->
+                        onCreateEvidence = { executionId, imageUri ->
                             viewModel.createEvidence(
                                 executionId = executionId,
-                                evidenceUrl = evidenceUrl,
+                                imageUri = imageUri,
                             )
                         },
                         opl = opl,
@@ -200,7 +201,7 @@ fun SequenceDetailContent(
     ) -> Unit,
     onCreateEvidence: (
         executionId: Int,
-        evidenceUrl: String,
+        imageUri: Uri,
     ) -> Unit,
     opl: Opl?,
     getOplById: (String) -> Unit,
@@ -496,10 +497,7 @@ fun SequenceDetailContent(
         CameraLauncher { imageUri ->
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
-                onCreateEvidence(
-                    execution.id,
-                    imageUri.toString(),
-                )
+                onCreateEvidence(execution.id, imageUri)
                 isEvidenceAtCreation = true
             }
         }
@@ -553,10 +551,7 @@ fun SequenceDetailContent(
         CameraLauncher { imageUri ->
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
-                onCreateEvidence(
-                    execution.id,
-                    imageUri.toString(),
-                )
+                onCreateEvidence(execution.id, imageUri)
                 isEvidenceAtFinal = true
             }
         }

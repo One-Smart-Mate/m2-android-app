@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.cilt
 
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
@@ -10,9 +11,12 @@ import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.repository.auth.AuthRepository
+import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
@@ -37,6 +41,7 @@ class CiltRoutineViewModel
         private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
         private val authRepository: AuthRepository,
+        private val firebaseStorageRepository: FirebaseStorageRepository,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
         init {
@@ -208,30 +213,46 @@ class CiltRoutineViewModel
 
         fun createEvidence(
             executionId: Int,
-            evidenceUrl: String,
+            imageUri: Uri,
         ) {
             viewModelScope.launch {
                 val currentTime = getCurrentDateTimeUtc()
-                val request =
-                    CiltEvidenceRequest(
-                        executionId = executionId,
-                        evidenceUrl = evidenceUrl,
-                        createdAt = currentTime,
+
+                val localEvidence =
+                    Evidence.fromCreateEvidence(
+                        cardId = executionId.toString(),
+                        url = imageUri.toString(),
+                        type = EvidenceType.IMCR.name,
                     )
-                kotlin.runCatching {
-                    callUseCase { createCiltEvidenceUseCase(request) }
-                }.onSuccess {
-                    setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_creating_evidence,
-                                    it.localizedMessage.orEmpty(),
-                                ),
+
+                val uploadedUrl = firebaseStorageRepository.uploadEvidence(localEvidence)
+
+                if (uploadedUrl.isNotEmpty()) {
+                    val request =
+                        CiltEvidenceRequest(
+                            executionId = executionId,
+                            evidenceUrl = uploadedUrl,
+                            createdAt = currentTime,
                         )
+                    kotlin.runCatching {
+                        callUseCase { createCiltEvidenceUseCase(request) }
+                    }.onSuccess {
+                        setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_creating_evidence,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                            )
+                        }
+                    }
+                } else {
+                    setState {
+                        copy(message = context.getString(R.string.error))
                     }
                 }
             }
