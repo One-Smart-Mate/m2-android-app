@@ -47,6 +47,10 @@ fun CiltScreen(
     val coroutineScope = rememberCoroutineScope()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
+    LaunchedEffect(Unit) {
+        viewModel.handleGetCilts()
+    }
+
     if (state.isLoading) {
         LoadingScreen()
     } else {

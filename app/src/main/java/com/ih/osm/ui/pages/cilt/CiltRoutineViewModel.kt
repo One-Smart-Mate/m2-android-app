@@ -60,7 +60,7 @@ class CiltRoutineViewModel
             val remediationOpl: Opl? = null,
         )
 
-        private fun handleGetCilts() {
+        fun handleGetCilts() {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
 

@@ -419,6 +419,7 @@ fun SequenceDetailContent(
                         0,
                     )
                     isFinished = true
+                    navController.popBackStack()
                     // isStarted = false
                 }
             },
