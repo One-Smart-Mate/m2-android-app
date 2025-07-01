@@ -29,6 +29,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -49,6 +50,7 @@ import androidx.lifecycle.flowWithLifecycle
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
+import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.stopMachine
@@ -58,6 +60,7 @@ import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
+import com.ih.osm.ui.components.evidence.SectionImagesEvidence
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
@@ -138,9 +141,9 @@ fun CiltDetailScreen(
                             )
                         },
                         onCreateEvidence = { executionId, imageUri ->
-                            viewModel.createEvidence(
+                            viewModel.addLocalEvidence(
                                 executionId = executionId,
-                                imageUri = imageUri,
+                                uri = imageUri,
                             )
                         },
                         opl = opl,
@@ -224,6 +227,8 @@ fun SequenceDetailContent(
     var elapsedTime by remember { mutableStateOf(0) }
     val totalDuration = sequence.executions.firstOrNull()?.duration ?: 0
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
+    val evidenceUrisBefore = remember { mutableStateListOf<Uri>() }
+    val evidenceUrisAfter = remember { mutableStateListOf<Uri>() }
 
     LaunchedEffect(isStarted) {
         while (isStarted) {
@@ -504,10 +509,25 @@ fun SequenceDetailContent(
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
                 onCreateEvidence(execution.id, imageUri)
+                evidenceUrisBefore.add(imageUri)
                 isEvidenceAtCreation = true
             }
         }
     }
+
+    SectionImagesEvidence(
+        imageEvidences =
+            evidenceUrisBefore.map { uri ->
+                Evidence.fromCreateEvidence(
+                    cardId = "",
+                    url = uri.toString(),
+                    type = "IMCR",
+                )
+            },
+        onDeleteEvidence = { evidence ->
+            evidenceUrisBefore.removeIf { it.toString() == evidence.url }
+        },
+    )
 
     Spacer(modifier = Modifier.height(8.dp))
 
@@ -558,10 +578,25 @@ fun SequenceDetailContent(
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
                 onCreateEvidence(execution.id, imageUri)
+                evidenceUrisAfter.add(imageUri)
                 isEvidenceAtFinal = true
             }
         }
     }
+
+    SectionImagesEvidence(
+        imageEvidences =
+            evidenceUrisAfter.map { uri ->
+                Evidence.fromCreateEvidence(
+                    cardId = "",
+                    url = uri.toString(),
+                    type = "IMCR",
+                )
+            },
+        onDeleteEvidence = { evidence ->
+            evidenceUrisAfter.removeIf { it.toString() == evidence.url }
+        },
+    )
 
     Spacer(modifier = Modifier.height(8.dp))
 

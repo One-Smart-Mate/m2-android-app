@@ -46,6 +46,8 @@ class CiltRoutineViewModel
         private val firebaseStorageRepository: FirebaseStorageRepository,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
+        private val pendingEvidences = mutableListOf<Evidence>()
+
         init {
             handleGetCilts()
         }
@@ -198,6 +200,7 @@ class CiltRoutineViewModel
                 kotlin.runCatching {
                     callUseCase { stopSequenceExecutionUseCase(request) }
                 }.onSuccess {
+                    uploadPendingEvidences(executionId)
                     notificationManager.buildNotificationSequenceFinished()
                     setState {
                         copy(isSequenceFinished = true)
@@ -217,51 +220,40 @@ class CiltRoutineViewModel
             }
         }
 
-        fun createEvidence(
+        fun addLocalEvidence(
             executionId: Int,
-            imageUri: Uri,
+            uri: Uri,
         ) {
-            viewModelScope.launch {
-                val currentTime = getCurrentDateTimeUtc()
+            val evidence =
+                Evidence.fromCreateEvidence(
+                    cardId = executionId.toString(),
+                    url = uri.toString(),
+                    type = EvidenceType.IMCR.name,
+                )
+            pendingEvidences.add(evidence)
+        }
 
-                val localEvidence =
-                    Evidence.fromCreateEvidence(
-                        cardId = executionId.toString(),
-                        url = imageUri.toString(),
-                        type = EvidenceType.IMCR.name,
-                    )
+        private suspend fun uploadPendingEvidences(executionId: Int) {
+            val createdAt = getCurrentDateTimeUtc()
 
-                val uploadedUrl = firebaseStorageRepository.uploadEvidence(localEvidence)
+            for (evidence in pendingEvidences) {
+                val uploadedUrl = firebaseStorageRepository.uploadEvidence(evidence)
 
                 if (uploadedUrl.isNotEmpty()) {
                     val request =
                         CiltEvidenceRequest(
                             executionId = executionId,
                             evidenceUrl = uploadedUrl,
-                            createdAt = currentTime,
+                            createdAt = createdAt,
                         )
                     kotlin.runCatching {
                         callUseCase { createCiltEvidenceUseCase(request) }
-                    }.onSuccess {
-                        setState { copy(message = context.getString(R.string.evidence_created_successfully)) }
                     }.onFailure {
                         LoggerHelperManager.logException(it)
-                        setState {
-                            copy(
-                                message =
-                                    context.getString(
-                                        R.string.error_creating_evidence,
-                                        it.localizedMessage.orEmpty(),
-                                    ),
-                            )
-                        }
-                    }
-                } else {
-                    setState {
-                        copy(message = context.getString(R.string.error))
                     }
                 }
             }
+            pendingEvidences.clear()
         }
 
         fun getSequenceById(sequenceId: Int): Sequence? {
