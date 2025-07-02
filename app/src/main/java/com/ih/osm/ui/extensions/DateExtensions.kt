@@ -231,3 +231,57 @@ fun calculateRemainingDaysFromIso(dueDateString: String): Int {
         0
     }
 }
+
+fun String.isWithinExecutionWindow(
+    allowExecuteBefore: Boolean,
+    allowExecuteBeforeMinutes: Int,
+    toleranceBeforeMinutes: Int,
+    toleranceAfterMinutes: Int,
+    allowExecuteAfterDue: Boolean,
+): Pair<Boolean, String?> {
+    return try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val scheduleDate = sdf.parse(this) ?: return false to null
+        val now = Date()
+
+        val millisNow = now.time
+        val millisSchedule = scheduleDate.time
+
+        val effectiveBeforeMinutes =
+            if (allowExecuteBefore) {
+                allowExecuteBeforeMinutes + toleranceBeforeMinutes
+            } else {
+                toleranceBeforeMinutes
+            }
+
+        val beforeStartMillis =
+            millisSchedule - (effectiveBeforeMinutes * 60 * 1000)
+        val afterEndMillis = millisSchedule + (toleranceAfterMinutes * 60 * 1000)
+
+        return when {
+            millisNow in beforeStartMillis..afterEndMillis -> true to null
+            millisNow < beforeStartMillis -> {
+                val diff = beforeStartMillis - millisNow
+                val mins = (diff / 1000 / 60).toInt()
+                val secs = (diff / 1000 % 60).toInt()
+                false to "Faltan %02d:%02d para poder ejecutarse".format(mins, secs)
+            }
+
+            millisNow > afterEndMillis -> {
+                if (allowExecuteAfterDue) {
+                    true to null
+                } else {
+                    false to "Secuencia fuera de tiempo"
+                }
+            }
+
+            else -> false to "No se puede ejecutar en este momento"
+        }
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        false to "Error al validar la ejecución"
+    }
+}
