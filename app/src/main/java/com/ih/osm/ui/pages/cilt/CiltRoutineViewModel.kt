@@ -235,6 +235,10 @@ class CiltRoutineViewModel
             pendingEvidences.add(evidence)
         }
 
+        fun removeLocalEvidence(evidenceUrl: String) {
+            pendingEvidences.removeIf { it.url == evidenceUrl }
+        }
+
         private suspend fun uploadPendingEvidences(executionId: Int) {
             val createdAt = getCurrentDateTimeUtc()
 

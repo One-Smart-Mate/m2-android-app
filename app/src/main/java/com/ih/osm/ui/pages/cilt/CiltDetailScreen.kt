@@ -2,13 +2,17 @@ package com.ih.osm.ui.pages.cilt
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -39,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,6 +88,7 @@ fun CiltDetailScreen(
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
+    val focusManager = LocalFocusManager.current
 
     val isLoading = state.isLoading
 
@@ -104,57 +110,72 @@ fun CiltDetailScreen(
 
     if (sequence != null) {
         Scaffold { padding ->
-            LazyColumn(
-                modifier = Modifier.defaultScreen(padding),
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize()
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() },
+                            onClick = { focusManager.clearFocus() },
+                        ),
             ) {
-                stickyHeader {
-                    CustomAppBar(
-                        navController = navController,
-                        content = { CiltDetailHeader(sequence) },
-                    )
-                }
+                LazyColumn(
+                    modifier =
+                        Modifier
+                            .defaultScreen(padding)
+                            .imePadding(),
+                ) {
+                    stickyHeader {
+                        CustomAppBar(
+                            navController = navController,
+                            content = { CiltDetailHeader(sequence) },
+                        )
+                    }
 
-                item {
-                    SequenceDetailContent(
-                        sequence = sequence,
-                        navController = navController,
-                        onStartExecution = { executionId ->
-                            viewModel.startSequenceExecution(
-                                executionId,
-                            )
-                        },
-                        onStopExecution = {
-                                executionId,
-                                initialParameter,
-                                evidenceAtCreation,
-                                finalParameter,
-                                evidenceAtFinal,
-                                nok,
-                                amTagId,
-                            ->
-                            viewModel.stopSequenceExecution(
-                                executionId = executionId,
-                                initialParameter = initialParameter,
-                                evidenceAtCreation = evidenceAtCreation,
-                                finalParameter = finalParameter,
-                                evidenceAtFinal = evidenceAtFinal,
-                                nok = nok,
-                                amTagId = amTagId,
-                            )
-                        },
-                        onCreateEvidence = { executionId, imageUri ->
-                            viewModel.addLocalEvidence(
-                                executionId = executionId,
-                                uri = imageUri,
-                            )
-                        },
-                        opl = opl,
-                        getOplById = { viewModel.getOplById(it) },
-                        remediationOpl = remediationOpl,
-                        getRemediationOplById = { viewModel.getRemediationOplById(it) },
-                        snackbarHostState = snackBarHostState,
-                        coroutineScope = coroutineScope,
-                    )
+                    item {
+                        SequenceDetailContent(
+                            sequence = sequence,
+                            navController = navController,
+                            onStartExecution = { executionId ->
+                                viewModel.startSequenceExecution(
+                                    executionId,
+                                )
+                            },
+                            onStopExecution = {
+                                    executionId,
+                                    initialParameter,
+                                    evidenceAtCreation,
+                                    finalParameter,
+                                    evidenceAtFinal,
+                                    nok,
+                                    amTagId,
+                                ->
+                                viewModel.stopSequenceExecution(
+                                    executionId = executionId,
+                                    initialParameter = initialParameter,
+                                    evidenceAtCreation = evidenceAtCreation,
+                                    finalParameter = finalParameter,
+                                    evidenceAtFinal = evidenceAtFinal,
+                                    nok = nok,
+                                    amTagId = amTagId,
+                                )
+                            },
+                            onCreateEvidence = { executionId, imageUri ->
+                                viewModel.addLocalEvidence(
+                                    executionId = executionId,
+                                    uri = imageUri,
+                                )
+                            },
+                            removeEvidence = { viewModel.removeLocalEvidence(it) },
+                            opl = opl,
+                            getOplById = { viewModel.getOplById(it) },
+                            remediationOpl = remediationOpl,
+                            getRemediationOplById = { viewModel.getRemediationOplById(it) },
+                            snackbarHostState = snackBarHostState,
+                            coroutineScope = coroutineScope,
+                        )
+                    }
                 }
             }
         }
@@ -216,6 +237,7 @@ fun SequenceDetailContent(
         executionId: Int,
         imageUri: Uri,
     ) -> Unit,
+    removeEvidence: (String) -> Unit,
     opl: Opl?,
     getOplById: (String) -> Unit,
     remediationOpl: Opl?,
@@ -550,6 +572,7 @@ fun SequenceDetailContent(
             },
         onDeleteEvidence = { evidence ->
             evidenceUrisBefore.removeIf { it.toString() == evidence.url }
+            removeEvidence(evidence.url)
         },
     )
 
@@ -619,6 +642,7 @@ fun SequenceDetailContent(
             },
         onDeleteEvidence = { evidence ->
             evidenceUrisAfter.removeIf { it.toString() == evidence.url }
+            removeEvidence(evidence.url)
         },
     )
 
