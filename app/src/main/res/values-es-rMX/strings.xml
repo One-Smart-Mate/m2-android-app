@@ -264,6 +264,11 @@
     <string name="nok">NOK</string>
     <string name="days_remaining_singular">Falta %1$d día para que caduque esta rutina</string>
     <string name="days_remaining_plural">Faltan %1$d días para que caduque esta rutina</string>
+    <string name="status_not_executed">No ejecutada</string>
+    <string name="status_premature">Prematura</string>
+    <string name="status_expired">Vencida</string>
+    <string name="status_on_time">En tiempo</string>
+    <string name="status_pending">Pendiente</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>

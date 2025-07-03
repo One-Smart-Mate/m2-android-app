@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
+import com.ih.osm.domain.model.ExecutionStatus
 import com.ih.osm.ui.utils.EMPTY
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -283,5 +284,60 @@ fun String.isWithinExecutionWindow(
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
         false to "Error al validar la ejecución"
+    }
+}
+
+fun String.getExecutionStatus(
+    sequenceStart: String?,
+    allowExecuteBefore: Boolean,
+    allowExecuteBeforeMinutes: Int,
+    toleranceBeforeMinutes: Int,
+    toleranceAfterMinutes: Int,
+    allowExecuteAfterDue: Boolean,
+): ExecutionStatus {
+    try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val scheduleDate = sdf.parse(this) ?: return ExecutionStatus.PENDING
+        val now = Date()
+
+        val millisNow = now.time
+        val millisSchedule = scheduleDate.time
+
+        val effectiveBeforeMinutes =
+            if (allowExecuteBefore) {
+                allowExecuteBeforeMinutes + toleranceBeforeMinutes
+            } else {
+                toleranceBeforeMinutes
+            }
+
+        val beforeStartMillis = millisSchedule - (effectiveBeforeMinutes * 60 * 1000)
+        val afterEndMillis = millisSchedule + (toleranceAfterMinutes * 60 * 1000)
+
+        if (sequenceStart == null) {
+            return if (millisNow < beforeStartMillis) ExecutionStatus.PENDING else ExecutionStatus.NOT_EXECUTED
+        }
+
+        val executionStartDate = sdf.parse(sequenceStart) ?: return ExecutionStatus.NOT_EXECUTED
+        val millisExecutionStart = executionStartDate.time
+
+        return when {
+            millisExecutionStart < beforeStartMillis -> ExecutionStatus.PREMATURE
+            millisExecutionStart in beforeStartMillis..afterEndMillis -> ExecutionStatus.ON_TIME
+            millisExecutionStart > afterEndMillis -> {
+                if (allowExecuteAfterDue) {
+                    ExecutionStatus.ON_TIME
+                } else {
+                    ExecutionStatus.EXPIRED
+                }
+            }
+
+            else -> ExecutionStatus.NOT_EXECUTED
+        }
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        return ExecutionStatus.NOT_EXECUTED
     }
 }

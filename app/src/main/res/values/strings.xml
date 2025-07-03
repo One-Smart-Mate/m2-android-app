@@ -265,6 +265,11 @@
     <string name="nok">NOK</string>
     <string name="days_remaining_singular">%1$d day left before this routine expires</string>
     <string name="days_remaining_plural">%1$d days left before this routine expires</string>
+    <string name="status_not_executed">Not executed</string>
+    <string name="status_premature">Premature</string>
+    <string name="status_expired">Expired</string>
+    <string name="status_on_time">On time</string>
+    <string name="status_pending">Pending</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>

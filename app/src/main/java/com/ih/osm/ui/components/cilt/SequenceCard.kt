@@ -22,6 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -29,7 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
+import com.ih.osm.domain.model.ExecutionStatus
 import com.ih.osm.domain.model.Sequence
+import com.ih.osm.ui.extensions.getExecutionStatus
 import com.ih.osm.ui.extensions.toHourFromIso
 import com.ih.osm.ui.extensions.toMinutesAndSeconds
 import com.ih.osm.ui.navigation.navigateToCiltDetail
@@ -39,6 +42,27 @@ fun SequenceCard(
     sequence: Sequence,
     navController: NavController,
 ) {
+    val execution = sequence.executions.first()
+
+    val status =
+        execution.secuenceSchedule.getExecutionStatus(
+            sequenceStart = execution.secuenceStart,
+            allowExecuteBefore = execution.allowExecuteBefore,
+            allowExecuteBeforeMinutes = execution.allowExecuteBeforeMinutes,
+            toleranceBeforeMinutes = execution.toleranceBeforeMinutes,
+            toleranceAfterMinutes = execution.toleranceAfterMinutes,
+            allowExecuteAfterDue = execution.allowExecuteAfterDue,
+        )
+
+    val (statusText, statusColor) =
+        when (status) {
+            ExecutionStatus.NOT_EXECUTED -> stringResource(R.string.status_not_executed) to MaterialTheme.colorScheme.error
+            ExecutionStatus.PREMATURE -> stringResource(R.string.status_premature) to Color(0xFFFFA500)
+            ExecutionStatus.EXPIRED -> stringResource(R.string.status_expired) to Color(0xFFFFFF00)
+            ExecutionStatus.ON_TIME -> stringResource(R.string.status_on_time) to Color(0xFF4CAF50)
+            ExecutionStatus.PENDING -> stringResource(R.string.status_pending) to MaterialTheme.colorScheme.primary
+        }
+
     Card(
         modifier =
             Modifier
@@ -132,12 +156,22 @@ fun SequenceCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Text(
-                        text = "STATUS",
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color = statusColor,
+                                    shape = MaterialTheme.shapes.small,
+                                )
+                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = statusText,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+
                     if (sequence.executions.firstOrNull()?.nok == true) {
                         Box(
                             modifier =

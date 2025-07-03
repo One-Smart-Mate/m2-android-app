@@ -192,8 +192,8 @@ fun CiltDetailHeader(sequence: Sequence) {
         Text(
             text = sequence.executions.first().ciltTypeName,
             style =
-            MaterialTheme.typography.titleLarge
-                .copy(fontWeight = FontWeight.Bold),
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
         )
     }
 }
@@ -245,9 +245,9 @@ fun SequenceDetailContent(
 
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Column(horizontalAlignment = Alignment.Start) {
@@ -258,7 +258,7 @@ fun SequenceDetailContent(
                 )
                 Text(
                     text =
-                    sequence.executions.firstOrNull()?.secuenceSchedule.fromIsoToNormalDate(),
+                        sequence.executions.firstOrNull()?.secuenceSchedule.fromIsoToNormalDate(),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
@@ -271,9 +271,9 @@ fun SequenceDetailContent(
                 )
                 Text(
                     text =
-                    sequence.executions.firstOrNull()?.ciltTypeName ?: stringResource(
-                        R.string.not_available,
-                    ),
+                        sequence.executions.firstOrNull()?.ciltTypeName ?: stringResource(
+                            R.string.not_available,
+                        ),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
@@ -286,16 +286,16 @@ fun SequenceDetailContent(
                 )
                 Box(
                     modifier =
-                    Modifier
-                        .size(dimensionResource(id = R.dimen.circle_shape_size))
-                        .background(
-                            color =
-                            getColorFromHex(
-                                sequence.executions.firstOrNull()?.secuenceColor
-                                    ?: stringResource(R.string.not_available),
+                        Modifier
+                            .size(dimensionResource(id = R.dimen.circle_shape_size))
+                            .background(
+                                color =
+                                    getColorFromHex(
+                                        sequence.executions.firstOrNull()?.secuenceColor
+                                            ?: stringResource(R.string.not_available),
+                                    ),
+                                shape = CircleShape,
                             ),
-                            shape = CircleShape,
-                        ),
                 )
             }
         }
@@ -308,9 +308,9 @@ fun SequenceDetailContent(
     )
     Text(
         text =
-        sequence.executions.firstOrNull()?.route ?: stringResource(
-            R.string.not_available,
-        ),
+            sequence.executions.firstOrNull()?.route ?: stringResource(
+                R.string.not_available,
+            ),
         style = MaterialTheme.typography.bodyLarge,
     )
 
@@ -323,11 +323,11 @@ fun SequenceDetailContent(
 
         Box(
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp)
-                .background(Color.Yellow, shape = RoundedCornerShape(8.dp))
-                .padding(12.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp)
+                    .background(Color.Yellow, shape = RoundedCornerShape(8.dp))
+                    .padding(12.dp),
         ) {
             Text(
                 text = stringResource(R.string.special_warning, specialWarning),
@@ -342,31 +342,31 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
-            .background(
-                if (sequence.executions
-                        .first()
-                        .stopMachine()
-                ) {
-                    Color(0xFFB71C1C)
-                } else {
-                    Color(0xFFEEEEEE)
-                },
-                shape = RoundedCornerShape(8.dp),
-            )
-            .padding(12.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp)
+                .background(
+                    if (sequence.executions
+                            .first()
+                            .stopMachine()
+                    ) {
+                        Color(0xFFB71C1C)
+                    } else {
+                        Color(0xFFEEEEEE)
+                    },
+                    shape = RoundedCornerShape(8.dp),
+                )
+                .padding(12.dp),
     ) {
         Text(
             text =
-            if (sequence.executions.first().stopMachine()) {
-                stringResource(
-                    R.string.stoppage_required,
-                )
-            } else {
-                stringResource(R.string.stoppage_not_required)
-            },
+                if (sequence.executions.first().stopMachine()) {
+                    stringResource(
+                        R.string.stoppage_required,
+                    )
+                } else {
+                    stringResource(R.string.stoppage_not_required)
+                },
             fontWeight = FontWeight.Bold,
             color = Color.Black,
             style = MaterialTheme.typography.bodyLarge,
@@ -377,17 +377,17 @@ fun SequenceDetailContent(
 
     Column(
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
     ) {
         Text(
             text = String.format("%02d:%02d", elapsedTime / 60, elapsedTime % 60),
             style =
-            MaterialTheme.typography.titleLarge.copy(
-                fontSize = 48.sp,
-                fontWeight = FontWeight.Bold,
-            ),
+                MaterialTheme.typography.titleLarge.copy(
+                    fontSize = 48.sp,
+                    fontWeight = FontWeight.Bold,
+                ),
             modifier = Modifier.align(Alignment.CenterHorizontally),
         )
     }
@@ -397,10 +397,10 @@ fun SequenceDetailContent(
     LinearProgressIndicator(
         progress = progress.coerceIn(0f, 1f),
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .height(12.dp)
-            .clip(RoundedCornerShape(4.dp)),
+            Modifier
+                .fillMaxWidth()
+                .height(12.dp)
+                .clip(RoundedCornerShape(4.dp)),
         color = MaterialTheme.colorScheme.primary,
     )
 
@@ -472,8 +472,8 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.reference_label),
         value =
-        sequence.executions.firstOrNull()?.referencePoint
-            ?: stringResource(R.string.not_available),
+            sequence.executions.firstOrNull()?.referencePoint
+                ?: stringResource(R.string.not_available),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -503,15 +503,15 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.parameter_ok),
         value =
-        sequence.executions.firstOrNull()?.standardOk
-            ?: stringResource(R.string.not_available),
+            sequence.executions.firstOrNull()?.standardOk
+                ?: stringResource(R.string.not_available),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
     CustomTextField(
         modifier =
-        Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth(),
         // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.parameter_found),
         placeholder = stringResource(R.string.enter_parameter_found),
@@ -524,8 +524,8 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
         // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
@@ -541,13 +541,13 @@ fun SequenceDetailContent(
 
     SectionImagesEvidence(
         imageEvidences =
-        evidenceUrisBefore.map { uri ->
-            Evidence.fromCreateEvidence(
-                cardId = "",
-                url = uri.toString(),
-                type = "IMCR",
-            )
-        },
+            evidenceUrisBefore.map { uri ->
+                Evidence.fromCreateEvidence(
+                    cardId = "",
+                    url = uri.toString(),
+                    type = "IMCR",
+                )
+            },
         onDeleteEvidence = { evidence ->
             evidenceUrisBefore.removeIf { it.toString() == evidence.url }
         },
@@ -563,9 +563,9 @@ fun SequenceDetailContent(
                 getOplById(oplId)
             },
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.view_opl_sop))
         }
@@ -580,7 +580,7 @@ fun SequenceDetailContent(
 
     CustomTextField(
         modifier =
-        Modifier.fillMaxWidth(),
+            Modifier.fillMaxWidth(),
         // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.final_parameter),
         placeholder = stringResource(R.string.enter_final_parameter),
@@ -593,8 +593,8 @@ fun SequenceDetailContent(
 
     Box(
         modifier =
-        Modifier
-            .fillMaxWidth(),
+            Modifier
+                .fillMaxWidth(),
         // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
@@ -610,13 +610,13 @@ fun SequenceDetailContent(
 
     SectionImagesEvidence(
         imageEvidences =
-        evidenceUrisAfter.map { uri ->
-            Evidence.fromCreateEvidence(
-                cardId = "",
-                url = uri.toString(),
-                type = "IMCR",
-            )
-        },
+            evidenceUrisAfter.map { uri ->
+                Evidence.fromCreateEvidence(
+                    cardId = "",
+                    url = uri.toString(),
+                    type = "IMCR",
+                )
+            },
         onDeleteEvidence = { evidence ->
             evidenceUrisAfter.removeIf { it.toString() == evidence.url }
         },
@@ -632,9 +632,9 @@ fun SequenceDetailContent(
                 getRemediationOplById(oplRemediationId)
             },
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.view_remediation))
         }
@@ -650,9 +650,9 @@ fun SequenceDetailContent(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
-        Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
     ) {
         Text(
             text = stringResource(R.string.parameter_ok_question),
@@ -674,9 +674,9 @@ fun SequenceDetailContent(
             onClick = { navController.navigateToCreateCard() },
             // enabled = isStarted,
             modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp),
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 4.dp),
         ) {
             Text(stringResource(R.string.generate_am_card))
         }
@@ -686,13 +686,13 @@ fun SequenceDetailContent(
         InfoItem(
             label = stringResource(R.string.stop_reason_label),
             value =
-            if (sequence.executions.first().stoppageReason()) {
-                stringResource(R.string.stop_reason_yes)
-            } else {
-                stringResource(
-                    R.string.stop_reason_no,
-                )
-            },
+                if (sequence.executions.first().stoppageReason()) {
+                    stringResource(R.string.stop_reason_yes)
+                } else {
+                    stringResource(
+                        R.string.stop_reason_no,
+                    )
+                },
         )
     }
 }
