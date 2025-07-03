@@ -43,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -253,6 +254,7 @@ fun SequenceDetailContent(
     var isStarted by remember { mutableStateOf(false) }
     var isFinished by remember { mutableStateOf(false) }
     var elapsedTime by remember { mutableStateOf(0) }
+    val context = LocalContext.current
     val totalDuration = sequence.executions.firstOrNull()?.duration ?: 0
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
     val evidenceUrisBefore = remember { mutableStateListOf<Uri>() }
@@ -434,6 +436,7 @@ fun SequenceDetailContent(
         val execution = sequence.executions.first()
         val (canExecute, message) =
             execution.secuenceSchedule.isWithinExecutionWindow(
+                context = context,
                 allowExecuteBefore = execution.allowExecuteBefore,
                 allowExecuteBeforeMinutes = execution.allowExecuteBeforeMinutes,
                 toleranceBeforeMinutes = execution.toleranceBeforeMinutes,
@@ -451,7 +454,7 @@ fun SequenceDetailContent(
                 } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
-                            message = message ?: "Secuencia fuera de ventana de ejecución",
+                            message = message ?: context.getString(R.string.execution_out_of_window),
                         )
                     }
                 }

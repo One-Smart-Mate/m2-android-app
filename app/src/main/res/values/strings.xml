@@ -270,6 +270,11 @@
     <string name="status_expired">Expired</string>
     <string name="status_on_time">On time</string>
     <string name="status_pending">Pending</string>
+    <string name="cannot_execute_now">Cannot execute at this time</string>
+    <string name="sequence_out_of_time">Sequence out of time</string>
+    <string name="execution_error">Error validating execution</string>
+    <string name="execution_wait_time">%1$02d:%2$02d left before execution</string>
+    <string name="execution_out_of_window">Sequence is out of execution window</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>

@@ -234,6 +234,7 @@ fun calculateRemainingDaysFromIso(dueDateString: String): Int {
 }
 
 fun String.isWithinExecutionWindow(
+    context: Context,
     allowExecuteBefore: Boolean,
     allowExecuteBeforeMinutes: Int,
     toleranceBeforeMinutes: Int,
@@ -268,22 +269,22 @@ fun String.isWithinExecutionWindow(
                 val diff = beforeStartMillis - millisNow
                 val mins = (diff / 1000 / 60).toInt()
                 val secs = (diff / 1000 % 60).toInt()
-                false to "Faltan %02d:%02d para poder ejecutarse".format(mins, secs)
+                false to context.getString(R.string.execution_wait_time, mins, secs)
             }
 
             millisNow > afterEndMillis -> {
                 if (allowExecuteAfterDue) {
                     true to null
                 } else {
-                    false to "Secuencia fuera de tiempo"
+                    false to context.getString(R.string.sequence_out_of_time)
                 }
             }
 
-            else -> false to "No se puede ejecutar en este momento"
+            else -> false to context.getString(R.string.cannot_execute_now)
         }
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
-        false to "Error al validar la ejecución"
+        false to context.getString(R.string.execution_error)
     }
 }
 
