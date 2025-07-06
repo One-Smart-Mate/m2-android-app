@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.cilt
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -23,11 +24,11 @@ import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -97,6 +98,17 @@ fun CiltDetailScreen(
 
     val opl = state.opl
     val remediationOpl = state.remediationOpl
+    val superiorId = state.superiorId
+
+    LaunchedEffect(state.superiorId) {
+        Log.d("CiltDetailScreen", "Valor en estado: superiorId = ${state.superiorId}")
+    }
+
+    LaunchedEffect(state.ciltData) {
+        if (state.ciltData != null) {
+            viewModel.getSuperiorIdFromExecutionRoute(sequenceId)
+        }
+    }
 
     LaunchedEffect(state.isSequenceFinished) {
         if (state.isSequenceFinished) {
@@ -138,6 +150,7 @@ fun CiltDetailScreen(
                         SequenceDetailContent(
                             sequence = sequence,
                             navController = navController,
+                            viewModel = viewModel,
                             onStartExecution = { executionId ->
                                 viewModel.startSequenceExecution(
                                     executionId,
@@ -173,6 +186,7 @@ fun CiltDetailScreen(
                             getOplById = { viewModel.getOplById(it) },
                             remediationOpl = remediationOpl,
                             getRemediationOplById = { viewModel.getRemediationOplById(it) },
+                            superiorId = superiorId,
                             snackbarHostState = snackBarHostState,
                             coroutineScope = coroutineScope,
                         )
@@ -224,6 +238,7 @@ fun CiltDetailHeader(sequence: Sequence) {
 fun SequenceDetailContent(
     sequence: Sequence,
     navController: NavController,
+    viewModel: CiltRoutineViewModel,
     onStartExecution: (Int) -> Unit,
     onStopExecution: (
         executionId: Int,
@@ -243,6 +258,7 @@ fun SequenceDetailContent(
     getOplById: (String) -> Unit,
     remediationOpl: Opl?,
     getRemediationOplById: (String) -> Unit,
+    superiorId: String?,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
 ) {
@@ -454,7 +470,9 @@ fun SequenceDetailContent(
                 } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
-                            message = message ?: context.getString(R.string.execution_out_of_window),
+                            message =
+                                message
+                                    ?: context.getString(R.string.execution_out_of_window),
                         )
                     }
                 }
@@ -674,8 +692,7 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    Column(
         modifier =
             Modifier
                 .fillMaxWidth()
@@ -685,20 +702,37 @@ fun SequenceDetailContent(
             text = stringResource(R.string.parameter_ok_question),
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Medium,
-            modifier = Modifier.weight(1f),
         )
-        Switch(
-            checked = isParameterOk,
-            onCheckedChange = { isParameterOk = it },
-            // enabled = isStarted,
-        )
+
+        Row(
+            modifier = Modifier.padding(top = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            RadioButton(
+                selected = isParameterOk,
+                onClick = { isParameterOk = true },
+            )
+            Text(
+                text = stringResource(R.string.yes_option_parameter_ok),
+                modifier = Modifier.padding(end = 16.dp),
+            )
+            RadioButton(
+                selected = !isParameterOk,
+                onClick = { isParameterOk = false },
+            )
+            Text(text = stringResource(R.string.no_option_parameter_ok))
+        }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
 
     if (!isParameterOk) {
         Button(
-            onClick = { navController.navigateToCreateCard() },
+            onClick = {
+                superiorId?.let {
+                    navController.navigateToCreateCard("cilt: $it")
+                }
+            },
             // enabled = isStarted,
             modifier =
                 Modifier

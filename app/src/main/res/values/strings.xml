@@ -275,6 +275,10 @@
     <string name="execution_error">Error validating execution</string>
     <string name="execution_wait_time">%1$02d:%2$02d left before execution</string>
     <string name="execution_out_of_window">Sequence is out of execution window</string>
+    <string name="yes_option_parameter_ok">Yes</string>
+    <string name="no_option_parameter_ok">No</string>
+    <string name="error_level_not_found_from_route">Could not find level matching the route</string>
+    <string name="error_missing_route">Route is missing for this sequence</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No OPLs found</string>

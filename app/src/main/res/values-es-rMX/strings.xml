@@ -274,6 +274,11 @@
     <string name="execution_error">Error al validar la ejecución</string>
     <string name="execution_wait_time">Faltan %1$02d:%2$02d para poder ejecutarse</string>
     <string name="execution_out_of_window">Secuencia fuera de ventana de ejecución</string>
+    <string name="yes_option_parameter_ok">Sí</string>
+    <string name="no_option_parameter_ok">No</string>
+    <string name="error_level_not_found_from_route">No se encontró el nivel correspondiente a la ruta</string>
+    <string name="error_missing_route">No hay ruta disponible para esta secuencia</string>
+
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>

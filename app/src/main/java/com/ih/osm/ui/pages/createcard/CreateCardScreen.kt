@@ -102,6 +102,15 @@ fun CreateCardScreen(
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
+    val filter = navController.currentBackStackEntry?.arguments?.getString("filter")
+
+    LaunchedEffect(filter) {
+        if (filter?.startsWith("cilt:") == true) {
+            val superiorId = filter.removePrefix("cilt:")
+            viewModel.loadLevelsFromSuperiorId(superiorId)
+        }
+    }
+
     if (state.isLoading) {
         LoadingScreen(state.message)
     } else {

@@ -318,27 +318,21 @@ fun String.getExecutionStatus(
         val afterEndMillis = millisSchedule + (toleranceAfterMinutes * 60 * 1000)
 
         if (sequenceStart == null) {
-            return if (millisNow < beforeStartMillis) ExecutionStatus.PENDING else ExecutionStatus.NOT_EXECUTED
+            return if (millisNow < beforeStartMillis) ExecutionStatus.PENDING else ExecutionStatus.PENDING
         }
 
-        val executionStartDate = sdf.parse(sequenceStart) ?: return ExecutionStatus.NOT_EXECUTED
+        val executionStartDate = sdf.parse(sequenceStart) ?: return ExecutionStatus.PENDING
         val millisExecutionStart = executionStartDate.time
 
         return when {
-            millisExecutionStart < beforeStartMillis -> ExecutionStatus.PREMATURE
-            millisExecutionStart in beforeStartMillis..afterEndMillis -> ExecutionStatus.ON_TIME
-            millisExecutionStart > afterEndMillis -> {
-                if (allowExecuteAfterDue) {
-                    ExecutionStatus.ON_TIME
-                } else {
-                    ExecutionStatus.EXPIRED
-                }
-            }
-
-            else -> ExecutionStatus.NOT_EXECUTED
+            millisExecutionStart < beforeStartMillis -> ExecutionStatus.PENDING
+            millisExecutionStart in beforeStartMillis until millisSchedule -> ExecutionStatus.PREMATURE
+            millisExecutionStart in millisSchedule..afterEndMillis -> ExecutionStatus.ON_TIME
+            millisExecutionStart > afterEndMillis -> ExecutionStatus.EXPIRED
+            else -> ExecutionStatus.PENDING
         }
     } catch (e: Exception) {
         FirebaseCrashlytics.getInstance().recordException(e)
-        return ExecutionStatus.NOT_EXECUTED
+        return ExecutionStatus.PENDING
     }
 }

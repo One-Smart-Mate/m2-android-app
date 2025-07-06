@@ -56,11 +56,10 @@ fun SequenceCard(
 
     val (statusText, statusColor) =
         when (status) {
-            ExecutionStatus.NOT_EXECUTED -> stringResource(R.string.status_not_executed) to MaterialTheme.colorScheme.error
-            ExecutionStatus.PREMATURE -> stringResource(R.string.status_premature) to Color(0xFFFFA500)
-            ExecutionStatus.EXPIRED -> stringResource(R.string.status_expired) to Color(0xFFFFFF00)
+            ExecutionStatus.PREMATURE -> stringResource(R.string.status_premature) to Color(0xFFFFEB3B)
+            ExecutionStatus.EXPIRED -> stringResource(R.string.status_expired) to Color(0xFFF44336)
             ExecutionStatus.ON_TIME -> stringResource(R.string.status_on_time) to Color(0xFF4CAF50)
-            ExecutionStatus.PENDING -> stringResource(R.string.status_pending) to MaterialTheme.colorScheme.primary
+            ExecutionStatus.PENDING -> stringResource(R.string.status_pending) to Color(0xFF2196F3)
         }
 
     Card(

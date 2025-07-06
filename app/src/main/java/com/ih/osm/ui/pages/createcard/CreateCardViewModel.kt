@@ -408,4 +408,16 @@ class CreateCardViewModel
                 }
             }
         }
+
+        fun loadLevelsFromSuperiorId(id: String) {
+            viewModelScope.launch {
+                val state = getState()
+                if (state.levelList.isEmpty()) {
+                    handleGetLevels()
+                    delay(500)
+                }
+                val levelList = getLevelById(id, 1)
+                setState { copy(nodeLevelList = levelList) }
+            }
+        }
     }
