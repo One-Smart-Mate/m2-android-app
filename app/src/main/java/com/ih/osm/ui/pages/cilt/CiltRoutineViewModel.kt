@@ -13,6 +13,7 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
@@ -234,6 +235,7 @@ class CiltRoutineViewModel
                     cardId = executionId.toString(),
                     url = uri.toString(),
                     type = EvidenceType.IMCR.name,
+                    parentType = EvidenceParentType.EXECUTION,
                 )
             pendingEvidences.add(evidence)
         }
