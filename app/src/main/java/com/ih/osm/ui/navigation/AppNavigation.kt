@@ -76,8 +76,12 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.CreateCard.route,
             arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
-        ) {
-            CreateCardScreen(navController = navController)
+        ) { backStackEntry ->
+            val filter = backStackEntry.arguments?.getString(ARG_CARD_FILTER)
+            CreateCardScreen(
+                navController = navController,
+                filter = filter,
+            )
         }
         composable(Screen.Dev.route) {
             DevScreen(navController)

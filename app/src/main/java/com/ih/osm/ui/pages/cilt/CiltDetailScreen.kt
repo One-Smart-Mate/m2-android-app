@@ -730,7 +730,7 @@ fun SequenceDetailContent(
         Button(
             onClick = {
                 superiorId?.let {
-                    navController.navigateToCreateCard("cilt: $it")
+                    navController.navigateToCreateCard("cilt:$it")
                 }
             },
             // enabled = isStarted,

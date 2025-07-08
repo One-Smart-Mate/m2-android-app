@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.createcard
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -94,6 +95,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateCardScreen(
     navController: NavController,
+    filter: String? = null,
     viewModel: CreateCardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -102,12 +104,11 @@ fun CreateCardScreen(
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
 
-    val filter = navController.currentBackStackEntry?.arguments?.getString("filter")
-
     LaunchedEffect(filter) {
         if (filter?.startsWith("cilt:") == true) {
             val superiorId = filter.removePrefix("cilt:")
-            viewModel.loadLevelsFromSuperiorId(superiorId)
+            viewModel.setCiltMode(true)
+            viewModel.setSuperiorIdCilt(superiorId)
         }
     }
 

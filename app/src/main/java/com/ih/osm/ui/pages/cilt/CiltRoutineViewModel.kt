@@ -285,27 +285,21 @@ class CiltRoutineViewModel
             sequenceId: Int,
             onResult: (String?) -> Unit = {},
         ) {
-            Log.d("ViewModel", "getSuperiorIdFromExecutionRoute llamado con sequenceId: $sequenceId")
             viewModelScope.launch {
                 // Retrieves the sequence object by its ID
                 val sequence = getSequenceById(sequenceId)
                 // Retrieves the first execution associated with the sequence (if any)
                 val execution = sequence?.executions?.firstOrNull()
-                Log.d("ViewModel", "Sequence: $sequence")
-                Log.d("ViewModel", "Execution: $execution")
                 // Gets the route string from the execution
                 val route = execution?.route
-                Log.d("ViewModel", "Route: $route")
                 // If the route is null or blank, sets superiorId to null and returns early
                 if (route.isNullOrBlank()) {
-                    Log.d("ViewModel", "Route es null o blank")
                     setState { copy(superiorId = null) }
                     onResult(null)
                     return@launch
                 }
                 // Extracts the last node ID from the route
                 val lastNodeId = route.split("/").last().trim()
-                Log.d("ViewModel", "Last node id del route: $lastNodeId")
 
                 kotlin.runCatching {
                     getLevelsUseCase()
@@ -314,7 +308,6 @@ class CiltRoutineViewModel
                     val matchingLevel = levels.find { it.name.trim().equals(lastNodeId.trim(), ignoreCase = true) }
                     // Retrieves the superior ID from the matching level
                     val id = matchingLevel?.superiorId
-                    Log.d("ViewModel", "Superior ID encontrado: $id")
                     // Updates the ViewModel state and returns the result via the callback
                     setState { copy(superiorId = id) }
                     onResult(id)

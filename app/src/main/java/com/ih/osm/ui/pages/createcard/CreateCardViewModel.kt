@@ -57,6 +57,9 @@ class CreateCardViewModel
         private val fileHelper: FileHelper,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
+        private var isCiltMode = false
+        private var superiorIdCilt: String? = null
+
         data class UiState(
             val cardTypeList: List<NodeCardItem> = emptyList(),
             val selectedCardType: String = EMPTY,
@@ -78,6 +81,7 @@ class CreateCardViewModel
             val isLoading: Boolean = false,
             val isCardSuccess: Boolean = false,
             val cardsZone: List<Card> = emptyList(),
+            val levelsLoaded: Boolean = false,
         )
 
         init {
@@ -208,10 +212,31 @@ class CreateCardViewModel
             }
         }
 
+        fun setCiltMode(enabled: Boolean) {
+            isCiltMode = enabled
+            if (!enabled) {
+                superiorIdCilt = null
+            }
+        }
+
+        fun setSuperiorIdCilt(id: String?) {
+            if (isCiltMode) {
+                superiorIdCilt = id
+            }
+        }
+
         private fun handleSetPriority(id: String) {
             viewModelScope.launch {
-                val levelList = getLevelById("0", 0)
+                val rootId =
+                    if (isCiltMode) {
+                        superiorIdCilt ?: "0"
+                    } else {
+                        "0"
+                    }
+                val levelList = getLevelById(rootId, 0)
                 setState { copy(selectedPriority = id, nodeLevelList = levelList) }
+
+                superiorIdCilt = null
             }
         }
 
@@ -304,7 +329,7 @@ class CreateCardViewModel
                 kotlin.runCatching {
                     callUseCase { getLevelsUseCase() }
                 }.onSuccess {
-                    setState { copy(levelList = it.toNodeItemList()) }
+                    setState { copy(levelList = it.toNodeItemList(), levelsLoaded = true) }
                     cleanScreenStates()
                     checkCatalogs()
                 }.onFailure {
@@ -406,18 +431,6 @@ class CreateCardViewModel
                         else -> {}
                     }
                 }
-            }
-        }
-
-        fun loadLevelsFromSuperiorId(id: String) {
-            viewModelScope.launch {
-                val state = getState()
-                if (state.levelList.isEmpty()) {
-                    handleGetLevels()
-                    delay(500)
-                }
-                val levelList = getLevelById(id, 1)
-                setState { copy(nodeLevelList = levelList) }
             }
         }
     }
