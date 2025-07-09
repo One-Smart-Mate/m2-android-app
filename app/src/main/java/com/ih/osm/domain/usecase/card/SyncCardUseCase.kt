@@ -8,6 +8,7 @@ import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.isLocalCard
 import com.ih.osm.domain.model.toCardRequest
+import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -24,6 +25,7 @@ class SyncCardUseCaseImpl
         private val firebaseStorageRepository: FirebaseStorageRepository,
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val evidenceRepository: EvidenceRepository,
+        private val authRepository: AuthRepository,
     ) : SyncCardUseCase {
         override suspend fun invoke(card: Card): Card? {
             return try {
@@ -35,24 +37,22 @@ class SyncCardUseCaseImpl
                         evidenceRepository.delete(evidence.id)
                     }
                 }
-                Log.d("SyncCardUseCase", "Es local: ${card.isLocalCard()}")
 
+                var siteId = authRepository.getSiteId()
+                var user = authRepository.get()
                 if (card.isLocalCard()) {
-                    val cardRequest =
-                        try {
-                            Log.d("SyncCardUseCase", "Transformando Card a CardRequest...")
-                            card.toCardRequest(evidences)
-                        } catch (e: Exception) {
-                            Log.e("SynCardUseCase", "Error en toCardRequest: ${e.message}")
-                            FirebaseCrashlytics.getInstance().recordException(e)
-                            return null
-                        }
-                    Log.d("SyncCardUseCase", "CardRequest: $cardRequest")
+                    val newCard =
+                        card.copy(
+                            siteId = siteId,
+                            creatorId = user?.userId,
+                            creatorName = user?.name.orEmpty(),
+                        )
+
+                    val cardRequest = newCard.toCardRequest(evidences)
+
                     LoggerHelperManager.logCreateCardRequest(cardRequest)
                     firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
-                    Log.d("SyncCardUseCase", "Subiendo tarjeta remota...")
                     val remoteCard = cardRepository.saveRemote(cardRequest)
-                    Log.d("SyncCardUseCase", "Tarjeta subida: $remoteCard")
                     cardRepository.delete(card.uuid)
                     cardRepository.save(remoteCard)
 

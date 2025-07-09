@@ -249,14 +249,12 @@ class CiltRoutineViewModel
 
                 var remoteCardId = 0
                 val localCard = sharedPreferences.getCiltCard()
-                Log.d("CardSync", "Local card found: $localCard")
 
                 if (localCard != null) {
                     kotlin.runCatching {
                         callUseCase { syncCardUseCase(localCard) }
                     }.onSuccess { syncedCard ->
                         remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
-                        Log.d("CardSync", "Synced card: $syncedCard")
                     }.onFailure {
                         LoggerHelperManager.logException(it)
                         setState {

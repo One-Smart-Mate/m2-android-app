@@ -363,9 +363,8 @@ class CreateCardViewModel
                 kotlin.runCatching {
                     callUseCase { saveCardUseCase(card) }
                 }.onSuccess {
-                    Log.e("Test", "Success $it")
+                    Log.e("Test", "Success $card")
                     setState { copy(isCardSuccess = true) }
-                    Log.d("CardSync", "Cilt mode: $isCiltMode, superiorIdCilt: $superiorIdCilt")
                     if (isCiltMode && superiorIdCilt != null && superiorIdCilt != "0") {
                         sharedPreferences.saveCiltCard(card)
                     }
