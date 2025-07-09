@@ -3,10 +3,15 @@ package com.ih.osm.ui.pages.cilt
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
+import com.ih.osm.core.network.NetworkConnection
+import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.notifications.NotificationManager
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
@@ -15,10 +20,12 @@ import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
+import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
+import com.ih.osm.domain.usecase.card.SyncCardUseCase
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
@@ -42,18 +49,45 @@ class CiltRoutineViewModel
         private val getOplByIdUseCase: GetOplByIdUseCase,
         private val getLevelsUseCase: GetLevelsUseCase,
         private val createCiltEvidenceUseCase: CreateCiltEvidenceUseCase,
+        private val syncCardUseCase: SyncCardUseCase,
         private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
         private val notificationManager: NotificationManager,
         private val authRepository: AuthRepository,
         private val firebaseStorageRepository: FirebaseStorageRepository,
+        private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CiltRoutineViewModel.UiState>(UiState()) {
         private val pendingEvidences = mutableListOf<Evidence>()
 
         init {
             handleGetCilts()
+
+            NetworkConnection.initObserve(
+                object : NetworkConnectionStatus {
+                    override fun onNetworkChange(networkStatus: NetworkStatus) {
+                        setState { copy(networkStatus = networkStatus) }
+                    }
+                },
+            )
         }
+
+        var isStarted = mutableStateOf(false)
+            private set
+        var isFinished = mutableStateOf(false)
+            private set
+        var parameterFound = mutableStateOf("")
+            private set
+        var finalParameter = mutableStateOf("")
+            private set
+        var isParameterOk = mutableStateOf(true)
+            private set
+        var isEvidenceAtCreation = mutableStateOf(false)
+            private set
+        var isEvidenceAtFinal = mutableStateOf(false)
+            private set
+        val evidenceUrisBefore = mutableStateListOf<Uri>()
+        val evidenceUrisAfter = mutableStateListOf<Uri>()
 
         data class UiState(
             val ciltData: CiltData? = null,
@@ -66,6 +100,7 @@ class CiltRoutineViewModel
             val isSequenceFinished: Boolean = false,
             val isUploadingEvidence: Boolean = false,
             val superiorId: String? = null,
+            val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS,
         )
 
         fun handleGetCilts() {
@@ -186,9 +221,64 @@ class CiltRoutineViewModel
             finalParameter: String,
             evidenceAtFinal: Boolean,
             nok: Boolean,
-            amTagId: Int,
         ) {
             viewModelScope.launch {
+                val state = getState()
+
+                if (!NetworkConnection.isConnected() ||
+                    state.networkStatus == NetworkStatus.NO_INTERNET_ACCESS ||
+                    state.networkStatus == NetworkStatus.WIFI_DISCONNECTED ||
+                    state.networkStatus == NetworkStatus.DATA_DISCONNECTED
+                ) {
+                    setState {
+                        copy(message = context.getString(R.string.please_connect_to_internet))
+                    }
+                    return@launch
+                }
+
+                if (state.networkStatus == NetworkStatus.DATA_CONNECTED &&
+                    sharedPreferences.getNetworkPreference().isEmpty()
+                ) {
+                    setState {
+                        copy(message = context.getString(R.string.network_preferences_allowed))
+                    }
+                    return@launch
+                }
+
+                setState { copy(isLoading = true) }
+
+                var remoteCardId = 0
+                val localCard = sharedPreferences.getCiltCard()
+                Log.d("CardSync", "Local card found: $localCard")
+
+                if (localCard != null) {
+                    kotlin.runCatching {
+                        callUseCase { syncCardUseCase(localCard) }
+                    }.onSuccess { syncedCard ->
+                        remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
+                        Log.d("CardSync", "Synced card: $syncedCard")
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = context.getString(R.string.error_syncing_card),
+                            )
+                        }
+                        return@launch
+                    }
+                }
+
+                if (nok && remoteCardId == 0) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.error_card_required),
+                        )
+                    }
+                    return@launch
+                }
+
                 val stopDate = getCurrentDateTimeUtc()
                 val request =
                     StopSequenceExecutionRequest(
@@ -199,17 +289,19 @@ class CiltRoutineViewModel
                         finalParameter = finalParameter,
                         evidenceAtFinal = evidenceAtFinal,
                         nok = nok,
-                        amTagId = amTagId,
+                        amTagId = if (nok) remoteCardId else 0,
                     )
 
                 kotlin.runCatching {
                     callUseCase { stopSequenceExecutionUseCase(request) }
                 }.onSuccess {
+                    sharedPreferences.removeCiltCard()
                     setState { copy(isUploadingEvidence = true) }
                     uploadPendingEvidences(executionId)
                     setState {
                         copy(isUploadingEvidence = false, isSequenceFinished = true)
                     }
+                    resetExecutionState()
                     notificationManager.buildNotificationSequenceFinished()
                 }.onFailure {
                     LoggerHelperManager.logException(it)
@@ -305,7 +397,8 @@ class CiltRoutineViewModel
                     getLevelsUseCase()
                 }.onSuccess { levels ->
                     // Finds the level that matches the last node ID
-                    val matchingLevel = levels.find { it.name.trim().equals(lastNodeId.trim(), ignoreCase = true) }
+                    val matchingLevel =
+                        levels.find { it.name.trim().equals(lastNodeId.trim(), ignoreCase = true) }
                     // Retrieves the superior ID from the matching level
                     val id = matchingLevel?.superiorId
                     // Updates the ViewModel state and returns the result via the callback
@@ -317,5 +410,61 @@ class CiltRoutineViewModel
                     onResult(null)
                 }
             }
+        }
+
+        fun setStarted(value: Boolean) {
+            isStarted.value = value
+        }
+
+        fun setFinished(value: Boolean) {
+            isFinished.value = value
+        }
+
+        fun setParameterFound(value: String) {
+            parameterFound.value = value
+        }
+
+        fun setFinalParameter(value: String) {
+            finalParameter.value = value
+        }
+
+        fun setParameterOk(value: Boolean) {
+            isParameterOk.value = value
+        }
+
+        fun setEvidenceAtCreation(value: Boolean) {
+            isEvidenceAtCreation.value = value
+        }
+
+        fun setEvidenceAtFinal(value: Boolean) {
+            isEvidenceAtFinal.value = value
+        }
+
+        fun addEvidenceBefore(uri: Uri) {
+            evidenceUrisBefore.add(uri)
+        }
+
+        fun addEvidenceAfter(uri: Uri) {
+            evidenceUrisAfter.add(uri)
+        }
+
+        fun removeEvidenceBefore(url: String) {
+            evidenceUrisBefore.removeIf { it.toString() == url }
+        }
+
+        fun removeEvidenceAfter(url: String) {
+            evidenceUrisAfter.removeIf { it.toString() == url }
+        }
+
+        fun resetExecutionState() {
+            isStarted.value = false
+            isFinished.value = false
+            parameterFound.value = ""
+            finalParameter.value = ""
+            isParameterOk.value = true
+            isEvidenceAtCreation.value = false
+            isEvidenceAtFinal.value = false
+            evidenceUrisBefore.clear()
+            evidenceUrisAfter.clear()
         }
     }

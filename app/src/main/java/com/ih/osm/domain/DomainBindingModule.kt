@@ -14,6 +14,8 @@ import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCaseImpl
 import com.ih.osm.domain.usecase.card.SaveCardUseCase
 import com.ih.osm.domain.usecase.card.SaveCardUseCaseImpl
+import com.ih.osm.domain.usecase.card.SyncCardUseCase
+import com.ih.osm.domain.usecase.card.SyncCardUseCaseImpl
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCaseImpl
 import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCase
@@ -126,8 +128,8 @@ interface DomainBindingModule {
     @Binds
     fun bindSyncCardsUseCase(syncCardsUseCaseImpl: SyncCardsUseCaseImpl): SyncCardsUseCase
 
-//    @Binds
-//    fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
+    @Binds
+    fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
 
     @Binds
     fun bindGetEmployeesUseCase(getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl): GetEmployeesUseCase

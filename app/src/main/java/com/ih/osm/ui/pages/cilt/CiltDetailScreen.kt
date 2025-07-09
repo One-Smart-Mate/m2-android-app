@@ -34,7 +34,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -156,23 +155,14 @@ fun CiltDetailScreen(
                                     executionId,
                                 )
                             },
-                            onStopExecution = {
-                                    executionId,
-                                    initialParameter,
-                                    evidenceAtCreation,
-                                    finalParameter,
-                                    evidenceAtFinal,
-                                    nok,
-                                    amTagId,
-                                ->
+                            onStopExecution = { executionId ->
                                 viewModel.stopSequenceExecution(
                                     executionId = executionId,
-                                    initialParameter = initialParameter,
-                                    evidenceAtCreation = evidenceAtCreation,
-                                    finalParameter = finalParameter,
-                                    evidenceAtFinal = evidenceAtFinal,
-                                    nok = nok,
-                                    amTagId = amTagId,
+                                    initialParameter = viewModel.parameterFound.value,
+                                    evidenceAtCreation = viewModel.isEvidenceAtCreation.value,
+                                    finalParameter = viewModel.finalParameter.value,
+                                    evidenceAtFinal = viewModel.isEvidenceAtFinal.value,
+                                    nok = !viewModel.isParameterOk.value,
                                 )
                             },
                             onCreateEvidence = { executionId, imageUri ->
@@ -240,19 +230,8 @@ fun SequenceDetailContent(
     navController: NavController,
     viewModel: CiltRoutineViewModel,
     onStartExecution: (Int) -> Unit,
-    onStopExecution: (
-        executionId: Int,
-        initialParameter: String,
-        evidenceAtCreation: Boolean,
-        finalParameter: String,
-        evidenceAtFinal: Boolean,
-        nok: Boolean,
-        amTagId: Int,
-    ) -> Unit,
-    onCreateEvidence: (
-        executionId: Int,
-        imageUri: Uri,
-    ) -> Unit,
+    onStopExecution: (executionId: Int) -> Unit,
+    onCreateEvidence: (executionId: Int, imageUri: Uri) -> Unit,
     removeEvidence: (String) -> Unit,
     opl: Opl?,
     getOplById: (String) -> Unit,
@@ -262,19 +241,21 @@ fun SequenceDetailContent(
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
 ) {
-    var parameterFound by remember { mutableStateOf("") }
-    var finalParameter by remember { mutableStateOf("") }
-    var isParameterOk by remember { mutableStateOf(true) }
-    var isEvidenceAtCreation by remember { mutableStateOf(false) }
-    var isEvidenceAtFinal by remember { mutableStateOf(false) }
-    var isStarted by remember { mutableStateOf(false) }
-    var isFinished by remember { mutableStateOf(false) }
-    var elapsedTime by remember { mutableStateOf(0) }
     val context = LocalContext.current
+
+    val isStarted = viewModel.isStarted.value
+    val isFinished = viewModel.isFinished.value
+    val parameterFound = viewModel.parameterFound.value
+    val finalParameter = viewModel.finalParameter.value
+    val isParameterOk = viewModel.isParameterOk.value
+    val isEvidenceAtCreation = viewModel.isEvidenceAtCreation.value
+    val isEvidenceAtFinal = viewModel.isEvidenceAtFinal.value
+    val evidenceUrisBefore = viewModel.evidenceUrisBefore
+    val evidenceUrisAfter = viewModel.evidenceUrisAfter
+
+    var elapsedTime by remember { mutableStateOf(0) }
     val totalDuration = sequence.executions.firstOrNull()?.duration ?: 0
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
-    val evidenceUrisBefore = remember { mutableStateListOf<Uri>() }
-    val evidenceUrisAfter = remember { mutableStateListOf<Uri>() }
 
     LaunchedEffect(isStarted) {
         while (isStarted) {
@@ -466,7 +447,7 @@ fun SequenceDetailContent(
             onClick = {
                 if (canExecute) {
                     onStartExecution(executionId)
-                    isStarted = true
+                    viewModel.setStarted(true)
                 } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
@@ -487,16 +468,8 @@ fun SequenceDetailContent(
             onClick = {
                 // if (isStarted && !isFinished) {
                 if (isStarted) {
-                    onStopExecution(
-                        executionId,
-                        parameterFound,
-                        isEvidenceAtCreation,
-                        finalParameter,
-                        isEvidenceAtFinal,
-                        !isParameterOk,
-                        0,
-                    )
-                    isFinished = true
+                    onStopExecution(executionId)
+                    viewModel.setFinished(true)
                     // isStarted = false
                 }
             },
@@ -560,7 +533,7 @@ fun SequenceDetailContent(
         placeholder = stringResource(R.string.enter_parameter_found),
         icon = Icons.Outlined.Menu,
         // onChange = { if (isStarted) parameterFound = it },
-        onChange = { parameterFound = it },
+        onChange = { viewModel.setParameterFound(it) },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -576,8 +549,8 @@ fun SequenceDetailContent(
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
                 onCreateEvidence(execution.id, imageUri)
-                evidenceUrisBefore.add(imageUri)
-                isEvidenceAtCreation = true
+                viewModel.addEvidenceBefore(imageUri)
+                viewModel.setEvidenceAtCreation(true)
             }
         }
     }
@@ -592,7 +565,7 @@ fun SequenceDetailContent(
                 )
             },
         onDeleteEvidence = { evidence ->
-            evidenceUrisBefore.removeIf { it.toString() == evidence.url }
+            viewModel.removeEvidenceBefore(evidence.url)
             removeEvidence(evidence.url)
         },
     )
@@ -630,7 +603,7 @@ fun SequenceDetailContent(
         placeholder = stringResource(R.string.enter_final_parameter),
         icon = Icons.Outlined.Menu,
         // onChange = { if (isStarted) finalParameter = it },
-        onChange = { finalParameter = it },
+        onChange = { viewModel.setFinalParameter(it) },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -646,8 +619,8 @@ fun SequenceDetailContent(
             val execution = sequence.executions.firstOrNull()
             if (execution != null) {
                 onCreateEvidence(execution.id, imageUri)
-                evidenceUrisAfter.add(imageUri)
-                isEvidenceAtFinal = true
+                viewModel.addEvidenceAfter(imageUri)
+                viewModel.setEvidenceAtFinal(true)
             }
         }
     }
@@ -662,7 +635,7 @@ fun SequenceDetailContent(
                 )
             },
         onDeleteEvidence = { evidence ->
-            evidenceUrisAfter.removeIf { it.toString() == evidence.url }
+            viewModel.removeEvidenceAfter(evidence.url)
             removeEvidence(evidence.url)
         },
     )
@@ -710,7 +683,7 @@ fun SequenceDetailContent(
         ) {
             RadioButton(
                 selected = isParameterOk,
-                onClick = { isParameterOk = true },
+                onClick = { viewModel.setParameterOk(true) },
             )
             Text(
                 text = stringResource(R.string.yes_option_parameter_ok),
@@ -718,7 +691,7 @@ fun SequenceDetailContent(
             )
             RadioButton(
                 selected = !isParameterOk,
-                onClick = { isParameterOk = false },
+                onClick = { viewModel.setParameterOk(false) },
             )
             Text(text = stringResource(R.string.no_option_parameter_ok))
         }

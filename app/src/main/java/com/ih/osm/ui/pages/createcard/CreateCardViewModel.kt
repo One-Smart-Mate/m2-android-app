@@ -8,6 +8,7 @@ import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
@@ -55,6 +56,7 @@ class CreateCardViewModel
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
         private val fileHelper: FileHelper,
+        private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
         private var isCiltMode = false
@@ -236,7 +238,7 @@ class CreateCardViewModel
                 val levelList = getLevelById(rootId, 0)
                 setState { copy(selectedPriority = id, nodeLevelList = levelList) }
 
-                superiorIdCilt = null
+                // superiorIdCilt = null
             }
         }
 
@@ -363,6 +365,10 @@ class CreateCardViewModel
                 }.onSuccess {
                     Log.e("Test", "Success $it")
                     setState { copy(isCardSuccess = true) }
+                    Log.d("CardSync", "Cilt mode: $isCiltMode, superiorIdCilt: $superiorIdCilt")
+                    if (isCiltMode && superiorIdCilt != null && superiorIdCilt != "0") {
+                        sharedPreferences.saveCiltCard(card)
+                    }
                     cleanScreenStates()
                 }.onFailure {
                     Log.e("test", "Failure $it")

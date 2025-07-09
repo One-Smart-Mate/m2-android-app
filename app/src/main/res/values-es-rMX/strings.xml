@@ -278,7 +278,8 @@
     <string name="no_option_parameter_ok">No</string>
     <string name="error_level_not_found_from_route">No se encontró el nivel correspondiente a la ruta</string>
     <string name="error_missing_route">No hay ruta disponible para esta secuencia</string>
-
+    <string name="error_card_required">Se debe crear una tarjeta AM</string>
+    <string name="error_syncing_card">Error al sincronizar la tarjeta AM</string>
 
     <string name="opl_screen_title">OPL</string>
     <string name="opl_list_empty_title">No se encontraron OPLs</string>
