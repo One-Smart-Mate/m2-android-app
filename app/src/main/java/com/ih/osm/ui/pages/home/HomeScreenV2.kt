@@ -23,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.List
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Settings
@@ -329,6 +330,14 @@ private fun HomeContent(
                     description = stringResource(R.string.opl_sop_documents),
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
+                }
+
+                HomeSectionCardItem(
+                    title = stringResource(R.string.fast_password),
+                    icon = Icons.Outlined.Lock,
+                    description = stringResource(R.string.change_user),
+                ) {
+                    // onClick(HomeActionClick.CILT_ROUTINE)
                 }
             }
         }

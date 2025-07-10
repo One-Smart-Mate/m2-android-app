@@ -278,4 +278,7 @@
     <string name="pdf_file_unreadable">Archivo no legible</string>
     <string name="error_loading_opls">Error al cargar OPLs: %1$s</string>
     <string name="select_level">Selecciona un nivel para ver OPLs</string>
+
+    <string name="fast_password">Contraseña rápida</string>
+    <string name="change_user">Cambiar usuario</string>
 </resources>
