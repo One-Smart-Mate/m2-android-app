@@ -13,7 +13,6 @@ import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.model.CiltEvidenceRequest
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
@@ -23,7 +22,6 @@ import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
-import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.card.SyncCardUseCase
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
@@ -53,7 +51,6 @@ class CiltRoutineViewModel
         private val startSequenceExecutionUseCase: StartSequenceExecutionUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
         private val notificationManager: NotificationManager,
-        private val authRepository: AuthRepository,
         private val firebaseStorageRepository: FirebaseStorageRepository,
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
@@ -107,23 +104,10 @@ class CiltRoutineViewModel
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
 
-                val userId = authRepository.get()?.userId?.toIntOrNull()
                 val date = getCurrentDate()
 
-                if (userId == null) {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = context.getString(R.string.error_user_id_not_found),
-                        )
-                    }
-                    return@launch
-                }
-
-                val body = GetCiltsRequest(userId, date)
-
                 kotlin.runCatching {
-                    callUseCase { getCiltsUseCase(body) }
+                    callUseCase { getCiltsUseCase(date) }
                 }.onSuccess { data ->
                     setState {
                         copy(

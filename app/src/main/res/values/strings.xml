@@ -241,7 +241,7 @@
     <string name="final_parameter">Final parameter</string>
     <string name="enter_final_parameter">Enter the final parameter</string>
     <string name="view_remediation">View remediation OPL or SOP</string>
-    <string name="stop_reason_label">Stoppage reason:</string>
+    <string name="stop_reason_label">Stoppage reason</string>
     <string name="stop_reason_yes">Yes</string>
     <string name="stop_reason_no">No</string>
     <string name="generate_am_card">NOK Generate AM card</string>

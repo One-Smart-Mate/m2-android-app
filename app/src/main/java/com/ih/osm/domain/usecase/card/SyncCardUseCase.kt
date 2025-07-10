@@ -18,54 +18,54 @@ interface SyncCardUseCase {
 }
 
 class SyncCardUseCaseImpl
-@Inject
-constructor(
-    private val cardRepository: CardRepository,
-    private val firebaseStorageRepository: FirebaseStorageRepository,
-    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val evidenceRepository: EvidenceRepository,
-    private val authRepository: AuthRepository,
-) : SyncCardUseCase {
-    override suspend fun invoke(card: Card): Card? {
-        return try {
-            val evidences = mutableListOf<CreateEvidenceRequest>()
-            card.evidences?.forEach { evidence ->
-                val url = firebaseStorageRepository.uploadEvidence(evidence)
-                if (url.isNotEmpty()) {
-                    evidences.add(CreateEvidenceRequest(evidence.type, url))
-                    evidenceRepository.delete(evidence.id)
+    @Inject
+    constructor(
+        private val cardRepository: CardRepository,
+        private val firebaseStorageRepository: FirebaseStorageRepository,
+        private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+        private val evidenceRepository: EvidenceRepository,
+        private val authRepository: AuthRepository,
+    ) : SyncCardUseCase {
+        override suspend fun invoke(card: Card): Card? {
+            return try {
+                val evidences = mutableListOf<CreateEvidenceRequest>()
+                card.evidences?.forEach { evidence ->
+                    val url = firebaseStorageRepository.uploadEvidence(evidence)
+                    if (url.isNotEmpty()) {
+                        evidences.add(CreateEvidenceRequest(evidence.type, url))
+                        evidenceRepository.delete(evidence.id)
+                    }
                 }
+
+                var siteId = authRepository.getSiteId()
+                var user = authRepository.get()
+                if (card.isLocalCard()) {
+                    val newCard =
+                        card.copy(
+                            siteId = siteId,
+                            creatorId = user?.userId,
+                            creatorName = user?.name.orEmpty(),
+                        )
+
+                    val cardRequest = newCard.toCardRequest(evidences)
+
+                    LoggerHelperManager.logCreateCardRequest(cardRequest)
+                    firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
+                    val remoteCard = cardRepository.saveRemote(cardRequest)
+                    cardRepository.delete(card.uuid)
+                    cardRepository.save(remoteCard)
+
+                    LoggerHelperManager.logCreateCardRequestSuccess(remoteCard)
+                    firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
+
+                    remoteCard
+                } else {
+                    card
+                }
+            } catch (e: Exception) {
+                LoggerHelperManager.logException(e)
+                FirebaseCrashlytics.getInstance().recordException(e)
+                null
             }
-
-            var siteId = authRepository.getSiteId()
-            var user = authRepository.get()
-            if (card.isLocalCard()) {
-                val newCard =
-                    card.copy(
-                        siteId = siteId,
-                        creatorId = user?.userId,
-                        creatorName = user?.name.orEmpty(),
-                    )
-
-                val cardRequest = newCard.toCardRequest(evidences)
-
-                LoggerHelperManager.logCreateCardRequest(cardRequest)
-                firebaseAnalyticsHelper.logCreateRemoteCardRequest(cardRequest)
-                val remoteCard = cardRepository.saveRemote(cardRequest)
-                cardRepository.delete(card.uuid)
-                cardRepository.save(remoteCard)
-
-                LoggerHelperManager.logCreateCardRequestSuccess(remoteCard)
-                firebaseAnalyticsHelper.logCreateRemoteCard(remoteCard)
-
-                remoteCard
-            } else {
-                card
-            }
-        } catch (e: Exception) {
-            LoggerHelperManager.logException(e)
-            FirebaseCrashlytics.getInstance().recordException(e)
-            null
         }
     }
-}
