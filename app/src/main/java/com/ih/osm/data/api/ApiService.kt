@@ -10,7 +10,6 @@ import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
 import com.ih.osm.data.model.GetCiltResponse
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
@@ -139,9 +138,10 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @POST("cilt-mstr/user")
+    @GET("cilt-mstr/user-read-only/{userId}/{date}")
     fun getCilts(
-        @Body body: GetCiltsRequest,
+        @Path("userId") userId: String,
+        @Path("date") date: String,
     ): Call<GetCiltResponse>
 
     @GET("/opl-mstr/{id}")

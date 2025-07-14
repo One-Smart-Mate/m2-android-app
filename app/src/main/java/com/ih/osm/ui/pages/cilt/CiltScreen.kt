@@ -48,12 +48,14 @@ fun CiltScreen(
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
     LaunchedEffect(Unit) {
-        viewModel.handleGetCilts()
+        viewModel.process(CiltAction.GetCilts)
     }
 
     LaunchedEffect(state.isSequenceFinished) {
-        viewModel.handleGetCilts()
-        viewModel.resetSequenceFinishedFlag()
+        if (state.isSequenceFinished) {
+            viewModel.process(CiltAction.GetCilts)
+            viewModel.resetSequenceFinishedFlag()
+        }
     }
 
     if (state.isLoading) {
@@ -62,13 +64,8 @@ fun CiltScreen(
         CiltContent(
             navController = navController,
             data = state.ciltData,
-        ) { action ->
-            /*
-            when (action) {
-                CiltAction.GetCilts -> viewModel.handleGetCilts()
-            }
-             */
-        }
+            onAction = { action -> viewModel.process(action) },
+        )
     }
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -88,6 +85,7 @@ fun CiltScreen(
                 if (state.message.isNotEmpty() && !state.isLoading) {
                     coroutineScope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
+                        viewModel.process(CiltAction.CleanMessage)
                     }
                 }
             }
@@ -127,7 +125,7 @@ fun CiltContent(
                             modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
                         ) {
-                            //
+                            onAction(CiltAction.GetCilts)
                         }
                         CustomButton(
                             text = stringResource(R.string.download_third_party_cilt),

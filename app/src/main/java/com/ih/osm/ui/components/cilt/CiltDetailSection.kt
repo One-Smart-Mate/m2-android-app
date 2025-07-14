@@ -126,9 +126,14 @@ fun CiltDetailSection(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
-                        cilt.sequences.forEachIndexed { index, sequence ->
-                            SequenceCard(
-                                sequence = sequence,
+                        val executions =
+                            cilt.sequences
+                                .flatMap { it.executions }
+                                .sortedBy { it.secuenceSchedule }
+
+                        executions.forEach { execution ->
+                            ExecutionCard(
+                                execution = execution,
                                 navController = navController,
                             )
                             Spacer(modifier = Modifier.height(16.dp))

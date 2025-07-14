@@ -20,4 +20,7 @@ enum class EvidenceType(type: String) {
     IMPS(IMG_PS),
     AUPS(AUDIO_PS),
     VIPS(VIDEO_PS),
+
+    INITIAL("IMG_INITIAL"),
+    FINAL("IMG_FINAL"),
 }

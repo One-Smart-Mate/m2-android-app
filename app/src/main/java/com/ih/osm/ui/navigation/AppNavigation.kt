@@ -132,13 +132,13 @@ fun AppNavigation(startDestination: String) {
             route = Screen.CiltDetail.route,
             arguments =
                 listOf(
-                    navArgument("sequenceId") {
+                    navArgument("executionId") {
                         type = NavType.IntType
                     },
                 ),
         ) { backStackEntry ->
-            val sequenceId = backStackEntry.arguments?.getInt("sequenceId") ?: 0
-            CiltDetailScreen(sequenceId = sequenceId, navController = navController)
+            val executionId = backStackEntry.arguments?.getInt("executionId") ?: 0
+            CiltDetailScreen(executionId = executionId, navController = navController)
         }
 
         composable(

@@ -272,7 +272,7 @@
     <string name="cannot_execute_now">No se puede ejecutar en este momento</string>
     <string name="sequence_out_of_time">Secuencia fuera de tiempo</string>
     <string name="execution_error">Error al validar la ejecución</string>
-    <string name="execution_wait_time">Faltan %1$02d:%2$02d para poder ejecutarse</string>
+    <string name="execution_wait_time">Faltan %1$s para poder ejecutarse</string>
     <string name="execution_out_of_window">Secuencia fuera de ventana de ejecución</string>
     <string name="yes_option_parameter_ok">Sí</string>
     <string name="no_option_parameter_ok">No</string>

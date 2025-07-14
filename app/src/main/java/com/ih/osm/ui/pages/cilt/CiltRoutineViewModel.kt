@@ -2,7 +2,6 @@ package com.ih.osm.ui.pages.cilt
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -13,16 +12,15 @@ import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.notifications.NotificationManager
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.model.CiltEvidenceRequest
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
+import com.ih.osm.domain.model.Execution
 import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.Opl
-import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.card.SyncCardUseCase
@@ -35,6 +33,7 @@ import com.ih.osm.domain.usecase.level.GetLevelsUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getCurrentDate
 import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
+import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -103,27 +102,14 @@ class CiltRoutineViewModel
             val networkStatus: NetworkStatus = NetworkStatus.NO_INTERNET_ACCESS,
         )
 
-        fun handleGetCilts() {
+        private fun handleGetCilts() {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
 
-                val userId = authRepository.get()?.userId?.toIntOrNull()
                 val date = getCurrentDate()
 
-                if (userId == null) {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = context.getString(R.string.error_user_id_not_found),
-                        )
-                    }
-                    return@launch
-                }
-
-                val body = GetCiltsRequest(userId, date)
-
                 kotlin.runCatching {
-                    callUseCase { getCiltsUseCase(body) }
+                    callUseCase { getCiltsUseCase(date) }
                 }.onSuccess { data ->
                     setState {
                         copy(
@@ -145,7 +131,7 @@ class CiltRoutineViewModel
             }
         }
 
-        fun getOplById(id: String) {
+        private fun getOplById(id: String) {
             viewModelScope.launch {
                 kotlin.runCatching {
                     callUseCase { getOplByIdUseCase(id) }
@@ -166,7 +152,7 @@ class CiltRoutineViewModel
             }
         }
 
-        fun getRemediationOplById(id: String) {
+        private fun getRemediationOplById(id: String) {
             viewModelScope.launch {
                 kotlin.runCatching {
                     callUseCase { getOplByIdUseCase(id) }
@@ -187,7 +173,7 @@ class CiltRoutineViewModel
             }
         }
 
-        fun startSequenceExecution(executionId: Int) {
+        private fun startSequenceExecution(executionId: Int) {
             viewModelScope.launch {
                 val startDate = getCurrentDateTimeUtc()
                 val request =
@@ -214,7 +200,7 @@ class CiltRoutineViewModel
             }
         }
 
-        fun stopSequenceExecution(
+        private fun stopSequenceExecution(
             executionId: Int,
             initialParameter: String,
             evidenceAtCreation: Boolean,
@@ -316,24 +302,6 @@ class CiltRoutineViewModel
             }
         }
 
-        fun addLocalEvidence(
-            executionId: Int,
-            uri: Uri,
-        ) {
-            val evidence =
-                Evidence.fromCreateEvidence(
-                    cardId = executionId.toString(),
-                    url = uri.toString(),
-                    type = EvidenceType.IMCR.name,
-                    parentType = EvidenceParentType.EXECUTION,
-                )
-            pendingEvidences.add(evidence)
-        }
-
-        fun removeLocalEvidence(evidenceUrl: String) {
-            pendingEvidences.removeIf { it.url == evidenceUrl }
-        }
-
         private suspend fun uploadPendingEvidences(executionId: Int) {
             val createdAt = getCurrentDateTimeUtc()
 
@@ -345,6 +313,7 @@ class CiltRoutineViewModel
                         CiltEvidenceRequest(
                             executionId = executionId,
                             evidenceUrl = uploadedUrl,
+                            type = evidence.type,
                             createdAt = createdAt,
                         )
                     kotlin.runCatching {
@@ -357,29 +326,21 @@ class CiltRoutineViewModel
             pendingEvidences.clear()
         }
 
-        fun getSequenceById(sequenceId: Int): Sequence? {
-            val execution =
-                state.value.ciltData?.positions
-                    ?.flatMap { it.ciltMasters }
-                    ?.flatMap { it.sequences }
-                    ?.find { it.id == sequenceId }
-            Log.e("test", "Execution $execution")
-            return execution
-        }
-
-        fun resetSequenceFinishedFlag() {
-            setState { copy(isSequenceFinished = false) }
+        fun getExecutionById(executionId: Int): Execution? {
+            return state.value.ciltData?.positions
+                ?.flatMap { it.ciltMasters }
+                ?.flatMap { it.sequences }
+                ?.flatMap { it.executions }
+                ?.find { it.id == executionId }
         }
 
         fun getSuperiorIdFromExecutionRoute(
-            sequenceId: Int,
+            executionId: Int,
             onResult: (String?) -> Unit = {},
         ) {
             viewModelScope.launch {
-                // Retrieves the sequence object by its ID
-                val sequence = getSequenceById(sequenceId)
-                // Retrieves the first execution associated with the sequence (if any)
-                val execution = sequence?.executions?.firstOrNull()
+                // Retrieves the execution object by its ID
+                val execution = getExecutionById(executionId)
                 // Gets the route string from the execution
                 val route = execution?.route
                 // If the route is null or blank, sets superiorId to null and returns early
@@ -410,51 +371,87 @@ class CiltRoutineViewModel
             }
         }
 
-        fun setStarted(value: Boolean) {
-            isStarted.value = value
+        fun resetSequenceFinishedFlag() {
+            setState { copy(isSequenceFinished = false) }
         }
 
-        fun setFinished(value: Boolean) {
-            isFinished.value = value
+        fun process(action: CiltAction) {
+            when (action) {
+                is CiltAction.GetCilts -> handleGetCilts()
+                is CiltAction.StartExecution -> {
+                    startSequenceExecution(action.executionId)
+                    isStarted.value = true
+                }
+
+                is CiltAction.StopExecution -> {
+                    stopSequenceExecution(
+                        executionId = action.executionId,
+                        initialParameter = parameterFound.value,
+                        evidenceAtCreation = isEvidenceAtCreation.value,
+                        finalParameter = finalParameter.value,
+                        evidenceAtFinal = isEvidenceAtFinal.value,
+                        nok = !isParameterOk.value,
+                    )
+                    isFinished.value = true
+                }
+
+                is CiltAction.SetParameterFound -> parameterFound.value = action.value
+                is CiltAction.SetFinalParameter -> finalParameter.value = action.value
+                is CiltAction.SetParameterOk -> isParameterOk.value = action.isOk
+                is CiltAction.SetEvidenceAtCreation -> isEvidenceAtCreation.value = action.value
+                is CiltAction.SetEvidenceAtFinal -> isEvidenceAtFinal.value = action.value
+                is CiltAction.AddEvidenceBefore -> {
+                    evidenceUrisBefore.add(action.uri)
+                    addLocalEvidence(action.executionId, action.uri, type = EvidenceType.INITIAL.name)
+                }
+
+                is CiltAction.AddEvidenceAfter -> {
+                    evidenceUrisAfter.add(action.uri)
+                    addLocalEvidence(action.executionId, action.uri, type = EvidenceType.FINAL.name)
+                }
+
+                is CiltAction.RemoveEvidenceBefore -> {
+                    evidenceUrisBefore.removeIf { it.toString() == action.url }
+                    removeLocalEvidence(action.url)
+                }
+
+                is CiltAction.RemoveEvidenceAfter -> {
+                    evidenceUrisAfter.removeIf { it.toString() == action.url }
+                    removeLocalEvidence(action.url)
+                }
+
+                is CiltAction.GetOplById -> getOplById(action.id)
+                is CiltAction.GetRemediationOplById -> getRemediationOplById(action.id)
+                CiltAction.SetStarted -> isStarted.value = true
+                CiltAction.SetFinished -> isFinished.value = true
+                CiltAction.CleanMessage -> cleanMessage()
+            }
         }
 
-        fun setParameterFound(value: String) {
-            parameterFound.value = value
+        private fun addLocalEvidence(
+            executionId: Int,
+            uri: Uri,
+            type: String,
+        ) {
+            val evidence =
+                Evidence.fromCreateEvidence(
+                    cardId = executionId.toString(),
+                    url = uri.toString(),
+                    type = type,
+                    parentType = EvidenceParentType.EXECUTION,
+                )
+            pendingEvidences.add(evidence)
         }
 
-        fun setFinalParameter(value: String) {
-            finalParameter.value = value
+        private fun removeLocalEvidence(evidenceUrl: String) {
+            pendingEvidences.removeIf { it.url == evidenceUrl }
         }
 
-        fun setParameterOk(value: Boolean) {
-            isParameterOk.value = value
+        fun cleanMessage() {
+            setState { copy(message = EMPTY) }
         }
 
-        fun setEvidenceAtCreation(value: Boolean) {
-            isEvidenceAtCreation.value = value
-        }
-
-        fun setEvidenceAtFinal(value: Boolean) {
-            isEvidenceAtFinal.value = value
-        }
-
-        fun addEvidenceBefore(uri: Uri) {
-            evidenceUrisBefore.add(uri)
-        }
-
-        fun addEvidenceAfter(uri: Uri) {
-            evidenceUrisAfter.add(uri)
-        }
-
-        fun removeEvidenceBefore(url: String) {
-            evidenceUrisBefore.removeIf { it.toString() == url }
-        }
-
-        fun removeEvidenceAfter(url: String) {
-            evidenceUrisAfter.removeIf { it.toString() == url }
-        }
-
-        fun resetExecutionState() {
+        private fun resetExecutionState() {
             isStarted.value = false
             isFinished.value = false
             parameterFound.value = ""

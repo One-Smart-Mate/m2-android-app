@@ -1,7 +1,5 @@
 package com.ih.osm.ui.pages.cilt
 
-import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -57,8 +55,9 @@ import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.EvidenceType
+import com.ih.osm.domain.model.Execution
 import com.ih.osm.domain.model.Opl
-import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.stopMachine
 import com.ih.osm.domain.model.stoppageReason
 import com.ih.osm.ui.components.CustomAppBar
@@ -73,6 +72,7 @@ import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.fromIsoToNormalDate
 import com.ih.osm.ui.extensions.isWithinExecutionWindow
 import com.ih.osm.ui.navigation.navigateToCreateCard
+import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.PaddingToolbar
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
@@ -81,7 +81,7 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun CiltDetailScreen(
-    sequenceId: Int,
+    executionId: Int,
     navController: NavController,
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
@@ -93,19 +93,15 @@ fun CiltDetailScreen(
 
     val isLoading = state.isLoading
 
-    val sequence = viewModel.getSequenceById(sequenceId)
+    val execution = viewModel.getExecutionById(executionId)
 
     val opl = state.opl
     val remediationOpl = state.remediationOpl
     val superiorId = state.superiorId
 
-    LaunchedEffect(state.superiorId) {
-        Log.d("CiltDetailScreen", "Valor en estado: superiorId = ${state.superiorId}")
-    }
-
     LaunchedEffect(state.ciltData) {
         if (state.ciltData != null) {
-            viewModel.getSuperiorIdFromExecutionRoute(sequenceId)
+            viewModel.getSuperiorIdFromExecutionRoute(executionId)
         }
     }
 
@@ -120,7 +116,7 @@ fun CiltDetailScreen(
         return
     }
 
-    if (sequence != null) {
+    if (execution != null) {
         Scaffold { padding ->
             Box(
                 modifier =
@@ -141,41 +137,18 @@ fun CiltDetailScreen(
                     stickyHeader {
                         CustomAppBar(
                             navController = navController,
-                            content = { CiltDetailHeader(sequence) },
+                            content = { CiltDetailHeader(execution) },
                         )
                     }
 
                     item {
-                        SequenceDetailContent(
-                            sequence = sequence,
+                        ExecutionDetailContent(
+                            execution = execution,
                             navController = navController,
                             viewModel = viewModel,
-                            onStartExecution = { executionId ->
-                                viewModel.startSequenceExecution(
-                                    executionId,
-                                )
-                            },
-                            onStopExecution = { executionId ->
-                                viewModel.stopSequenceExecution(
-                                    executionId = executionId,
-                                    initialParameter = viewModel.parameterFound.value,
-                                    evidenceAtCreation = viewModel.isEvidenceAtCreation.value,
-                                    finalParameter = viewModel.finalParameter.value,
-                                    evidenceAtFinal = viewModel.isEvidenceAtFinal.value,
-                                    nok = !viewModel.isParameterOk.value,
-                                )
-                            },
-                            onCreateEvidence = { executionId, imageUri ->
-                                viewModel.addLocalEvidence(
-                                    executionId = executionId,
-                                    uri = imageUri,
-                                )
-                            },
-                            removeEvidence = { viewModel.removeLocalEvidence(it) },
+                            onAction = { viewModel.process(it) },
                             opl = opl,
-                            getOplById = { viewModel.getOplById(it) },
                             remediationOpl = remediationOpl,
-                            getRemediationOplById = { viewModel.getRemediationOplById(it) },
                             superiorId = superiorId,
                             snackbarHostState = snackBarHostState,
                             coroutineScope = coroutineScope,
@@ -192,6 +165,7 @@ fun CiltDetailScreen(
                     if (state.message.isNotEmpty() && !state.isLoading) {
                         coroutineScope.launch {
                             snackBarHostState.showSnackbar(message = state.message)
+                            viewModel.process(CiltAction.CleanMessage)
                         }
                     }
                 }
@@ -209,14 +183,14 @@ fun CiltDetailScreen(
 }
 
 @Composable
-fun CiltDetailHeader(sequence: Sequence) {
+fun CiltDetailHeader(execution: Execution) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
-            text = sequence.executions.first().ciltTypeName,
+            text = execution.ciltTypeName,
             style =
                 MaterialTheme.typography.titleLarge
                     .copy(fontWeight = FontWeight.Bold),
@@ -225,18 +199,13 @@ fun CiltDetailHeader(sequence: Sequence) {
 }
 
 @Composable
-fun SequenceDetailContent(
-    sequence: Sequence,
+fun ExecutionDetailContent(
+    execution: Execution,
     navController: NavController,
     viewModel: CiltRoutineViewModel,
-    onStartExecution: (Int) -> Unit,
-    onStopExecution: (executionId: Int) -> Unit,
-    onCreateEvidence: (executionId: Int, imageUri: Uri) -> Unit,
-    removeEvidence: (String) -> Unit,
+    onAction: (CiltAction) -> Unit,
     opl: Opl?,
-    getOplById: (String) -> Unit,
     remediationOpl: Opl?,
-    getRemediationOplById: (String) -> Unit,
     superiorId: String?,
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
@@ -254,7 +223,7 @@ fun SequenceDetailContent(
     val evidenceUrisAfter = viewModel.evidenceUrisAfter
 
     var elapsedTime by remember { mutableStateOf(0) }
-    val totalDuration = sequence.executions.firstOrNull()?.duration ?: 0
+    val totalDuration = execution.duration ?: 0
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
 
     LaunchedEffect(isStarted) {
@@ -279,7 +248,7 @@ fun SequenceDetailContent(
                 )
                 Text(
                     text =
-                        sequence.executions.firstOrNull()?.secuenceSchedule.fromIsoToNormalDate(),
+                        execution.secuenceSchedule.fromIsoToNormalDate(),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
@@ -291,10 +260,7 @@ fun SequenceDetailContent(
                     fontWeight = FontWeight.SemiBold,
                 )
                 Text(
-                    text =
-                        sequence.executions.firstOrNull()?.ciltTypeName ?: stringResource(
-                            R.string.not_available,
-                        ),
+                    text = execution.ciltTypeName,
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
@@ -311,10 +277,7 @@ fun SequenceDetailContent(
                             .size(dimensionResource(id = R.dimen.circle_shape_size))
                             .background(
                                 color =
-                                    getColorFromHex(
-                                        sequence.executions.firstOrNull()?.secuenceColor
-                                            ?: stringResource(R.string.not_available),
-                                    ),
+                                    getColorFromHex(execution.secuenceColor),
                                 shape = CircleShape,
                             ),
                 )
@@ -329,7 +292,7 @@ fun SequenceDetailContent(
     )
     Text(
         text =
-            sequence.executions.firstOrNull()?.route ?: stringResource(
+            execution.route ?: stringResource(
                 R.string.not_available,
             ),
         style = MaterialTheme.typography.bodyLarge,
@@ -337,7 +300,7 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    val specialWarning = sequence.executions.firstOrNull()?.specialWarning
+    val specialWarning = execution.specialWarning
 
     if (specialWarning != null) {
         Spacer(modifier = Modifier.height(8.dp))
@@ -367,10 +330,7 @@ fun SequenceDetailContent(
                 .fillMaxWidth()
                 .padding(vertical = 8.dp)
                 .background(
-                    if (sequence.executions
-                            .first()
-                            .stopMachine()
-                    ) {
+                    if (execution.stopMachine()) {
                         Color(0xFFB71C1C)
                     } else {
                         Color(0xFFEEEEEE)
@@ -381,7 +341,7 @@ fun SequenceDetailContent(
     ) {
         Text(
             text =
-                if (sequence.executions.first().stopMachine()) {
+                if (execution.stopMachine()) {
                     stringResource(
                         R.string.stoppage_required,
                     )
@@ -427,27 +387,23 @@ fun SequenceDetailContent(
 
     Spacer(modifier = Modifier.height(20.dp))
 
-    val executionId = sequence.executions.firstOrNull()?.id
+    val (canExecute, message) =
+        execution.secuenceSchedule.isWithinExecutionWindow(
+            context = context,
+            allowExecuteBefore = execution.allowExecuteBefore,
+            allowExecuteBeforeMinutes = execution.allowExecuteBeforeMinutes,
+            toleranceBeforeMinutes = execution.toleranceBeforeMinutes,
+            toleranceAfterMinutes = execution.toleranceAfterMinutes,
+            allowExecuteAfterDue = execution.allowExecuteAfterDue,
+        )
 
-    if (executionId != null && !isStarted) {
-        val execution = sequence.executions.first()
-        val (canExecute, message) =
-            execution.secuenceSchedule.isWithinExecutionWindow(
-                context = context,
-                allowExecuteBefore = execution.allowExecuteBefore,
-                allowExecuteBeforeMinutes = execution.allowExecuteBeforeMinutes,
-                toleranceBeforeMinutes = execution.toleranceBeforeMinutes,
-                toleranceAfterMinutes = execution.toleranceAfterMinutes,
-                allowExecuteAfterDue = execution.allowExecuteAfterDue,
-            )
-
+    if (!isStarted) {
         CustomButton(
             text = stringResource(R.string.start_sequence),
             buttonType = ButtonType.DEFAULT,
             onClick = {
                 if (canExecute) {
-                    onStartExecution(executionId)
-                    viewModel.setStarted(true)
+                    onAction(CiltAction.StartExecution(execution.id))
                 } else {
                     coroutineScope.launch {
                         snackbarHostState.showSnackbar(
@@ -459,19 +415,12 @@ fun SequenceDetailContent(
                 }
             },
         )
-    }
-
-    if (executionId != null && isStarted) {
+    } else if (isStarted) {
         CustomButton(
             text = stringResource(R.string.finish_sequence),
             buttonType = ButtonType.DEFAULT,
             onClick = {
-                // if (isStarted && !isFinished) {
-                if (isStarted) {
-                    onStopExecution(executionId)
-                    viewModel.setFinished(true)
-                    // isStarted = false
-                }
+                onAction(CiltAction.StopExecution(execution.id))
             },
         )
     }
@@ -480,7 +429,7 @@ fun SequenceDetailContent(
 
     InfoItem(
         label = stringResource(R.string.duration_label),
-        value = sequence.executions.firstOrNull()?.duration.toString(),
+        value = execution.duration.toString(),
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -488,7 +437,7 @@ fun SequenceDetailContent(
     InfoItem(
         label = stringResource(R.string.reference_label),
         value =
-            sequence.executions.firstOrNull()?.referencePoint
+            execution.referencePoint
                 ?: stringResource(R.string.not_available),
     )
 
@@ -499,7 +448,7 @@ fun SequenceDetailContent(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
     )
-    sequence.executions.firstOrNull()?.secuenceList?.split("\n")?.forEach { step ->
+    execution.secuenceList.split("\n").forEach { step ->
         Text("• ${step.trim()}", style = MaterialTheme.typography.bodyLarge)
     }
 
@@ -510,7 +459,7 @@ fun SequenceDetailContent(
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.SemiBold,
     )
-    sequence.executions.firstOrNull()?.toolsRequiered?.split("\n")?.forEach { tool ->
+    execution.toolsRequiered.split("\n").forEach { tool ->
         Text("• ${tool.trim()}", style = MaterialTheme.typography.bodyLarge)
     }
 
@@ -518,9 +467,7 @@ fun SequenceDetailContent(
 
     InfoItem(
         label = stringResource(R.string.parameter_ok),
-        value =
-            sequence.executions.firstOrNull()?.standardOk
-                ?: stringResource(R.string.not_available),
+        value = execution.standardOk,
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -528,12 +475,10 @@ fun SequenceDetailContent(
     CustomTextField(
         modifier =
             Modifier.fillMaxWidth(),
-        // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.parameter_found),
         placeholder = stringResource(R.string.enter_parameter_found),
         icon = Icons.Outlined.Menu,
-        // onChange = { if (isStarted) parameterFound = it },
-        onChange = { viewModel.setParameterFound(it) },
+        onChange = { onAction(CiltAction.SetParameterFound(it)) },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -542,42 +487,32 @@ fun SequenceDetailContent(
         modifier =
             Modifier
                 .fillMaxWidth(),
-        // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
         CameraLauncher { imageUri ->
-            val execution = sequence.executions.firstOrNull()
-            if (execution != null) {
-                onCreateEvidence(execution.id, imageUri)
-                viewModel.addEvidenceBefore(imageUri)
-                viewModel.setEvidenceAtCreation(true)
-            }
+            onAction(CiltAction.AddEvidenceBefore(execution.id, imageUri))
+            onAction(CiltAction.SetEvidenceAtCreation(true))
         }
     }
 
     SectionImagesEvidence(
         imageEvidences =
             evidenceUrisBefore.map { uri ->
-                Evidence.fromCreateEvidence(
-                    cardId = "",
-                    url = uri.toString(),
-                    type = "IMCR",
-                )
+                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.INITIAL.name)
             },
         onDeleteEvidence = { evidence ->
-            viewModel.removeEvidenceBefore(evidence.url)
-            removeEvidence(evidence.url)
+            onAction(CiltAction.RemoveEvidenceBefore(evidence.url))
         },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    val oplId = sequence.executions.firstOrNull()?.referenceOplSopId?.toString()
+    val oplId = execution.referenceOplSopId.toString()
 
-    if (opl == null && oplId != null) {
+    if (opl == null) {
         Button(
             onClick = {
-                getOplById(oplId)
+                onAction(CiltAction.GetOplById(oplId))
             },
             modifier =
                 Modifier
@@ -598,12 +533,10 @@ fun SequenceDetailContent(
     CustomTextField(
         modifier =
             Modifier.fillMaxWidth(),
-        // .alpha(if (isStarted) 1f else 0.5f),
         label = stringResource(R.string.final_parameter),
         placeholder = stringResource(R.string.enter_final_parameter),
         icon = Icons.Outlined.Menu,
-        // onChange = { if (isStarted) finalParameter = it },
-        onChange = { viewModel.setFinalParameter(it) },
+        onChange = { onAction(CiltAction.SetFinalParameter(it)) },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -612,42 +545,32 @@ fun SequenceDetailContent(
         modifier =
             Modifier
                 .fillMaxWidth(),
-        // .alpha(if (isStarted) 1f else 0.5f),
         contentAlignment = Alignment.Center,
     ) {
         CameraLauncher { imageUri ->
-            val execution = sequence.executions.firstOrNull()
-            if (execution != null) {
-                onCreateEvidence(execution.id, imageUri)
-                viewModel.addEvidenceAfter(imageUri)
-                viewModel.setEvidenceAtFinal(true)
-            }
+            onAction(CiltAction.AddEvidenceAfter(execution.id, imageUri))
+            onAction(CiltAction.SetEvidenceAtFinal(true))
         }
     }
 
     SectionImagesEvidence(
         imageEvidences =
             evidenceUrisAfter.map { uri ->
-                Evidence.fromCreateEvidence(
-                    cardId = "",
-                    url = uri.toString(),
-                    type = "IMCR",
-                )
+                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.FINAL.name)
             },
         onDeleteEvidence = { evidence ->
-            viewModel.removeEvidenceAfter(evidence.url)
-            removeEvidence(evidence.url)
+            onAction(CiltAction.RemoveEvidenceAfter(evidence.url))
         },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    val oplRemediationId = sequence.executions.firstOrNull()?.remediationOplSopId
+    val oplRemediationId = execution.remediationOplSopId
 
     if (remediationOpl == null && oplRemediationId != null) {
         Button(
             onClick = {
-                getRemediationOplById(oplRemediationId)
+                onAction(CiltAction.GetRemediationOplById(oplRemediationId))
             },
             modifier =
                 Modifier
@@ -683,7 +606,7 @@ fun SequenceDetailContent(
         ) {
             RadioButton(
                 selected = isParameterOk,
-                onClick = { viewModel.setParameterOk(true) },
+                onClick = { onAction(CiltAction.SetParameterOk(true)) },
             )
             Text(
                 text = stringResource(R.string.yes_option_parameter_ok),
@@ -691,7 +614,7 @@ fun SequenceDetailContent(
             )
             RadioButton(
                 selected = !isParameterOk,
-                onClick = { viewModel.setParameterOk(false) },
+                onClick = { onAction(CiltAction.SetParameterOk(false)) },
             )
             Text(text = stringResource(R.string.no_option_parameter_ok))
         }
@@ -706,7 +629,7 @@ fun SequenceDetailContent(
                     navController.navigateToCreateCard("cilt:$it")
                 }
             },
-            // enabled = isStarted,
+            enabled = isStarted,
             modifier =
                 Modifier
                     .fillMaxWidth()
@@ -720,7 +643,7 @@ fun SequenceDetailContent(
         InfoItem(
             label = stringResource(R.string.stop_reason_label),
             value =
-                if (sequence.executions.first().stoppageReason()) {
+                if (execution.stoppageReason()) {
                     stringResource(R.string.stop_reason_yes)
                 } else {
                     stringResource(

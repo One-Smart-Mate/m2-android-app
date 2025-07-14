@@ -267,9 +267,14 @@ fun String.isWithinExecutionWindow(
             millisNow in beforeStartMillis..afterEndMillis -> true to null
             millisNow < beforeStartMillis -> {
                 val diff = beforeStartMillis - millisNow
-                val mins = (diff / 1000 / 60).toInt()
-                val secs = (diff / 1000 % 60).toInt()
-                false to context.getString(R.string.execution_wait_time, mins, secs)
+
+                val hours = (diff / (1000 * 60 * 60)).toInt()
+                val minutes = (diff / 1000 / 60).toInt()
+                val seconds = (diff / 1000 % 60).toInt()
+
+                val timeFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+                false to context.getString(R.string.execution_wait_time, timeFormatted)
             }
 
             millisNow > afterEndMillis -> {

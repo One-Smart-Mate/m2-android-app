@@ -58,6 +58,8 @@ class FirebaseStorageRepositoryImpl
                 EvidenceType.IMPS -> "IMAGE_PS_$timeStamp.jpg"
                 EvidenceType.AUPS -> "AUDIO_PS_$timeStamp.mp3"
                 EvidenceType.VIPS -> "VIDEO_PS_$timeStamp.mp4"
+                EvidenceType.INITIAL -> "IMAGE_INITIAL_$timeStamp.jpg"
+                EvidenceType.FINAL -> "IMAGE_FINAL_$timeStamp.jpg"
             }
         }
 
@@ -82,6 +84,7 @@ class FirebaseStorageRepositoryImpl
                             EvidenceType.IMCR, EvidenceType.IMCL, EvidenceType.IMPS -> "$basePath/images/$evidenceName"
                             EvidenceType.VICR, EvidenceType.VICL, EvidenceType.VIPS -> "$basePath/videos/$evidenceName"
                             EvidenceType.AUCR, EvidenceType.AUCL, EvidenceType.AUPS -> "$basePath/audios/$evidenceName"
+                            else -> throw IllegalArgumentException("EvidenceType $type is not valid for CARD")
                         }
                 }
 

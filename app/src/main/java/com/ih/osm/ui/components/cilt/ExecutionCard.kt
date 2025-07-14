@@ -18,8 +18,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,20 +28,18 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
+import com.ih.osm.domain.model.Execution
 import com.ih.osm.domain.model.ExecutionStatus
-import com.ih.osm.domain.model.Sequence
 import com.ih.osm.ui.extensions.getExecutionStatus
 import com.ih.osm.ui.extensions.toHourFromIso
 import com.ih.osm.ui.extensions.toMinutesAndSeconds
 import com.ih.osm.ui.navigation.navigateToCiltDetail
 
 @Composable
-fun SequenceCard(
-    sequence: Sequence,
+fun ExecutionCard(
+    execution: Execution,
     navController: NavController,
 ) {
-    val execution = sequence.executions.first()
-
     val status =
         execution.secuenceSchedule.getExecutionStatus(
             sequenceStart = execution.secuenceStart,
@@ -70,7 +66,7 @@ fun SequenceCard(
                     horizontal = dimensionResource(id = R.dimen.card_padding_horizontal),
                     vertical = dimensionResource(id = R.dimen.card_padding_vertical),
                 )
-                .clickable { navController.navigateToCiltDetail(sequence.id) },
+                .clickable { navController.navigateToCiltDetail(execution.id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
@@ -90,13 +86,13 @@ fun SequenceCard(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = sequence.executions.firstOrNull()?.siteExecutionId.toString(),
+                        text = execution.siteExecutionId.toString(),
                         style =
                             MaterialTheme.typography.titleMedium
                                 .copy(fontWeight = FontWeight.Bold),
                     )
                     Text(
-                        text = sequence.ciltTypeName,
+                        text = execution.ciltTypeName,
                         style =
                             MaterialTheme.typography.titleMedium
                                 .copy(fontWeight = FontWeight.Bold),
@@ -106,12 +102,12 @@ fun SequenceCard(
                             Modifier
                                 .size(dimensionResource(id = R.dimen.circle_shape_size))
                                 .background(
-                                    color = getColorFromHex(sequence.secuenceColor),
+                                    color = getColorFromHex(execution.secuenceColor),
                                     shape = CircleShape,
                                 ),
                     )
                     Text(
-                        text = sequence.executions.firstOrNull()?.secuenceSchedule.toHourFromIso(),
+                        text = execution.secuenceSchedule.toHourFromIso(),
                         style =
                             MaterialTheme.typography.titleMedium
                                 .copy(fontWeight = FontWeight.Bold),
@@ -126,20 +122,19 @@ fun SequenceCard(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    if (sequence.executions.firstOrNull()?.secuenceStart != null) {
+                    if (execution.secuenceStart != null) {
                         Text(
-                            text = sequence.executions.firstOrNull()?.secuenceStart.toHourFromIso(),
+                            text = execution.secuenceStart.toHourFromIso(),
                             style =
                                 MaterialTheme.typography.titleMedium
                                     .copy(fontWeight = FontWeight.Bold),
                         )
                     }
 
-                    if (sequence.executions.firstOrNull()?.realDuration != null) {
+                    if (execution.realDuration != null) {
                         Text(
                             text =
-                                sequence.executions.firstOrNull()?.realDuration?.toMinutesAndSeconds()
-                                    ?: "0 s",
+                                execution.realDuration.toMinutesAndSeconds(),
                             style =
                                 MaterialTheme.typography.titleMedium
                                     .copy(fontWeight = FontWeight.Bold),
@@ -171,7 +166,7 @@ fun SequenceCard(
                         )
                     }
 
-                    if (sequence.executions.firstOrNull()?.nok == true) {
+                    if (execution.nok) {
                         Box(
                             modifier =
                                 Modifier
