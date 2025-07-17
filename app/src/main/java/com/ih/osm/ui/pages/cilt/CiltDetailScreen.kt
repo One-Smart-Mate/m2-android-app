@@ -101,7 +101,7 @@ fun CiltDetailScreen(
 
     LaunchedEffect(state.ciltData) {
         if (state.ciltData != null) {
-            viewModel.getSuperiorIdFromExecutionRoute(executionId)
+            viewModel.getSuperiorIdFromExecutionLevelId(executionId)
         }
     }
 
@@ -588,6 +588,20 @@ fun ExecutionDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
+    InfoItem(
+        label = stringResource(R.string.stop_reason_label),
+        value =
+        if (execution.stoppageReason()) {
+            stringResource(R.string.stop_reason_yes)
+        } else {
+            stringResource(
+                R.string.stop_reason_no,
+            )
+        },
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
     Column(
         modifier =
             Modifier
@@ -639,18 +653,6 @@ fun ExecutionDetailContent(
         }
 
         Spacer(modifier = Modifier.height(8.dp))
-
-        InfoItem(
-            label = stringResource(R.string.stop_reason_label),
-            value =
-                if (execution.stoppageReason()) {
-                    stringResource(R.string.stop_reason_yes)
-                } else {
-                    stringResource(
-                        R.string.stop_reason_no,
-                    )
-                },
-        )
     }
 }
 

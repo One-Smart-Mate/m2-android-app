@@ -334,30 +334,28 @@ class CiltRoutineViewModel
                 ?.find { it.id == executionId }
         }
 
-        fun getSuperiorIdFromExecutionRoute(
+        fun getSuperiorIdFromExecutionLevelId(
             executionId: Int,
             onResult: (String?) -> Unit = {},
         ) {
             viewModelScope.launch {
                 // Retrieves the execution object by its ID
                 val execution = getExecutionById(executionId)
-                // Gets the route string from the execution
-                val route = execution?.route
-                // If the route is null or blank, sets superiorId to null and returns early
-                if (route.isNullOrBlank()) {
+                // Gets the levelId from the execution
+                val levelId = execution?.levelId
+                // If the levelId is null, sets superiorId to null and returns early
+                if (levelId == null) {
                     setState { copy(superiorId = null) }
                     onResult(null)
                     return@launch
                 }
-                // Extracts the last node ID from the route
-                val lastNodeId = route.split("/").last().trim()
 
                 kotlin.runCatching {
                     getLevelsUseCase()
                 }.onSuccess { levels ->
-                    // Finds the level that matches the last node ID
-                    val matchingLevel =
-                        levels.find { it.name.trim().equals(lastNodeId.trim(), ignoreCase = true) }
+                    // Convert levelId to String before comparison
+                    // Finds the level that matches the level ID
+                    val matchingLevel = levels.find { it.id == levelId.toString() }
                     // Retrieves the superior ID from the matching level
                     val id = matchingLevel?.superiorId
                     // Updates the ViewModel state and returns the result via the callback
