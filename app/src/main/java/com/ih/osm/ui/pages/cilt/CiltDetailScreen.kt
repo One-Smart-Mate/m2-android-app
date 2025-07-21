@@ -591,13 +591,13 @@ fun ExecutionDetailContent(
     InfoItem(
         label = stringResource(R.string.stop_reason_label),
         value =
-        if (execution.stoppageReason()) {
-            stringResource(R.string.stop_reason_yes)
-        } else {
-            stringResource(
-                R.string.stop_reason_no,
-            )
-        },
+            if (execution.stoppageReason()) {
+                stringResource(R.string.stop_reason_yes)
+            } else {
+                stringResource(
+                    R.string.stop_reason_no,
+                )
+            },
     )
 
     Spacer(modifier = Modifier.height(8.dp))
