@@ -230,9 +230,9 @@
     <string name="parameter_ok">Parámetro Ok:</string>
     <string name="view_opl_sop">Ver OPL o SOP</string>
     <string name="parameter_found">Parámetro encontrado</string>
-    <string name="enter_parameter_found">Ingrese el parámetro encontrado</string>
+    <string name="enter_parameter_found">Ingresa el parámetro encontrado</string>
     <string name="final_parameter">Parámetro final</string>
-    <string name="enter_final_parameter">Ingrese el parámetro final</string>
+    <string name="enter_final_parameter">Ingresa el parámetro final</string>
     <string name="view_remediation">Ver OPL o SOP de remediación</string>
     <string name="stop_reason_label">Motivo de paro:</string>
     <string name="stop_reason_yes">Sí</string>
@@ -281,4 +281,5 @@
 
     <string name="fast_password">Contraseña rápida</string>
     <string name="change_user">Cambiar usuario</string>
+    <string name="enter_fast_password">Ingresa tu contraseña rápida</string>
 </resources>

@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material.icons.twotone.CheckCircle
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
@@ -41,6 +42,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -69,6 +71,7 @@ import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTag
+import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.TagSize
@@ -198,6 +201,9 @@ private fun HomeContent(
     showSyncRemoteCards: Boolean,
     onClick: (HomeActionClick) -> Unit,
 ) {
+    var showFastPasswordDialog by remember { mutableStateOf(false) }
+    var fastPassword by remember { mutableStateOf(EMPTY) }
+
     Scaffold(
         floatingActionButton = {
             Column {
@@ -337,9 +343,57 @@ private fun HomeContent(
                     icon = Icons.Outlined.Lock,
                     description = stringResource(R.string.change_user),
                 ) {
-                    // onClick(HomeActionClick.CILT_ROUTINE)
+                    showFastPasswordDialog = true
                 }
             }
+        }
+        if (showFastPasswordDialog) {
+            AlertDialog(
+                onDismissRequest = { showFastPasswordDialog = false },
+                confirmButton = {
+                    /*
+                    TextButton(
+                        onClick = {
+                            showFastPasswordDialog = false
+                        },
+                    ) {
+                        Text(
+                            text = "Aceptar",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                    }
+                     */
+                },
+                dismissButton = {
+                    /*
+                    TextButton(
+                        onClick = { showFastPasswordDialog = false },
+                    ) {
+                        Text(
+                            text = "Cancelar",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.secondary,
+                        )
+                    }
+                     */
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.fast_password),
+                    )
+                },
+                text = {
+                    CustomTextField(
+                        label = stringResource(R.string.enter_fast_password),
+                        icon = Icons.Outlined.Lock,
+                        isPassword = true,
+                        onChange = { fastPassword = it },
+                    )
+                },
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
         }
     }
 }

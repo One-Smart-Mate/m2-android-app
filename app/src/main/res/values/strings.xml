@@ -282,5 +282,6 @@
 
     <string name="fast_password">Fast password</string>
     <string name="change_user">Change user</string>
+    <string name="enter_fast_password">Enter your fast password</string>
 
 </resources>

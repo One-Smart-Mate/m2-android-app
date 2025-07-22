@@ -4,6 +4,7 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
@@ -88,4 +89,6 @@ interface NetworkRepository {
     suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
 
     suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence
+
+    suspend fun fastLogin(body: FastLoginRequest): LoginResponse
 }

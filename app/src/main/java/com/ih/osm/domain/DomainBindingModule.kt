@@ -48,6 +48,8 @@ import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCaseImpl
 import com.ih.osm.domain.usecase.level.GetLevelsUseCase
 import com.ih.osm.domain.usecase.level.GetLevelsUseCaseImpl
+import com.ih.osm.domain.usecase.login.FastLoginUseCase
+import com.ih.osm.domain.usecase.login.FastLoginUseCaseImpl
 import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCaseImpl
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
@@ -194,4 +196,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
+
+    @Binds
+    fun bindFastLoginUseCase(fastLoginUseCaseImpl: FastLoginUseCaseImpl): FastLoginUseCase
 }

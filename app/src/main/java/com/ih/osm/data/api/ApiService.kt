@@ -6,6 +6,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
@@ -175,4 +176,9 @@ interface ApiService {
     fun getOplsByLevel(
         @Path("levelId") levelId: String,
     ): Call<GetOplsResponse>
+
+    @POST("auth/login-fast")
+    fun fastLogin(
+        @Body body: FastLoginRequest,
+    ): Call<LoginResponse>
 }
