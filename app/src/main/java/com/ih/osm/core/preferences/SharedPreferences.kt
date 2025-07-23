@@ -11,179 +11,179 @@ import java.util.Calendar
 import javax.inject.Inject
 
 class SharedPreferences
-@Inject
-constructor(
-    @ApplicationContext context: Context,
-) {
-    private var sharedPreferences: SharedPreferences? = null
+    @Inject
+    constructor(
+        @ApplicationContext context: Context,
+    ) {
+        private var sharedPreferences: SharedPreferences? = null
 
-    companion object {
-        private const val OSM_APP_PREFERENCES = "osm_app_preferences"
-        private const val NETWORK_PREFERENCES = "network_preference"
-        private const val LOG_FILE_PREFERENCES = "path_log_file"
-        private const val LAST_SYNC_PREFERENCES = "last_sync_date"
-        private const val FIREBASE_TOKEN_PREFERENCES = "firebase_token"
-        private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
-        private const val NOTIFICATION_APP_VERSION = "app_version"
-        private const val DUE_DATE_PREFERENCES = "due_date"
-        private const val CILT_CARD_PREFERENCES = "cilt_card"
-        private const val AUTH_TOKEN = "auth_token"
-    }
-
-    init {
-        sharedPreferences = context.getSharedPreferences(OSM_APP_PREFERENCES, Context.MODE_PRIVATE)
-    }
-
-    fun clearPreferences() {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                remove(NETWORK_PREFERENCES)
-                remove(LAST_SYNC_PREFERENCES)
-                remove(FIREBASE_TOKEN_PREFERENCES)
-                remove(NOTIFICATION_TYPE_PREFERENCES)
-                remove(NOTIFICATION_APP_VERSION)
-                commit()
-            }
+        companion object {
+            private const val OSM_APP_PREFERENCES = "osm_app_preferences"
+            private const val NETWORK_PREFERENCES = "network_preference"
+            private const val LOG_FILE_PREFERENCES = "path_log_file"
+            private const val LAST_SYNC_PREFERENCES = "last_sync_date"
+            private const val FIREBASE_TOKEN_PREFERENCES = "firebase_token"
+            private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
+            private const val NOTIFICATION_APP_VERSION = "app_version"
+            private const val DUE_DATE_PREFERENCES = "due_date"
+            private const val CILT_CARD_PREFERENCES = "cilt_card"
+            private const val AUTH_TOKEN = "auth_token"
         }
-    }
 
-    fun saveNetworkPreference(network: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(NETWORK_PREFERENCES, network)
-                commit()
-            }
+        init {
+            sharedPreferences = context.getSharedPreferences(OSM_APP_PREFERENCES, Context.MODE_PRIVATE)
         }
-    }
 
-    fun getNetworkPreference(): String {
-        return sharedPreferences?.getString(NETWORK_PREFERENCES, EMPTY).orEmpty()
-    }
-
-    fun saveLogFile(path: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(LOG_FILE_PREFERENCES, path)
-                commit()
-            }
-        }
-    }
-
-    fun getLogPath(): String {
-        return sharedPreferences?.getString(LOG_FILE_PREFERENCES, EMPTY).orEmpty()
-    }
-
-    fun saveLastSyncDate() {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(
-                    LAST_SYNC_PREFERENCES,
-                    Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS,
-                )
-                commit()
-            }
-        }
-    }
-
-    fun getLastSyncDate(): String {
-        return sharedPreferences?.getString(LAST_SYNC_PREFERENCES, EMPTY).orEmpty()
-    }
-
-    fun saveFirebaseToken(token: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(FIREBASE_TOKEN_PREFERENCES, token)
-                commit()
-            }
-        }
-    }
-
-    fun getFirebaseToken(): String {
-        return sharedPreferences?.getString(FIREBASE_TOKEN_PREFERENCES, EMPTY).orEmpty()
-    }
-
-    fun saveNotificationType(type: String = EMPTY) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(NOTIFICATION_TYPE_PREFERENCES, type.uppercase())
-                commit()
-            }
-        }
-    }
-
-    fun getNotificationType(): String {
-        return sharedPreferences?.getString(
-            NOTIFICATION_TYPE_PREFERENCES,
-            EMPTY,
-        ).orEmpty().uppercase()
-    }
-
-    fun removeNotification(withAppVersion: Boolean = false) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                remove(NOTIFICATION_TYPE_PREFERENCES)
-                if (withAppVersion) {
+        fun clearPreferences() {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    remove(NETWORK_PREFERENCES)
+                    remove(LAST_SYNC_PREFERENCES)
+                    remove(FIREBASE_TOKEN_PREFERENCES)
+                    remove(NOTIFICATION_TYPE_PREFERENCES)
                     remove(NOTIFICATION_APP_VERSION)
+                    commit()
                 }
-                commit()
             }
         }
-    }
 
-    fun saveAppVersion(appVersion: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(NOTIFICATION_APP_VERSION, appVersion)
-                commit()
+        fun saveNetworkPreference(network: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(NETWORK_PREFERENCES, network)
+                    commit()
+                }
             }
         }
-    }
 
-    fun getAppVersion(): String {
-        return sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
-    }
+        fun getNetworkPreference(): String {
+            return sharedPreferences?.getString(NETWORK_PREFERENCES, EMPTY).orEmpty()
+        }
 
-    fun saveDueDate(dueDate: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(DUE_DATE_PREFERENCES, dueDate)
-                commit()
+        fun saveLogFile(path: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(LOG_FILE_PREFERENCES, path)
+                    commit()
+                }
             }
         }
-    }
 
-    fun getDueDate(): String {
-        return sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
-    }
-
-    fun saveCiltCard(card: Card) {
-        val json = Gson().toJson(card)
-        sharedPreferences?.edit()?.putString(CILT_CARD_PREFERENCES, json)?.apply()
-    }
-
-    fun getCiltCard(): Card? {
-        val json = sharedPreferences?.getString(CILT_CARD_PREFERENCES, null) ?: return null
-        return try {
-            Gson().fromJson(json, Card::class.java)
-        } catch (e: Exception) {
-            null
+        fun getLogPath(): String {
+            return sharedPreferences?.getString(LOG_FILE_PREFERENCES, EMPTY).orEmpty()
         }
-    }
 
-    fun removeCiltCard() {
-        sharedPreferences?.edit()?.remove(CILT_CARD_PREFERENCES)?.apply()
-    }
-
-    fun saveToken(token: String) {
-        sharedPreferences?.let {
-            with(it.edit()) {
-                putString(AUTH_TOKEN, token)
-                apply()
+        fun saveLastSyncDate() {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(
+                        LAST_SYNC_PREFERENCES,
+                        Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS,
+                    )
+                    commit()
+                }
             }
         }
-    }
 
-    fun getToken(): String {
-        return sharedPreferences?.getString(AUTH_TOKEN, EMPTY).orEmpty()
+        fun getLastSyncDate(): String {
+            return sharedPreferences?.getString(LAST_SYNC_PREFERENCES, EMPTY).orEmpty()
+        }
+
+        fun saveFirebaseToken(token: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(FIREBASE_TOKEN_PREFERENCES, token)
+                    commit()
+                }
+            }
+        }
+
+        fun getFirebaseToken(): String {
+            return sharedPreferences?.getString(FIREBASE_TOKEN_PREFERENCES, EMPTY).orEmpty()
+        }
+
+        fun saveNotificationType(type: String = EMPTY) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(NOTIFICATION_TYPE_PREFERENCES, type.uppercase())
+                    commit()
+                }
+            }
+        }
+
+        fun getNotificationType(): String {
+            return sharedPreferences?.getString(
+                NOTIFICATION_TYPE_PREFERENCES,
+                EMPTY,
+            ).orEmpty().uppercase()
+        }
+
+        fun removeNotification(withAppVersion: Boolean = false) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    remove(NOTIFICATION_TYPE_PREFERENCES)
+                    if (withAppVersion) {
+                        remove(NOTIFICATION_APP_VERSION)
+                    }
+                    commit()
+                }
+            }
+        }
+
+        fun saveAppVersion(appVersion: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(NOTIFICATION_APP_VERSION, appVersion)
+                    commit()
+                }
+            }
+        }
+
+        fun getAppVersion(): String {
+            return sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
+        }
+
+        fun saveDueDate(dueDate: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(DUE_DATE_PREFERENCES, dueDate)
+                    commit()
+                }
+            }
+        }
+
+        fun getDueDate(): String {
+            return sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
+        }
+
+        fun saveCiltCard(card: Card) {
+            val json = Gson().toJson(card)
+            sharedPreferences?.edit()?.putString(CILT_CARD_PREFERENCES, json)?.apply()
+        }
+
+        fun getCiltCard(): Card? {
+            val json = sharedPreferences?.getString(CILT_CARD_PREFERENCES, null) ?: return null
+            return try {
+                Gson().fromJson(json, Card::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        fun removeCiltCard() {
+            sharedPreferences?.edit()?.remove(CILT_CARD_PREFERENCES)?.apply()
+        }
+
+        fun saveToken(token: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(AUTH_TOKEN, token)
+                    apply()
+                }
+            }
+        }
+
+        fun getToken(): String {
+            return sharedPreferences?.getString(AUTH_TOKEN, EMPTY).orEmpty()
+        }
     }
-}
