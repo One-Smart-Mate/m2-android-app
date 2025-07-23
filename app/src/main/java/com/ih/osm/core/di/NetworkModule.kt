@@ -2,6 +2,7 @@ package com.ih.osm.core.di
 
 import com.google.gson.GsonBuilder
 import com.ih.osm.BuildConfig
+import com.ih.osm.core.network.AuthInterceptor
 import com.ih.osm.data.api.ApiService
 import dagger.Module
 import dagger.Provides
@@ -24,9 +25,13 @@ object NetworkModule {
         }
 
     @Provides
-    fun providesClientOkHttp(interceptor: HttpLoggingInterceptor) =
+    fun providesClientOkHttp(
+        loggingInterceptor: HttpLoggingInterceptor,
+        authInterceptor: AuthInterceptor
+    ): OkHttpClient =
         OkHttpClient.Builder()
-            .addInterceptor(interceptor)
+            .addInterceptor(authInterceptor)
+            .addInterceptor(loggingInterceptor)
             .connectTimeout(120, TimeUnit.SECONDS)
             .readTimeout(120, TimeUnit.SECONDS)
             .writeTimeout(120, TimeUnit.SECONDS)
