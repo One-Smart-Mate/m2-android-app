@@ -12,7 +12,6 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
@@ -78,7 +77,10 @@ interface NetworkRepository {
 
     suspend fun logout(body: LogoutRequest)
 
-    suspend fun getCilts(body: GetCiltsRequest): CiltData
+    suspend fun getCilts(
+        userId: String,
+        date: String,
+    ): CiltData
 
     suspend fun getOplById(id: String): Opl
 

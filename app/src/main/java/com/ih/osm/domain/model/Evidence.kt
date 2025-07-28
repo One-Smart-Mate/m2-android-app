@@ -15,6 +15,11 @@ import com.ih.osm.ui.utils.VIDEO_CREATION
 import com.ih.osm.ui.utils.VIDEO_PS
 import java.util.UUID
 
+enum class EvidenceParentType {
+    CARD,
+    EXECUTION,
+}
+
 data class Evidence(
     val id: String,
     val cardId: String,
@@ -27,12 +32,14 @@ data class Evidence(
     val createdAt: String?,
     val updatedAt: String?,
     val deletedAt: String?,
+    val parentType: EvidenceParentType = EvidenceParentType.CARD,
 ) {
     companion object {
         fun fromCreateEvidence(
             cardId: String,
             url: String,
             type: String,
+            parentType: EvidenceParentType = EvidenceParentType.CARD,
         ): Evidence {
             return Evidence(
                 id = UUID.randomUUID().toString(),
@@ -44,6 +51,7 @@ data class Evidence(
                 createdAt = null,
                 updatedAt = null,
                 deletedAt = null,
+                parentType = parentType,
             )
         }
     }

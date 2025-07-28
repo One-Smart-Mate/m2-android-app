@@ -8,6 +8,7 @@ import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.core.firebase.FirebaseNotificationType
+import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.repository.firebase.FirebaseAnalyticsHelper
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
@@ -55,8 +56,12 @@ class CreateCardViewModel
         private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
         private val fileHelper: FileHelper,
+        private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
+        private var isCiltMode = false
+        private var superiorIdCilt: String? = null
+
         data class UiState(
             val cardTypeList: List<NodeCardItem> = emptyList(),
             val selectedCardType: String = EMPTY,
@@ -78,6 +83,7 @@ class CreateCardViewModel
             val isLoading: Boolean = false,
             val isCardSuccess: Boolean = false,
             val cardsZone: List<Card> = emptyList(),
+            val levelsLoaded: Boolean = false,
         )
 
         init {
@@ -208,10 +214,31 @@ class CreateCardViewModel
             }
         }
 
+        fun setCiltMode(enabled: Boolean) {
+            isCiltMode = enabled
+            if (!enabled) {
+                superiorIdCilt = null
+            }
+        }
+
+        fun setSuperiorIdCilt(id: String?) {
+            if (isCiltMode) {
+                superiorIdCilt = id
+            }
+        }
+
         private fun handleSetPriority(id: String) {
             viewModelScope.launch {
-                val levelList = getLevelById("0", 0)
+                val rootId =
+                    if (isCiltMode) {
+                        superiorIdCilt ?: "0"
+                    } else {
+                        "0"
+                    }
+                val levelList = getLevelById(rootId, 0)
                 setState { copy(selectedPriority = id, nodeLevelList = levelList) }
+
+                // superiorIdCilt = null
             }
         }
 
@@ -304,7 +331,7 @@ class CreateCardViewModel
                 kotlin.runCatching {
                     callUseCase { getLevelsUseCase() }
                 }.onSuccess {
-                    setState { copy(levelList = it.toNodeItemList()) }
+                    setState { copy(levelList = it.toNodeItemList(), levelsLoaded = true) }
                     cleanScreenStates()
                     checkCatalogs()
                 }.onFailure {
@@ -336,8 +363,11 @@ class CreateCardViewModel
                 kotlin.runCatching {
                     callUseCase { saveCardUseCase(card) }
                 }.onSuccess {
-                    Log.e("Test", "Success $it")
+                    Log.e("Test", "Success $card")
                     setState { copy(isCardSuccess = true) }
+                    if (isCiltMode && superiorIdCilt != null && superiorIdCilt != "0") {
+                        sharedPreferences.saveCiltCard(card)
+                    }
                     cleanScreenStates()
                 }.onFailure {
                     Log.e("test", "Failure $it")

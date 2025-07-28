@@ -14,6 +14,8 @@ import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCaseImpl
 import com.ih.osm.domain.usecase.card.SaveCardUseCase
 import com.ih.osm.domain.usecase.card.SaveCardUseCaseImpl
+import com.ih.osm.domain.usecase.card.SyncCardUseCase
+import com.ih.osm.domain.usecase.card.SyncCardUseCaseImpl
 import com.ih.osm.domain.usecase.card.SyncCardsUseCase
 import com.ih.osm.domain.usecase.card.SyncCardsUseCaseImpl
 import com.ih.osm.domain.usecase.card.UpdateCardMechanicUseCase
@@ -36,8 +38,6 @@ import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCaseImpl
-import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCase
-import com.ih.osm.domain.usecase.cilt.UpdateCiltEvidenceUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesByRoleUseCaseImpl
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
@@ -130,8 +130,8 @@ interface DomainBindingModule {
     @Binds
     fun bindSyncCardsUseCase(syncCardsUseCaseImpl: SyncCardsUseCaseImpl): SyncCardsUseCase
 
-//    @Binds
-//    fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
+    @Binds
+    fun bindSyncCardUseCase(syncCardUseCaseImpl: SyncCardUseCaseImpl): SyncCardUseCase
 
     @Binds
     fun bindGetEmployeesUseCase(getEmployeesUseCaseImpl: GetEmployeesUseCaseImpl): GetEmployeesUseCase
@@ -190,9 +190,6 @@ interface DomainBindingModule {
 
     @Binds
     fun bindCreateCiltEvidenceUseCase(createCiltEvidenceUseCaseImpl: CreateCiltEvidenceUseCaseImpl): CreateCiltEvidenceUseCase
-
-    @Binds
-    fun bindUpdateCiltEvidenceUseCase(updateCiltEvidenceUseCaseImpl: UpdateCiltEvidenceUseCaseImpl): UpdateCiltEvidenceUseCase
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase

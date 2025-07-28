@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
+import com.ih.osm.domain.model.ExecutionStatus
 import com.ih.osm.ui.utils.EMPTY
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -31,9 +32,13 @@ val Date.YYYY_MM_DD_HH_MM_SS: String
 val Date.DayMonthWithTimeZone: String
     get() = SimpleDateFormat(EEE_MMM_DD_HH_MM_A, Locale.getDefault()).format(this)
 
-fun String.toDate(format: String): Date? {
-    return SimpleDateFormat(format, Locale.getDefault())
-        .parse(this)
+fun String.toDate(
+    format: String,
+    timeZone: TimeZone = TimeZone.getDefault(),
+): Date? {
+    return SimpleDateFormat(format, Locale.getDefault()).apply {
+        this.timeZone = timeZone
+    }.parse(this)
 }
 
 fun Date.toCalendar(): Calendar {
@@ -115,6 +120,13 @@ fun String.isExpired(): Boolean {
     return dueDate?.before(todayDate).defaultIfNull(false)
 }
 
+fun String.isCardExpired(referenceDateString: String): Boolean {
+    if (this.isEmpty() || this.isBlank()) return false
+    val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
+    val referenceDate = referenceDateString.toDate(ISO, TimeZone.getTimeZone("UTC"))
+    return dueDate?.before(referenceDate).defaultIfNull(false)
+}
+
 fun String?.fromIsoToFormattedDate(
     inputPattern: String = ISO,
     outputPattern: String = DD_MM_YYYY_HH_MM,
@@ -139,6 +151,28 @@ fun String?.fromIsoToFormattedDate(
     }
 }
 
+fun String?.fromIsoToNormalDate(): String {
+    if (this.isNullOrBlank()) return EMPTY
+
+    return try {
+        val isoFormat =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val date = isoFormat.parse(this)
+
+        val outputFormat =
+            SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).apply {
+                timeZone = TimeZone.getDefault()
+            }
+
+        date?.let { outputFormat.format(it) } ?: EMPTY
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        EMPTY
+    }
+}
+
 fun getCurrentDate(): String {
     return SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 }
@@ -147,4 +181,163 @@ fun getCurrentDateTimeUtc(): String {
     val sdf = SimpleDateFormat(ISO, Locale.US)
     sdf.timeZone = TimeZone.getTimeZone("UTC")
     return sdf.format(Date())
+}
+
+fun String?.toHourFromIso(): String {
+    if (this.isNullOrBlank()) return EMPTY
+
+    return try {
+        val isoFormat =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val date = isoFormat.parse(this)
+
+        val outputFormat =
+            SimpleDateFormat("HH:mm", Locale.getDefault()).apply {
+                timeZone = TimeZone.getDefault()
+            }
+
+        date?.let { outputFormat.format(it) } ?: EMPTY
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        EMPTY
+    }
+}
+
+fun Int.toMinutesAndSeconds(): String {
+    if (this <= 0) return "0 s"
+    val minutes = this / 60
+    val seconds = this % 60
+    return when {
+        minutes > 0 && seconds > 0 -> "$minutes min $seconds s"
+        minutes > 0 -> "$minutes min"
+        else -> "$seconds s"
+    }
+}
+
+fun calculateRemainingDaysFromIso(dueDateString: String): Int {
+    return try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val dueDate = sdf.parse(dueDateString)
+        val today = Date()
+
+        val diffInMillis = dueDate.time - today.time
+        (diffInMillis / (1000 * 60 * 60 * 24)).toInt().coerceAtLeast(0)
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        0
+    }
+}
+
+fun String.isWithinExecutionWindow(
+    context: Context,
+    allowExecuteBefore: Boolean,
+    allowExecuteBeforeMinutes: Int,
+    toleranceBeforeMinutes: Int,
+    toleranceAfterMinutes: Int,
+    allowExecuteAfterDue: Boolean,
+): Pair<Boolean, String?> {
+    return try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val scheduleDate = sdf.parse(this) ?: return false to null
+        val now = Date()
+
+        val millisNow = now.time
+        val millisSchedule = scheduleDate.time
+
+        val effectiveBeforeMinutes =
+            if (allowExecuteBefore) {
+                allowExecuteBeforeMinutes + toleranceBeforeMinutes
+            } else {
+                toleranceBeforeMinutes
+            }
+
+        val beforeStartMillis =
+            millisSchedule - (effectiveBeforeMinutes * 60 * 1000)
+        val afterEndMillis = millisSchedule + (toleranceAfterMinutes * 60 * 1000)
+
+        return when {
+            millisNow in beforeStartMillis..afterEndMillis -> true to null
+            millisNow < beforeStartMillis -> {
+                val diff = beforeStartMillis - millisNow
+
+                val hours = (diff / (1000 * 60 * 60)).toInt()
+                val minutes = (diff / 1000 / 60).toInt()
+                val seconds = (diff / 1000 % 60).toInt()
+
+                val timeFormatted = String.format("%02d:%02d:%02d", hours, minutes, seconds)
+
+                false to context.getString(R.string.execution_wait_time, timeFormatted)
+            }
+
+            millisNow > afterEndMillis -> {
+                if (allowExecuteAfterDue) {
+                    true to null
+                } else {
+                    false to context.getString(R.string.sequence_out_of_time)
+                }
+            }
+
+            else -> false to context.getString(R.string.cannot_execute_now)
+        }
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        false to context.getString(R.string.execution_error)
+    }
+}
+
+fun String.getExecutionStatus(
+    sequenceStart: String?,
+    allowExecuteBefore: Boolean,
+    allowExecuteBeforeMinutes: Int,
+    toleranceBeforeMinutes: Int,
+    toleranceAfterMinutes: Int,
+    allowExecuteAfterDue: Boolean,
+): ExecutionStatus {
+    try {
+        val sdf =
+            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }
+        val scheduleDate = sdf.parse(this) ?: return ExecutionStatus.PENDING
+        val now = Date()
+
+        val millisNow = now.time
+        val millisSchedule = scheduleDate.time
+
+        val effectiveBeforeMinutes =
+            if (allowExecuteBefore) {
+                allowExecuteBeforeMinutes + toleranceBeforeMinutes
+            } else {
+                toleranceBeforeMinutes
+            }
+
+        val beforeStartMillis = millisSchedule - (effectiveBeforeMinutes * 60 * 1000)
+        val afterEndMillis = millisSchedule + (toleranceAfterMinutes * 60 * 1000)
+
+        if (sequenceStart == null) {
+            return if (millisNow < beforeStartMillis) ExecutionStatus.PENDING else ExecutionStatus.PENDING
+        }
+
+        val executionStartDate = sdf.parse(sequenceStart) ?: return ExecutionStatus.PENDING
+        val millisExecutionStart = executionStartDate.time
+
+        return when {
+            millisExecutionStart < beforeStartMillis -> ExecutionStatus.PENDING
+            millisExecutionStart in beforeStartMillis until millisSchedule -> ExecutionStatus.PREMATURE
+            millisExecutionStart in millisSchedule..afterEndMillis -> ExecutionStatus.ON_TIME
+            millisExecutionStart > afterEndMillis -> ExecutionStatus.EXPIRED
+            else -> ExecutionStatus.PENDING
+        }
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        return ExecutionStatus.PENDING
+    }
 }

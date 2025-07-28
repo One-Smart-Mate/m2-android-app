@@ -76,8 +76,12 @@ fun AppNavigation(startDestination: String) {
         composable(
             Screen.CreateCard.route,
             arguments = listOf(navArgument(ARG_CARD_FILTER) { type = NavType.StringType }),
-        ) {
-            CreateCardScreen(navController = navController)
+        ) { backStackEntry ->
+            val filter = backStackEntry.arguments?.getString(ARG_CARD_FILTER)
+            CreateCardScreen(
+                navController = navController,
+                filter = filter,
+            )
         }
         composable(Screen.Dev.route) {
             DevScreen(navController)
@@ -128,13 +132,13 @@ fun AppNavigation(startDestination: String) {
             route = Screen.CiltDetail.route,
             arguments =
                 listOf(
-                    navArgument("sequenceId") {
+                    navArgument("executionId") {
                         type = NavType.IntType
                     },
                 ),
         ) { backStackEntry ->
-            val sequenceId = backStackEntry.arguments?.getInt("sequenceId") ?: 0
-            CiltDetailScreen(sequenceId = sequenceId, navController = navController)
+            val executionId = backStackEntry.arguments?.getInt("executionId") ?: 0
+            CiltDetailScreen(executionId = executionId, navController = navController)
         }
 
         composable(

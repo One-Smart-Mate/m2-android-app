@@ -1,4 +1,5 @@
 package com.ih.osm.ui.components.opl
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
@@ -251,7 +252,10 @@ fun OplItemCard(
                             modifier = Modifier.size(16.dp),
                             tint = Color(0xFF4CAF50),
                         )
-                        CustomSpacer(direction = SpacerDirection.HORIZONTAL, space = SpacerSize.TINY)
+                        CustomSpacer(
+                            direction = SpacerDirection.HORIZONTAL,
+                            space = SpacerSize.TINY,
+                        )
                         Text(
                             text = stringResource(id = R.string.opl_reviewed_by, opl.reviewerName),
                             style =
@@ -344,30 +348,11 @@ private fun OplDetailItem(
                     .background(
                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                         shape = RoundedCornerShape(8.dp),
-                    )
-                    .padding(PaddingSmall),
+                    ),
+            // .padding(PaddingSmall),
             verticalAlignment = Alignment.Top,
         ) {
             // Step number inside a circle
-            Box(
-                modifier =
-                    Modifier
-                        .size(28.dp)
-                        .background(
-                            color = MaterialTheme.colorScheme.primary,
-                            shape = RoundedCornerShape(14.dp),
-                        ),
-                contentAlignment = Alignment.Center,
-            ) {
-                Text(
-                    text = "${detail.order}",
-                    style =
-                        MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            fontWeight = FontWeight.Bold,
-                        ),
-                )
-            }
 
             CustomSpacer(direction = SpacerDirection.HORIZONTAL, space = SpacerSize.SMALL)
 
@@ -387,15 +372,6 @@ private fun OplDetailItem(
                             ),
                         modifier = Modifier.weight(1f),
                     )
-
-                    if (detail.type.isNotEmpty()) {
-                        CustomSpacer(direction = SpacerDirection.HORIZONTAL, space = SpacerSize.SMALL)
-                        CustomTag(
-                            title = detail.type.uppercase(),
-                            tagSize = TagSize.SMALL,
-                            tagType = TagType.OUTLINE,
-                        )
-                    }
                 }
             }
         }
@@ -413,22 +389,27 @@ private fun OplDetailItem(
                         evidences = imageEvidences,
                     )
                 }
+
                 "video" -> {
                     // Show video using CardVideoSection
-                    val videoEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, VIDEO_CREATION)
+                    val videoEvidences =
+                        createEvidencesFromMediaUrl(detail.mediaUrl, VIDEO_CREATION)
                     CardVideoSection(
                         title = "",
                         evidences = videoEvidences,
                     )
                 }
+
                 "audio" -> {
                     // Show audio using CardAudioSection
-                    val audioEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, AUDIO_CREATION)
+                    val audioEvidences =
+                        createEvidencesFromMediaUrl(detail.mediaUrl, AUDIO_CREATION)
                     CardAudioSection(
                         title = "",
                         evidences = audioEvidences,
                     )
                 }
+
                 "pdf" -> {
                     // Show PDF using CardPdfSection
                     val pdfEvidences = createEvidencesFromMediaUrl(detail.mediaUrl, "PDF")
@@ -437,6 +418,7 @@ private fun OplDetailItem(
                         evidences = pdfEvidences,
                     )
                 }
+
                 else -> {
                     // Other file type or unrecognized type
                     if (detail.mediaUrl.isNotEmpty()) {

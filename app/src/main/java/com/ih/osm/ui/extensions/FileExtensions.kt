@@ -6,6 +6,8 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 fun getFileFromUri(
     context: Context,
@@ -63,4 +65,9 @@ fun getFileNameFromUri(
         }
     }
     return fileName
+}
+
+fun String.extractDecodedFileName(): String {
+    val decoded = URLDecoder.decode(this, StandardCharsets.UTF_8.name())
+    return decoded.substringAfterLast("/")
 }

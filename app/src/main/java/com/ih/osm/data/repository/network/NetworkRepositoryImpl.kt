@@ -15,7 +15,6 @@ import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
@@ -246,8 +245,11 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun getCilts(body: GetCiltsRequest): CiltData {
-            val response = apiService.getCilts(body).execute()
+        override suspend fun getCilts(
+            userId: String,
+            date: String,
+        ): CiltData {
+            val response = apiService.getCilts(userId, date).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
