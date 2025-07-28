@@ -2,6 +2,8 @@ package com.ih.osm.core.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.ih.osm.domain.model.Card
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,6 +26,8 @@ class SharedPreferences
             private const val NOTIFICATION_TYPE_PREFERENCES = "notification_type"
             private const val NOTIFICATION_APP_VERSION = "app_version"
             private const val DUE_DATE_PREFERENCES = "due_date"
+            private const val CILT_CARD_PREFERENCES = "cilt_card"
+            private const val AUTH_TOKEN = "auth_token"
         }
 
         init {
@@ -150,5 +154,36 @@ class SharedPreferences
 
         fun getDueDate(): String {
             return sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
+        }
+
+        fun saveCiltCard(card: Card) {
+            val json = Gson().toJson(card)
+            sharedPreferences?.edit()?.putString(CILT_CARD_PREFERENCES, json)?.apply()
+        }
+
+        fun getCiltCard(): Card? {
+            val json = sharedPreferences?.getString(CILT_CARD_PREFERENCES, null) ?: return null
+            return try {
+                Gson().fromJson(json, Card::class.java)
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        fun removeCiltCard() {
+            sharedPreferences?.edit()?.remove(CILT_CARD_PREFERENCES)?.apply()
+        }
+
+        fun saveToken(token: String) {
+            sharedPreferences?.let {
+                with(it.edit()) {
+                    putString(AUTH_TOKEN, token)
+                    apply()
+                }
+            }
+        }
+
+        fun getToken(): String {
+            return sharedPreferences?.getString(AUTH_TOKEN, EMPTY).orEmpty()
         }
     }

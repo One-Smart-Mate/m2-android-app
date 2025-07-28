@@ -10,7 +10,6 @@ import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
 import com.ih.osm.data.model.GetCiltResponse
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
@@ -26,8 +25,6 @@ import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StartSequenceExecutionResponse
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionResponse
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import retrofit2.Call
@@ -141,9 +138,10 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @POST("cilt-mstr/user")
+    @GET("cilt-mstr/user-read-only/{userId}/{date}")
     fun getCilts(
-        @Body body: GetCiltsRequest,
+        @Path("userId") userId: String,
+        @Path("date") date: String,
     ): Call<GetCiltResponse>
 
     @GET("/opl-mstr/{id}")
@@ -161,15 +159,10 @@ interface ApiService {
         @Body body: StopSequenceExecutionRequest,
     ): Call<StopSequenceExecutionResponse>
 
-    @POST("cilt-sequences-evidences/create")
+    @POST("cilt-sequences-executions/evidence/create")
     fun createEvidence(
         @Body body: CiltEvidenceRequest,
     ): Call<CiltEvidenceResponse>
-
-    @PUT("/cilt-sequences-evidences/update")
-    fun updateEvidence(
-        @Body body: UpdateCiltEvidenceRequest,
-    ): Call<UpdateCiltEvidenceResponse>
 
     @GET("opl-levels/level/{levelId}")
     fun getOplsByLevel(

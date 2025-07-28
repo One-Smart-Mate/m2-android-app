@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -68,7 +68,7 @@ fun CustomTag(
                 modifier
                     .background(
                         color = containerColor,
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(20.dp),
                     )
                     .padding(vertical = 6.dp, horizontal = 10.dp)
             }
@@ -85,7 +85,7 @@ fun CustomTag(
                             } else {
                                 MaterialTheme.colorScheme.primary
                             },
-                        shape = CircleShape,
+                        shape = RoundedCornerShape(20.dp),
                     )
                     .padding(vertical = 2.dp, horizontal = 12.dp)
             }
@@ -99,6 +99,7 @@ fun CustomTag(
             style = tagTextStyle,
             modifier = textModifier,
             textAlign = textAlign,
+            softWrap = true,
         )
     }
 }

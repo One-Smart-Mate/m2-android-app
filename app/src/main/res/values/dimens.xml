@@ -6,7 +6,7 @@
     <dimen name="button_spacing">4dp</dimen>
     <dimen name="card_padding_horizontal">16dp</dimen>
     <dimen name="card_padding_vertical">8dp</dimen>
-    <dimen name="content_padding">16dp</dimen>
+    <dimen name="content_padding">5dp</dimen>
     <dimen name="circle_shape_size">20dp</dimen>
     <dimen name="box_padding">32dp</dimen>
     <dimen name="vertical_spacedby">12dp</dimen>

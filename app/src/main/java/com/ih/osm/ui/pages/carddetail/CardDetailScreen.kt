@@ -56,6 +56,8 @@ import com.ih.osm.ui.components.card.CardAudioSection
 import com.ih.osm.ui.components.card.CardImageSection
 import com.ih.osm.ui.components.card.CardVideoSection
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
+import com.ih.osm.ui.extensions.isCardExpired
 import com.ih.osm.ui.extensions.isExpired
 import com.ih.osm.ui.extensions.orDefault
 import com.ih.osm.ui.pages.error.ErrorScreen
@@ -162,15 +164,24 @@ fun CardInformationContent(card: Card) {
             value = card.getCreationDate(),
         )
 
+        val referenceDateString =
+            if (card.cardDefinitiveSolutionDate.isNullOrEmpty()) {
+                getCurrentDateTimeUtc()
+            } else {
+                card.cardDefinitiveSolutionDate
+            }
+
+        val isExpired = card.dueDate.isCardExpired(referenceDateString)
+
         SectionTag(
             title = stringResource(id = R.string.due_date),
             value =
-                if (card.dueDate.isExpired()) {
-                    stringResource(id = R.string.expired)
+                if (isExpired) {
+                    "${card.dueDate} ${stringResource(id = R.string.expired)}"
                 } else {
                     card.dueDate
                 },
-            isErrorEnabled = card.dueDate.isExpired(),
+            isErrorEnabled = isExpired,
         )
         SectionTag(
             title = stringResource(R.string.preclassifier),

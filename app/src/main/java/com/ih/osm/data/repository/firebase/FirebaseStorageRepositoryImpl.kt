@@ -6,6 +6,7 @@ import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.model.Evidence
+import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.user.GetUserUseCase
@@ -28,7 +29,13 @@ class FirebaseStorageRepositoryImpl
                 val evidenceType = EvidenceType.valueOf(evidence.type)
                 val evidenceName = getEvidenceFileName(evidenceType)
                 val evidenceReference =
-                    getEvidenceReference(evidenceType, evidenceName, evidence.cardId, siteId)
+                    getEvidenceReference(
+                        evidenceType,
+                        evidenceName,
+                        evidence.cardId,
+                        siteId,
+                        evidence.parentType,
+                    )
                 evidenceReference.putFile(evidence.url.toUri()).await()
                 val url = evidenceReference.downloadUrl.await()
                 url.toString()
@@ -51,34 +58,37 @@ class FirebaseStorageRepositoryImpl
                 EvidenceType.IMPS -> "IMAGE_PS_$timeStamp.jpg"
                 EvidenceType.AUPS -> "AUDIO_PS_$timeStamp.mp3"
                 EvidenceType.VIPS -> "VIDEO_PS_$timeStamp.mp4"
+                EvidenceType.INITIAL -> "IMAGE_INITIAL_$timeStamp.jpg"
+                EvidenceType.FINAL -> "IMAGE_FINAL_$timeStamp.jpg"
             }
         }
 
         private fun getEvidenceReference(
             type: EvidenceType,
             evidenceName: String,
-            cardId: String,
+            parentId: String,
             siteId: String,
+            parentType: EvidenceParentType,
         ): StorageReference {
-            val prefixImages = "site-$siteId/$cardId/images/$evidenceName"
-            val prefixVideos = "site-$siteId/$cardId/videos/$evidenceName"
-            val prefixAudios = "site-$siteId/$cardId/audios/$evidenceName"
-            return when (type) {
-                EvidenceType.IMCR, EvidenceType.IMCL, EvidenceType.IMPS ->
-                    firebaseStorage.reference.child(
-                        prefixImages,
-                    )
+            val basePath =
+                when (parentType) {
+                    EvidenceParentType.CARD -> "site_$siteId/cards/$parentId"
+                    EvidenceParentType.EXECUTION -> "site_$siteId/executions/$parentId"
+                }
 
-                EvidenceType.VICR, EvidenceType.VICL, EvidenceType.VIPS ->
-                    firebaseStorage.reference.child(
-                        prefixVideos,
-                    )
+            val path =
+                when (parentType) {
+                    EvidenceParentType.EXECUTION -> "$basePath/images/$evidenceName"
+                    EvidenceParentType.CARD ->
+                        when (type) {
+                            EvidenceType.IMCR, EvidenceType.IMCL, EvidenceType.IMPS -> "$basePath/images/$evidenceName"
+                            EvidenceType.VICR, EvidenceType.VICL, EvidenceType.VIPS -> "$basePath/videos/$evidenceName"
+                            EvidenceType.AUCR, EvidenceType.AUCL, EvidenceType.AUPS -> "$basePath/audios/$evidenceName"
+                            else -> throw IllegalArgumentException("EvidenceType $type is not valid for CARD")
+                        }
+                }
 
-                EvidenceType.AUCR, EvidenceType.AUCL, EvidenceType.AUPS ->
-                    firebaseStorage.reference.child(
-                        prefixAudios,
-                    )
-            }
+            return firebaseStorage.reference.child(path)
         }
 
         override suspend fun deleteEvidence(cardUUID: String): Boolean {
@@ -86,18 +96,18 @@ class FirebaseStorageRepositoryImpl
                 val siteId = getUserUseCase()?.siteId.defaultIfNull("0")
 
                 val imagesReference =
-                    firebaseStorage.getReference("site-$siteId/$cardUUID/images/")
+                    firebaseStorage.getReference("site_$siteId/cards/$cardUUID/images/")
                 imagesReference.listAll().await().items.forEach { image ->
                     image.delete()
                 }
                 val videosReference =
-                    firebaseStorage.getReference("site-$siteId/$cardUUID/videos/")
+                    firebaseStorage.getReference("site_$siteId/cards/$cardUUID/videos/")
                 videosReference.listAll().await().items.forEach { image ->
                     image.delete()
                 }
 
                 val audiosReference =
-                    firebaseStorage.getReference("site-$siteId/$cardUUID/audios/")
+                    firebaseStorage.getReference("site_$siteId/cards/$cardUUID/audios/")
                 audiosReference.listAll().await().items.forEach { image ->
                     image.delete()
                 }

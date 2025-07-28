@@ -94,6 +94,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CreateCardScreen(
     navController: NavController,
+    filter: String? = null,
     viewModel: CreateCardViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -101,6 +102,14 @@ fun CreateCardScreen(
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+
+    LaunchedEffect(filter) {
+        if (filter?.startsWith("cilt:") == true) {
+            val superiorId = filter.removePrefix("cilt:")
+            viewModel.setCiltMode(true)
+            viewModel.setSuperiorIdCilt(superiorId)
+        }
+    }
 
     if (state.isLoading) {
         LoadingScreen(state.message)

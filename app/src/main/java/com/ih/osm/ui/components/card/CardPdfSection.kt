@@ -54,6 +54,7 @@ import com.ih.osm.domain.model.Evidence
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.pdf.PreviewPdf
+import com.ih.osm.ui.extensions.extractDecodedFileName
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
@@ -91,7 +92,7 @@ fun CardPdfSection(
             items(evidences) { evidence ->
                 PdfCardItem(
                     pdfUrl = evidence.url,
-                    fileName = evidence.url.substringAfterLast("/").substringAfterLast("\\"),
+                    fileName = evidence.url.extractDecodedFileName(),
                     modifier =
                         Modifier
                             .width(Size200)

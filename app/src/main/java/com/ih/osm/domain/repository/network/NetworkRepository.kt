@@ -4,14 +4,12 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
-import com.ih.osm.data.model.UpdateCiltEvidenceRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
@@ -77,7 +75,10 @@ interface NetworkRepository {
 
     suspend fun logout(body: LogoutRequest)
 
-    suspend fun getCilts(body: GetCiltsRequest): CiltData
+    suspend fun getCilts(
+        userId: String,
+        date: String,
+    ): CiltData
 
     suspend fun getOplById(id: String): Opl
 
@@ -86,6 +87,4 @@ interface NetworkRepository {
     suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution
 
     suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
-
-    suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence
 }
