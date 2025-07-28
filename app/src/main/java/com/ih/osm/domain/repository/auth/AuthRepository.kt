@@ -1,5 +1,6 @@
 package com.ih.osm.domain.repository.auth
 
+import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.RestorePasswordRequest
@@ -24,4 +25,6 @@ interface AuthRepository {
     suspend fun logout(): Int
 
     suspend fun getSiteId(): String
+
+    suspend fun fastLogin(body: FastLoginRequest): LoginResponse
 }

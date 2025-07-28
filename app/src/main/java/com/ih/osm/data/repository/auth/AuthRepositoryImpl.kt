@@ -2,6 +2,7 @@ package com.ih.osm.data.repository.auth
 
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.entities.toDomain
+import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -59,5 +60,9 @@ class AuthRepositoryImpl
 
         override suspend fun getSiteId(): String {
             return dao.getUser()?.siteId.orEmpty()
+        }
+
+        override suspend fun fastLogin(body: FastLoginRequest): LoginResponse {
+            return networkRepository.fastLogin(body)
         }
     }

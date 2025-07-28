@@ -7,6 +7,8 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
+import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -291,6 +293,25 @@ class NetworkRepositoryImpl
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun updateEvidence(body: UpdateCiltEvidenceRequest): CiltSequenceEvidence {
+            val response = apiService.updateEvidence(body).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun fastLogin(body: FastLoginRequest): LoginResponse {
+            val response = apiService.fastLogin(body).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!
             } else {
                 error(response.getErrorMessage())
             }
