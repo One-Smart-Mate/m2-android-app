@@ -24,6 +24,10 @@ import com.ih.osm.ui.components.SectionTag
 import com.ih.osm.ui.extensions.calculateRemainingDaysFromIso
 import com.ih.osm.ui.extensions.fromIsoToFormattedDate
 import com.ih.osm.ui.extensions.isExpired
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
 
 @Composable
 fun CiltDetailSection(
@@ -126,10 +130,17 @@ fun CiltDetailSection(
 
                         Spacer(modifier = Modifier.height(8.dp))
 
+                        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+                        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+
                         val executions =
                             cilt.sequences
                                 .flatMap { it.executions }
-                                .sortedBy { it.secuenceSchedule }
+                                .sortedBy { execution ->
+                                    val date = inputFormat.parse(execution.secuenceSchedule)
+                                    val calendar = Calendar.getInstance().apply { time = date }
+                                    calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
+                                }
 
                         executions.forEach { execution ->
                             ExecutionCard(

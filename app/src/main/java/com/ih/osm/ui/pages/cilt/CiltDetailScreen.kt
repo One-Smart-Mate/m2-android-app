@@ -190,6 +190,12 @@ fun CiltDetailHeader(execution: Execution) {
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
+            text = execution.siteExecutionId.toString(),
+            style =
+                MaterialTheme.typography.titleLarge
+                    .copy(fontWeight = FontWeight.Bold),
+        )
+        Text(
             text = execution.ciltTypeName,
             style =
                 MaterialTheme.typography.titleLarge

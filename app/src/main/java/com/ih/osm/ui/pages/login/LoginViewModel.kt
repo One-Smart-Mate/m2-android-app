@@ -1,7 +1,6 @@
 package com.ih.osm.ui.pages.login
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
@@ -26,112 +25,112 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel
-    @Inject
-    constructor(
-        private val loginUseCase: LoginUseCase,
-        private val saveUserUseCase: SaveUserUseCase,
-        private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-        private val sharedPreferences: SharedPreferences,
-        @ApplicationContext private val context: Context,
-    ) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
-        data class UiState(
-            val isLoading: Boolean = false,
-            val message: String = EMPTY,
-            val isAuthenticated: Boolean = false,
-            val email: String = EMPTY,
-            val password: String = EMPTY,
-        )
+@Inject
+constructor(
+    private val loginUseCase: LoginUseCase,
+    private val saveUserUseCase: SaveUserUseCase,
+    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+    private val sharedPreferences: SharedPreferences,
+    @ApplicationContext private val context: Context,
+) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
+    data class UiState(
+        val isLoading: Boolean = false,
+        val message: String = EMPTY,
+        val isAuthenticated: Boolean = false,
+        val email: String = EMPTY,
+        val password: String = EMPTY,
+    )
 
-        fun process(action: LoginAction) {
-            when (action) {
-                is LoginAction.Login -> checkConnection()
-                is LoginAction.SetEmail -> setState { copy(email = action.email) }
-                is LoginAction.SetPassword -> setState { copy(password = action.password) }
-            }
-        }
-
-        fun cleanMessage() {
-            setState { copy(message = EMPTY) }
-        }
-
-        private fun checkConnection() {
-            viewModelScope.launch {
-                setState { copy(isLoading = true) }
-                if (NetworkConnection.isConnected().not()) {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = context.getString(R.string.please_connect_to_internet),
-                        )
-                    }
-                } else {
-                    handleLogin()
-                }
-            }
-        }
-
-        private fun handleLogin() {
-            viewModelScope.launch {
-                val email = getState().email
-                val password = getState().password
-                val timezone = getValidIanaTimeZone()
-
-                kotlin.runCatching {
-                    callUseCase {
-                        loginUseCase(
-                            LoginRequest(
-                                email = email,
-                                password = password,
-                                timezone = timezone,
-                                platform = ANDROID_SO.uppercase(),
-                            ),
-                        )
-                    }
-                }.onSuccess { loginResponse ->
-                    val user = loginResponse.toDomain()
-                    LoggerHelperManager.logUser(user)
-                    sharedPreferences.saveToken(user.token)
-                    sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
-                    handleSaveUser(user)
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
-            }
-        }
-
-        private fun handleSaveUser(user: User) {
-            viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { saveUserUseCase(user) }
-                }.onSuccess {
-                    handleSyncFirebaseToken()
-                    setState { copy(isLoading = false, isAuthenticated = true) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
-                }
-            }
-        }
-
-        private suspend fun handleSyncFirebaseToken() {
-            kotlin.runCatching {
-                callUseCase { syncFirebaseTokenUseCase() }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                FirebaseCrashlytics.getInstance().recordException(it)
-            }
-        }
-
-        private fun getValidIanaTimeZone(): String {
-            val defaultTimeZone = TimeZone.getDefault()
-            val availableIDs = TimeZone.getAvailableIDs(defaultTimeZone.rawOffset)
-
-            return availableIDs.firstOrNull { it.contains("/") } ?: "UTC"
+    fun process(action: LoginAction) {
+        when (action) {
+            is LoginAction.Login -> checkConnection()
+            is LoginAction.SetEmail -> setState { copy(email = action.email) }
+            is LoginAction.SetPassword -> setState { copy(password = action.password) }
         }
     }
+
+    fun cleanMessage() {
+        setState { copy(message = EMPTY) }
+    }
+
+    private fun checkConnection() {
+        viewModelScope.launch {
+            setState { copy(isLoading = true) }
+            if (NetworkConnection.isConnected().not()) {
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = context.getString(R.string.please_connect_to_internet),
+                    )
+                }
+            } else {
+                handleLogin()
+            }
+        }
+    }
+
+    private fun handleLogin() {
+        viewModelScope.launch {
+            val email = getState().email
+            val password = getState().password
+            val timezone = getValidIanaTimeZone()
+
+            kotlin.runCatching {
+                callUseCase {
+                    loginUseCase(
+                        LoginRequest(
+                            email = email,
+                            password = password,
+                            timezone = timezone,
+                            platform = ANDROID_SO.uppercase(),
+                        ),
+                    )
+                }
+            }.onSuccess { loginResponse ->
+                val user = loginResponse.toDomain()
+                LoggerHelperManager.logUser(user)
+                sharedPreferences.saveToken(user.token)
+                sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
+                handleSaveUser(user)
+            }.onFailure {
+                LoggerHelperManager.logException(it)
+                setState {
+                    copy(
+                        isLoading = false,
+                        message = it.localizedMessage.orEmpty(),
+                    )
+                }
+            }
+        }
+    }
+
+    private fun handleSaveUser(user: User) {
+        viewModelScope.launch {
+            kotlin.runCatching {
+                callUseCase { saveUserUseCase(user) }
+            }.onSuccess {
+                handleSyncFirebaseToken()
+                setState { copy(isLoading = false, isAuthenticated = true) }
+            }.onFailure {
+                LoggerHelperManager.logException(it)
+                setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+            }
+        }
+    }
+
+    private suspend fun handleSyncFirebaseToken() {
+        kotlin.runCatching {
+            callUseCase { syncFirebaseTokenUseCase() }
+        }.onFailure {
+            LoggerHelperManager.logException(it)
+            FirebaseCrashlytics.getInstance().recordException(it)
+        }
+    }
+
+    private fun getValidIanaTimeZone(): String {
+        val defaultTimeZone = TimeZone.getDefault()
+        val availableIDs = TimeZone.getAvailableIDs(defaultTimeZone.rawOffset)
+
+        return availableIDs.firstOrNull { it.contains("/") } ?: "UTC"
+    }
+}
