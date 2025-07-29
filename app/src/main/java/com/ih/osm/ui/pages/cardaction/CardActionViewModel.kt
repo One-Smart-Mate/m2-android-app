@@ -2,7 +2,6 @@ package com.ih.osm.ui.pages.cardaction
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
@@ -299,7 +298,6 @@ class CardActionViewModel
                         )
                     }
                 }.onSuccess {
-                    Log.e("Test", "Solution Success $it")
                     setState { copy(isActionSuccess = true) }
                     buildNotification()
                     cleanScreenStates()
@@ -344,7 +342,6 @@ class CardActionViewModel
         }
 
         private fun handleGetCardDetail(uuid: String) {
-            Log.e("test", "CardID -> $uuid")
             setState { copy(isLoading = true) }
             viewModelScope.launch {
                 kotlin.runCatching {

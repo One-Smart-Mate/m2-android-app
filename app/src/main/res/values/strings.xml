@@ -311,4 +311,13 @@
     <string name="change_user">Change user</string>
     <string name="enter_fast_password">Enter your fast password</string>
 
+
+    <string name="execution_one">The date of this execution was %1$s</string>
+    <string name="execution_two">The execution time after is between %1$s and %2$s</string>
+    <string name="execution_three">The execution time before is between %1$s and %2$s</string>
+
+    <string name="leave_screen">Alert, are you going to leave the screen!</string>
+    <string name="leave_screen_description">If you leave the screen you will lost all the information saved, Do you want to continue?</string>
+    <string name="close">Close</string>
+
 </resources>

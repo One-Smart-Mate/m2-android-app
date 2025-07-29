@@ -6,6 +6,7 @@ import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Opl
+import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 
 interface CiltRepository {
@@ -18,4 +19,6 @@ interface CiltRepository {
     suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
 
     suspend fun getOplById(id: String): Opl
+
+    suspend fun getSequence(id: Int): Sequence
 }

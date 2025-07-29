@@ -71,7 +71,7 @@ fun CiltScreen(
     SnackbarHost(hostState = snackBarHostState) {
         Snackbar(
             snackbarData = it,
-            containerColor = MaterialTheme.colorScheme.error,
+            containerColor = Color.Red,
             contentColor = Color.White,
             modifier = Modifier.padding(top = PaddingToolbar),
         )

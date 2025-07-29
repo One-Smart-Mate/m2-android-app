@@ -309,4 +309,13 @@
     <string name="fast_password">Contraseña rápida</string>
     <string name="change_user">Cambiar usuario</string>
     <string name="enter_fast_password">Ingresa tu contraseña rápida</string>
+
+    <string name="execution_one">Le fecha de ejecución fue %1$s</string>
+    <string name="execution_two">El tiempo de ejecución posterior es entre %1$s y %2$s</string>
+    <string name="execution_three">El tiempo de ejecución antes es entre %1$s y %2$s</string>
+
+    <string name="leave_screen">Aviso!, estas por cerrar la pantalla</string>
+    <string name="leave_screen_description">Si cierras la pantalla perderas la información guardada, Deseas continuar?</string>
+    <string name="close">Cerrar</string>
+
 </resources>

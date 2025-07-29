@@ -1,4 +1,4 @@
-package com.ih.osm.domain.usecase.saveuser
+package com.ih.osm.domain.usecase.user
 
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.repository.auth.AuthRepository

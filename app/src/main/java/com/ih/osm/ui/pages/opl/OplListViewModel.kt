@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.opllist
+package com.ih.osm.ui.pages.opl
 
 import android.content.Context
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import com.ih.osm.domain.model.toNodeItemList
 import com.ih.osm.domain.usecase.level.GetLevelsUseCase
 import com.ih.osm.domain.usecase.opl.GetOplsByLevelUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
-import com.ih.osm.ui.pages.opllist.action.OplListAction
+import com.ih.osm.ui.pages.opl.action.OplListAction
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext

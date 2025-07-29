@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
+import com.ih.osm.ui.theme.PaddingSmall
 
 @Composable
 fun ExpandableCard(
@@ -46,7 +47,7 @@ fun ExpandableCard(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(PaddingNormal),
+                .padding(vertical = PaddingSmall),
     ) {
         Row(
             modifier =

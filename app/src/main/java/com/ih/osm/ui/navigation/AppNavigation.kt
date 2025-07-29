@@ -1,5 +1,6 @@
 package com.ih.osm.ui.navigation
 
+import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -9,8 +10,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ih.osm.domain.model.Sequence
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.card.actions.toActionString
+import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.pages.account.AccountScreen
 import com.ih.osm.ui.pages.cardaction.CardActionScreen
 import com.ih.osm.ui.pages.carddetail.CardDetailScreen
@@ -21,10 +24,11 @@ import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
-import com.ih.osm.ui.pages.opllist.OplListScreen
+import com.ih.osm.ui.pages.opl.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
+import com.ih.osm.ui.pages.sequence.SequenceScreen
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 
@@ -146,6 +150,24 @@ fun AppNavigation(startDestination: String) {
         ) {
             OplListScreen(navController = navController)
         }
+
+        composable(
+            route = Screen.Sequence.route,
+            arguments =
+                listOf(
+                    navArgument(ARG_SEQUENCE_ID) {
+                        type = NavType.IntType
+                    },
+                    navArgument(ARG_EXECUTION_ID) {
+                        type = NavType.IntType
+                    },
+                ),
+        ) { backStackEntry ->
+            val sequenceId = backStackEntry.arguments?.getInt(ARG_SEQUENCE_ID).defaultIfNull(0)
+            val executionId = backStackEntry.arguments?.getInt(ARG_EXECUTION_ID).defaultIfNull(0)
+            Log.e("test", " Sequence ID: $sequenceId, Execution ID: $executionId")
+            SequenceScreen(navController = navController, sequenceId = sequenceId, executionId = executionId)
+        }
     }
 }
 
@@ -219,4 +241,11 @@ fun NavController.navigateToCiltDetail(sequenceId: Int) {
 
 fun NavController.navigateToOplList() {
     navigate(Screen.OplList.route)
+}
+
+fun NavController.navigateToSequence(
+    sequenceId: Int,
+    executionId: Int,
+) {
+    navigate("${Screen.Sequence.path}/$sequenceId/$executionId")
 }

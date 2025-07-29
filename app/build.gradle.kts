@@ -28,8 +28,8 @@ android {
         applicationId = "com.ih.osm"
         minSdk = 24
         targetSdk = 36
-        versionCode = 26
-        versionName = "1.0.21"
+        versionCode = 28
+        versionName = "1.0.28"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -75,6 +75,7 @@ android {
     }
     kotlinOptions {
         jvmTarget = "1.8"
+        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
     }
     buildFeatures {
         compose = true

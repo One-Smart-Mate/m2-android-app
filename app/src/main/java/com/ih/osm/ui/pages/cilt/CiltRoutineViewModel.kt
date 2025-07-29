@@ -277,7 +277,7 @@ class CiltRoutineViewModel
                     )
 
                 kotlin.runCatching {
-                    callUseCase { stopSequenceExecutionUseCase(request) }
+                    callUseCase { stopSequenceExecutionUseCase(request, emptyList()) }
                 }.onSuccess {
                     sharedPreferences.removeCiltCard()
                     setState { copy(isUploadingEvidence = true) }

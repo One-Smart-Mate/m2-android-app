@@ -17,7 +17,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 interface SaveCardUseCase {
-    suspend operator fun invoke(card: Card): Long
+    suspend operator fun invoke(card: Card): Card
 }
 
 class SaveCardUseCaseImpl
@@ -33,7 +33,7 @@ class SaveCardUseCaseImpl
         private val evidenceRepo: EvidenceRepository,
         private val notificationManager: NotificationManager,
     ) : SaveCardUseCase {
-        override suspend fun invoke(card: Card): Long {
+        override suspend fun invoke(card: Card): Card {
             val lastCardId = cardRepo.getLastCardId()
             val lastSiteCardId = cardRepo.getLastSiteCardId()
             val user = authRepo.get()
@@ -72,6 +72,6 @@ class SaveCardUseCaseImpl
             firebaseAnalyticsHelper.logCreateCard(updatedCard)
             notificationManager.buildNotificationSuccessCard()
             LoggerHelperManager.logCreateCard(updatedCard)
-            return id
+            return updatedCard
         }
     }

@@ -12,6 +12,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -20,14 +21,9 @@ import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.ui.components.ExpandableCard
-import com.ih.osm.ui.components.SectionTag
 import com.ih.osm.ui.extensions.calculateRemainingDaysFromIso
 import com.ih.osm.ui.extensions.fromIsoToFormattedDate
-import com.ih.osm.ui.extensions.isExpired
-import java.text.SimpleDateFormat
-import java.util.Calendar
-import java.util.Locale
-import java.util.TimeZone
+import com.ih.osm.ui.navigation.navigateToSequence
 
 @Composable
 fun CiltDetailSection(
@@ -45,45 +41,21 @@ fun CiltDetailSection(
                     ),
             ) {
                 Column(modifier = Modifier.padding(8.dp)) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.routine_label),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = cilt.ciltName,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-
+                    AnatomyHorizontalSection(
+                        title = stringResource(R.string.routine_label),
+                        description = cilt.ciltName,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    AnatomyHorizontalSection(
+                        title = stringResource(R.string.position_label),
+                        description = position.name,
+                    )
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.position_label),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = position.name,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.description_label),
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = cilt.ciltDescription,
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
+                    AnatomyHorizontalSection(
+                        title = stringResource(R.string.description_label),
+                        description = cilt.ciltDescription,
+                    )
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -91,25 +63,25 @@ fun CiltDetailSection(
                         title = stringResource(R.string.cilt_details),
                         expanded = false,
                     ) {
-                        SectionTag(
+                        AnatomyHorizontalSection(
                             title = stringResource(R.string.cilt_created_by),
-                            value = cilt.creatorName,
+                            description = cilt.creatorName,
                         )
-                        SectionTag(
+                        AnatomyHorizontalSection(
                             title = stringResource(R.string.cilt_reviewed_by),
-                            value = cilt.reviewerName,
+                            description = cilt.reviewerName,
                         )
-                        SectionTag(
+                        AnatomyHorizontalSection(
                             title = stringResource(R.string.cilt_approved_by),
-                            value = cilt.approvedByName,
+                            description = cilt.approvedByName,
                         )
-                        SectionTag(
+                        AnatomyHorizontalSection(
                             title = stringResource(R.string.cilt_due_date),
-                            value = cilt.ciltDueDate.fromIsoToFormattedDate(),
-                            isErrorEnabled = cilt.ciltDueDate.isExpired(),
+                            description = cilt.ciltDueDate.fromIsoToFormattedDate(),
                         )
+
                         val daysRemaining = calculateRemainingDaysFromIso(cilt.ciltDueDate)
-                        if (daysRemaining > 0) {
+                        if (daysRemaining > 0 && daysRemaining < 5) {
                             val message =
                                 if (daysRemaining == 1) {
                                     stringResource(R.string.days_remaining_singular, daysRemaining)
@@ -129,30 +101,38 @@ fun CiltDetailSection(
                         CiltDiagramSection(imageUrl = cilt.urlImgLayout)
 
                         Spacer(modifier = Modifier.height(8.dp))
-
-                        val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
-                        inputFormat.timeZone = TimeZone.getTimeZone("UTC")
-
-                        val executions =
-                            cilt.sequences
-                                .flatMap { it.executions }
-                                .sortedBy { execution ->
-                                    val date = inputFormat.parse(execution.secuenceSchedule)
-                                    val calendar = Calendar.getInstance().apply { time = date }
-                                    calendar.get(Calendar.HOUR_OF_DAY) * 60 + calendar.get(Calendar.MINUTE)
+                        cilt.sequences.forEach { sequence ->
+                            sequence.executions.forEach { execution ->
+                                ExecutionCard(
+                                    execution = execution,
+                                ) {
+                                    navController.navigateToSequence(sequence.id, execution.id)
                                 }
-
-                        executions.forEach { execution ->
-                            ExecutionCard(
-                                execution = execution,
-                                navController = navController,
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
+                                Spacer(modifier = Modifier.height(16.dp))
+                            }
                         }
                     }
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
+    }
+}
+
+@Composable
+fun AnatomyHorizontalSection(
+    title: String,
+    description: String,
+) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+        )
+        Spacer(modifier = Modifier.width(12.dp))
+        Text(
+            text = description,
+            style = MaterialTheme.typography.bodyLarge,
+        )
     }
 }

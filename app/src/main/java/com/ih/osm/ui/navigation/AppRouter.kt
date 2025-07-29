@@ -8,6 +8,7 @@ const val ARG_SOLUTION = "arg_solution"
 const val ARG_CARD_FILTER = "arg_card_filter"
 const val ARG_ACTION_TYPE = "arg_action_type"
 const val ARG_EXECUTION_ID = "executionId"
+const val ARG_SEQUENCE_ID = "sequenceId"
 
 private object Route {
     const val LOGIN = "login"
@@ -43,6 +44,9 @@ private object Route {
 
     const val OPL_LIST_PATH = "opl-list"
     const val OPL_LIST = OPL_LIST_PATH
+
+    const val SEQUENCE_PATH = "sequence"
+    const val SEQUENCE = "$SEQUENCE_PATH/{$ARG_SEQUENCE_ID}/{$ARG_EXECUTION_ID}"
 }
 
 sealed class Screen(val route: String, val path: String = EMPTY) {
@@ -77,4 +81,6 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
     }
 
     data object OplList : Screen(Route.OPL_LIST, Route.OPL_LIST_PATH)
+
+    data object Sequence : Screen(Route.SEQUENCE, Route.SEQUENCE_PATH)
 }

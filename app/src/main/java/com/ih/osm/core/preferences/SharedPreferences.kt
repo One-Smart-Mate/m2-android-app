@@ -2,6 +2,7 @@ package com.ih.osm.core.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 import com.google.gson.Gson
 import com.ih.osm.domain.model.Card
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
@@ -27,7 +28,6 @@ class SharedPreferences
             private const val NOTIFICATION_APP_VERSION = "app_version"
             private const val DUE_DATE_PREFERENCES = "due_date"
             private const val CILT_CARD_PREFERENCES = "cilt_card"
-            private const val AUTH_TOKEN = "auth_token"
         }
 
         init {
@@ -36,22 +36,22 @@ class SharedPreferences
 
         fun clearPreferences() {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     remove(NETWORK_PREFERENCES)
                     remove(LAST_SYNC_PREFERENCES)
                     remove(FIREBASE_TOKEN_PREFERENCES)
                     remove(NOTIFICATION_TYPE_PREFERENCES)
                     remove(NOTIFICATION_APP_VERSION)
-                    commit()
+                    remove(CILT_CARD_PREFERENCES)
+                    remove(DUE_DATE_PREFERENCES)
                 }
             }
         }
 
         fun saveNetworkPreference(network: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(NETWORK_PREFERENCES, network)
-                    commit()
                 }
             }
         }
@@ -62,9 +62,8 @@ class SharedPreferences
 
         fun saveLogFile(path: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(LOG_FILE_PREFERENCES, path)
-                    commit()
                 }
             }
         }
@@ -75,12 +74,11 @@ class SharedPreferences
 
         fun saveLastSyncDate() {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(
                         LAST_SYNC_PREFERENCES,
                         Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS,
                     )
-                    commit()
                 }
             }
         }
@@ -91,9 +89,8 @@ class SharedPreferences
 
         fun saveFirebaseToken(token: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(FIREBASE_TOKEN_PREFERENCES, token)
-                    commit()
                 }
             }
         }
@@ -104,9 +101,8 @@ class SharedPreferences
 
         fun saveNotificationType(type: String = EMPTY) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(NOTIFICATION_TYPE_PREFERENCES, type.uppercase())
-                    commit()
                 }
             }
         }
@@ -120,21 +116,19 @@ class SharedPreferences
 
         fun removeNotification(withAppVersion: Boolean = false) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     remove(NOTIFICATION_TYPE_PREFERENCES)
                     if (withAppVersion) {
                         remove(NOTIFICATION_APP_VERSION)
                     }
-                    commit()
                 }
             }
         }
 
         fun saveAppVersion(appVersion: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(NOTIFICATION_APP_VERSION, appVersion)
-                    commit()
                 }
             }
         }
@@ -145,9 +139,8 @@ class SharedPreferences
 
         fun saveDueDate(dueDate: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
+                it.edit(commit = true) {
                     putString(DUE_DATE_PREFERENCES, dueDate)
-                    commit()
                 }
             }
         }
@@ -158,7 +151,11 @@ class SharedPreferences
 
         fun saveCiltCard(card: Card) {
             val json = Gson().toJson(card)
-            sharedPreferences?.edit()?.putString(CILT_CARD_PREFERENCES, json)?.apply()
+            sharedPreferences?.let {
+                it.edit(commit = true) {
+                    putString(CILT_CARD_PREFERENCES, json)
+                }
+            }
         }
 
         fun getCiltCard(): Card? {
@@ -171,19 +168,10 @@ class SharedPreferences
         }
 
         fun removeCiltCard() {
-            sharedPreferences?.edit()?.remove(CILT_CARD_PREFERENCES)?.apply()
-        }
-
-        fun saveToken(token: String) {
             sharedPreferences?.let {
-                with(it.edit()) {
-                    putString(AUTH_TOKEN, token)
-                    apply()
+                it.edit(commit = true) {
+                    remove(CILT_CARD_PREFERENCES)
                 }
             }
-        }
-
-        fun getToken(): String {
-            return sharedPreferences?.getString(AUTH_TOKEN, EMPTY).orEmpty()
         }
     }
