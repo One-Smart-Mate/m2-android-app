@@ -70,6 +70,8 @@ import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
 import com.ih.osm.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.osm.domain.usecase.saveuser.SaveUserUseCaseImpl
+import com.ih.osm.domain.usecase.session.GetSessionUseCase
+import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCaseImpl
 import com.ih.osm.domain.usecase.user.UpdateTokenUseCase
@@ -196,4 +198,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindFastLoginUseCase(fastLoginUseCaseImpl: FastLoginUseCaseImpl): FastLoginUseCase
+
+    @Binds
+    fun bindGetSessionUseCase(getSessionUseCaseImpl: GetSessionUseCaseImpl): GetSessionUseCase
 }
