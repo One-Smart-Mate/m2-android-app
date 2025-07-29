@@ -1,11 +1,13 @@
 package com.ih.osm.data.database.dao
 
+import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.ih.osm.data.database.entities.SessionEntity
 
+@Dao
 interface SessionDao {
     @Query("SELECT * FROM SESSION_TABLE LIMIT 1")
     suspend fun getSession(): SessionEntity?

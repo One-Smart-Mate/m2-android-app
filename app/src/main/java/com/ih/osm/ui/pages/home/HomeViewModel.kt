@@ -19,6 +19,7 @@ import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
+import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
@@ -40,6 +41,7 @@ class HomeViewModel
     @Inject
     constructor(
         private val getUserUseCase: GetUserUseCase,
+        private val getSessionUseCase: GetSessionUseCase,
         private val getCardsUseCase: GetCardsUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
