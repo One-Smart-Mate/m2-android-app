@@ -17,6 +17,7 @@ import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.pages.login.action.LoginAction
 import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.EMPTY
+import com.ih.osm.ui.utils.NETWORK_DATA_MOBILE
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
@@ -109,11 +110,18 @@ class LoginViewModel
                     callUseCase { saveUserUseCase(user) }
                 }.onSuccess {
                     handleSyncFirebaseToken()
+                    setDefaultPreferences()
                     setState { copy(isLoading = false, isAuthenticated = true) }
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
                 }
+            }
+        }
+
+        private fun setDefaultPreferences() {
+            viewModelScope.launch {
+                sharedPreferences.saveNetworkPreference(NETWORK_DATA_MOBILE)
             }
         }
 
