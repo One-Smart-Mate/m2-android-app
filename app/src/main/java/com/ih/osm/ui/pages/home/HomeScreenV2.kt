@@ -39,6 +39,7 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -152,6 +153,9 @@ fun HomeScreenV2(
                     }
                 }
             },
+            onFastLogin = { fastPassword ->
+                viewModel.process(HomeAction.FastLogin(fastPassword))
+            },
         )
     }
 
@@ -200,6 +204,7 @@ private fun HomeContent(
     showSyncCatalogs: Boolean,
     showSyncRemoteCards: Boolean,
     onClick: (HomeActionClick) -> Unit,
+    onFastLogin: (String) -> Unit,
 ) {
     var showFastPasswordDialog by remember { mutableStateOf(false) }
     var fastPassword by remember { mutableStateOf(EMPTY) }
@@ -351,10 +356,10 @@ private fun HomeContent(
             AlertDialog(
                 onDismissRequest = { showFastPasswordDialog = false },
                 confirmButton = {
-                    /*
                     TextButton(
                         onClick = {
                             showFastPasswordDialog = false
+                            onFastLogin(fastPassword)
                         },
                     ) {
                         Text(
@@ -363,10 +368,8 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.primary,
                         )
                     }
-                     */
                 },
                 dismissButton = {
-                    /*
                     TextButton(
                         onClick = { showFastPasswordDialog = false },
                     ) {
@@ -376,7 +379,6 @@ private fun HomeContent(
                             color = MaterialTheme.colorScheme.secondary,
                         )
                     }
-                     */
                 },
                 title = {
                     Text(

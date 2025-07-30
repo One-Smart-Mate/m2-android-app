@@ -12,12 +12,15 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.WorkManagerUUID
+import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
+import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
@@ -26,6 +29,7 @@ import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.extensions.lastSyncDate
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.pages.home.action.HomeAction
+import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -34,6 +38,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -41,6 +46,7 @@ class HomeViewModel
     @Inject
     constructor(
         private val getUserUseCase: GetUserUseCase,
+        private val fastLoginUseCase: FastLoginUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val getCardsUseCase: GetCardsUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
@@ -71,6 +77,8 @@ class HomeViewModel
                 is HomeAction.SyncLocalCards -> {
                     handleSyncLocalCards(action.context)
                 }
+
+                is HomeAction.FastLogin -> handleFastLogin(action.fastPassword)
             }
         }
 
@@ -370,9 +378,51 @@ class HomeViewModel
                             }
                         }
 
-                        else -> { }
+                        else -> {}
                     }
                 }
             }
+        }
+
+        private fun handleFastLogin(fastPassword: String) {
+            viewModelScope.launch {
+                setState { copy(isLoading = true, message = EMPTY) }
+                val timezone = getValidIanaTimeZone()
+
+                kotlin.runCatching {
+                    callUseCase {
+                        fastLoginUseCase(
+                            FastLoginRequest(
+                                fastPassword = fastPassword,
+                                timezone = timezone,
+                                platform = ANDROID_SO.uppercase(),
+                            ),
+                        )
+                    }
+                }.onSuccess { loginResponse ->
+                    val user = loginResponse.toDomain()
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = "FastLogin exitoso para ${user.name}",
+                        )
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
+                        )
+                    }
+                }
+            }
+        }
+
+        private fun getValidIanaTimeZone(): String {
+            val defaultTimeZone = TimeZone.getDefault()
+            val availableIDs = TimeZone.getAvailableIDs(defaultTimeZone.rawOffset)
+
+            return availableIDs.firstOrNull { it.contains("/") } ?: "UTC"
         }
     }
