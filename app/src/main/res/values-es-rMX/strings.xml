@@ -309,4 +309,7 @@
     <string name="fast_password">Contraseña rápida</string>
     <string name="change_user">Cambiar usuario</string>
     <string name="enter_fast_password">Ingresa tu contraseña rápida</string>
+    <string name="accept">Aceptar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="block">Bloquear</string>
 </resources>

@@ -267,10 +267,10 @@ private fun HomeContent(
                     Text(
                         stringResource(R.string.cards),
                         style =
-                            MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.W500,
-                                color = getTextColor(),
-                            ),
+                        MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.W500,
+                            color = getTextColor(),
+                        ),
                         modifier = Modifier.padding(horizontal = PaddingNormal),
                     )
                     HorizontalDivider(
@@ -297,15 +297,15 @@ private fun HomeContent(
                         title = stringResource(R.string.sync_cards),
                         icon = Icons.Outlined.Refresh,
                         subText =
-                            stringResource(
-                                R.string.last_update,
-                                lastSyncUpdateDate,
-                            ),
+                        stringResource(
+                            R.string.last_update,
+                            lastSyncUpdateDate,
+                        ),
                         description =
-                            stringResource(
-                                R.string.local_cards,
-                                cardList.toLocalCards().size,
-                            ),
+                        stringResource(
+                            R.string.local_cards,
+                            cardList.toLocalCards().size,
+                        ),
                     ) {
                         onClick(HomeActionClick.LOCAL_CARDS)
                     }
@@ -325,14 +325,14 @@ private fun HomeContent(
                     title = stringResource(R.string.anomalies_cards),
                     icon = Icons.Outlined.Build,
                     description =
-                        if (cardList.isNotEmpty()) {
-                            stringResource(
-                                R.string.total_cards,
-                                cardList.size,
-                            )
-                        } else {
-                            EMPTY
-                        },
+                    if (cardList.isNotEmpty()) {
+                        stringResource(
+                            R.string.total_cards,
+                            cardList.size,
+                        )
+                    } else {
+                        EMPTY
+                    },
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
@@ -377,7 +377,7 @@ private fun HomeContent(
                         },
                     ) {
                         Text(
-                            text = "Aceptar",
+                            text = stringResource(R.string.accept),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.primary,
                         )
@@ -391,7 +391,7 @@ private fun HomeContent(
                             },
                         ) {
                             Text(
-                                text = "Cancelar",
+                                text = stringResource(R.string.cancel),
                                 style = MaterialTheme.typography.labelLarge,
                                 color = MaterialTheme.colorScheme.secondary,
                             )
@@ -414,7 +414,7 @@ private fun HomeContent(
                         if (!state.isDialogBlocked) {
                             TextButton(onClick = { onBlockDialog() }) {
                                 Text(
-                                    text = "Bloquear",
+                                    text = stringResource(R.string.block),
                                     color = MaterialTheme.colorScheme.error,
                                     style = MaterialTheme.typography.labelLarge,
                                 )
@@ -449,9 +449,9 @@ private fun HomeSectionCardItem(
 ) {
     Card(
         modifier =
-            Modifier
-                .fillMaxWidth()
-                .padding(PaddingNormal),
+        Modifier
+            .fillMaxWidth()
+            .padding(PaddingNormal),
         onClick = onClick,
     ) {
         Column(
@@ -463,9 +463,9 @@ private fun HomeSectionCardItem(
             Text(
                 text = title,
                 style =
-                    MaterialTheme.typography.titleLarge.copy(
-                        color = getPrimaryColor(),
-                    ),
+                MaterialTheme.typography.titleLarge.copy(
+                    color = getPrimaryColor(),
+                ),
                 modifier = Modifier.padding(PaddingNormal),
             )
             AnimatedVisibility(visible = description.isNotEmpty()) {
@@ -476,16 +476,16 @@ private fun HomeSectionCardItem(
                     Text(
                         text = description,
                         style =
-                            MaterialTheme.typography.bodyMedium
-                                .copy(fontWeight = FontWeight.SemiBold),
+                        MaterialTheme.typography.bodyMedium
+                            .copy(fontWeight = FontWeight.SemiBold),
                         modifier = Modifier.padding(bottom = Size2),
                     )
                     AnimatedVisibility(visible = subText.isNotEmpty()) {
                         Text(
                             text = subText,
                             style =
-                                MaterialTheme.typography.bodySmall
-                                    .copy(color = subTextColor),
+                            MaterialTheme.typography.bodySmall
+                                .copy(color = subTextColor),
                         )
                     }
                     CustomSpacer()
@@ -515,12 +515,12 @@ private fun HomeAppBarV2(
                 networkStatus = networkStatus,
                 textColor = getTextColor(),
                 modifier =
-                    Modifier
-                        .background(
-                            shape = RoundedCornerShape(Radius8),
-                            color = Color.Gray.copy(alpha = 0.1f),
-                        )
-                        .padding(PaddingTiny),
+                Modifier
+                    .background(
+                        shape = RoundedCornerShape(Radius8),
+                        color = Color.Gray.copy(alpha = 0.1f),
+                    )
+                    .padding(PaddingTiny),
             )
         }
         CustomSpacer(space = SpacerSize.SMALL)
@@ -528,10 +528,10 @@ private fun HomeAppBarV2(
             Text(
                 text = "${getTimeText()},\n${user.name}.",
                 style =
-                    MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color = getTextColor(),
-                    ),
+                MaterialTheme.typography.headlineMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = getTextColor(),
+                ),
             )
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -539,9 +539,9 @@ private fun HomeAppBarV2(
                 Text(
                     text = user.siteName,
                     style =
-                        MaterialTheme.typography.bodyLarge.copy(
-                            color = getTextColor(),
-                        ),
+                    MaterialTheme.typography.bodyLarge.copy(
+                        color = getTextColor(),
+                    ),
                 )
                 Icon(
                     Icons.TwoTone.CheckCircle,
