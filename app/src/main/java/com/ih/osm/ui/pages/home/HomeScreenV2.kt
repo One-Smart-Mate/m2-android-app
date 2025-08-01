@@ -43,7 +43,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
@@ -153,9 +152,12 @@ fun HomeScreenV2(
                     }
                 }
             },
-            onFastLogin = { fastPassword ->
-                viewModel.process(HomeAction.FastLogin(fastPassword))
-            },
+            state = state,
+            onFastLogin = { viewModel.process(HomeAction.FastLogin(it)) },
+            onShowDialog = { viewModel.showFastPasswordDialog() },
+            onDismissDialog = { viewModel.hideFastPasswordDialog() },
+            onBlockDialog = { viewModel.blockFastPasswordDialog() },
+            onPasswordChange = { viewModel.updateFastPassword(it) },
         )
     }
 
@@ -190,6 +192,13 @@ fun HomeScreenV2(
                 }
             }
     }
+
+    LaunchedEffect(state.fastLoginSuccessful) {
+        if (state.fastLoginSuccessful) {
+            viewModel.hideFastPasswordDialog()
+            viewModel.consumeFastLoginSuccess()
+        }
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -204,11 +213,13 @@ private fun HomeContent(
     showSyncCatalogs: Boolean,
     showSyncRemoteCards: Boolean,
     onClick: (HomeActionClick) -> Unit,
+    state: HomeViewModel.UiState,
     onFastLogin: (String) -> Unit,
+    onShowDialog: () -> Unit,
+    onDismissDialog: () -> Unit,
+    onBlockDialog: () -> Unit,
+    onPasswordChange: (String) -> Unit,
 ) {
-    var showFastPasswordDialog by remember { mutableStateOf(false) }
-    var fastPassword by remember { mutableStateOf(EMPTY) }
-
     Scaffold(
         floatingActionButton = {
             Column {
@@ -348,18 +359,21 @@ private fun HomeContent(
                     icon = Icons.Outlined.Lock,
                     description = stringResource(R.string.change_user),
                 ) {
-                    showFastPasswordDialog = true
+                    onShowDialog()
                 }
             }
         }
-        if (showFastPasswordDialog) {
+        if (state.showFastPasswordDialog) {
             AlertDialog(
-                onDismissRequest = { showFastPasswordDialog = false },
+                onDismissRequest = {
+                    if (!state.isDialogBlocked) {
+                        onDismissDialog()
+                    }
+                },
                 confirmButton = {
                     TextButton(
                         onClick = {
-                            showFastPasswordDialog = false
-                            onFastLogin(fastPassword)
+                            onFastLogin(state.fastPassword)
                         },
                     ) {
                         Text(
@@ -370,14 +384,18 @@ private fun HomeContent(
                     }
                 },
                 dismissButton = {
-                    TextButton(
-                        onClick = { showFastPasswordDialog = false },
-                    ) {
-                        Text(
-                            text = "Cancelar",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.secondary,
-                        )
+                    if (!state.isDialogBlocked) {
+                        TextButton(
+                            onClick = {
+                                onDismissDialog()
+                            },
+                        ) {
+                            Text(
+                                text = "Cancelar",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.secondary,
+                            )
+                        }
                     }
                 },
                 title = {
@@ -386,12 +404,23 @@ private fun HomeContent(
                     )
                 },
                 text = {
-                    CustomTextField(
-                        label = stringResource(R.string.enter_fast_password),
-                        icon = Icons.Outlined.Lock,
-                        isPassword = true,
-                        onChange = { fastPassword = it },
-                    )
+                    Column {
+                        CustomTextField(
+                            label = stringResource(R.string.enter_fast_password),
+                            icon = Icons.Outlined.Lock,
+                            isPassword = true,
+                            onChange = { onPasswordChange(it) },
+                        )
+                        if (!state.isDialogBlocked) {
+                            TextButton(onClick = { onBlockDialog() }) {
+                                Text(
+                                    text = "Bloquear",
+                                    color = MaterialTheme.colorScheme.error,
+                                    style = MaterialTheme.typography.labelLarge,
+                                )
+                            }
+                        }
+                    }
                 },
                 shape = RoundedCornerShape(16.dp),
                 containerColor = MaterialTheme.colorScheme.surface,

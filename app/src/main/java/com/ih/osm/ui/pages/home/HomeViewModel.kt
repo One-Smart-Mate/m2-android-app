@@ -67,6 +67,10 @@ class HomeViewModel
             val showSyncCatalogs: Boolean = false,
             val showSyncRemoteCards: Boolean = false,
             val updateApp: Boolean = false,
+            val showFastPasswordDialog: Boolean = false,
+            val fastPassword: String = EMPTY,
+            val isDialogBlocked: Boolean = false,
+            val fastLoginSuccessful: Boolean = false,
         )
 
         fun process(action: HomeAction) {
@@ -405,6 +409,7 @@ class HomeViewModel
                         copy(
                             isLoading = false,
                             message = "FastLogin exitoso para ${user.name}",
+                            fastLoginSuccessful = true,
                         )
                     }
                 }.onFailure {
@@ -417,6 +422,38 @@ class HomeViewModel
                     }
                 }
             }
+        }
+
+        fun showFastPasswordDialog() {
+            setState {
+                copy(
+                    showFastPasswordDialog = true,
+                    fastPassword = EMPTY,
+                    isDialogBlocked = false,
+                )
+            }
+        }
+
+        fun hideFastPasswordDialog() {
+            setState {
+                copy(
+                    showFastPasswordDialog = false,
+                    fastPassword = EMPTY,
+                    isDialogBlocked = false,
+                )
+            }
+        }
+
+        fun updateFastPassword(password: String) {
+            setState { copy(fastPassword = password) }
+        }
+
+        fun blockFastPasswordDialog() {
+            setState { copy(isDialogBlocked = true) }
+        }
+
+        fun consumeFastLoginSuccess() {
+            setState { copy(fastLoginSuccessful = false) }
         }
 
         private fun getValidIanaTimeZone(): String {
