@@ -72,6 +72,8 @@ import com.ih.osm.domain.usecase.saveuser.SaveUserUseCase
 import com.ih.osm.domain.usecase.saveuser.SaveUserUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
+import com.ih.osm.domain.usecase.session.SaveSessionUseCase
+import com.ih.osm.domain.usecase.session.SaveSessionUseCaseImpl
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCaseImpl
 import com.ih.osm.domain.usecase.user.UpdateTokenUseCase
@@ -201,4 +203,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetSessionUseCase(getSessionUseCaseImpl: GetSessionUseCaseImpl): GetSessionUseCase
+
+    @Binds
+    fun bindSaveSessionUseCase(saveSessionUseCaseImpl: SaveSessionUseCaseImpl): SaveSessionUseCase
 }

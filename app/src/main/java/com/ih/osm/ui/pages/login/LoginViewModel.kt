@@ -9,10 +9,13 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.toDomain
+import com.ih.osm.data.model.toSession
+import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.saveuser.SaveUserUseCase
+import com.ih.osm.domain.usecase.session.SaveSessionUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.pages.login.action.LoginAction
 import com.ih.osm.ui.utils.ANDROID_SO
@@ -29,6 +32,7 @@ class LoginViewModel
     constructor(
         private val loginUseCase: LoginUseCase,
         private val saveUserUseCase: SaveUserUseCase,
+        private val saveSessionUseCase: SaveSessionUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
@@ -88,10 +92,11 @@ class LoginViewModel
                     }
                 }.onSuccess { loginResponse ->
                     val user = loginResponse.toDomain()
+                    val session = loginResponse.toSession()
                     LoggerHelperManager.logUser(user)
                     sharedPreferences.saveToken(user.token)
                     sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
-                    handleSaveUser(user)
+                    handleSaveUserAndSession(user, session)
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     setState {
@@ -104,10 +109,14 @@ class LoginViewModel
             }
         }
 
-        private fun handleSaveUser(user: User) {
+        private fun handleSaveUserAndSession(
+            user: User,
+            session: Session,
+        ) {
             viewModelScope.launch {
                 kotlin.runCatching {
                     callUseCase { saveUserUseCase(user) }
+                    callUseCase { saveSessionUseCase(session) }
                 }.onSuccess {
                     handleSyncFirebaseToken()
                     setState { copy(isLoading = false, isAuthenticated = true) }
