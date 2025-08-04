@@ -17,6 +17,7 @@ import com.ih.osm.data.model.toDomain
 import com.ih.osm.data.model.toSession
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
+import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.domain.repository.session.SessionRepository
@@ -60,6 +61,7 @@ constructor(
 ) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
     data class UiState(
         val user: User? = null,
+        val session: Session? = null,
         val message: String = EMPTY,
         val cards: List<Card> = emptyList(),
         val isSyncing: Boolean = true,
@@ -203,7 +205,7 @@ constructor(
                 handleGetCatalogs()
             }
         } else {
-            handleGetUser()
+            handleGetSession()
         }
     }
 
@@ -217,7 +219,7 @@ constructor(
                         showSyncCatalogs = false,
                     )
                 }
-                handleGetUser()
+                handleGetSession()
             }.onFailure {
                 LoggerHelperManager.logException(it)
             }
@@ -299,14 +301,14 @@ constructor(
         }
     }
 
-    private fun handleGetUser() {
+    private fun handleGetSession() {
         setState { copy(isLoading = true) }
         viewModelScope.launch {
             kotlin.runCatching {
-                callUseCase { getUserUseCase() }
-            }.onSuccess { user ->
+                callUseCase { getSessionUseCase() }
+            }.onSuccess { session ->
                 handleGetCards()
-                setState { copy(user = user) }
+                setState { copy(session = session) }
             }.onFailure {
                 LoggerHelperManager.logException(it)
                 cleanScreenStates(it.localizedMessage.orEmpty())
@@ -412,11 +414,13 @@ constructor(
 
                 sessionRepository.save(session)
 
+                handleGetSession()
+
                 setState {
                     copy(
                         isLoading = false,
                         fastLoginSuccessful = true,
-                        user = user,
+                        session = session,
                     )
                 }
             }.onFailure {
