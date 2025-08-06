@@ -15,4 +15,6 @@ sealed class HomeAction {
 //    data object ClearMessage : Action()
 
     data object SyncRemoteCards : HomeAction()
+
+    data class FastLogin(val fastPassword: String) : HomeAction()
 }

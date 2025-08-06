@@ -12,19 +12,28 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.WorkManagerUUID
+import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.toDomain
+import com.ih.osm.data.model.toSession
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
+import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toLocalCards
+import com.ih.osm.domain.repository.session.SessionRepository
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
+import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
+import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
+import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
 import com.ih.osm.ui.extensions.lastSyncDate
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.pages.home.action.HomeAction
+import com.ih.osm.ui.utils.ANDROID_SO
 import com.ih.osm.ui.utils.EMPTY
 import com.ih.osm.ui.utils.LOAD_CATALOGS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,15 +49,19 @@ class HomeViewModel
     @Inject
     constructor(
         private val getUserUseCase: GetUserUseCase,
+        private val fastLoginUseCase: FastLoginUseCase,
+        private val getSessionUseCase: GetSessionUseCase,
         private val getCardsUseCase: GetCardsUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
+        private val sessionRepository: SessionRepository,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
         @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
     ) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
         data class UiState(
             val user: User? = null,
+            val session: Session? = null,
             val message: String = EMPTY,
             val cards: List<Card> = emptyList(),
             val isSyncing: Boolean = true,
@@ -59,6 +72,10 @@ class HomeViewModel
             val showSyncCatalogs: Boolean = false,
             val showSyncRemoteCards: Boolean = false,
             val updateApp: Boolean = false,
+            val showFastPasswordDialog: Boolean = false,
+            val fastPassword: String = EMPTY,
+            val isDialogBlocked: Boolean = false,
+            val fastLoginSuccessful: Boolean = false,
         )
 
         fun process(action: HomeAction) {
@@ -69,6 +86,8 @@ class HomeViewModel
                 is HomeAction.SyncLocalCards -> {
                     handleSyncLocalCards(action.context)
                 }
+
+                is HomeAction.FastLogin -> handleFastLogin(action.fastPassword)
             }
         }
 
@@ -186,7 +205,7 @@ class HomeViewModel
                     handleGetCatalogs()
                 }
             } else {
-                handleGetUser()
+                handleGetSession()
             }
         }
 
@@ -200,7 +219,7 @@ class HomeViewModel
                             showSyncCatalogs = false,
                         )
                     }
-                    handleGetUser()
+                    handleGetSession()
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                 }
@@ -282,14 +301,14 @@ class HomeViewModel
             }
         }
 
-        private fun handleGetUser() {
+        private fun handleGetSession() {
             setState { copy(isLoading = true) }
             viewModelScope.launch {
                 kotlin.runCatching {
-                    callUseCase { getUserUseCase() }
-                }.onSuccess { user ->
+                    callUseCase { getSessionUseCase() }
+                }.onSuccess { session ->
                     handleGetCards()
-                    setState { copy(user = user) }
+                    setState { copy(session = session) }
                 }.onFailure {
                     LoggerHelperManager.logException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())
@@ -368,9 +387,84 @@ class HomeViewModel
                             }
                         }
 
-                        else -> { }
+                        else -> {}
                     }
                 }
             }
+        }
+
+        private fun handleFastLogin(fastPassword: String) {
+            viewModelScope.launch {
+                setState { copy(isLoading = true, message = EMPTY) }
+                val timezone = getCurrentDateTimeUtc()
+
+                kotlin.runCatching {
+                    callUseCase {
+                        fastLoginUseCase(
+                            FastLoginRequest(
+                                fastPassword = fastPassword,
+                                timezone = timezone,
+                                platform = ANDROID_SO.uppercase(),
+                            ),
+                        )
+                    }
+                }.onSuccess { loginResponse ->
+                    val user = loginResponse.toDomain()
+                    val session = loginResponse.toSession()
+
+                    sessionRepository.save(session)
+
+                    handleGetSession()
+
+                    setState {
+                        copy(
+                            isLoading = false,
+                            fastLoginSuccessful = true,
+                            user = user,
+                            session = session,
+                        )
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
+                        )
+                    }
+                }
+            }
+        }
+
+        fun showFastPasswordDialog() {
+            setState {
+                copy(
+                    showFastPasswordDialog = true,
+                    fastPassword = EMPTY,
+                    isDialogBlocked = false,
+                )
+            }
+        }
+
+        fun hideFastPasswordDialog() {
+            setState {
+                copy(
+                    showFastPasswordDialog = false,
+                    fastPassword = EMPTY,
+                    isDialogBlocked = false,
+                )
+            }
+        }
+
+        fun updateFastPassword(password: String) {
+            setState { copy(fastPassword = password) }
+        }
+
+        fun blockFastPasswordDialog() {
+            setState { copy(isDialogBlocked = true) }
+        }
+
+        fun consumeFastLoginSuccess() {
+            setState { copy(fastLoginSuccessful = false) }
         }
     }

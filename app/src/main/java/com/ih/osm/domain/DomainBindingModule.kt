@@ -72,6 +72,10 @@ import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
+import com.ih.osm.domain.usecase.session.GetSessionUseCase
+import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
+import com.ih.osm.domain.usecase.session.SaveSessionUseCase
+import com.ih.osm.domain.usecase.session.SaveSessionUseCaseImpl
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCaseImpl
 import com.ih.osm.domain.usecase.user.SaveUserUseCase
@@ -200,6 +204,12 @@ interface DomainBindingModule {
 
     @Binds
     fun bindFastLoginUseCase(fastLoginUseCaseImpl: FastLoginUseCaseImpl): FastLoginUseCase
+
+    @Binds
+    fun bindGetSessionUseCase(getSessionUseCaseImpl: GetSessionUseCaseImpl): GetSessionUseCase
+
+    @Binds
+    fun bindSaveSessionUseCase(saveSessionUseCaseImpl: SaveSessionUseCaseImpl): SaveSessionUseCase
 
     @Binds
     fun bindGetSequenceUseCase(getSequenceUseCaseImpl: GetSequenceUseCaseImpl): GetSequenceUseCase

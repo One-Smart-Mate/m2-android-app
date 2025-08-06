@@ -6,7 +6,7 @@ import com.ih.osm.domain.repository.auth.AuthRepository
 import javax.inject.Inject
 
 interface FastLoginUseCase {
-    suspend fun invoke(body: FastLoginRequest): LoginResponse
+    suspend operator fun invoke(body: FastLoginRequest): LoginResponse
 }
 
 class FastLoginUseCaseImpl

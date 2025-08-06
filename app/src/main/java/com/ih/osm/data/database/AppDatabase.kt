@@ -2,6 +2,7 @@ package com.ih.osm.data.database
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.ih.osm.data.database.dao.SessionDao
 import com.ih.osm.data.database.dao.UserDao
 import com.ih.osm.data.database.dao.card.CardDao
 import com.ih.osm.data.database.dao.cardtype.CardTypeDao
@@ -11,6 +12,7 @@ import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.osm.data.database.dao.priority.PriorityDao
 import com.ih.osm.data.database.dao.solution.SolutionDao
+import com.ih.osm.data.database.entities.SessionEntity
 import com.ih.osm.data.database.entities.UserEntity
 import com.ih.osm.data.database.entities.card.CardEntity
 import com.ih.osm.data.database.entities.cardtype.CardTypeEntity
@@ -32,8 +34,9 @@ import com.ih.osm.data.database.entities.solution.SolutionEntity
         EvidenceEntity::class,
         EmployeeEntity::class,
         SolutionEntity::class,
+        SessionEntity::class,
     ],
-    version = 5,
+    version = 6,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
@@ -53,4 +56,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getEmployeeDao(): EmployeeDao
 
     abstract fun getSolutionDao(): SolutionDao
+
+    abstract fun getSessionDao(): SessionDao
 }

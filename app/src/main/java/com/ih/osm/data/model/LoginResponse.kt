@@ -1,6 +1,7 @@
 package com.ih.osm.data.model
 
 import com.google.gson.annotations.SerializedName
+import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 
 data class LoginResponse(val data: UserWrapper, val status: Int, val message: String)
@@ -15,6 +16,21 @@ fun LoginResponse.toDomain(): User {
         roles = this.data.roles,
         companyName = this.data.companyName,
         companyId = this.data.companyId,
+        siteId = site?.id.orEmpty(),
+        siteName = site?.name.orEmpty(),
+        logo = site?.logo.orEmpty(),
+    )
+}
+
+fun LoginResponse.toSession(): Session {
+    val site = this.data.sites.firstOrNull()
+    return Session(
+        userId = this.data.userId,
+        name = this.data.name,
+        email = this.data.email,
+        roles = this.data.roles,
+        companyId = this.data.companyId,
+        companyName = this.data.companyName,
         siteId = site?.id.orEmpty(),
         siteName = site?.name.orEmpty(),
         logo = site?.logo.orEmpty(),
