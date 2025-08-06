@@ -1,5 +1,6 @@
 package com.ih.osm.core.app
 
+import android.util.Log
 import com.google.firebase.messaging.RemoteMessage
 import com.ih.osm.core.file.FileHelper
 import com.ih.osm.data.model.CreateCardRequest
@@ -20,10 +21,12 @@ object LoggerHelperManager {
     }
 
     fun logException(exception: Throwable) {
+        Log.e("LoggerHelperManager", "Exception logged: ${exception.message}", exception)
         fileHelper?.logException(exception)
     }
 
     fun logException(exception: String) {
+        Log.e("LoggerHelperManager", "Exception logged: $exception")
         fileHelper?.logException(exception)
     }
 

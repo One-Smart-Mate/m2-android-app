@@ -11,11 +11,14 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import java.util.TimeZone
+import kotlin.div
+import kotlin.text.toInt
 
 const val EEEE = "EEEE"
 const val DD = "dd"
 const val MMM = "MMM"
 const val EEE_MMM_DD_YYYY = "EEE, MMM dd, yyyy, HH:mm a z"
+const val HH_MM = "HH:mm"
 
 const val EEE_MMM_DD_HH_MM_A = "EEE, MMM dd HH:mm a"
 
@@ -25,9 +28,14 @@ const val SIMPLE_DATE_FORMAT = "yyyy-MM-dd"
 const val TIME_STAMP_FORMAT = "yyyyMMdd_HHmmss"
 const val DD_MM_YYYY_HH_MM = "dd-MM-yyyy HH:mm"
 const val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+const val YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm"
 
 val Date.YYYY_MM_DD_HH_MM_SS: String
     get() = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
+
+val Date.YYYY_MM_DD_HH_MM: String
+    get() =
+        SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
 
 val Date.DayMonthWithTimeZone: String
     get() = SimpleDateFormat(EEE_MMM_DD_HH_MM_A, Locale.getDefault()).format(this)
@@ -43,7 +51,7 @@ fun String.toDate(
 
 fun Date.toCalendar(): Calendar {
     return Calendar.getInstance().apply {
-        setTime(this.time)
+        time = this@toCalendar
     }
 }
 
@@ -67,6 +75,8 @@ fun String?.toFormatDate(format: String): String {
 }
 
 fun Date.timeStamp(): String = SimpleDateFormat(TIME_STAMP_FORMAT, Locale.getDefault()).format(this)
+
+fun Date.format(): String = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
 
 fun String.lastSyncDate(context: Context): String {
     try {
@@ -129,7 +139,7 @@ fun String.isCardExpired(referenceDateString: String): Boolean {
 
 fun String?.fromIsoToFormattedDate(
     inputPattern: String = ISO,
-    outputPattern: String = DD_MM_YYYY_HH_MM,
+    outputPattern: String = YYYY_MM_DD_HH_MM,
 ): String {
     if (this.isNullOrBlank()) return ""
 
@@ -340,4 +350,49 @@ fun String.getExecutionStatus(
         FirebaseCrashlytics.getInstance().recordException(e)
         return ExecutionStatus.PENDING
     }
+}
+
+fun String.parseUTCToLocal(outputFormat: String = NORMAL_FORMAT): String {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+    val date: Date? = inputFormat.parse(this)
+    val localFormat = SimpleDateFormat(outputFormat, Locale.getDefault())
+    localFormat.timeZone = TimeZone.getDefault()
+    return date?.let { localFormat.format(it) }.orEmpty()
+}
+
+fun String.toHourMinuteString(): String {
+    return try {
+        val inputFormat = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault())
+        val date = inputFormat.parse(this)
+        val outputFormat = SimpleDateFormat(HH_MM, Locale.getDefault())
+        date?.let { outputFormat.format(it) }.orEmpty()
+    } catch (e: Exception) {
+        this
+    }
+}
+
+fun Calendar.toHourMinuteString(): String {
+    return try {
+        val inputFormat = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault())
+        val date = inputFormat.parse(Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS)
+        val outputFormat = SimpleDateFormat(HH_MM, Locale.getDefault())
+        date?.let { outputFormat.format(it) }.orEmpty()
+    } catch (e: Exception) {
+        "00:00"
+    }
+}
+
+fun getMinutesDifference(
+    time1: String,
+    time2: String,
+): Int {
+    val format = SimpleDateFormat(HH_MM, Locale.getDefault())
+    val date1 = format.parse(time1)
+    val date2 = format.parse(time2)
+    if (date1 != null && date2 != null) {
+        val diffMillis = date2.time - date1.time
+        return (diffMillis / (1000 * 60)).toInt()
+    }
+    return 0
 }

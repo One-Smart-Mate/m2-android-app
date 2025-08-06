@@ -1,10 +1,10 @@
 package com.ih.osm.ui.pages.splash
 
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.Firebase
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig
-import com.google.firebase.remoteconfig.ktx.remoteConfig
+import com.google.firebase.remoteconfig.remoteConfig
 import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase

@@ -31,6 +31,7 @@ import com.ih.osm.ui.theme.Size38
 fun CustomAppBar(
     navController: NavController,
     title: String,
+    blockBack: (() -> Unit)? = null,
 ) {
     Column(
         modifier =
@@ -47,7 +48,11 @@ fun CustomAppBar(
                 Modifier
                     .size(Size38)
                     .clickable {
-                        navController.popBackStack()
+                        if (blockBack != null) {
+                            blockBack()
+                        } else {
+                            navController.popBackStack()
+                        }
                     },
         )
         Text(

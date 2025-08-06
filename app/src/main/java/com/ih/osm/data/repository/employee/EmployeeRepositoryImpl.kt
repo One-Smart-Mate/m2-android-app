@@ -2,7 +2,6 @@ package com.ih.osm.data.repository.employee
 
 import com.ih.osm.data.database.dao.employee.EmployeeDao
 import com.ih.osm.data.database.entities.employee.toDomain
-import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.auth.AuthRepository

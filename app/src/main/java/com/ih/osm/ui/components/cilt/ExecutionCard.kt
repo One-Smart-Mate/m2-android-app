@@ -20,183 +20,97 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.getColorFromHex
 import com.ih.osm.domain.model.Execution
-import com.ih.osm.domain.model.ExecutionStatus
-import com.ih.osm.ui.extensions.getExecutionStatus
-import com.ih.osm.ui.extensions.toHourFromIso
-import com.ih.osm.ui.extensions.toMinutesAndSeconds
-import com.ih.osm.ui.navigation.navigateToCiltDetail
+import com.ih.osm.domain.model.getStatus
+import com.ih.osm.domain.model.getStatusColor
+import com.ih.osm.domain.model.getStatusTextColor
+import com.ih.osm.ui.extensions.parseUTCToLocal
+import com.ih.osm.ui.extensions.toHourMinuteString
+import com.ih.osm.ui.theme.PaddingSmall
 
 @Composable
 fun ExecutionCard(
     execution: Execution,
-    navController: NavController,
+    onClick: () -> Unit,
 ) {
-    val status =
-        execution.secuenceSchedule.getExecutionStatus(
-            sequenceStart = execution.secuenceStart,
-            allowExecuteBefore = execution.allowExecuteBefore,
-            allowExecuteBeforeMinutes = execution.allowExecuteBeforeMinutes,
-            toleranceBeforeMinutes = execution.toleranceBeforeMinutes,
-            toleranceAfterMinutes = execution.toleranceAfterMinutes,
-            allowExecuteAfterDue = execution.allowExecuteAfterDue,
-        )
-
-    val (statusText, statusColor) =
-        when (status) {
-            ExecutionStatus.PREMATURE -> stringResource(R.string.status_premature) to Color(0xFFFFEB3B)
-            ExecutionStatus.EXPIRED -> stringResource(R.string.status_expired) to Color(0xFFF44336)
-            ExecutionStatus.ON_TIME -> stringResource(R.string.status_on_time) to Color(0xFF4CAF50)
-            ExecutionStatus.PENDING -> stringResource(R.string.status_pending) to Color(0xFF2196F3)
-        }
-
     Card(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.card_padding_horizontal),
-                    vertical = dimensionResource(id = R.dimen.card_padding_vertical),
-                )
-                .clickable { navController.navigateToCiltDetail(execution.id) },
+                .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            Column(
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxWidth().padding(vertical = PaddingSmall),
+        ) {
+            Row(
                 modifier =
                     Modifier
                         .fillMaxWidth()
-                        .padding(end = 32.dp),
+                        .padding(PaddingSmall),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
+                Text(
+                    text = execution.siteExecutionId.toString(),
+                    style =
+                        MaterialTheme.typography.titleMedium
+                            .copy(fontWeight = FontWeight.Bold),
+                )
+                Text(
+                    text = execution.ciltTypeName,
+                    style =
+                        MaterialTheme.typography.titleMedium
+                            .copy(fontWeight = FontWeight.Bold),
+                )
+                Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(dimensionResource(id = R.dimen.content_padding)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Text(
-                        text = execution.siteExecutionId.toString(),
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    Text(
-                        text = execution.ciltTypeName,
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    Box(
-                        modifier =
-                            Modifier
-                                .size(dimensionResource(id = R.dimen.circle_shape_size))
-                                .background(
-                                    color = getColorFromHex(execution.secuenceColor),
-                                    shape = CircleShape,
-                                ),
-                    )
-                    Text(
-                        text = execution.secuenceSchedule.toHourFromIso(),
-                        style =
-                            MaterialTheme.typography.titleMedium
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                }
-
-                Row(
+                            .size(dimensionResource(id = R.dimen.circle_shape_size))
+                            .background(
+                                color = getColorFromHex(execution.secuenceColor),
+                                shape = CircleShape,
+                            ),
+                )
+                Text(
+                    text = execution.secuenceSchedule.parseUTCToLocal().toHourMinuteString(),
+                    style =
+                        MaterialTheme.typography.titleMedium
+                            .copy(fontWeight = FontWeight.Bold),
+                )
+                Box(
                     modifier =
                         Modifier
-                            .fillMaxWidth()
-                            .padding(dimensionResource(id = R.dimen.content_padding)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    if (execution.secuenceStart != null) {
-                        Text(
-                            text = execution.secuenceStart.toHourFromIso(),
-                            style =
-                                MaterialTheme.typography.titleMedium
-                                    .copy(fontWeight = FontWeight.Bold),
-                        )
-                    }
-
-                    if (execution.realDuration != null) {
-                        Text(
-                            text =
-                                execution.realDuration.toMinutesAndSeconds(),
-                            style =
-                                MaterialTheme.typography.titleMedium
-                                    .copy(fontWeight = FontWeight.Bold),
-                        )
-                    }
-                }
-
-                Row(
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(dimensionResource(id = R.dimen.content_padding)),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Box(
-                        modifier =
-                            Modifier
-                                .background(
-                                    color = statusColor,
-                                    shape = MaterialTheme.shapes.small,
-                                )
-                                .padding(horizontal = 12.dp, vertical = 4.dp),
-                    ) {
-                        Text(
-                            text = statusText,
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                        )
-                    }
-
-                    if (execution.nok) {
-                        Box(
-                            modifier =
-                                Modifier
-                                    .background(
-                                        color = MaterialTheme.colorScheme.error,
-                                        shape = MaterialTheme.shapes.small,
-                                    )
-                                    .padding(horizontal = 12.dp, vertical = 4.dp),
-                        ) {
-                            Text(
-                                text = stringResource(R.string.nok),
-                                color = MaterialTheme.colorScheme.onError,
-                                style =
-                                    MaterialTheme.typography.titleMedium
-                                        .copy(fontWeight = FontWeight.Bold),
+                            .background(
+                                color = execution.getStatusColor(),
+                                shape = MaterialTheme.shapes.small,
                             )
-                        }
-                    }
+                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                ) {
+                    Text(
+                        text = execution.getStatus(),
+                        color = execution.getStatusTextColor(),
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                    )
                 }
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = stringResource(R.string.view_details),
+                    tint = MaterialTheme.colorScheme.onSurface,
+                    modifier =
+                        Modifier
+                            .padding(end = 8.dp),
+                )
             }
-
-            Icon(
-                imageVector = Icons.Default.KeyboardArrowRight,
-                contentDescription = stringResource(R.string.view_details),
-                tint = MaterialTheme.colorScheme.onSurface,
-                modifier =
-                    Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 8.dp),
-            )
         }
     }
 }

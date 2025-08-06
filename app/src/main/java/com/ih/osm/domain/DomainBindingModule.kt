@@ -2,6 +2,8 @@ package com.ih.osm.domain
 
 import com.ih.osm.data.repository.cilt.CiltRepositoryImpl
 import com.ih.osm.domain.repository.cilt.CiltRepository
+import com.ih.osm.domain.usecase.card.DeleteCardUseCase
+import com.ih.osm.domain.usecase.card.DeleteCardUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardsLevelMachineUseCase
@@ -34,6 +36,8 @@ import com.ih.osm.domain.usecase.cilt.GetCiltsUseCase
 import com.ih.osm.domain.usecase.cilt.GetCiltsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCaseImpl
+import com.ih.osm.domain.usecase.cilt.GetSequenceUseCase
+import com.ih.osm.domain.usecase.cilt.GetSequenceUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCase
 import com.ih.osm.domain.usecase.cilt.StartSequenceExecutionUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.StopSequenceExecutionUseCase
@@ -68,14 +72,14 @@ import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
-import com.ih.osm.domain.usecase.saveuser.SaveUserUseCase
-import com.ih.osm.domain.usecase.saveuser.SaveUserUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
 import com.ih.osm.domain.usecase.session.SaveSessionUseCaseImpl
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCaseImpl
+import com.ih.osm.domain.usecase.user.SaveUserUseCase
+import com.ih.osm.domain.usecase.user.SaveUserUseCaseImpl
 import com.ih.osm.domain.usecase.user.UpdateTokenUseCase
 import com.ih.osm.domain.usecase.user.UpdateTokenUseCaseImpl
 import dagger.Binds
@@ -206,4 +210,10 @@ interface DomainBindingModule {
 
     @Binds
     fun bindSaveSessionUseCase(saveSessionUseCaseImpl: SaveSessionUseCaseImpl): SaveSessionUseCase
+
+    @Binds
+    fun bindGetSequenceUseCase(getSequenceUseCaseImpl: GetSequenceUseCaseImpl): GetSequenceUseCase
+
+    @Binds
+    fun bindDeleteCardUseCase(deleteCardUseCaseImpl: DeleteCardUseCaseImpl): DeleteCardUseCase
 }

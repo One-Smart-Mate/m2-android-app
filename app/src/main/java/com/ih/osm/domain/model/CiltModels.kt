@@ -1,5 +1,23 @@
 package com.ih.osm.domain.model
 
+import android.content.Context
+import android.util.Log
+import androidx.compose.ui.graphics.Color
+import com.ih.osm.R
+import com.ih.osm.ui.extensions.NORMAL_FORMAT
+import com.ih.osm.ui.extensions.defaultIfNull
+import com.ih.osm.ui.extensions.format
+import com.ih.osm.ui.extensions.getMinutesDifference
+import com.ih.osm.ui.extensions.parseUTCToLocal
+import com.ih.osm.ui.extensions.toCalendar
+import com.ih.osm.ui.extensions.toDate
+import com.ih.osm.ui.extensions.toHourMinuteString
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Locale
+import java.util.TimeZone
+import kotlin.math.abs
+
 data class CiltData(
     val userInfo: UserInfo,
     val positions: List<Position>,
@@ -73,6 +91,17 @@ data class Sequence(
     val executions: List<Execution>,
 )
 
+fun List<Execution>.sortByTime(): List<Execution> {
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+    inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+    return this
+        .sortedBy { execution ->
+            val date = execution.secuenceSchedule.parseUTCToLocal().toDate(format = NORMAL_FORMAT)
+            val calendar = date?.toCalendar()
+            calendar?.get(Calendar.HOUR_OF_DAY).defaultIfNull(0) * 60 + calendar?.get(Calendar.MINUTE).defaultIfNull(0)
+        }
+}
+
 fun Execution.stopMachine(): Boolean {
     return this.machineStopped == true
 }
@@ -129,6 +158,100 @@ data class Execution(
     val referenceOplSop: OplSop?,
     val remediationOplSop: OplSop?,
 )
+
+fun Execution.getStatus(): String {
+    val time = this.secuenceSchedule.parseUTCToLocal().toHourMinuteString()
+    val currentTime = Calendar.getInstance().toHourMinuteString()
+    val timeInMinutes = getMinutesDifference(currentTime, time)
+    val minutesBefore = this.allowExecuteBeforeMinutes
+    val minutesAfter = this.toleranceAfterMinutes
+
+    if (this.status != "A") {
+        return "Completada"
+    }
+
+    if (timeInMinutes >= minutesBefore) {
+        return "Pendiente"
+    }
+
+    if ((timeInMinutes + minutesAfter) < 0) {
+        return "Vencida"
+    }
+
+    if (abs(timeInMinutes) <= minutesAfter || timeInMinutes >= 0) {
+        return "En tiempo"
+    }
+    return "Vencida"
+}
+
+fun Execution.getStatusColor(): Color {
+    return when (this.getStatus()) {
+        "Pendiente" -> return Color.Yellow
+        "Completada" -> return Color.Blue
+        "Vencida" -> return Color.Red
+        "En tiempo" -> return Color.Green
+        else -> Color.Blue
+    }
+}
+
+fun Execution.getStatusTextColor(): Color {
+    return when (this.getStatus()) {
+        "Pendiente", "En tiempo" -> Color.Black
+        else -> Color.White
+    }
+}
+
+fun Execution.validate(context: Context): Pair<Int, String> {
+    val time = this.secuenceSchedule.parseUTCToLocal().toHourMinuteString()
+    val currentTime = Calendar.getInstance().toHourMinuteString()
+    val scheduleDate = this.secuenceSchedule.parseUTCToLocal().toDate(format = NORMAL_FORMAT)
+    val timeInMinutes = getMinutesDifference(currentTime, time)
+
+    val timeBefore =
+        scheduleDate?.toCalendar().apply {
+            this?.add(Calendar.MINUTE, -allowExecuteBeforeMinutes)
+        }?.time?.format()
+
+    val timeAfter =
+        scheduleDate?.toCalendar().apply {
+            this?.add(Calendar.MINUTE, toleranceAfterMinutes)
+        }?.time?.format()
+
+    Log.e("test", "Time: $time")
+    Log.e("test", "currentTime: $currentTime")
+    Log.e("test", "scheduleDate: $scheduleDate")
+    Log.e("test", "scheduleDate calendar: ${scheduleDate?.toCalendar()?.time}")
+    Log.e("test", "timeInMinutes: $timeInMinutes")
+    Log.e("test", "timeBefore: $timeBefore")
+    Log.e("test", "timeAfter: $timeAfter")
+    Log.e("test", "minutes toleranceBeforeMinutes: $allowExecuteBeforeMinutes")
+    Log.e("test", "minutes toleranceAfterMinutes: $toleranceAfterMinutes")
+    Log.e("test", "allowExecuteAfterDue: $allowExecuteAfterDue")
+
+    if (scheduleDate?.toCalendar()?.before(Calendar.getInstance()).defaultIfNull(false)) {
+        if (!this.allowExecuteAfterDue) {
+            return Pair(0, context.getString(R.string.execution_one, scheduleDate))
+        }
+    }
+
+    return if (timeInMinutes > 0) {
+        if (this.allowExecuteBefore && this.allowExecuteBeforeMinutes >= timeInMinutes) {
+            Pair(1, "execution_success")
+        } else {
+            Pair(0, context.getString(R.string.execution_three, timeBefore, scheduleDate?.format()))
+        }
+    } else {
+        if (this.toleranceAfterMinutes >= abs(timeInMinutes)) {
+            Pair(1, "execution_success")
+        } else {
+            Pair(0, context.getString(R.string.execution_two, scheduleDate?.format(), timeAfter))
+        }
+    }
+}
+
+fun Execution.isValidExecution(context: Context): Boolean {
+    return validate(context).first == 1
+}
 
 data class CiltEvidence(
     val id: Int,

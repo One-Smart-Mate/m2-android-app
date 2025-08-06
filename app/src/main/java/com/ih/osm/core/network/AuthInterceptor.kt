@@ -1,6 +1,7 @@
 package com.ih.osm.core.network
 
-import com.ih.osm.core.preferences.SharedPreferences
+import com.ih.osm.data.database.dao.UserDao
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -8,10 +9,11 @@ import javax.inject.Inject
 class AuthInterceptor
     @Inject
     constructor(
-        private val sharedPreferences: SharedPreferences,
+        private val dao: UserDao,
     ) : Interceptor {
         override fun intercept(chain: Interceptor.Chain): Response {
-            val token = sharedPreferences.getToken()
+            val user = runBlocking { dao.getUser() }
+            val token = user?.token.orEmpty()
             val requestBuilder = chain.request().newBuilder()
 
             if (token.isNotEmpty()) {

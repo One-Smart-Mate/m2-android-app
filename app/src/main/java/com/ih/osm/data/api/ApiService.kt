@@ -11,12 +11,14 @@ import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
 import com.ih.osm.data.model.GetCiltResponse
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
 import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
+import com.ih.osm.data.model.GetSequenceResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -139,10 +141,9 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @GET("cilt-mstr/user-read-only/{userId}/{date}")
+    @POST("cilt-mstr/user")
     fun getCilts(
-        @Path("userId") userId: String,
-        @Path("date") date: String,
+        @Body body: GetCiltsRequest,
     ): Call<GetCiltResponse>
 
     @GET("/opl-mstr/{id}")
@@ -174,4 +175,9 @@ interface ApiService {
     fun fastLogin(
         @Body body: FastLoginRequest,
     ): Call<LoginResponse>
+
+    @GET("cilt-sequences/{id}")
+    fun getSequence(
+        @Path("id") id: Int,
+    ): Call<GetSequenceResponse>
 }

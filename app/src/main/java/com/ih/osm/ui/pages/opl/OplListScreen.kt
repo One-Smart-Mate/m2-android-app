@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.opllist
+package com.ih.osm.ui.pages.opl
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
@@ -28,7 +28,7 @@ import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.pages.createcard.SectionItemCard
-import com.ih.osm.ui.pages.opllist.action.OplListAction
+import com.ih.osm.ui.pages.opl.action.OplListAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 

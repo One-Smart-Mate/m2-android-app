@@ -4,8 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -81,7 +79,6 @@ fun OplItemCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         onClick = {
             isExpanded = !isExpanded
-            // Removed onClick() to prevent navigation
         },
     ) {
         Column(
@@ -163,7 +160,7 @@ fun OplItemCard(
                 Text(
                     text = opl.objetive,
                     style =
-                        MaterialTheme.typography.bodyMedium.copy(
+                        MaterialTheme.typography.bodyLarge.copy(
                             color = getTextColor(),
                         ),
                     maxLines = if (isExpanded) Int.MAX_VALUE else 2,
@@ -193,7 +190,7 @@ fun OplItemCard(
                     Text(
                         text = stringResource(id = R.string.opl_created_by, opl.creatorName),
                         style =
-                            MaterialTheme.typography.bodySmall.copy(
+                            MaterialTheme.typography.bodyMedium.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
                             ),
                         maxLines = 1,
@@ -201,7 +198,7 @@ fun OplItemCard(
                     )
                 }
             }
-
+            CustomSpacer(space = SpacerSize.SMALL)
             // Details count and date
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -220,7 +217,7 @@ fun OplItemCard(
                     Text(
                         text = "${opl.details.size} ${stringResource(id = R.string.steps)}",
                         style =
-                            MaterialTheme.typography.bodySmall.copy(
+                            MaterialTheme.typography.bodyMedium.copy(
                                 color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Medium,
                             ),
@@ -230,7 +227,7 @@ fun OplItemCard(
                 Text(
                     text = opl.updatedAt,
                     style =
-                        MaterialTheme.typography.bodySmall.copy(
+                        MaterialTheme.typography.bodyMedium.copy(
                             color = getTextColor().copy(alpha = 0.6f),
                         ),
                 )
@@ -259,7 +256,7 @@ fun OplItemCard(
                         Text(
                             text = stringResource(id = R.string.opl_reviewed_by, opl.reviewerName),
                             style =
-                                MaterialTheme.typography.bodySmall.copy(
+                                MaterialTheme.typography.bodyMedium.copy(
                                     color = Color(0xFF4CAF50),
                                     fontWeight = FontWeight.Medium,
                                 ),
@@ -271,14 +268,6 @@ fun OplItemCard(
             // Expandable details section
             AnimatedVisibility(
                 visible = isExpanded,
-                enter =
-                    expandVertically(
-                        expandFrom = Alignment.Top,
-                    ),
-                exit =
-                    shrinkVertically(
-                        shrinkTowards = Alignment.Top,
-                    ),
             ) {
                 Column {
                     CustomSpacer()
@@ -340,7 +329,7 @@ private fun OplDetailItem(
     detail: OplDetail,
     modifier: Modifier = Modifier,
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier, horizontalAlignment = Alignment.CenterHorizontally) {
         Row(
             modifier =
                 Modifier

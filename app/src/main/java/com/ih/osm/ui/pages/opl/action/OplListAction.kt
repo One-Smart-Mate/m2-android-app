@@ -1,4 +1,4 @@
-package com.ih.osm.ui.pages.opllist.action
+package com.ih.osm.ui.pages.opl.action
 
 sealed class OplListAction {
     data object UpdateList : OplListAction()

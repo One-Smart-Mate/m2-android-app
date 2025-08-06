@@ -8,6 +8,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -26,6 +27,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.network.NetworkRepository
 import org.json.JSONObject
@@ -248,7 +250,7 @@ class NetworkRepositoryImpl
             userId: String,
             date: String,
         ): CiltData {
-            val response = apiService.getCilts(userId, date).execute()
+            val response = apiService.getCilts(GetCiltsRequest(userId.toInt(), date)).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
@@ -301,6 +303,15 @@ class NetworkRepositoryImpl
             val response = apiService.fastLogin(body).execute()
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getSequence(id: Int): Sequence {
+            val response = apiService.getSequence(id).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
             } else {
                 error(response.getErrorMessage())
             }

@@ -22,6 +22,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 
 interface NetworkRepository {
@@ -90,4 +91,6 @@ interface NetworkRepository {
     suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence
 
     suspend fun fastLogin(body: FastLoginRequest): LoginResponse
+
+    suspend fun getSequence(id: Int): Sequence
 }

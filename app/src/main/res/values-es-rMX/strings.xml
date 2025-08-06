@@ -312,4 +312,12 @@
     <string name="accept">Aceptar</string>
     <string name="cancel">Cancelar</string>
     <string name="block">Bloquear</string>
+
+    <string name="execution_one">Le fecha de ejecución fue %1$s</string>
+    <string name="execution_two">El tiempo de ejecución posterior es entre %1$s y %2$s</string>
+    <string name="execution_three">El tiempo de ejecución antes es entre %1$s y %2$s</string>
+
+    <string name="leave_screen">Aviso!, estas por cerrar la pantalla</string>
+    <string name="leave_screen_description">Si cierras la pantalla perderas la información guardada, Deseas continuar?</string>
+    <string name="close">Cerrar</string>
 </resources>

@@ -2,7 +2,6 @@ package com.ih.osm.ui.pages.createcard
 
 import android.content.Context
 import android.net.Uri
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
@@ -363,14 +362,12 @@ class CreateCardViewModel
                 kotlin.runCatching {
                     callUseCase { saveCardUseCase(card) }
                 }.onSuccess {
-                    Log.e("Test", "Success $card")
                     setState { copy(isCardSuccess = true) }
-                    if (isCiltMode && superiorIdCilt != null && superiorIdCilt != "0") {
-                        sharedPreferences.saveCiltCard(card)
+                    if (isCiltMode) {
+                        sharedPreferences.saveCiltCard(it)
                     }
                     cleanScreenStates()
                 }.onFailure {
-                    Log.e("test", "Failure $it")
                     LoggerHelperManager.logException(it)
                     firebaseAnalyticsHelper.logCreateCardException(it)
                     cleanScreenStates(it.localizedMessage.orEmpty())

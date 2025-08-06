@@ -3,9 +3,7 @@ package com.ih.osm.ui.pages.home
 import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.icu.util.Calendar
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -201,7 +199,6 @@ fun HomeScreenV2(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun HomeContent(
     navController: NavController,
@@ -250,8 +247,8 @@ private fun HomeContent(
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
         ) {
-            if (user != null) {
-                stickyHeader {
+            item {
+                if (user != null) {
                     HomeAppBarV2(
                         user = user,
                         padding = padding.calculateTopPadding(),
@@ -361,6 +358,7 @@ private fun HomeContent(
                 ) {
                     onShowDialog()
                 }
+                CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
         }
         if (state.showFastPasswordDialog) {
@@ -574,7 +572,6 @@ private fun HomeAppBarV2(
 private fun getTimeText(): String {
     val calendar = Calendar.getInstance()
     val hour = calendar.get(Calendar.HOUR_OF_DAY)
-    Log.e("test", "Hour -> $hour")
     return when (hour) {
         in 0..11 -> stringResource(R.string.good_morning)
         in 12..19 -> stringResource(R.string.good_evening)
