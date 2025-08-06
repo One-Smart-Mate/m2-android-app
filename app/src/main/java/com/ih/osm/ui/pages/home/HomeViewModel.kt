@@ -1,7 +1,6 @@
 package com.ih.osm.ui.pages.home
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.BuildConfig
@@ -30,6 +29,7 @@ import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
+import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
 import com.ih.osm.ui.extensions.lastSyncDate
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.pages.home.action.HomeAction
@@ -42,7 +42,6 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
@@ -397,7 +396,7 @@ class HomeViewModel
         private fun handleFastLogin(fastPassword: String) {
             viewModelScope.launch {
                 setState { copy(isLoading = true, message = EMPTY) }
-                val timezone = getValidIanaTimeZone()
+                val timezone = getCurrentDateTimeUtc()
 
                 kotlin.runCatching {
                     callUseCase {
@@ -414,8 +413,6 @@ class HomeViewModel
                     val session = loginResponse.toSession()
 
                     sessionRepository.save(session)
-
-                    Log.e("Session:", "$session")
 
                     handleGetSession()
 
@@ -469,12 +466,5 @@ class HomeViewModel
 
         fun consumeFastLoginSuccess() {
             setState { copy(fastLoginSuccessful = false) }
-        }
-
-        private fun getValidIanaTimeZone(): String {
-            val defaultTimeZone = TimeZone.getDefault()
-            val availableIDs = TimeZone.getAvailableIDs(defaultTimeZone.rawOffset)
-
-            return availableIDs.firstOrNull { it.contains("/") } ?: "UTC"
         }
     }
