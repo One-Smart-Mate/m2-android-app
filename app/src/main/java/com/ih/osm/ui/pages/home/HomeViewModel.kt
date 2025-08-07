@@ -18,7 +18,6 @@ import com.ih.osm.data.model.toSession
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.Session
-import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.domain.repository.session.SessionRepository
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
@@ -26,10 +25,8 @@ import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
-import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
-import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
 import com.ih.osm.ui.extensions.lastSyncDate
 import com.ih.osm.ui.navigation.ARG_SYNC_CATALOG
 import com.ih.osm.ui.pages.home.action.HomeAction
@@ -42,13 +39,13 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import java.util.TimeZone
 import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel
     @Inject
     constructor(
-        private val getUserUseCase: GetUserUseCase,
         private val fastLoginUseCase: FastLoginUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val getCardsUseCase: GetCardsUseCase,
@@ -60,7 +57,6 @@ class HomeViewModel
         savedStateHandle: SavedStateHandle,
     ) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
         data class UiState(
-            val user: User? = null,
             val session: Session? = null,
             val message: String = EMPTY,
             val cards: List<Card> = emptyList(),
@@ -396,14 +392,13 @@ class HomeViewModel
         private fun handleFastLogin(fastPassword: String) {
             viewModelScope.launch {
                 setState { copy(isLoading = true, message = EMPTY) }
-                val timezone = getCurrentDateTimeUtc()
 
                 kotlin.runCatching {
                     callUseCase {
                         fastLoginUseCase(
                             FastLoginRequest(
                                 fastPassword = fastPassword,
-                                timezone = timezone,
+                                timezone = TimeZone.getDefault().id,
                                 platform = ANDROID_SO.uppercase(),
                             ),
                         )
@@ -420,7 +415,6 @@ class HomeViewModel
                         copy(
                             isLoading = false,
                             fastLoginSuccessful = true,
-                            user = user,
                             session = session,
                         )
                     }

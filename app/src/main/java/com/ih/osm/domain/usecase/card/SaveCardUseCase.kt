@@ -22,31 +22,31 @@ interface SaveCardUseCase {
 }
 
 class SaveCardUseCaseImpl
-@Inject
-constructor(
-    private val authRepo: AuthRepository,
-    private val sessionRepo: SessionRepository,
-    private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
-    private val cardRepo: CardRepository,
-    private val cardTypeRepo: CardTypeRepository,
-    private val preclassifierRepo: PreclassifierRepository,
-    private val priorityRepo: PriorityRepository,
-    private val levelRepo: LevelRepository,
-    private val evidenceRepo: EvidenceRepository,
-    private val notificationManager: NotificationManager,
-) : SaveCardUseCase {
-    override suspend fun invoke(card: Card): Long {
-        val lastCardId = cardRepo.getLastCardId()
-        val lastSiteCardId = cardRepo.getLastSiteCardId()
-        val user = sessionRepo.get()
-        val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
-        val area = levelRepo.get(card.areaId.toString())
-        val priority = priorityRepo.get(card.priorityId.orEmpty())
-        val preclassifier = preclassifierRepo.get(card.preclassifierId)
-        var uuid = card.uuid
-        val hasData = cardRepo.get(uuid)
-        if (hasData != null) {
-            uuid = UUID.randomUUID().toString()
+    @Inject
+    constructor(
+        private val authRepo: AuthRepository,
+        private val sessionRepo: SessionRepository,
+        private val firebaseAnalyticsHelper: FirebaseAnalyticsHelper,
+        private val cardRepo: CardRepository,
+        private val cardTypeRepo: CardTypeRepository,
+        private val preclassifierRepo: PreclassifierRepository,
+        private val priorityRepo: PriorityRepository,
+        private val levelRepo: LevelRepository,
+        private val evidenceRepo: EvidenceRepository,
+        private val notificationManager: NotificationManager,
+    ) : SaveCardUseCase {
+        override suspend fun invoke(card: Card): Card {
+            val lastCardId = cardRepo.getLastCardId()
+            val lastSiteCardId = cardRepo.getLastSiteCardId()
+            val user = sessionRepo.get()
+            val cardType = cardTypeRepo.get(card.cardTypeId.orEmpty())
+            val area = levelRepo.get(card.areaId.toString())
+            val priority = priorityRepo.get(card.priorityId.orEmpty())
+            val preclassifier = preclassifierRepo.get(card.preclassifierId)
+            var uuid = card.uuid
+            val hasData = cardRepo.get(uuid)
+            if (hasData != null) {
+                uuid = UUID.randomUUID().toString()
             }
             val updatedCard =
                 card.copy(
@@ -75,5 +75,5 @@ constructor(
             notificationManager.buildNotificationSuccessCard()
             LoggerHelperManager.logCreateCard(updatedCard)
             return updatedCard
+        }
     }
-}

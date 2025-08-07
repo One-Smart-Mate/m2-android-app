@@ -65,7 +65,7 @@ import com.ih.osm.MainActivity
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
-import com.ih.osm.domain.model.User
+import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTag
@@ -116,7 +116,7 @@ fun HomeScreenV2(
     } else {
         HomeContent(
             navController = navController,
-            user = state.user,
+            session = state.session,
             cardList = state.cards,
             networkStatus = state.networkStatus,
             lastSyncUpdateDate = state.lastSyncUpdate,
@@ -202,7 +202,7 @@ fun HomeScreenV2(
 @Composable
 private fun HomeContent(
     navController: NavController,
-    user: User?,
+    session: Session?,
     cardList: List<Card>,
     networkStatus: NetworkStatus,
     lastSyncUpdateDate: String,
@@ -248,9 +248,9 @@ private fun HomeContent(
             modifier = Modifier.fillMaxSize(),
         ) {
             item {
-                if (user != null) {
+                if (session != null) {
                     HomeAppBarV2(
-                        user = user,
+                        session = session,
                         padding = padding.calculateTopPadding(),
                         networkStatus = networkStatus,
                     )
@@ -495,7 +495,7 @@ private fun HomeSectionCardItem(
 
 @Composable
 private fun HomeAppBarV2(
-    user: User,
+    session: Session,
     padding: Dp,
     networkStatus: NetworkStatus,
 ) {
@@ -508,7 +508,7 @@ private fun HomeAppBarV2(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            CircularImage(image = user.logo, size = Size64)
+            CircularImage(image = session.logo, size = Size64)
             NetworkCard(
                 networkStatus = networkStatus,
                 textColor = getTextColor(),
@@ -524,7 +524,7 @@ private fun HomeAppBarV2(
         CustomSpacer(space = SpacerSize.SMALL)
         Column {
             Text(
-                text = "${getTimeText()},\n${user.name}.",
+                text = "${getTimeText()},\n${session.name}.",
                 style =
                     MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.Bold,
@@ -535,7 +535,7 @@ private fun HomeAppBarV2(
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
-                    text = user.siteName,
+                    text = session.siteName,
                     style =
                         MaterialTheme.typography.bodyLarge.copy(
                             color = getTextColor(),
@@ -543,15 +543,15 @@ private fun HomeAppBarV2(
                 )
                 Icon(
                     Icons.TwoTone.CheckCircle,
-                    contentDescription = user.siteName,
+                    contentDescription = session.siteName,
                     tint = Color(0XFF048574),
                     modifier = Modifier.size(16.dp),
                 )
             }
             CustomSpacer()
-            if (user.roles.isNotEmpty()) {
+            if (session.roles.isNotEmpty()) {
                 LazyRow {
-                    items(user.roles) {
+                    items(session.roles) {
                         Box(modifier = Modifier.padding(horizontal = 2.dp)) {
                             CustomTag(
                                 title = it,

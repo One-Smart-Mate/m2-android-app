@@ -23,77 +23,77 @@ import kotlin.coroutines.CoroutineContext
 
 @HiltViewModel
 class SplashViewModel
-@Inject
-constructor(
-    private val coroutineContext: CoroutineContext,
-    private val getUserUseCase: GetUserUseCase,
-    private val getSessionUseCase: GetSessionUseCase,
-    private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
-) : BaseViewModel<SplashViewModel.UiState>(UiState) {
-    data object UiState
+    @Inject
+    constructor(
+        private val coroutineContext: CoroutineContext,
+        private val getUserUseCase: GetUserUseCase,
+        private val getSessionUseCase: GetSessionUseCase,
+        private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+    ) : BaseViewModel<SplashViewModel.UiState>(UiState) {
+        data object UiState
 
-    private val _isAuthenticated = MutableStateFlow(false)
-    val isAuthenticated = _isAuthenticated.asStateFlow()
+        private val _isAuthenticated = MutableStateFlow(false)
+        val isAuthenticated = _isAuthenticated.asStateFlow()
 
-    private val _startRoute = MutableStateFlow(Screen.Login.route)
-    val startRoute = _startRoute.asStateFlow()
+        private val _startRoute = MutableStateFlow(Screen.Login.route)
+        val startRoute = _startRoute.asStateFlow()
 
-    init {
-        handleSyncFirebaseToken()
-        handleSyncFirebaseConfigs()
-    }
+        init {
+            handleSyncFirebaseToken()
+            handleSyncFirebaseConfigs()
+        }
 
-    private fun handleSyncFirebaseConfigs() {
-        viewModelScope.launch {
-            try {
-                val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
-                val configSettings =
-                    remoteConfigSettings {
-                        minimumFetchIntervalInSeconds = 3600
-                    }
-                remoteConfig.setConfigSettingsAsync(configSettings)
-                remoteConfig.fetchAndActivate().await()
-                handleGetSession()
-            } catch (e: Exception) {
-                LoggerHelperManager.logException(e)
-                FirebaseCrashlytics.getInstance().recordException(e)
-                handleGetSession()
+        private fun handleSyncFirebaseConfigs() {
+            viewModelScope.launch {
+                try {
+                    val remoteConfig: FirebaseRemoteConfig = Firebase.remoteConfig
+                    val configSettings =
+                        remoteConfigSettings {
+                            minimumFetchIntervalInSeconds = 3600
+                        }
+                    remoteConfig.setConfigSettingsAsync(configSettings)
+                    remoteConfig.fetchAndActivate().await()
+                    handleGetSession()
+                } catch (e: Exception) {
+                    LoggerHelperManager.logException(e)
+                    FirebaseCrashlytics.getInstance().recordException(e)
+                    handleGetSession()
+                }
             }
         }
-    }
 
-    private fun handleGetSession() {
-        viewModelScope.launch(coroutineContext) {
-            kotlin.runCatching {
-                getSessionUseCase()
-            }.onSuccess {
-                val route =
-                    if (it != null) {
-                        FirebaseCrashlytics.getInstance().setUserId(it.userId)
-                        Screen.HomeV2.route
-                    } else {
-                        Screen.Login.route
-                    }
-                navigateToScreen(route)
-            }.onFailure {
-                navigateToScreen(Screen.Login.route)
+        private fun handleGetSession() {
+            viewModelScope.launch(coroutineContext) {
+                kotlin.runCatching {
+                    getSessionUseCase()
+                }.onSuccess {
+                    val route =
+                        if (it != null) {
+                            FirebaseCrashlytics.getInstance().setUserId(it.userId)
+                            Screen.HomeV2.route
+                        } else {
+                            Screen.Login.route
+                        }
+                    navigateToScreen(route)
+                }.onFailure {
+                    navigateToScreen(Screen.Login.route)
+                }
             }
         }
-    }
 
-    private fun handleSyncFirebaseToken() {
-        viewModelScope.launch(coroutineContext) {
-            kotlin.runCatching {
-                syncFirebaseTokenUseCase()
-            }.onFailure {
-                LoggerHelperManager.logException(it)
+        private fun handleSyncFirebaseToken() {
+            viewModelScope.launch(coroutineContext) {
+                kotlin.runCatching {
+                    syncFirebaseTokenUseCase()
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                }
             }
         }
-    }
 
-    private suspend fun navigateToScreen(route: String) {
-        _startRoute.value = route
-        delay(1000)
-        _isAuthenticated.value = true
+        private suspend fun navigateToScreen(route: String) {
+            _startRoute.value = route
+            delay(1000)
+            _isAuthenticated.value = true
+        }
     }
-}

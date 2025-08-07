@@ -30,162 +30,162 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CardListViewModel
-@Inject
-constructor(
-    private val getCardsUseCase: GetCardsUseCase,
-    private val getUserUseCase: GetUserUseCase,
-    private val getSessionUseCase: GetSessionUseCase,
-    private val syncCatalogsUseCase: SyncCatalogsUseCase,
-    private val sharedPreferences: SharedPreferences,
-    @ApplicationContext private val context: Context,
-) : BaseViewModel<CardListViewModel.UiState>(UiState()) {
-    data class UiState(
-        val cards: List<Card> = emptyList(),
-        val isLoading: Boolean = true,
-        val message: String = EMPTY,
-        val user: User? = null,
-        val session: Session? = null,
-    )
+    @Inject
+    constructor(
+        private val getCardsUseCase: GetCardsUseCase,
+        private val getUserUseCase: GetUserUseCase,
+        private val getSessionUseCase: GetSessionUseCase,
+        private val syncCatalogsUseCase: SyncCatalogsUseCase,
+        private val sharedPreferences: SharedPreferences,
+        @ApplicationContext private val context: Context,
+    ) : BaseViewModel<CardListViewModel.UiState>(UiState()) {
+        data class UiState(
+            val cards: List<Card> = emptyList(),
+            val isLoading: Boolean = true,
+            val message: String = EMPTY,
+            val user: User? = null,
+            val session: Session? = null,
+        )
 
-    fun load() {
-        handleGeCards()
-        handleGetSession()
-    }
+        fun load() {
+            handleGeCards()
+            handleGetSession()
+        }
 
-    fun handleUpdateRemoteCardsAndSave() {
-        viewModelScope.launch {
-            setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
+        fun handleUpdateRemoteCardsAndSave() {
+            viewModelScope.launch {
+                setState { copy(isLoading = true, message = context.getString(R.string.loading_data)) }
 
-            val (isExpired, errorMessage) = isSubscriptionExpired()
-            if (isExpired) {
-                setState {
-                    copy(isLoading = false, message = errorMessage.orEmpty())
+                val (isExpired, errorMessage) = isSubscriptionExpired()
+                if (isExpired) {
+                    setState {
+                        copy(isLoading = false, message = errorMessage.orEmpty())
+                    }
+                    return@launch
                 }
-                return@launch
-            }
 
-            if (!NetworkConnection.isConnected()) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.please_connect_to_internet)
-                    )
+                if (!NetworkConnection.isConnected()) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.please_connect_to_internet),
+                        )
+                    }
+                    return@launch
                 }
-                return@launch
-            }
 
-            val networkStatus = NetworkConnection.networkStatus(context)
-            if (networkStatus == NetworkStatus.DATA_CONNECTED &&
-                sharedPreferences.getNetworkPreference().isEmpty()
-            ) {
-                setState {
-                    copy(
-                        isLoading = false,
-                        message = context.getString(R.string.network_preferences_allowed)
-                    )
+                val networkStatus = NetworkConnection.networkStatus(context)
+                if (networkStatus == NetworkStatus.DATA_CONNECTED &&
+                    sharedPreferences.getNetworkPreference().isEmpty()
+                ) {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = context.getString(R.string.network_preferences_allowed),
+                        )
+                    }
+                    return@launch
                 }
-                return@launch
-            }
 
-            context.getActivity<MainActivity>()?.enqueueSyncCardsWork()
+                context.getActivity<MainActivity>()?.enqueueSyncCardsWork()
 
-            kotlinx.coroutines.delay(3000)
+                kotlinx.coroutines.delay(3000)
 
-            kotlin.runCatching {
-                callUseCase { syncCatalogsUseCase(syncCards = true) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-            }
-
-            kotlin.runCatching {
-                callUseCase { getCardsUseCase(syncRemote = true, localCards = false) }
-            }.onSuccess { cards ->
-                setState {
-                    copy(
-                        cards = cards.sortedByDescending { it.siteCardId },
-                        isLoading = false,
-                        message = EMPTY,
-                    )
+                kotlin.runCatching {
+                    callUseCase { syncCatalogsUseCase(syncCards = true) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
                 }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                setState {
-                    copy(isLoading = false, message = it.localizedMessage.orEmpty())
+
+                kotlin.runCatching {
+                    callUseCase { getCardsUseCase(syncRemote = true, localCards = false) }
+                }.onSuccess { cards ->
+                    setState {
+                        copy(
+                            cards = cards.sortedByDescending { it.siteCardId },
+                            isLoading = false,
+                            message = EMPTY,
+                        )
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(isLoading = false, message = it.localizedMessage.orEmpty())
+                    }
                 }
             }
         }
-    }
 
-    private fun isSubscriptionExpired(): Pair<Boolean, String?> {
-        val dueDateString = sharedPreferences.getDueDate()
-        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        private fun isSubscriptionExpired(): Pair<Boolean, String?> {
+            val dueDateString = sharedPreferences.getDueDate()
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
-        val dueDate =
-            try {
-                sdf.parse(dueDateString)
-            } catch (e: Exception) {
-                null
-            }
-
-        val today = Date()
-
-        return if (dueDate != null && dueDate.before(today)) {
-            true to context.getString(R.string.cards_cannot_be_uploaded)
-        } else {
-            false to null
-        }
-    }
-
-    private fun handleGeCards() {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getCardsUseCase(syncRemote = false) }
-            }.onSuccess {
-                setState {
-                    copy(
-                        cards = it.sortedByDescending { item -> item.siteCardId },
-                        isLoading = false,
-                        message = EMPTY,
-                    )
+            val dueDate =
+                try {
+                    sdf.parse(dueDateString)
+                } catch (e: Exception) {
+                    null
                 }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                cleanScreenStates(it.localizedMessage.orEmpty())
+
+            val today = Date()
+
+            return if (dueDate != null && dueDate.before(today)) {
+                true to context.getString(R.string.cards_cannot_be_uploaded)
+            } else {
+                false to null
+            }
+        }
+
+        private fun handleGeCards() {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getCardsUseCase(syncRemote = false) }
+                }.onSuccess {
+                    setState {
+                        copy(
+                            cards = it.sortedByDescending { item -> item.siteCardId },
+                            isLoading = false,
+                            message = EMPTY,
+                        )
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    cleanScreenStates(it.localizedMessage.orEmpty())
+                }
+            }
+        }
+
+        private fun handleGetSession() {
+            viewModelScope.launch {
+                kotlin.runCatching {
+                    callUseCase { getSessionUseCase() }
+                }.onSuccess { session ->
+                    setState { copy(session = session) }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    cleanScreenStates(it.localizedMessage.orEmpty())
+                }
+            }
+        }
+
+        fun handleFilterCards(filter: String) {
+            viewModelScope.launch {
+                val cards = getCardsUseCase(syncRemote = false)
+                val filteredCards =
+                    cards.filterByStatus(
+                        filter = filter.toCardFilter(context = context),
+                        userId = getState().session?.userId.orEmpty(),
+                    ).sortedByDescending { it.siteCardId }
+                setState { copy(cards = filteredCards) }
+            }
+        }
+
+        private fun cleanScreenStates(message: String = EMPTY) {
+            setState {
+                copy(
+                    isLoading = false,
+                    message = message,
+                )
             }
         }
     }
-
-    private fun handleGetSession() {
-        viewModelScope.launch {
-            kotlin.runCatching {
-                callUseCase { getSessionUseCase() }
-            }.onSuccess { session ->
-                setState { copy(session = session) }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                cleanScreenStates(it.localizedMessage.orEmpty())
-            }
-        }
-    }
-
-    fun handleFilterCards(filter: String) {
-        viewModelScope.launch {
-            val cards = getCardsUseCase(syncRemote = false)
-            val filteredCards =
-                cards.filterByStatus(
-                    filter = filter.toCardFilter(context = context),
-                    userId = getState().session?.userId.orEmpty(),
-                ).sortedByDescending { it.siteCardId }
-            setState { copy(cards = filteredCards) }
-        }
-    }
-
-    private fun cleanScreenStates(message: String = EMPTY) {
-        setState {
-            copy(
-                isLoading = false,
-                message = message,
-            )
-        }
-    }
-}
