@@ -16,7 +16,6 @@ import com.ih.osm.domain.model.toCardFilter
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
-import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getActivity
 import com.ih.osm.ui.utils.EMPTY
@@ -33,7 +32,6 @@ class CardListViewModel
     @Inject
     constructor(
         private val getCardsUseCase: GetCardsUseCase,
-        private val getUserUseCase: GetUserUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,

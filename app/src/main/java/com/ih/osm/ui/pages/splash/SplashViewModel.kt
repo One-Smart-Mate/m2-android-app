@@ -9,7 +9,6 @@ import com.google.firebase.remoteconfig.remoteConfigSettings
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
-import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.navigation.Screen
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +25,6 @@ class SplashViewModel
     @Inject
     constructor(
         private val coroutineContext: CoroutineContext,
-        private val getUserUseCase: GetUserUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
     ) : BaseViewModel<SplashViewModel.UiState>(UiState) {

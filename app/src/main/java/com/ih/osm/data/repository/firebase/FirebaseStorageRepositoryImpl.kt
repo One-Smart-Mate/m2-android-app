@@ -9,6 +9,7 @@ import com.ih.osm.domain.model.Evidence
 import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
+import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -21,11 +22,11 @@ class FirebaseStorageRepositoryImpl
     @Inject
     constructor(
         private val firebaseStorage: FirebaseStorage,
-        private val getUserUseCase: GetUserUseCase,
+        private val gerSessionUseCase: GetSessionUseCase,
     ) : FirebaseStorageRepository {
         override suspend fun uploadEvidence(evidence: Evidence): String {
             return try {
-                val siteId = getUserUseCase()?.siteId.defaultIfNull("0")
+                val siteId = gerSessionUseCase().siteId.defaultIfNull("0")
                 val evidenceType = EvidenceType.valueOf(evidence.type)
                 val evidenceName = getEvidenceFileName(evidenceType)
                 val evidenceReference =
@@ -93,7 +94,7 @@ class FirebaseStorageRepositoryImpl
 
         override suspend fun deleteEvidence(cardUUID: String): Boolean {
             return try {
-                val siteId = getUserUseCase()?.siteId.defaultIfNull("0")
+                val siteId = gerSessionUseCase().siteId.defaultIfNull("0")
 
                 val imagesReference =
                     firebaseStorage.getReference("site_$siteId/cards/$cardUUID/images/")
