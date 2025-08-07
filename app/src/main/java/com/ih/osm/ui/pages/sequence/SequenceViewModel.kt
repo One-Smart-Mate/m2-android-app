@@ -327,7 +327,7 @@ class SequenceViewModel
 
                 if (state.card != null) {
                     kotlin.runCatching {
-                        callUseCase { syncCardUseCase(card = state.card!!) }
+                        callUseCase { syncCardUseCase(card = state.card) }
                     }.onSuccess { syncedCard ->
                         remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
                     }.onFailure {

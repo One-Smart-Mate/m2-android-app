@@ -10,7 +10,6 @@ import com.ih.osm.domain.model.EvidenceParentType
 import com.ih.osm.domain.model.EvidenceType
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
-import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.utils.EMPTY
