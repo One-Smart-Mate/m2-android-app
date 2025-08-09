@@ -182,6 +182,7 @@ fun HomeScreenV2(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
+                        viewModel.process(HomeAction.CleanMessage)
                     }
                 }
                 if (state.updateApp) {

@@ -84,6 +84,7 @@ class HomeViewModel
                 }
 
                 is HomeAction.FastLogin -> handleFastLogin(action.fastPassword)
+                is HomeAction.CleanMessage -> cleanMessage()
             }
         }
 
@@ -460,5 +461,9 @@ class HomeViewModel
 
         fun consumeFastLoginSuccess() {
             setState { copy(fastLoginSuccessful = false) }
+        }
+
+        fun cleanMessage() {
+            setState { copy(message = EMPTY) }
         }
     }

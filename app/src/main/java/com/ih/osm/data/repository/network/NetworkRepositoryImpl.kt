@@ -8,7 +8,6 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -250,7 +249,7 @@ class NetworkRepositoryImpl
             userId: String,
             date: String,
         ): CiltData {
-            val response = apiService.getCilts(GetCiltsRequest(userId.toInt(), date)).execute()
+            val response = apiService.getCilts(userId, date).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
