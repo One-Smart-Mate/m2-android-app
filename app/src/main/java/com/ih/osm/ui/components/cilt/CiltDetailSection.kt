@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.sortByTime
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.extensions.calculateRemainingDaysFromIso
 import com.ih.osm.ui.extensions.fromIsoToFormattedDate
@@ -101,15 +102,18 @@ fun CiltDetailSection(
                         CiltDiagramSection(imageUrl = cilt.urlImgLayout)
 
                         Spacer(modifier = Modifier.height(8.dp))
+
                         cilt.sequences.forEach { sequence ->
-                            sequence.executions.forEach { execution ->
-                                ExecutionCard(
-                                    execution = execution,
-                                ) {
-                                    navController.navigateToSequence(sequence.id, execution.id)
+                            sequence.executions
+                                .sortByTime()
+                                .forEach { execution ->
+                                    ExecutionCard(
+                                        execution = execution,
+                                    ) {
+                                        navController.navigateToSequence(sequence.id, execution.id)
+                                    }
+                                    Spacer(modifier = Modifier.height(16.dp))
                                 }
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
                         }
                     }
                 }
@@ -124,7 +128,13 @@ fun AnatomyHorizontalSection(
     title: String,
     description: String,
 ) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
