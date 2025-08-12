@@ -47,70 +47,86 @@ fun ExecutionCard(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = MaterialTheme.shapes.medium,
     ) {
-        Column(
+        Row(
             modifier =
                 Modifier
-                    .fillMaxWidth().padding(vertical = PaddingSmall),
+                    .fillMaxWidth()
+                    .padding(vertical = PaddingSmall, horizontal = PaddingSmall),
+            verticalAlignment = Alignment.CenterVertically,
         ) {
-            Row(
-                modifier =
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(PaddingSmall),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
+            Column(
+                modifier = Modifier.weight(1f),
             ) {
-                Text(
-                    text = execution.siteExecutionId.toString(),
-                    style =
-                        MaterialTheme.typography.titleMedium
-                            .copy(fontWeight = FontWeight.Bold),
-                )
-                Text(
-                    text = execution.ciltTypeName,
-                    style =
-                        MaterialTheme.typography.titleMedium
-                            .copy(fontWeight = FontWeight.Bold),
-                )
-                Box(
-                    modifier =
-                        Modifier
-                            .size(dimensionResource(id = R.dimen.circle_shape_size))
-                            .background(
-                                color = getColorFromHex(execution.secuenceColor),
-                                shape = CircleShape,
-                            ),
-                )
-                Text(
-                    text = execution.secuenceSchedule.parseUTCToLocal().toHourMinuteString(),
-                    style =
-                        MaterialTheme.typography.titleMedium
-                            .copy(fontWeight = FontWeight.Bold),
-                )
-                Box(
-                    modifier =
-                        Modifier
-                            .background(
-                                color = execution.getStatusColor(),
-                                shape = MaterialTheme.shapes.small,
-                            )
-                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    // .padding(PaddingSmall),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Text(
-                        text = execution.getStatus(),
-                        color = execution.getStatusTextColor(),
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        text = execution.siteExecutionId.toString(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Text(
+                        text = execution.ciltTypeName,
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .size(dimensionResource(id = R.dimen.circle_shape_size))
+                                .background(
+                                    color = getColorFromHex(execution.secuenceColor),
+                                    shape = CircleShape,
+                                ),
                     )
                 }
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = stringResource(R.string.view_details),
-                    tint = MaterialTheme.colorScheme.onSurface,
+                Row(
                     modifier =
                         Modifier
-                            .padding(end = 8.dp),
-                )
+                            .fillMaxWidth()
+                            .padding(top = PaddingSmall),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(
+                        text =
+                            execution.secuenceSchedule.parseUTCToLocal()
+                                .toHourMinuteString(),
+                        style =
+                            MaterialTheme.typography.titleMedium
+                                .copy(fontWeight = FontWeight.Bold),
+                    )
+                    Box(
+                        modifier =
+                            Modifier
+                                .background(
+                                    color = execution.getStatusColor(),
+                                    shape = MaterialTheme.shapes.small,
+                                )
+                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                    ) {
+                        Text(
+                            text = execution.getStatus(),
+                            color = execution.getStatusTextColor(),
+                            style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        )
+                    }
+                }
             }
+
+            Icon(
+                imageVector = Icons.Default.KeyboardArrowRight,
+                contentDescription = stringResource(R.string.view_details),
+                tint = MaterialTheme.colorScheme.onSurface,
+                modifier =
+                    Modifier
+                        .padding(end = 8.dp),
+            )
         }
     }
 }
