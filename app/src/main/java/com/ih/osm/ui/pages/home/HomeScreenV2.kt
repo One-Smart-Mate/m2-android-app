@@ -369,34 +369,8 @@ private fun HomeContent(
                         onDismissDialog()
                     }
                 },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            onFastLogin(state.fastPassword)
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.accept),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                },
-                dismissButton = {
-                    if (!state.isDialogBlocked) {
-                        TextButton(
-                            onClick = {
-                                onDismissDialog()
-                            },
-                        ) {
-                            Text(
-                                text = stringResource(R.string.cancel),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.secondary,
-                            )
-                        }
-                    }
-                },
+                confirmButton = { },
+                dismissButton = { },
                 title = {
                     Text(
                         text = stringResource(R.string.fast_password),
@@ -408,7 +382,12 @@ private fun HomeContent(
                             label = stringResource(R.string.enter_fast_password),
                             icon = Icons.Outlined.Lock,
                             isPassword = true,
-                            onChange = { onPasswordChange(it) },
+                            onChange = {
+                                onPasswordChange(it)
+                                if (it.length == 4) {
+                                    onFastLogin(it)
+                                }
+                            },
                         )
                         if (!state.isDialogBlocked) {
                             TextButton(onClick = { onBlockDialog() }) {
