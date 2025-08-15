@@ -338,7 +338,12 @@ fun SequenceContent(
 
             if (enableCompleteButton) {
                 CustomButton(text = stringResource(R.string.finish_sequence)) {
-                    onAction(SequenceViewModel.SequenceAction.CompleteSequence(initialParam, finalParam))
+                    onAction(
+                        SequenceViewModel.SequenceAction.CompleteSequence(
+                            initialParam,
+                            finalParam
+                        )
+                    )
                 }
             }
 
@@ -382,7 +387,7 @@ fun SequenceContent(
                     icon = Icons.Outlined.Create,
                     modifier = Modifier.fillMaxWidth(),
                 ) { value ->
-                    initialParam = value
+                    onAction(SequenceViewModel.SequenceAction.UpdateInitialParameter(value))
                 }
                 CustomSpacer()
                 Box(
@@ -418,7 +423,7 @@ fun SequenceContent(
                     icon = Icons.Outlined.Create,
                     modifier = Modifier.fillMaxWidth(),
                 ) { value ->
-                    finalParam = value
+                    onAction(SequenceViewModel.SequenceAction.UpdateFinalParameter(value))
                 }
                 CustomSpacer()
 
@@ -514,7 +519,12 @@ fun SequenceContent(
                 ExpandableCard(
                     title = stringResource(R.string.card),
                 ) {
-                    CardItemListV2(card = card, onClick = {}, onAction = {}, isActionsEnabled = false)
+                    CardItemListV2(
+                        card = card,
+                        onClick = {},
+                        onAction = {},
+                        isActionsEnabled = false
+                    )
                 }
             }
 
