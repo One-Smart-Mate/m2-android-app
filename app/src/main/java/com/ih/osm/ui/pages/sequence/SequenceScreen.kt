@@ -85,7 +85,6 @@ import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTinySmall
 import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.utils.EMPTY
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -215,8 +214,6 @@ fun SequenceContent(
     onShowDialog: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
-    var initialParam by remember { mutableStateOf(EMPTY) }
-    var finalParam by remember { mutableStateOf(EMPTY) }
 
     Scaffold { paddingValues ->
         Column(
@@ -338,12 +335,7 @@ fun SequenceContent(
 
             if (enableCompleteButton) {
                 CustomButton(text = stringResource(R.string.finish_sequence)) {
-                    onAction(
-                        SequenceViewModel.SequenceAction.CompleteSequence(
-                            initialParam,
-                            finalParam
-                        )
-                    )
+                    onAction(SequenceViewModel.SequenceAction.CompleteSequence)
                 }
             }
 
@@ -523,7 +515,7 @@ fun SequenceContent(
                         card = card,
                         onClick = {},
                         onAction = {},
-                        isActionsEnabled = false
+                        isActionsEnabled = false,
                     )
                 }
             }
