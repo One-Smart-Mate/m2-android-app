@@ -85,7 +85,6 @@ import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTinySmall
 import com.ih.osm.ui.theme.PaddingToolbar
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -118,6 +117,7 @@ fun SequenceScreen(
             enableCompleteButton = state.enableCompleteButton,
             enableStartExecution = state.enableStartExecution,
             maxTimeDuration = state.duration,
+            elapsedTime = state.elapsedTime,
             isParamOk = state.isParamOk,
             superiorId = state.superiorId,
             card = state.card,
@@ -207,6 +207,7 @@ fun SequenceContent(
     enableCompleteButton: Boolean,
     enableStartExecution: Boolean,
     maxTimeDuration: Int = 0,
+    elapsedTime: Int = 0,
     isParamOk: Boolean,
     superiorId: Int,
     card: Card? = null,
@@ -323,7 +324,7 @@ fun SequenceContent(
             // Counter
 
             if (enableCompleteButton) {
-                SequenceTimer(totalDuration = maxTimeDuration)
+                SequenceTimer(totalDuration = maxTimeDuration, elapsedTime = elapsedTime)
             }
 
             if (enableStartButton) {
@@ -540,16 +541,11 @@ fun SequenceContent(
 }
 
 @Composable
-fun SequenceTimer(totalDuration: Int) {
-    var elapsedTime by remember { mutableStateOf(0) }
+fun SequenceTimer(
+    totalDuration: Int,
+    elapsedTime: Int,
+) {
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
-
-    LaunchedEffect(Unit) {
-        while (elapsedTime <= totalDuration) {
-            delay(1000L)
-            elapsedTime += 1
-        }
-    }
 
     Column(
         modifier =

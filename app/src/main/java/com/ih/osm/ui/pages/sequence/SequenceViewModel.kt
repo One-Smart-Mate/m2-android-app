@@ -31,6 +31,9 @@ import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,6 +52,8 @@ class SequenceViewModel
         private val syncCardUseCase: SyncCardUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
     ) : BaseViewModel<SequenceViewModel.UiState>(UiState()) {
+        private var timerJob: Job? = null
+
         data class UiState(
             val isLoading: Boolean = true,
             val evidences: List<Evidence> = emptyList(),
@@ -70,6 +75,8 @@ class SequenceViewModel
             val superiorId: Int = 0,
             val card: Card? = null,
             val navigateBack: Boolean = false,
+            val elapsedTime: Int = 0,
+            val isTimerRunning: Boolean = false,
         )
 
         sealed class SequenceAction {
@@ -263,6 +270,7 @@ class SequenceViewModel
                         )
                     }
                     notificationManager.buildNotificationSequenceStarted()
+                    startTimer()
                 }.onFailure {
                     val isExecutionStarted =
                         it.localizedMessage.orEmpty().lowercase().contains(
@@ -282,6 +290,27 @@ class SequenceViewModel
                     }
                 }
             }
+        }
+
+        fun startTimer() {
+            if (getState().isTimerRunning) return
+
+            timerJob?.cancel()
+            timerJob =
+                viewModelScope.launch {
+                    setState { copy(isTimerRunning = true) }
+                    while (isActive) {
+                        delay(1000L)
+                        val next = getState().elapsedTime + 1
+                        setState { copy(elapsedTime = next) }
+                    }
+                }
+        }
+
+        fun stopTimer() {
+            timerJob?.cancel()
+            timerJob = null
+            setState { copy(isTimerRunning = false) }
         }
 
         private fun getDuration(): Int {
@@ -374,6 +403,7 @@ class SequenceViewModel
                 kotlin.runCatching {
                     callUseCase { stopSequenceExecutionUseCase(request, state.evidences) }
                 }.onSuccess {
+                    stopTimer()
                     notificationManager.buildNotificationSequenceFinished()
                     setState { copy(isLoading = false, navigateBack = true) }
                 }.onFailure {
