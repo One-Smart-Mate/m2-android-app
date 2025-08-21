@@ -13,7 +13,6 @@ import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.WorkManagerUUID
 import com.ih.osm.data.model.FastLoginRequest
-import com.ih.osm.data.model.toDomain
 import com.ih.osm.data.model.toSession
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
@@ -406,10 +405,10 @@ class HomeViewModel
                         )
                     }
                 }.onSuccess { loginResponse ->
-                    val user = loginResponse.toDomain()
                     val session = loginResponse.toSession()
 
                     sessionRepository.save(session)
+                    sharedPreferences.saveFastPasswordBlocked(false)
 
                     handleGetSession()
 
