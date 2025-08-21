@@ -93,6 +93,7 @@ class HomeViewModel
             val syncCatalogs = savedStateHandle.get<String>(ARG_SYNC_CATALOG).orEmpty()
             handleSyncCatalogs(syncCatalogs)
             checkPreferences()
+            restoreFastPasswordBlocked()
         }
 
         private fun handleSyncLocalCards(appContext: Context) {
@@ -456,6 +457,7 @@ class HomeViewModel
         }
 
         fun blockFastPasswordDialog() {
+            sharedPreferences.saveFastPasswordBlocked(true)
             setState { copy(isDialogBlocked = true) }
         }
 
@@ -465,5 +467,12 @@ class HomeViewModel
 
         fun cleanMessage() {
             setState { copy(message = EMPTY) }
+        }
+
+        private fun restoreFastPasswordBlocked() {
+            val blocked = sharedPreferences.isFastPasswordBlocked()
+            if (blocked) {
+                setState { copy(isDialogBlocked = true, showFastPasswordDialog = true) }
+            }
         }
     }
