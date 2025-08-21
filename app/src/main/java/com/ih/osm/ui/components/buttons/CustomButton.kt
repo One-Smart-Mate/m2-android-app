@@ -17,6 +17,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ih.osm.ui.components.CustomSpacer
@@ -28,6 +29,7 @@ fun CustomButton(
     text: String,
     isLoading: Boolean = false,
     buttonType: ButtonType = ButtonType.DEFAULT,
+    textStyle: TextStyle = MaterialTheme.typography.labelLarge,
     onClick: () -> Unit,
 ) {
     val colors =
@@ -58,6 +60,7 @@ fun CustomButton(
                     .fillMaxWidth()
                     .height(54.dp)
             }
+
             ButtonType.SMALL -> {
                 modifier
                     .border(
@@ -88,7 +91,10 @@ fun CustomButton(
         if (isLoading) {
             CircularProgressIndicator(color = Color.White)
         } else {
-            Text(text)
+            Text(
+                text = text,
+                style = textStyle,
+            )
         }
     }
 }

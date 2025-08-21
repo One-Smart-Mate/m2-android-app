@@ -201,7 +201,7 @@
 
     <string name="docs_title">Docs</string>
     <string name="opl_sop_documents">OPL and SOP documents</string>
-    <string name="cilt_routine">CILT/LILA Routine</string>
+    <string name="cilt_routine">Routines</string>
     <string name="view_cilt_routines">View CILT routines</string>
     <string name="download_cilts">Download CILT\'s</string>
     <string name="update_cilts">Update</string>

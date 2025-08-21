@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -124,6 +126,7 @@ fun CiltContent(
                             text = stringResource(R.string.update_cilts),
                             modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
+                            textStyle = TextStyle(fontSize = 11.sp),
                         ) {
                             onAction(CiltAction.GetCilts)
                         }
@@ -131,6 +134,7 @@ fun CiltContent(
                             text = stringResource(R.string.download_third_party_cilt),
                             modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
+                            textStyle = TextStyle(fontSize = 11.sp),
                         ) {
                             //
                         }
@@ -138,6 +142,7 @@ fun CiltContent(
                             text = stringResource(R.string.non_programmable_cilts),
                             modifier = Modifier.weight(1f),
                             buttonType = ButtonType.DEFAULT,
+                            textStyle = TextStyle(fontSize = 11.sp),
                         ) {
                             //
                         }
