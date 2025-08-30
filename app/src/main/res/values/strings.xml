@@ -307,6 +307,14 @@
     <string name="error_loading_opls">Error loading OPLs: %1$s</string>
     <string name="select_level">Select a level to view OPLs</string>
 
+    <string name="procedimientos_generales">Procedimientos Generales</string>
+    <string name="ver_procedimientos">Ver</string>
+    <string name="procedimientos_screen_title">Procedimientos Generales</string>
+    <string name="procedimientos_list_empty_title">No procedures found</string>
+    <string name="procedimientos_list_empty_subtitle">Select a level to view available procedures</string>
+    <string name="error_loading_procedimientos">Error loading procedures: %1$s</string>
+    <string name="select_level_procedimientos">Select a level to view procedures</string>
+
     <string name="fast_password">Fast password</string>
     <string name="change_user">Change user</string>
     <string name="enter_fast_password">Enter your fast password</string>

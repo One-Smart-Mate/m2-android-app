@@ -11,6 +11,7 @@ import com.ih.osm.data.repository.network.NetworkRepositoryImpl
 import com.ih.osm.data.repository.opl.OplRepositoryImpl
 import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
 import com.ih.osm.data.repository.priority.PriorityRepositoryImpl
+import com.ih.osm.data.repository.procedimiento.ProcedimientoRepositoryImpl
 import com.ih.osm.data.repository.session.SessionRepositoryImpl
 import com.ih.osm.data.repository.solution.SolutionRepositoryImpl
 import com.ih.osm.domain.repository.auth.AuthRepository
@@ -24,6 +25,7 @@ import com.ih.osm.domain.repository.network.NetworkRepository
 import com.ih.osm.domain.repository.opl.OplRepository
 import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.PriorityRepository
+import com.ih.osm.domain.repository.procedimiento.ProcedimientoRepository
 import com.ih.osm.domain.repository.session.SessionRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import dagger.Binds
@@ -69,6 +71,9 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindOplRepository(oplRepositoryImpl: OplRepositoryImpl): OplRepository
+
+    @Binds
+    fun bindProcedimientoRepository(procedimientoRepositoryImpl: ProcedimientoRepositoryImpl): ProcedimientoRepository
 
     @Binds
     fun bindSessionRepository(sessionRepositoryImpl: SessionRepositoryImpl): SessionRepository

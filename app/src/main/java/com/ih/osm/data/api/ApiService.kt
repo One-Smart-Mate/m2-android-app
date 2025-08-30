@@ -4,9 +4,13 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CiltEvidenceResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
+import com.ih.osm.data.model.CreateCiltExecutionRequest
+import com.ih.osm.data.model.CreateCiltExecutionResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
@@ -17,6 +21,7 @@ import com.ih.osm.data.model.GetOplByIdResponse
 import com.ih.osm.data.model.GetOplsResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
+import com.ih.osm.data.model.GetProcedimientoCiltResponse
 import com.ih.osm.data.model.GetSequenceResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
@@ -180,4 +185,19 @@ interface ApiService {
     fun getSequence(
         @Path("id") id: Int,
     ): Call<GetSequenceResponse>
+
+    @GET("cilt-mstr-position-levels/level/{levelId}/recent-executions")
+    fun getProcedimientoCiltsByLevel(
+        @Path("levelId") levelId: String,
+    ): Call<GetProcedimientoCiltResponse>
+
+    @POST("cilt-sequences-executions/create")
+    fun createCiltExecution(
+        @Body body: CreateCiltExecutionRequest,
+    ): Call<CreateCiltExecutionResponse>
+
+    @POST("cilt-sequences-executions/generate")
+    fun generateCiltExecution(
+        @Body body: GenerateCiltExecutionRequest,
+    ): Call<GenerateCiltExecutionResponse>
 }

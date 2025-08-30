@@ -84,6 +84,7 @@ import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToCiltRoutine
 import com.ih.osm.ui.navigation.navigateToOplList
+import com.ih.osm.ui.navigation.navigateToProcedimientoList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -147,6 +148,10 @@ fun HomeScreenV2(
 
                     HomeActionClick.OPL_NAVIGATION -> {
                         navController.navigateToOplList()
+                    }
+
+                    HomeActionClick.PROCEDIMIENTO_NAVIGATION -> {
+                        navController.navigateToProcedimientoList()
                     }
                 }
             },
@@ -352,6 +357,15 @@ private fun HomeContent(
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
 
+                // Procedimientos Generales Section
+                HomeSectionCardItem(
+                    title = stringResource(R.string.procedimientos_generales),
+                    icon = Icons.Outlined.List,
+                    description = stringResource(R.string.ver_procedimientos),
+                ) {
+                    onClick(HomeActionClick.PROCEDIMIENTO_NAVIGATION)
+                }
+
                 HomeSectionCardItem(
                     title = stringResource(R.string.fast_password),
                     icon = Icons.Outlined.Lock,
@@ -414,6 +428,7 @@ enum class HomeActionClick {
     NAVIGATION,
     CILT_ROUTINE,
     OPL_NAVIGATION,
+    PROCEDIMIENTO_NAVIGATION,
 }
 
 @Composable

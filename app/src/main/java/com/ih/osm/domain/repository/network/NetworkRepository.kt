@@ -2,9 +2,13 @@ package com.ih.osm.domain.repository.network
 
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.CreateCiltExecutionRequest
+import com.ih.osm.data.model.CreateCiltExecutionResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -22,6 +26,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.ProcedimientoCiltData
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 
@@ -93,4 +98,10 @@ interface NetworkRepository {
     suspend fun fastLogin(body: FastLoginRequest): LoginResponse
 
     suspend fun getSequence(id: Int): Sequence
+
+    suspend fun getRemoteProcedimientoCiltsByLevel(levelId: String): ProcedimientoCiltData
+
+    suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse
+
+    suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse
 }
