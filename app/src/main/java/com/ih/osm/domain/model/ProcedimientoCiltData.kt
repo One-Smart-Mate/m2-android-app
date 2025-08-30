@@ -73,7 +73,7 @@ data class ProcedimientoCiltData(
         val ciltId: Int,
         val ciltSecuenceId: Int,
         val levelId: Int,
-        val route: String,
+        val route: String?,
         val userId: Int,
         val userWhoExecutedId: Int,
         val secuenceSchedule: String,

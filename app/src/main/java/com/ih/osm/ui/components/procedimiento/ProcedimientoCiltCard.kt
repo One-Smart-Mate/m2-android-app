@@ -393,7 +393,7 @@ private fun ExecutionCard(execution: ProcedimientoCiltData.Execution) {
             CustomSpacer(space = SpacerSize.TINY)
 
             Text(
-                text = execution.route,
+                text = execution.route ?: "Sin ruta especificada",
                 style =
                     MaterialTheme.typography.bodySmall.copy(
                         color = getTextColor().copy(alpha = 0.7f),
