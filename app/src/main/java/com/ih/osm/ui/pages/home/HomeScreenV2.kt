@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Lock
@@ -156,6 +157,10 @@ fun HomeScreenV2(
             onDismissDialog = { viewModel.hideFastPasswordDialog() },
             onBlockDialog = { viewModel.blockFastPasswordDialog() },
             onPasswordChange = { viewModel.updateFastPassword(it) },
+            onForgotFastPassword = { viewModel.showForgotFastPasswordDialog() },
+            onDismissForgotFastPasswordDialog = { viewModel.hideForgotFastPasswordDialog() },
+            onPhoneNumberChange = { viewModel.updatePhoneNumber(it) },
+            onSendFastPassword = { viewModel.process(HomeAction.SendFastPassword(it)) },
         )
     }
 
@@ -217,6 +222,10 @@ private fun HomeContent(
     onDismissDialog: () -> Unit,
     onBlockDialog: () -> Unit,
     onPasswordChange: (String) -> Unit,
+    onForgotFastPassword: () -> Unit,
+    onDismissForgotFastPasswordDialog: () -> Unit,
+    onPhoneNumberChange: (String) -> Unit,
+    onSendFastPassword: (String) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -398,6 +407,51 @@ private fun HomeContent(
                                 )
                             }
                         }
+
+                        TextButton(onClick = { onForgotFastPassword() }) {
+                            Text(
+                                text = stringResource(R.string.forgot_fast_password),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+        }
+
+        if (state.showForgotFastPasswordDialog) {
+            AlertDialog(
+                onDismissRequest = { onDismissForgotFastPasswordDialog() },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onSendFastPassword(state.phoneNumber)
+                    }) {
+                        Text(stringResource(R.string.accept))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onDismissForgotFastPasswordDialog()
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.recover_fast_password),
+                    )
+                },
+                text = {
+                    Column {
+                        CustomTextField(
+                            label = stringResource(R.string.enter_phone_number),
+                            icon = Icons.Outlined.Call,
+                            isPassword = false,
+                            onChange = { onPhoneNumberChange(it) },
+                        )
                     }
                 },
                 shape = RoundedCornerShape(16.dp),

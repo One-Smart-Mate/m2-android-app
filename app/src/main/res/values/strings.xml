@@ -201,8 +201,8 @@
 
     <string name="docs_title">Docs</string>
     <string name="opl_sop_documents">OPL and SOP documents</string>
-    <string name="cilt_routine">Routines</string>
-    <string name="view_cilt_routines">View CILT routines</string>
+    <string name="cilt_routine">Procedures</string>
+    <string name="view_cilt_routines">View CILT procedures</string>
     <string name="download_cilts">Download CILT\'s</string>
     <string name="update_cilts">Update</string>
     <string name="download_third_party_cilt">Third-party CILT</string>
@@ -249,7 +249,7 @@
     <string name="sequence_finished">Sequence completed</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Machine Diagram</string>
-    <string name="no_cilt_data">No CILT routines available</string>
+    <string name="no_cilt_data">No CILT procedures available</string>
     <string name="parameter_ok_question">"Parameter OK?"</string>
     <string name="error_user_id_not_found">Error: Unable to retrieve user ID</string>
     <string name="error_loading_cilts">Failed to load CILTS: %1$s</string>
@@ -322,4 +322,8 @@
     <string name="leave_screen">Alert, are you going to leave the screen!</string>
     <string name="leave_screen_description">If you leave the screen you will lost all the information saved, Do you want to continue?</string>
     <string name="close">Close</string>
+
+    <string name="forgot_fast_password">Forgot your fast password?</string>
+    <string name="recover_fast_password">Recover fast password</string>
+    <string name="enter_phone_number">Enter your phone number</string>
 </resources>

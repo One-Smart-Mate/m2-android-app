@@ -22,6 +22,8 @@ import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SendFastPasswordRequest
+import com.ih.osm.data.model.SendFastPasswordResponse
 import com.ih.osm.data.model.SolutionResponse
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StartSequenceExecutionResponse
@@ -180,4 +182,9 @@ interface ApiService {
     fun getSequence(
         @Path("id") id: Int,
     ): Call<GetSequenceResponse>
+
+    @POST("auth/send-fastpassword-by-phone")
+    fun sendFastPassword(
+        @Body body: SendFastPasswordRequest,
+    ): Call<SendFastPasswordResponse>
 }

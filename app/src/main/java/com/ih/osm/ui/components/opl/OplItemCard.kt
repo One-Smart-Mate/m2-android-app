@@ -52,6 +52,7 @@ import com.ih.osm.ui.components.card.CardAudioSection
 import com.ih.osm.ui.components.card.CardImageSection
 import com.ih.osm.ui.components.card.CardPdfSection
 import com.ih.osm.ui.components.card.CardVideoSection
+import com.ih.osm.ui.extensions.fromIsoToFormattedDate
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingSmall
@@ -225,7 +226,7 @@ fun OplItemCard(
                 }
 
                 Text(
-                    text = opl.updatedAt,
+                    text = opl.updatedAt.fromIsoToFormattedDate(),
                     style =
                         MaterialTheme.typography.bodyMedium.copy(
                             color = getTextColor().copy(alpha = 0.6f),
