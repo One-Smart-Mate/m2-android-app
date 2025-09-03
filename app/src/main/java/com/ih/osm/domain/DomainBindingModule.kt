@@ -74,6 +74,10 @@ import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
+import com.ih.osm.domain.usecase.procedimiento.CreateCiltExecutionUseCase
+import com.ih.osm.domain.usecase.procedimiento.CreateCiltExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.procedimiento.GetProcedimientosByLevelUseCase
+import com.ih.osm.domain.usecase.procedimiento.GetProcedimientosByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
@@ -203,6 +207,14 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
+
+    @Binds
+    fun bindGetProcedimientosByLevelUseCase(
+        getProcedimientosByLevelUseCaseImpl: GetProcedimientosByLevelUseCaseImpl,
+    ): GetProcedimientosByLevelUseCase
+
+    @Binds
+    fun bindCreateCiltExecutionUseCase(createCiltExecutionUseCaseImpl: CreateCiltExecutionUseCaseImpl): CreateCiltExecutionUseCase
 
     @Binds
     fun bindFastLoginUseCase(fastLoginUseCaseImpl: FastLoginUseCaseImpl): FastLoginUseCase

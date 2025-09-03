@@ -26,6 +26,7 @@ import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.opl.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
+import com.ih.osm.ui.pages.procedimiento.ProcedimientoListScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
 import com.ih.osm.ui.pages.sequence.SequenceScreen
@@ -152,6 +153,12 @@ fun AppNavigation(startDestination: String) {
         }
 
         composable(
+            Screen.ProcedimientoList.route,
+        ) {
+            ProcedimientoListScreen(navController = navController)
+        }
+
+        composable(
             route = Screen.Sequence.route,
             arguments =
                 listOf(
@@ -241,6 +248,10 @@ fun NavController.navigateToCiltDetail(sequenceId: Int) {
 
 fun NavController.navigateToOplList() {
     navigate(Screen.OplList.route)
+}
+
+fun NavController.navigateToProcedimientoList() {
+    navigate(Screen.ProcedimientoList.route)
 }
 
 fun NavController.navigateToSequence(

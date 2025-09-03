@@ -1,13 +1,18 @@
 package com.ih.osm.data.repository.network
 
+import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.api.ApiService
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.CreateCiltExecutionRequest
+import com.ih.osm.data.model.CreateCiltExecutionResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -28,6 +33,7 @@ import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
+import com.ih.osm.domain.model.ProcedimientoCiltData
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 import com.ih.osm.domain.repository.network.NetworkRepository
@@ -323,6 +329,63 @@ class NetworkRepositoryImpl
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!
             } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteProcedimientoCiltsByLevel(levelId: String): ProcedimientoCiltData {
+            Log.d("NetworkRepository", "Getting procedimiento cilts by level: $levelId")
+            try {
+                val response = apiService.getProcedimientoCiltsByLevel(levelId).execute()
+                Log.d("NetworkRepository", "Response successful: ${response.isSuccessful}")
+                Log.d("NetworkRepository", "Response code: ${response.code()}")
+
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()!!
+                    Log.d("NetworkRepository", "Response body data size: ${responseBody.data.size}")
+
+                    responseBody.data.forEach { position ->
+                        Log.d("NetworkRepository", "Position: ${position.position.name}")
+                        Log.d("NetworkRepository", "CILT Master: ${position.ciltMstr.ciltName}")
+                        Log.d("NetworkRepository", "Sequences count: ${position.ciltMstr.sequences.size}")
+
+                        position.ciltMstr.sequences.forEach { sequence ->
+                            Log.d("NetworkRepository", "Sequence: ${sequence.ciltTypeName}, executions: ${sequence.executions.size}")
+                        }
+                    }
+
+                    val domainData = responseBody.toDomain()
+                    Log.d("NetworkRepository", "Domain conversion successful")
+                    return domainData
+                } else {
+                    Log.e("NetworkRepository", "Response failed: ${response.getErrorMessage()}")
+                    error(response.getErrorMessage())
+                }
+            } catch (e: Exception) {
+                Log.e("NetworkRepository", "Exception in getRemoteProcedimientoCiltsByLevel", e)
+                throw e
+            }
+        }
+
+        override suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
+            val response = apiService.createCiltExecution(request).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse {
+            Log.d("NetworkRepository", "Generate CILT execution - sequenceId: ${request.sequenceId}, userId: ${request.userId}")
+            val response = apiService.generateCiltExecution(request).execute()
+            Log.d("NetworkRepository", "Generate response successful: ${response.isSuccessful}, code: ${response.code()}")
+            return if (response.isSuccessful && response.body() != null) {
+                val responseBody = response.body()!!
+                Log.d("NetworkRepository", "Generate execution successful - siteExecutionId: ${responseBody.data.siteExecutionId}")
+                responseBody
+            } else {
+                Log.e("NetworkRepository", "Generate execution failed: ${response.getErrorMessage()}")
                 error(response.getErrorMessage())
             }
         }
