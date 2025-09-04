@@ -12,6 +12,7 @@ import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
+import com.ih.osm.data.model.RefreshTokenRequest
 import com.ih.osm.data.model.RestorePasswordRequest
 import com.ih.osm.data.model.SendFastPasswordRequest
 import com.ih.osm.data.model.SendFastPasswordResponse
@@ -108,4 +109,6 @@ interface NetworkRepository {
     suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse
 
     suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse
+
+    suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse
 }
