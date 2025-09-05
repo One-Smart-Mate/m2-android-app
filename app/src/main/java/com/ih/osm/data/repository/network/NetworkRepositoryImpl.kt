@@ -255,7 +255,7 @@ class NetworkRepositoryImpl
             userId: String,
             date: String,
         ): CiltData {
-            val response = apiService.getCilts(userId, date).execute()
+            val response = apiService.getCilts().execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
@@ -366,12 +366,16 @@ class NetworkRepositoryImpl
         }
 
         override suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse {
-            Log.d("NetworkRepository", "Generate CILT execution - sequenceId: ${request.sequenceId}, userId: ${request.userId}")
+            Log.d(
+                "NetworkRepository",
+                "🌐 API REQUEST - Generate CILT execution for sequenceId: ${request.sequenceId}, userId: ${request.userId}",
+            )
             val response = apiService.generateCiltExecution(request).execute()
-            Log.d("NetworkRepository", "Generate response successful: ${response.isSuccessful}, code: ${response.code()}")
+            Log.d("NetworkRepository", "📊 API RESPONSE - successful: ${response.isSuccessful}, code: ${response.code()}")
             return if (response.isSuccessful && response.body() != null) {
                 val responseBody = response.body()!!
-                Log.d("NetworkRepository", "Generate execution successful - siteExecutionId: ${responseBody.data.siteExecutionId}")
+                Log.d("NetworkRepository", "✅ EXECUTION GENERATED SUCCESSFULLY - siteExecutionId: ${responseBody.data.siteExecutionId}")
+                Log.d("NetworkRepository", "🆔 NEW EXECUTION ID: ${responseBody.data.siteExecutionId} ready for navigation")
                 responseBody
             } else {
                 Log.e("NetworkRepository", "Generate execution failed: ${response.getErrorMessage()}")

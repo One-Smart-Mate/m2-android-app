@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.sequence
 
 import android.content.res.Configuration
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -95,6 +96,8 @@ fun SequenceScreen(
     sequenceId: Int,
     viewModel: SequenceViewModel = hiltViewModel(),
 ) {
+    Log.e("SequenceScreen", "🚀🚀🚀 SEQUENCE SCREEN STARTED 🚀🚀🚀")
+    Log.e("SequenceScreen", "executionId: $executionId, sequenceId: $sequenceId")
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -214,6 +217,14 @@ fun SequenceContent(
     onAction: (SequenceViewModel.SequenceAction) -> Unit = {},
     onShowDialog: () -> Unit = {},
 ) {
+    // Check if execution is completed (status = "R" means completed)
+    val isCompleted = execution?.status == "R"
+    Log.e("SequenceScreen", "=== EXECUTION STATUS CHECK ===")
+    Log.e("SequenceScreen", "Execution ${execution?.siteExecutionId} - status: '${execution?.status}'")
+    Log.e("SequenceScreen", "isCompleted: $isCompleted (based on status == 'R')")
+    Log.e("SequenceScreen", "enableStartButton: $enableStartButton, enableCompleteButton: $enableCompleteButton")
+    Log.e("SequenceScreen", "enableStartExecution: $enableStartExecution")
+    Log.e("SequenceScreen", "===============================")
     val scrollState = rememberScrollState()
 
     Scaffold { paddingValues ->
@@ -327,17 +338,48 @@ fun SequenceContent(
                 SequenceTimer(totalDuration = maxTimeDuration, elapsedTime = elapsedTime)
             }
 
-            if (enableStartButton) {
+            // Only show start button if execution is not completed (status != "R")
+            if (enableStartButton && !isCompleted) {
+                Log.e("SequenceScreen", "▶️ SHOWING START SEQUENCE BUTTON")
                 CustomButton(text = stringResource(R.string.start_sequence)) {
+                    Log.e("SequenceScreen", "🚀 START SEQUENCE clicked")
                     onAction(SequenceViewModel.SequenceAction.StartSequence)
+                }
+            } else if (isCompleted) {
+                Log.e("SequenceScreen", "🚫 HIDING START BUTTON - execution completed (status = 'R')")
+                // Show completion status
+                Card(
+                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        ),
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = "Secuencia Completada",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
             CustomSpacer()
 
-            if (enableCompleteButton) {
+            // Only show finish button if execution is not completed
+            if (enableCompleteButton && !isCompleted) {
+                Log.e("SequenceScreen", "⏹️ SHOWING FINISH SEQUENCE BUTTON")
                 CustomButton(text = stringResource(R.string.finish_sequence)) {
+                    Log.e("SequenceScreen", "🛑 FINISH SEQUENCE clicked")
                     onAction(SequenceViewModel.SequenceAction.CompleteSequence)
                 }
+            } else if (isCompleted && enableCompleteButton) {
+                Log.e("SequenceScreen", "🚫 HIDING FINISH BUTTON - execution completed")
             }
 
             AnatomyHorizontalSection(
@@ -374,7 +416,9 @@ fun SequenceContent(
             )
             CustomSpacer()
 
-            if (enableStartExecution) {
+            // Only show editable fields if execution is not completed
+            if (enableStartExecution && !isCompleted) {
+                Log.e("SequenceScreen", "✏️ SHOWING EDITABLE initial parameter field and camera")
                 CustomTextField(
                     label = stringResource(R.string.parameter_found),
                     icon = Icons.Outlined.Create,
@@ -402,6 +446,13 @@ fun SequenceContent(
                 SectionImagesEvidence(imageEvidences = evidences.filter { it.type == EvidenceType.INITIAL.name }) {
                     onAction(SequenceViewModel.SequenceAction.RemoveEvidence(it))
                 }
+            } else if (isCompleted && enableStartExecution) {
+                Log.e("SequenceScreen", "🔒 SHOWING READ-ONLY initial parameter - execution completed")
+                AnatomyHorizontalSection(
+                    title = stringResource(R.string.parameter_found),
+                    description = execution?.initialParameter ?: "N/A",
+                )
+                CustomSpacer()
             }
 
             CustomSpacer()
@@ -410,7 +461,9 @@ fun SequenceContent(
             }
             CustomSpacer(space = SpacerSize.LARGE)
 
-            if (enableStartExecution) {
+            // Only show final parameter field if execution is not completed
+            if (enableStartExecution && !isCompleted) {
+                Log.e("SequenceScreen", "✏️ SHOWING EDITABLE final parameter field and camera")
                 CustomTextField(
                     label = stringResource(R.string.final_parameter),
                     icon = Icons.Outlined.Create,
@@ -441,6 +494,13 @@ fun SequenceContent(
                     onAction(SequenceViewModel.SequenceAction.RemoveEvidence(it))
                 }
                 CustomSpacer()
+            } else if (isCompleted && enableStartExecution) {
+                Log.e("SequenceScreen", "🔒 SHOWING READ-ONLY final parameter - execution completed")
+                AnatomyHorizontalSection(
+                    title = stringResource(R.string.final_parameter),
+                    description = execution?.finalParameter ?: "N/A",
+                )
+                CustomSpacer()
             }
             CustomButton(text = stringResource(R.string.view_remediation)) {
                 onAction(SequenceViewModel.SequenceAction.GetRemediationOpl)
@@ -460,7 +520,9 @@ fun SequenceContent(
                     },
             )
 
-            if (enableStartExecution && card == null) {
+            // Only show parameter OK radio buttons if execution is not completed
+            if (enableStartExecution && card == null && !isCompleted) {
+                Log.e("SequenceScreen", "📳 SHOWING PARAMETER OK radio buttons")
                 Column(
                     modifier =
                         Modifier
@@ -499,13 +561,19 @@ fun SequenceContent(
                         Text(text = stringResource(R.string.no_option_parameter_ok))
                     }
                 }
+            } else if (isCompleted && enableStartExecution) {
+                Log.e("SequenceScreen", "🔒 HIDING PARAMETER OK radio buttons - execution completed")
             }
             CustomSpacer()
 
-            if (isParamOk.not() && card == null && enableStartExecution) {
+            // Only show generate card button if execution is not completed
+            if (isParamOk.not() && card == null && enableStartExecution && !isCompleted) {
+                Log.e("SequenceScreen", "🃏 SHOWING GENERATE AM CARD button")
                 CustomButton(text = stringResource(R.string.generate_am_card)) {
                     navController.navigateToCreateCard("cilt:$superiorId")
                 }
+            } else if (isCompleted && isParamOk.not()) {
+                Log.e("SequenceScreen", "🚫 HIDING GENERATE AM CARD button - execution completed")
             }
 
             if (card != null) {

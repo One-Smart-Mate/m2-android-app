@@ -130,6 +130,9 @@ fun AppNavigation(startDestination: String) {
         composable(
             route = Screen.Cilt.route,
         ) {
+            Log.d("AppNavigation", "=== CREATING CILT SCREEN ===")
+            Log.d("AppNavigation", "Route: ${Screen.Cilt.route}")
+            Log.d("AppNavigation", "=============================")
             CiltScreen(navController = navController)
         }
 
@@ -140,10 +143,24 @@ fun AppNavigation(startDestination: String) {
                     navArgument("executionId") {
                         type = NavType.IntType
                     },
+                    navArgument("targetSiteExecutionId") {
+                        type = NavType.IntType
+                        defaultValue = -1
+                    },
                 ),
         ) { backStackEntry ->
             val executionId = backStackEntry.arguments?.getInt("executionId") ?: 0
-            CiltDetailScreen(executionId = executionId, navController = navController)
+            val targetSiteExecutionId = backStackEntry.arguments?.getInt("targetSiteExecutionId") ?: -1
+            Log.d("AppNavigation", "=== CREATING CILT DETAIL SCREEN ===")
+            Log.d("AppNavigation", "executionId: $executionId")
+            Log.d("AppNavigation", "targetSiteExecutionId: $targetSiteExecutionId")
+            Log.d("AppNavigation", "Route: ${backStackEntry.destination.route}")
+            Log.d("AppNavigation", "===================================")
+            CiltDetailScreen(
+                executionId = executionId,
+                targetSiteExecutionId = targetSiteExecutionId,
+                navController = navController,
+            )
         }
 
         composable(
@@ -242,8 +259,22 @@ fun NavController.navigateToCiltRoutine() {
     navigate(Screen.Cilt.route)
 }
 
-fun NavController.navigateToCiltDetail(sequenceId: Int) {
-    navigate(Screen.CiltDetail.createRoute(sequenceId))
+fun NavController.navigateToCiltDetail(executionId: Int) {
+    navigate(Screen.CiltDetail.createRoute(executionId))
+}
+
+fun NavController.navigateToCiltDetailWithTarget(
+    executionId: Int,
+    targetSiteExecutionId: Int,
+) {
+    val route = Screen.CiltDetail.createRouteWithTarget(executionId, targetSiteExecutionId)
+    Log.d("Navigation", "🚀 NAVIGATION START - Going to CiltDetailScreen with target execution")
+    Log.d("Navigation", "🎯 Target parameters: executionId=$executionId, targetSiteExecutionId=$targetSiteExecutionId")
+    Log.d("Navigation", "🔗 Generated route: $route")
+    Log.d("Navigation", "🧭 This will load CiltDetailScreen and auto-navigate to sequence execution")
+    Log.d("Navigation", "=== EXECUTING NAVIGATION COMMAND ===")
+    navigate(route)
+    Log.d("Navigation", "✅ Navigation command sent - CiltDetailScreen should appear next")
 }
 
 fun NavController.navigateToOplList() {

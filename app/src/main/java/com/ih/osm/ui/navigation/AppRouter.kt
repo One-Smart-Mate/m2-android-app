@@ -9,6 +9,7 @@ const val ARG_CARD_FILTER = "arg_card_filter"
 const val ARG_ACTION_TYPE = "arg_action_type"
 const val ARG_EXECUTION_ID = "executionId"
 const val ARG_SEQUENCE_ID = "sequenceId"
+const val ARG_TARGET_SITE_EXECUTION_ID = "targetSiteExecutionId"
 
 private object Route {
     const val LOGIN = "login"
@@ -40,7 +41,7 @@ private object Route {
 
     const val CILT_ROUTINE = "cilt-routine"
     const val CILT_DETAIL_PATH = "cilt-detail"
-    const val CILT_DETAIL = "$CILT_DETAIL_PATH/{$ARG_EXECUTION_ID}"
+    const val CILT_DETAIL = "$CILT_DETAIL_PATH/{$ARG_EXECUTION_ID}?$ARG_TARGET_SITE_EXECUTION_ID={$ARG_TARGET_SITE_EXECUTION_ID}"
 
     const val OPL_LIST_PATH = "opl-list"
     const val OPL_LIST = OPL_LIST_PATH
@@ -81,6 +82,11 @@ sealed class Screen(val route: String, val path: String = EMPTY) {
 
     data object CiltDetail : Screen(Route.CILT_DETAIL, Route.CILT_DETAIL_PATH) {
         fun createRoute(executionId: Int) = "$path/$executionId"
+
+        fun createRouteWithTarget(
+            executionId: Int,
+            targetSiteExecutionId: Int,
+        ) = "$path/$executionId?$ARG_TARGET_SITE_EXECUTION_ID=$targetSiteExecutionId"
     }
 
     data object OplList : Screen(Route.OPL_LIST, Route.OPL_LIST_PATH)

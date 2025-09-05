@@ -1,5 +1,6 @@
 package com.ih.osm.ui.pages.cilt
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -44,6 +45,9 @@ fun CiltScreen(
     navController: NavController,
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
+    Log.d("CiltScreen", "=== CILT SCREEN CREATED ===")
+    Log.d("CiltScreen", "Current route: ${navController.currentDestination?.route}")
+    Log.d("CiltScreen", "==============================")
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -54,10 +58,15 @@ fun CiltScreen(
     }
 
     LaunchedEffect(state.isSequenceFinished) {
+        Log.d("CiltScreen", "=== CILT SCREEN SEQUENCE HANDLER ===")
+        Log.d("CiltScreen", "isSequenceFinished: ${state.isSequenceFinished}")
+        Log.d("CiltScreen", "Current route: ${navController.currentDestination?.route}")
         if (state.isSequenceFinished) {
+            Log.d("CiltScreen", "🔄 CILT SCREEN - Sequence finished, refreshing data")
             viewModel.process(CiltAction.GetCilts)
-            viewModel.resetSequenceFinishedFlag()
+            Log.d("CiltScreen", "✅ CILT SCREEN - Data refresh completed")
         }
+        Log.d("CiltScreen", "=== CILT SCREEN HANDLER END ===")
     }
 
     if (state.isLoading) {

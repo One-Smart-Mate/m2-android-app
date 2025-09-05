@@ -14,7 +14,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.PlayArrow
@@ -228,6 +227,8 @@ private fun SequenceCard(
             MaterialTheme.colorScheme.primary
         }
 
+    Log.d("SequenceCard", "Sequence ${sequence.ciltTypeName} - executions: ${sequence.executions.size}")
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
@@ -353,15 +354,9 @@ private fun ExecutionCard(execution: ProcedimientoCiltData.Execution) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
-                    Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = "Ejecución completada",
-                        tint = if (execution.nok) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(16.dp),
-                    )
                     CustomSpacer(space = SpacerSize.TINY)
                     Text(
-                        text = "ID: ${execution.id}",
+                        text = "${execution.siteExecutionId}",
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
                                 fontWeight = FontWeight.Medium,

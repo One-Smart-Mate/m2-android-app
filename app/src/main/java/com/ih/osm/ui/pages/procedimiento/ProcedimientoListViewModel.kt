@@ -187,7 +187,25 @@ class ProcedimientoListViewModel
         }
 
         fun clearNavigationData() {
-            setState { copy(createdExecutionData = null) }
+            Log.d("ProcedimientoListViewModel", "Clearing navigation data")
+            setState {
+                copy(
+                    createdExecutionData = null,
+                    creatingExecutionForSequence = null,
+                    message = EMPTY,
+                )
+            }
+        }
+
+        fun clearAllExecutionState() {
+            Log.d("ProcedimientoListViewModel", "Clearing all execution state")
+            setState {
+                copy(
+                    createdExecutionData = null,
+                    creatingExecutionForSequence = null,
+                    message = EMPTY,
+                )
+            }
         }
 
         fun createExecution(
@@ -197,23 +215,23 @@ class ProcedimientoListViewModel
         ) {
             Log.d(
                 "ProcedimientoListViewModel",
-                "createExecution called for sequence: ${sequence.id}, positionId: $positionId, levelId: $levelId",
+                "🔧 CREATE EXECUTION REQUEST - sequence: ${sequence.id}, positionId: $positionId, levelId: $levelId",
             )
-            Log.d("ProcedimientoListViewModel", "Starting coroutine...")
+            Log.d("ProcedimientoListViewModel", "🚀 Starting execution creation process...")
 
             viewModelScope.launch(Dispatchers.IO) {
-                Log.d("ProcedimientoListViewModel", "Inside coroutine, starting execution creation...")
-                Log.d("ProcedimientoListViewModel", "Setting creatingExecutionForSequence = ${sequence.id}")
+                Log.d("ProcedimientoListViewModel", "💬 Inside coroutine - preparing API call...")
+                Log.d("ProcedimientoListViewModel", "🔄 Setting loading state - creatingExecutionForSequence = ${sequence.id}")
                 setState { copy(creatingExecutionForSequence = sequence.id) }
                 Log.d(
                     "ProcedimientoListViewModel",
-                    "State updated, current creatingExecutionForSequence = ${getState().creatingExecutionForSequence}",
+                    "📊 Loading state updated - creatingExecutionForSequence = ${getState().creatingExecutionForSequence}",
                 )
 
                 try {
-                    Log.d("ProcedimientoListViewModel", "Getting session...")
+                    Log.d("ProcedimientoListViewModel", "🔐 Getting user session...")
                     val session = getSessionUseCase()
-                    Log.d("ProcedimientoListViewModel", "Session userId: ${session.userId}")
+                    Log.d("ProcedimientoListViewModel", "👤 Session userId: ${session.userId}")
 
                     val request =
                         GenerateCiltExecutionRequest(
@@ -223,11 +241,12 @@ class ProcedimientoListViewModel
 
                     Log.d(
                         "ProcedimientoListViewModel",
-                        "Making generate request: sequenceId=${sequence.id}, userId=${session.userId.toIntOrNull() ?: 1}",
+                        "🌐 API CALL - Creating new execution for sequence ${sequence.id}, userId: ${session.userId.toIntOrNull() ?: 1}",
                     )
                     val response = networkRepository.generateCiltExecution(request)
                     val executionId = response.data.siteExecutionId
-                    Log.d("ProcedimientoListViewModel", "Generated execution with ID: $executionId")
+                    Log.d("ProcedimientoListViewModel", "✅ API SUCCESS - Generated execution with siteExecutionId: $executionId")
+                    Log.d("ProcedimientoListViewModel", "🆔 NEW EXECUTION CREATED - ID: $executionId")
 
                     setState {
                         copy(
@@ -239,10 +258,15 @@ class ProcedimientoListViewModel
 
                     Log.d(
                         "ProcedimientoListViewModel",
-                        "Execution created successfully, sequenceId: ${sequence.id}, executionId: $executionId",
+                        "🎉 EXECUTION CREATION COMPLETED - sequenceId: ${sequence.id}, executionId: $executionId",
+                    )
+                    Log.d(
+                        "ProcedimientoListViewModel",
+                        "🔄 STATE UPDATED - createdExecutionData will trigger navigation to CiltDetailScreen",
                     )
                 } catch (e: Exception) {
-                    Log.e("ProcedimientoListViewModel", "Error creating execution", e)
+                    Log.e("ProcedimientoListViewModel", "❌ API ERROR - Failed to create execution", e)
+                    Log.e("ProcedimientoListViewModel", "🛑 Error details: ${e.localizedMessage}")
                     setState {
                         copy(
                             creatingExecutionForSequence = null,

@@ -18,6 +18,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -38,7 +40,7 @@ import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.procedimiento.ProcedimientoCiltCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
-import com.ih.osm.ui.navigation.navigateToSequence
+import com.ih.osm.ui.navigation.navigateToCiltDetailWithTarget
 import com.ih.osm.ui.pages.createcard.SectionItemCard
 import com.ih.osm.ui.pages.procedimiento.action.ProcedimientoListAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -55,6 +57,15 @@ fun ProcedimientoListScreen(
     Log.d("ProcedimientoListScreen", "procedimientoData is null: ${state.procedimientoData == null}")
     Log.d("ProcedimientoListScreen", "creatingExecutionForSequence: ${state.creatingExecutionForSequence}")
     Log.d("ProcedimientoListScreen", "createdExecutionData: ${state.createdExecutionData}")
+
+    // Clear any stale execution state when screen is first displayed
+    LaunchedEffect(Unit) {
+        Log.d("ProcedimientoListScreen", "Screen initialized, ensuring clean state")
+        if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
+            Log.d("ProcedimientoListScreen", "Found stale execution state, clearing...")
+            viewModel.clearAllExecutionState()
+        }
+    }
     state.procedimientoData?.let { data ->
         Log.d("ProcedimientoListScreen", "Positions count: ${data.positions.size}")
         data.positions.forEach { position ->
@@ -63,16 +74,32 @@ fun ProcedimientoListScreen(
     }
 
     // Handle navigation after successful execution creation
-    state.createdExecutionData?.let { (sequenceId, executionId) ->
-        Log.d("ProcedimientoListScreen", "Navigating to sequence: $sequenceId, execution: $executionId")
-        try {
-            navController.navigateToSequence(sequenceId, executionId)
-            Log.d("ProcedimientoListScreen", "Navigation call successful")
-        } catch (e: Exception) {
-            Log.e("ProcedimientoListScreen", "Navigation failed", e)
+    LaunchedEffect(state.createdExecutionData) {
+        state.createdExecutionData?.let { (sequenceId, siteExecutionId) ->
+            Log.d("ProcedimientoListScreen", "🚀 NAVIGATION TRIGGER - New execution created")
+            Log.d("ProcedimientoListScreen", "🎯 Target siteExecutionId: $siteExecutionId for sequence: $sequenceId")
+            Log.d("ProcedimientoListScreen", "🧭 About to navigate to CiltDetailScreen with target execution")
+            try {
+                // Use 0 as dummy executionId since we want to show general rutinas view,
+                // but with automatic transition to the specific siteExecutionId
+                navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
+                Log.d("ProcedimientoListScreen", "✅ Navigation command executed successfully")
+                Log.d("ProcedimientoListScreen", "🔄 User will now see CiltDetailScreen, then auto-navigate to sequence execution")
+            } catch (e: Exception) {
+                Log.e("ProcedimientoListScreen", "❌ Navigation failed with error", e)
+            }
+            viewModel.clearNavigationData()
+            Log.d("ProcedimientoListScreen", "Navigation data cleared")
+            Log.d("ProcedimientoListScreen", "Navigation data cleared")
         }
-        viewModel.clearNavigationData()
-        Log.d("ProcedimientoListScreen", "Navigation data cleared")
+    }
+
+    // Clean up state when leaving the screen
+    DisposableEffect(navController) {
+        onDispose {
+            Log.d("ProcedimientoListScreen", "Screen disposed, clearing all execution state")
+            viewModel.clearAllExecutionState()
+        }
     }
 
     if (state.isLoading) {

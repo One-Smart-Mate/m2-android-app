@@ -1,5 +1,6 @@
 package com.ih.osm.ui.pages.cilt
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -14,12 +15,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -71,7 +75,9 @@ import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.fromIsoToNormalDate
 import com.ih.osm.ui.extensions.isWithinExecutionWindow
+import com.ih.osm.ui.navigation.Screen
 import com.ih.osm.ui.navigation.navigateToCreateCard
+import com.ih.osm.ui.navigation.navigateToSequence
 import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.PaddingToolbar
 import kotlinx.coroutines.CoroutineScope
@@ -82,9 +88,20 @@ import kotlinx.coroutines.launch
 @Composable
 fun CiltDetailScreen(
     executionId: Int,
+    targetSiteExecutionId: Int = -1,
     navController: NavController,
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
+    Log.e("CiltDetailScreen", "🚀🚀🚀 CILT DETAIL SCREEN STARTED 🚀🚀🚀")
+    Log.e("CiltDetailScreen", "executionId: $executionId")
+    Log.e("CiltDetailScreen", "targetSiteExecutionId: $targetSiteExecutionId")
+    Log.e("CiltDetailScreen", "Current route: ${navController.currentDestination?.route}")
+    Log.e("CiltDetailScreen", "============================================")
+    Log.d("CiltDetailScreen", "=== SCREEN CREATED ===")
+    Log.d("CiltDetailScreen", "executionId: $executionId")
+    Log.d("CiltDetailScreen", "targetSiteExecutionId: $targetSiteExecutionId")
+    Log.d("CiltDetailScreen", "Current route: ${navController.currentDestination?.route}")
+    Log.d("CiltDetailScreen", "========================")
     val state by viewModel.state.collectAsState()
     val snackBarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -93,30 +110,177 @@ fun CiltDetailScreen(
 
     val isLoading = state.isLoading
 
-    val execution = viewModel.getExecutionById(executionId)
+    val execution =
+        if (executionId == 0 && targetSiteExecutionId != -1) {
+            // When coming from Procedimientos, find execution by siteExecutionId
+            Log.d("CiltDetailScreen", "🔍 SEARCHING for execution with siteExecutionId: $targetSiteExecutionId")
+            val foundExecution = viewModel.getExecutionBySiteExecutionId(targetSiteExecutionId)
+            if (foundExecution != null) {
+                Log.d("CiltDetailScreen", "✅ FOUND execution: siteExecutionId=${foundExecution.siteExecutionId}, id=${foundExecution.id}")
+            } else {
+                Log.e("CiltDetailScreen", "❌ EXECUTION NOT FOUND for siteExecutionId: $targetSiteExecutionId")
+                Log.d("CiltDetailScreen", "Available executions:")
+                state.ciltData?.positions?.forEach { position ->
+                    Log.d("CiltDetailScreen", "Position: ${position.name}")
+                    position.ciltMasters.forEach { master ->
+                        Log.d("CiltDetailScreen", "  CiltMaster: ${master.ciltName}")
+                        master.sequences.forEach { sequence ->
+                            Log.d("CiltDetailScreen", "    Sequence ${sequence.id}: ${sequence.executions.size} executions")
+                            sequence.executions.forEach { exec ->
+                                Log.d("CiltDetailScreen", "      - Execution id=${exec.id}, siteExecutionId=${exec.siteExecutionId}")
+                            }
+                        }
+                    }
+                }
+            }
+            foundExecution
+        } else {
+            Log.d("CiltDetailScreen", "🔍 SEARCHING for execution with id: $executionId")
+            val foundExecution = viewModel.getExecutionById(executionId)
+            Log.d("CiltDetailScreen", "Found execution: ${foundExecution?.id}")
+            foundExecution
+        }
 
     val opl = state.opl
     val remediationOpl = state.remediationOpl
     val superiorId = state.superiorId
 
+    LaunchedEffect(Unit) {
+        Log.d("CiltDetailScreen", "=== INITIAL LOAD ===")
+        Log.d("CiltDetailScreen", "targetSiteExecutionId: $targetSiteExecutionId")
+        if (targetSiteExecutionId != -1) {
+            Log.d("CiltDetailScreen", "🔄 Coming from Procedimientos - forcing data refresh")
+        } else {
+            Log.d("CiltDetailScreen", "📋 Normal navigation - regular data load")
+        }
+        viewModel.process(CiltAction.GetCilts)
+        Log.d("CiltDetailScreen", "=== INITIAL LOAD END ===")
+    }
+
     LaunchedEffect(state.ciltData) {
+        Log.d("CiltDetailScreen", "CiltData changed: ${state.ciltData != null}")
         if (state.ciltData != null) {
+            Log.d("CiltDetailScreen", "Loading superior ID for executionId: $executionId")
             viewModel.getSuperiorIdFromExecutionLevelId(executionId)
         }
     }
 
+    // Auto-navigate to sequence when coming from Procedimientos
+    var hasNavigated by remember { mutableStateOf(false) }
+
     LaunchedEffect(state.isSequenceFinished) {
+        Log.d("CiltDetailScreen", "=== SEQUENCE FINISHED HANDLER ===")
+        Log.d("CiltDetailScreen", "🔔 isSequenceFinished: ${state.isSequenceFinished}")
+        Log.d("CiltDetailScreen", "🎯 targetSiteExecutionId: $targetSiteExecutionId")
+        Log.d("CiltDetailScreen", "🆔 executionId: $executionId")
+        Log.d("CiltDetailScreen", "🧭 Current route: ${navController.currentDestination?.route}")
         if (state.isSequenceFinished) {
-            navController.popBackStack()
+            Log.d("CiltDetailScreen", "✅ SEQUENCE EXECUTION COMPLETED - DETERMINING NAVIGATION")
+            Log.d("CiltDetailScreen", "🤔 Coming from Procedimientos? ${targetSiteExecutionId != -1}")
+            Log.d("CiltDetailScreen", "📍 Current destination: ${navController.currentDestination?.route}")
+            Log.d("CiltDetailScreen", "🔄 REDIRECTION LOGIC: Will redirect to main rutinas or pop back stack")
+
+            // Reset hasNavigated flag when sequence is finished
+            hasNavigated = false
+            Log.d("CiltDetailScreen", "🧹 RESET hasNavigated to false")
+
+            // When coming from Procedimientos (targetSiteExecutionId != -1), go back to rutinas
+            if (targetSiteExecutionId != -1) {
+                Log.d("CiltDetailScreen", "🏠 REDIRECTION TO MAIN RUTINAS (came from Procedimientos)")
+                Log.d("CiltDetailScreen", "📍 Before navigation - current route: ${navController.currentDestination?.route}")
+                Log.d("CiltDetailScreen", "🎯 Target was siteExecutionId: $targetSiteExecutionId - now completed")
+                // Force complete destruction by popping back to CiltScreen
+                val success = navController.popBackStack(Screen.Cilt.route, false)
+                Log.d("CiltDetailScreen", "PopBackStack result: $success")
+                if (!success) {
+                    // Fallback: navigate fresh
+                    Log.d("CiltDetailScreen", "Fallback navigation")
+                    navController.navigate(Screen.Cilt.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
+                Log.d("CiltDetailScreen", "📍 After navigation - current route: ${navController.currentDestination?.route}")
+            } else {
+                Log.d("CiltDetailScreen", "⬅️ NORMAL NAVIGATION - POP BACK STACK (regular navigation)")
+                Log.d("CiltDetailScreen", "📤 Popping back to previous screen")
+                navController.popBackStack()
+            }
+
+            // Reset the sequence finished flag immediately after navigation
+            viewModel.resetSequenceFinishedFlag()
+            Log.d("CiltDetailScreen", "🧹 RESET isSequenceFinished flag to prevent re-triggering")
+            Log.d("CiltDetailScreen", "✅ REDIRECTION COMPLETED - User should see main rutinas or previous screen")
+            Log.d("CiltDetailScreen", "=== NAVIGATION COMPLETED ===")
         }
     }
 
+    LaunchedEffect(targetSiteExecutionId, hasNavigated) {
+        Log.d("CiltDetailScreen", "=== AUTO-NAVIGATE HANDLER STARTED ===")
+        Log.d("CiltDetailScreen", "🔑 Keys - targetSiteExecutionId: $targetSiteExecutionId, hasNavigated: $hasNavigated")
+        Log.d("CiltDetailScreen", "📊 Current state - execution: ${execution?.siteExecutionId}, ciltData: ${state.ciltData != null}")
+        Log.d("CiltDetailScreen", "⚠️ This LaunchedEffect should NOT restart if execution changes")
+
+        if (targetSiteExecutionId != -1 && execution != null && state.ciltData != null && !hasNavigated) {
+            Log.d("CiltDetailScreen", "✅ AUTO-NAVIGATE CONDITIONS MET")
+            Log.d("CiltDetailScreen", "Found execution: ${execution.siteExecutionId} (ID: ${execution.id})")
+            Log.d("CiltDetailScreen", "Starting sequence search...")
+            // Find the sequence that contains this execution
+            val sequence =
+                state.ciltData?.positions
+                    ?.flatMap { it.ciltMasters }
+                    ?.flatMap { it.sequences }
+                    ?.find { sequence ->
+                        val hasExecution = sequence.executions.any { it.siteExecutionId == targetSiteExecutionId }
+                        Log.d("CiltDetailScreen", "Checking sequence ${sequence.id}: has execution = $hasExecution")
+                        hasExecution
+                    }
+
+            if (sequence != null) {
+                Log.d("CiltDetailScreen", "🎯 FOUND SEQUENCE: ${sequence.id} for execution: ${execution.id}")
+                Log.d("CiltDetailScreen", "⏱️ Waiting 500ms before navigation...")
+                // Navigate to the sequence after a small delay to ensure smooth transition
+                Log.d("CiltDetailScreen", "⏳ Starting 500ms delay - LaunchedEffect should NOT restart during this time")
+                delay(500)
+                Log.d("CiltDetailScreen", "✅ Delay completed - proceeding with navigation")
+                Log.d("CiltDetailScreen", "🚀 EXECUTING NAVIGATION TO SEQUENCE")
+                Log.d("CiltDetailScreen", "🎯 Sequence ID: ${sequence.id}, Execution ID: ${execution.id}")
+                Log.d("CiltDetailScreen", "🆔 siteExecutionId: ${execution.siteExecutionId}")
+                hasNavigated = true
+                navController.navigateToSequence(sequence.id, execution.id)
+                Log.d("CiltDetailScreen", "✅ Navigation command executed - User should now see sequence screen")
+                Log.d("CiltDetailScreen", "🔄 When sequence completes, it will trigger redirection back here")
+            } else {
+                Log.e("CiltDetailScreen", "❌ SEQUENCE NOT FOUND for siteExecutionId: $targetSiteExecutionId")
+                Log.d("CiltDetailScreen", "Available sequences:")
+                state.ciltData?.positions?.forEach { position ->
+                    position.ciltMasters.forEach { master ->
+                        master.sequences.forEach { seq ->
+                            Log.d("CiltDetailScreen", "  - Sequence ${seq.id}: ${seq.executions.map { it.siteExecutionId }}")
+                        }
+                    }
+                }
+            }
+        } else {
+            Log.d("CiltDetailScreen", "❌ AUTO-NAVIGATE CONDITIONS NOT MET:")
+            Log.d("CiltDetailScreen", "  - targetSiteExecutionId != -1: ${targetSiteExecutionId != -1}")
+            Log.d("CiltDetailScreen", "  - execution != null: ${execution != null}")
+            Log.d("CiltDetailScreen", "  - ciltData != null: ${state.ciltData != null}")
+            Log.d("CiltDetailScreen", "  - !hasNavigated: ${!hasNavigated}")
+        }
+        Log.d("CiltDetailScreen", "=== AUTO-NAVIGATE HANDLER END ===")
+    }
+
     if (state.isUploadingEvidence || isLoading) {
+        Log.d("CiltDetailScreen", "Showing loading screen - uploadingEvidence: ${state.isUploadingEvidence}, isLoading: $isLoading")
         LoadingScreen()
         return
     }
 
     if (execution != null) {
+        Log.e("CiltDetailScreen", "🖥️🖥️🖥️ RENDERING EXECUTION SCREEN for siteExecutionId: ${execution.siteExecutionId}")
+        Log.e("CiltDetailScreen", "📊📊📊 EXECUTION STATUS: '${execution.status}' - ID: ${execution.id}")
+        Log.d("CiltDetailScreen", "Rendering execution screen for siteExecutionId: ${execution.siteExecutionId}")
         Scaffold { padding ->
             Box(
                 modifier =
@@ -170,6 +334,18 @@ fun CiltDetailScreen(
                     }
                 }
         }
+    } else {
+        Log.e("CiltDetailScreen", "❌ EXECUTION IS NULL - CANNOT RENDER")
+        Log.e("CiltDetailScreen", "🆔 executionId: $executionId, targetSiteExecutionId: $targetSiteExecutionId")
+        Log.e("CiltDetailScreen", "📊 CiltData is null: ${state.ciltData == null}")
+        Log.e("CiltDetailScreen", "🛑 This indicates a problem with data loading or navigation parameters")
+        // Show empty screen or error message
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text("No execution found")
+        }
     }
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -216,6 +392,7 @@ fun ExecutionDetailContent(
     snackbarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
 ) {
+    Log.d("CiltDetailScreen", "🎯 ENTERING ExecutionDetailContent for execution ${execution.siteExecutionId}")
     val context = LocalContext.current
 
     val isStarted = viewModel.isStarted.value
@@ -227,6 +404,15 @@ fun ExecutionDetailContent(
     val isEvidenceAtFinal = viewModel.isEvidenceAtFinal.value
     val evidenceUrisBefore = viewModel.evidenceUrisBefore
     val evidenceUrisAfter = viewModel.evidenceUrisAfter
+
+    // Check if execution is completed (status = "R" means completed)
+    val isCompleted = execution.status == "R"
+    Log.d("CiltDetailScreen", "=== EXECUTION STATUS CHECK ===")
+    Log.d("CiltDetailScreen", "Execution ${execution.siteExecutionId} - status: '${execution.status}'")
+    Log.d("CiltDetailScreen", "secuenceStart: ${execution.secuenceStart}")
+    Log.d("CiltDetailScreen", "secuenceStop: ${execution.secuenceStop}")
+    Log.d("CiltDetailScreen", "isCompleted: $isCompleted (based on status == 'R')")
+    Log.d("CiltDetailScreen", "===============================")
 
     var elapsedTime by remember { mutableStateOf(0) }
     val totalDuration = execution.duration ?: 0
@@ -403,32 +589,77 @@ fun ExecutionDetailContent(
             allowExecuteAfterDue = execution.allowExecuteAfterDue,
         )
 
-    if (!isStarted) {
-        CustomButton(
-            text = stringResource(R.string.start_sequence),
-            buttonType = ButtonType.DEFAULT,
-            onClick = {
-                if (canExecute) {
-                    onAction(CiltAction.StartExecution(execution.id))
-                } else {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message =
-                                message
-                                    ?: context.getString(R.string.execution_out_of_window),
-                        )
+    // Only show start/finish buttons if execution is not completed (status != "R")
+    if (!isCompleted) {
+        Log.d("CiltDetailScreen", "🔘 SHOWING ACTION BUTTONS - execution not completed")
+        if (!isStarted) {
+            Log.d("CiltDetailScreen", "▶️ Showing START SEQUENCE button")
+            CustomButton(
+                text = stringResource(R.string.start_sequence),
+                buttonType = ButtonType.DEFAULT,
+                onClick = {
+                    Log.d("CiltDetailScreen", "🚀 START SEQUENCE clicked - checking execution window")
+                    if (canExecute) {
+                        Log.d("CiltDetailScreen", "✅ Execution window valid - starting sequence")
+                        onAction(CiltAction.StartExecution(execution.id))
+                    } else {
+                        Log.d("CiltDetailScreen", "❌ Execution window invalid - showing snackbar")
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message =
+                                    message
+                                        ?: context.getString(R.string.execution_out_of_window),
+                            )
+                        }
                     }
-                }
-            },
-        )
-    } else if (isStarted) {
-        CustomButton(
-            text = stringResource(R.string.finish_sequence),
-            buttonType = ButtonType.DEFAULT,
-            onClick = {
-                onAction(CiltAction.StopExecution(execution.id))
-            },
-        )
+                },
+            )
+        } else if (isStarted) {
+            Log.d("CiltDetailScreen", "⏹️ Showing FINISH SEQUENCE button")
+            CustomButton(
+                text = stringResource(R.string.finish_sequence),
+                buttonType = ButtonType.DEFAULT,
+                onClick = {
+                    Log.d("CiltDetailScreen", "🛑 FINISH SEQUENCE clicked")
+                    onAction(CiltAction.StopExecution(execution.id))
+                },
+            )
+        }
+    } else {
+        Log.d("CiltDetailScreen", "🚫 HIDING ACTION BUTTONS - execution completed (status = 'R')")
+        // Show completion status
+        Log.d("CiltDetailScreen", "📊 SHOWING COMPLETION STATUS - execution already finished")
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        RoundedCornerShape(12.dp),
+                    )
+                    .padding(16.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    Icons.Filled.CheckCircle,
+                    contentDescription = "Completado",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = "Secuencia Completada (Status: R)",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -478,36 +709,59 @@ fun ExecutionDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    CustomTextField(
-        modifier =
-            Modifier.fillMaxWidth(),
-        label = stringResource(R.string.parameter_found),
-        placeholder = stringResource(R.string.enter_parameter_found),
-        icon = Icons.Outlined.Menu,
-        onChange = { onAction(CiltAction.SetParameterFound(it)) },
-    )
+    if (!isCompleted) {
+        Log.d("CiltDetailScreen", "✏️ SHOWING EDITABLE parameter_found field")
+        CustomTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(R.string.parameter_found),
+            placeholder = stringResource(R.string.enter_parameter_found),
+            icon = Icons.Outlined.Menu,
+            onChange = { onAction(CiltAction.SetParameterFound(it)) },
+        )
+    } else {
+        Log.d("CiltDetailScreen", "🔒 SHOWING READ-ONLY parameter_found field - value: ${execution.initialParameter}")
+        // Show read-only field for completed executions
+        InfoItem(
+            label = stringResource(R.string.parameter_found),
+            value = execution.initialParameter ?: "N/A",
+        )
+    }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CameraLauncher { imageUri ->
-            onAction(CiltAction.AddEvidenceBefore(execution.id, imageUri))
-            onAction(CiltAction.SetEvidenceAtCreation(true))
+    // Only show camera for evidence if execution is not completed
+    if (!isCompleted) {
+        Log.d("CiltDetailScreen", "📷 SHOWING INITIAL EVIDENCE camera")
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CameraLauncher { imageUri ->
+                onAction(CiltAction.AddEvidenceBefore(execution.id, imageUri))
+                onAction(CiltAction.SetEvidenceAtCreation(true))
+            }
         }
+    } else {
+        Log.d("CiltDetailScreen", "🚫 HIDING INITIAL EVIDENCE camera - execution completed")
     }
 
     SectionImagesEvidence(
         imageEvidences =
-            evidenceUrisBefore.map { uri ->
-                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.INITIAL.name)
+            if (isCompleted) {
+                // For completed executions, we would need to get the actual evidence from the execution
+                // For now, showing empty list, but this should be populated with actual evidence data
+                emptyList()
+            } else {
+                evidenceUrisBefore.map { uri ->
+                    Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.INITIAL.name)
+                }
             },
         onDeleteEvidence = { evidence ->
-            onAction(CiltAction.RemoveEvidenceBefore(evidence.url))
+            if (!isCompleted) {
+                onAction(CiltAction.RemoveEvidenceBefore(evidence.url))
+            }
         },
     )
 
@@ -536,36 +790,59 @@ fun ExecutionDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    CustomTextField(
-        modifier =
-            Modifier.fillMaxWidth(),
-        label = stringResource(R.string.final_parameter),
-        placeholder = stringResource(R.string.enter_final_parameter),
-        icon = Icons.Outlined.Menu,
-        onChange = { onAction(CiltAction.SetFinalParameter(it)) },
-    )
+    if (!isCompleted) {
+        Log.d("CiltDetailScreen", "✏️ SHOWING EDITABLE final_parameter field")
+        CustomTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(R.string.final_parameter),
+            placeholder = stringResource(R.string.enter_final_parameter),
+            icon = Icons.Outlined.Menu,
+            onChange = { onAction(CiltAction.SetFinalParameter(it)) },
+        )
+    } else {
+        Log.d("CiltDetailScreen", "🔒 SHOWING READ-ONLY final_parameter field - value: ${execution.finalParameter}")
+        // Show read-only field for completed executions
+        InfoItem(
+            label = stringResource(R.string.final_parameter),
+            value = execution.finalParameter ?: "N/A",
+        )
+    }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CameraLauncher { imageUri ->
-            onAction(CiltAction.AddEvidenceAfter(execution.id, imageUri))
-            onAction(CiltAction.SetEvidenceAtFinal(true))
+    // Only show camera for final evidence if execution is not completed
+    if (!isCompleted) {
+        Log.d("CiltDetailScreen", "📷 SHOWING FINAL EVIDENCE camera")
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CameraLauncher { imageUri ->
+                onAction(CiltAction.AddEvidenceAfter(execution.id, imageUri))
+                onAction(CiltAction.SetEvidenceAtFinal(true))
+            }
         }
+    } else {
+        Log.d("CiltDetailScreen", "🚫 HIDING FINAL EVIDENCE camera - execution completed")
     }
 
     SectionImagesEvidence(
         imageEvidences =
-            evidenceUrisAfter.map { uri ->
-                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.FINAL.name)
+            if (isCompleted) {
+                // For completed executions, we would need to get the actual evidence from the execution
+                // For now, showing empty list, but this should be populated with actual evidence data
+                emptyList()
+            } else {
+                evidenceUrisAfter.map { uri ->
+                    Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.FINAL.name)
+                }
             },
         onDeleteEvidence = { evidence ->
-            onAction(CiltAction.RemoveEvidenceAfter(evidence.url))
+            if (!isCompleted) {
+                onAction(CiltAction.RemoveEvidenceAfter(evidence.url))
+            }
         },
     )
 

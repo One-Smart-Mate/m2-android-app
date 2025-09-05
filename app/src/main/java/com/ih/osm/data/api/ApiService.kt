@@ -145,11 +145,8 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @GET("cilt-mstr/user-read-only/{userId}/{date}")
-    fun getCilts(
-        @Path("userId") userId: String,
-        @Path("date") date: String,
-    ): Call<GetCiltResponse>
+    @GET("cilt-sequences-executions/of-day")
+    fun getCilts(): Call<GetCiltResponse>
 
     @GET("/opl-mstr/{id}")
     fun getOplById(
