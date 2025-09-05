@@ -56,6 +56,10 @@ import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.login.FastLoginUseCaseImpl
 import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCaseImpl
+import com.ih.osm.domain.usecase.login.RefreshTokenUseCase
+import com.ih.osm.domain.usecase.login.RefreshTokenUseCaseImpl
+import com.ih.osm.domain.usecase.login.SendFastLoginUseCaseImpl
+import com.ih.osm.domain.usecase.login.SendFastPasswordUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
@@ -228,4 +232,10 @@ interface DomainBindingModule {
 
     @Binds
     fun bindDeleteCardUseCase(deleteCardUseCaseImpl: DeleteCardUseCaseImpl): DeleteCardUseCase
+
+    @Binds
+    fun bindSendFastPasswordUseCase(sendFastPasswordUseCase: SendFastLoginUseCaseImpl): SendFastPasswordUseCase
+
+    @Binds
+    fun bindRefreshTokenUseCase(refreshTokenUseCaseImpl: RefreshTokenUseCaseImpl): RefreshTokenUseCase
 }

@@ -200,8 +200,8 @@
 
     <string name="docs_title">Docs</string>
     <string name="opl_sop_documents">Documentos OPL y SOP</string>
-    <string name="cilt_routine">Rutinas</string>
-    <string name="view_cilt_routines">Ver rutinas CILT</string>
+    <string name="cilt_routine">Procedimientos</string>
+    <string name="view_cilt_routines">Ver procedimientos CILT</string>
     <string name="download_cilts">Descargar CILT\'s</string>
     <string name="update_cilts">Actualizar</string>
     <string name="download_third_party_cilt">CILT de terceros</string>
@@ -248,7 +248,7 @@
     <string name="sequence_finished">Secuencia completada</string>
     <string name="cilt_error">Error:</string>
     <string name="machine_diagram">Diagrama de la máquina</string>
-    <string name="no_cilt_data">No hay rutinas CILT disponibles</string>
+    <string name="no_cilt_data">No hay procedimientos CILT disponibles</string>
     <string name="parameter_ok_question">¿Parámetro OK?</string>
     <string name="error_user_id_not_found">Error: No se pudo obtener el ID del usuario</string>
     <string name="error_loading_cilts">Error al cargar los CILTS: %1$s</string>
@@ -317,7 +317,11 @@
     <string name="execution_two">El tiempo de ejecución posterior es entre %1$s y %2$s</string>
     <string name="execution_three">El tiempo de ejecución antes es entre %1$s y %2$s</string>
 
-    <string name="leave_screen">Aviso!, estas por cerrar la pantalla</string>
-    <string name="leave_screen_description">Si cierras la pantalla perderas la información guardada, Deseas continuar?</string>
+    <string name="leave_screen">Aviso!, estás por cerrar la pantalla</string>
+    <string name="leave_screen_description">Si cierras la pantalla perderás la información guardada, Deseas continuar?</string>
     <string name="close">Cerrar</string>
+
+    <string name="forgot_fast_password">¿Olvidaste tu contraseña rápida?</string>
+    <string name="recover_fast_password">Recuperar contraseña rápida</string>
+    <string name="enter_phone_number">Ingresa tu número de celular</string>
 </resources>
