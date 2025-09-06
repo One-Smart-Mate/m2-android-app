@@ -1,13 +1,12 @@
 package com.ih.osm.data.model
 
-import android.util.Log
-import com.ih.osm.domain.model.ProcedimientoCiltData
+import com.ih.osm.domain.model.CiltProcedureData
 
-data class GetProcedimientoCiltResponse(
-    val data: List<ProcedimientoCiltPosition>,
+data class GetCiltProcedureResponse(
+    val data: List<CiltProcedurePosition>,
 )
 
-data class ProcedimientoCiltPosition(
+data class CiltProcedurePosition(
     val id: Int,
     val siteId: Int,
     val ciltMstrId: Int,
@@ -17,11 +16,11 @@ data class ProcedimientoCiltPosition(
     val createdAt: String,
     val updatedAt: String,
     val deletedAt: String?,
-    val position: ProcedimientoCiltPositionDetail,
-    val ciltMstr: ProcedimientoCiltMaster,
+    val position: CiltProcedurePositionDetail,
+    val ciltMstr: CiltProcedureMaster,
 )
 
-data class ProcedimientoCiltPositionDetail(
+data class CiltProcedurePositionDetail(
     val id: Int,
     val siteId: Int,
     val siteName: String,
@@ -39,7 +38,7 @@ data class ProcedimientoCiltPositionDetail(
     val status: String,
 )
 
-data class ProcedimientoCiltMaster(
+data class CiltProcedureMaster(
     val id: Int,
     val siteId: Int,
     val ciltName: String,
@@ -59,10 +58,10 @@ data class ProcedimientoCiltMaster(
     val createdAt: String,
     val updatedAt: String,
     val deletedAt: String?,
-    val sequences: List<ProcedimientoCiltSequence>,
+    val sequences: List<CiltProcedureSequence>,
 )
 
-data class ProcedimientoCiltSequence(
+data class CiltProcedureSequence(
     val id: Int,
     val siteId: Int,
     val siteName: String,
@@ -91,10 +90,10 @@ data class ProcedimientoCiltSequence(
     val createdAt: String,
     val updatedAt: String,
     val deletedAt: String?,
-    val executions: List<ProcedimientoExecution>,
+    val executions: List<ProcedureExecution>,
 )
 
-data class ProcedimientoExecution(
+data class ProcedureExecution(
     val id: Int,
     val siteId: Int,
     val siteExecutionId: Int,
@@ -140,11 +139,11 @@ data class ProcedimientoExecution(
     val updatedAt: String,
     val deletedAt: String?,
     val evidences: List<Any>,
-    val referenceOplSop: ProcedimientoOpl,
-    val remediationOplSop: ProcedimientoOpl,
+    val referenceOplSop: ProcedureOpl,
+    val remediationOplSop: ProcedureOpl,
 )
 
-data class ProcedimientoOpl(
+data class ProcedureOpl(
     val id: Int,
     val siteId: Int,
     val title: String,
@@ -164,21 +163,19 @@ data class ProcedimientoOpl(
     val deletedAt: String?,
 )
 
-fun GetProcedimientoCiltResponse.toDomain() =
+fun GetCiltProcedureResponse.toDomain() =
     try {
-        Log.d("ProcedimientoResponse", "Converting response to domain, positions: ${this.data.size}")
-        ProcedimientoCiltData(
+        CiltProcedureData(
             positions =
                 this.data.map { position ->
-                    Log.d("ProcedimientoResponse", "Converting position: ${position.position.name}")
-                    ProcedimientoCiltData.Position(
+                    CiltProcedureData.Position(
                         id = position.position.id,
                         name = position.position.name,
                         siteName = position.position.siteName,
                         areaName = position.position.areaName,
                         ciltMasters =
                             listOf(
-                                ProcedimientoCiltData.CiltMaster(
+                                CiltProcedureData.CiltMaster(
                                     id = position.ciltMstr.id,
                                     siteId = position.ciltMstr.siteId,
                                     ciltName = position.ciltMstr.ciltName,
@@ -200,7 +197,7 @@ fun GetProcedimientoCiltResponse.toDomain() =
                                     status = position.ciltMstr.status,
                                     sequences =
                                         position.ciltMstr.sequences.map { seq ->
-                                            ProcedimientoCiltData.Sequence(
+                                            CiltProcedureData.Sequence(
                                                 id = seq.id,
                                                 siteId = seq.siteId,
                                                 siteName = seq.siteName,
@@ -231,8 +228,7 @@ fun GetProcedimientoCiltResponse.toDomain() =
                                                 specialWarning = seq.specialWarning,
                                                 executions =
                                                     seq.executions.map { exec ->
-                                                        Log.d("ProcedimientoResponse", "Converting execution: ${exec.id}")
-                                                        ProcedimientoCiltData.Execution(
+                                                        CiltProcedureData.Execution(
                                                             id = exec.id,
                                                             siteExecutionId = exec.siteExecutionId,
                                                             positionId = exec.positionId,
@@ -265,7 +261,7 @@ fun GetProcedimientoCiltResponse.toDomain() =
                                                             updatedAt = exec.updatedAt,
                                                             deletedAt = exec.deletedAt,
                                                             referenceOpl =
-                                                                ProcedimientoCiltData.Opl(
+                                                                CiltProcedureData.Opl(
                                                                     id = exec.referenceOplSop.id,
                                                                     title = exec.referenceOplSop.title,
                                                                     objetive = exec.referenceOplSop.objetive,
@@ -276,7 +272,7 @@ fun GetProcedimientoCiltResponse.toDomain() =
                                                                     lastUsedAt = exec.referenceOplSop.lastUsedAt,
                                                                 ),
                                                             remediationOpl =
-                                                                ProcedimientoCiltData.Opl(
+                                                                CiltProcedureData.Opl(
                                                                     id = exec.remediationOplSop.id,
                                                                     title = exec.remediationOplSop.title,
                                                                     objetive = exec.remediationOplSop.objetive,
@@ -296,6 +292,5 @@ fun GetProcedimientoCiltResponse.toDomain() =
                 },
         )
     } catch (e: Exception) {
-        Log.e("ProcedimientoResponse", "Error converting to domain", e)
         throw e
     }

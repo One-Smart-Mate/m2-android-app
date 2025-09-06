@@ -23,13 +23,13 @@ import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
-import com.ih.osm.domain.model.ProcedimientoCiltData
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.SequenceExecution
 
@@ -104,7 +104,7 @@ interface NetworkRepository {
 
     suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse
 
-    suspend fun getRemoteProcedimientoCiltsByLevel(levelId: String): ProcedimientoCiltData
+    suspend fun getRemoteCiltProcedureByLevel(levelId: String): CiltProcedureData
 
     suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse
 

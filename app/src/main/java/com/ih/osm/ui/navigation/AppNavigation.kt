@@ -1,6 +1,5 @@
 package com.ih.osm.ui.navigation
 
-import android.util.Log
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
@@ -10,7 +9,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.ih.osm.domain.model.Sequence
 import com.ih.osm.ui.components.card.actions.CardItemSheetAction
 import com.ih.osm.ui.components.card.actions.toActionString
 import com.ih.osm.ui.extensions.defaultIfNull
@@ -26,7 +24,7 @@ import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.opl.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
-import com.ih.osm.ui.pages.procedimiento.ProcedimientoListScreen
+import com.ih.osm.ui.pages.procedure.ProcedureListScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
 import com.ih.osm.ui.pages.sequence.SequenceScreen
@@ -130,9 +128,6 @@ fun AppNavigation(startDestination: String) {
         composable(
             route = Screen.Cilt.route,
         ) {
-            Log.d("AppNavigation", "=== CREATING CILT SCREEN ===")
-            Log.d("AppNavigation", "Route: ${Screen.Cilt.route}")
-            Log.d("AppNavigation", "=============================")
             CiltScreen(navController = navController)
         }
 
@@ -150,12 +145,8 @@ fun AppNavigation(startDestination: String) {
                 ),
         ) { backStackEntry ->
             val executionId = backStackEntry.arguments?.getInt("executionId") ?: 0
-            val targetSiteExecutionId = backStackEntry.arguments?.getInt("targetSiteExecutionId") ?: -1
-            Log.d("AppNavigation", "=== CREATING CILT DETAIL SCREEN ===")
-            Log.d("AppNavigation", "executionId: $executionId")
-            Log.d("AppNavigation", "targetSiteExecutionId: $targetSiteExecutionId")
-            Log.d("AppNavigation", "Route: ${backStackEntry.destination.route}")
-            Log.d("AppNavigation", "===================================")
+            val targetSiteExecutionId =
+                backStackEntry.arguments?.getInt("targetSiteExecutionId") ?: -1
             CiltDetailScreen(
                 executionId = executionId,
                 targetSiteExecutionId = targetSiteExecutionId,
@@ -170,9 +161,9 @@ fun AppNavigation(startDestination: String) {
         }
 
         composable(
-            Screen.ProcedimientoList.route,
+            Screen.ProcedureList.route,
         ) {
-            ProcedimientoListScreen(navController = navController)
+            ProcedureListScreen(navController = navController)
         }
 
         composable(
@@ -189,8 +180,11 @@ fun AppNavigation(startDestination: String) {
         ) { backStackEntry ->
             val sequenceId = backStackEntry.arguments?.getInt(ARG_SEQUENCE_ID).defaultIfNull(0)
             val executionId = backStackEntry.arguments?.getInt(ARG_EXECUTION_ID).defaultIfNull(0)
-            Log.e("test", " Sequence ID: $sequenceId, Execution ID: $executionId")
-            SequenceScreen(navController = navController, sequenceId = sequenceId, executionId = executionId)
+            SequenceScreen(
+                navController = navController,
+                sequenceId = sequenceId,
+                executionId = executionId,
+            )
         }
     }
 }
@@ -268,21 +262,15 @@ fun NavController.navigateToCiltDetailWithTarget(
     targetSiteExecutionId: Int,
 ) {
     val route = Screen.CiltDetail.createRouteWithTarget(executionId, targetSiteExecutionId)
-    Log.d("Navigation", "🚀 NAVIGATION START - Going to CiltDetailScreen with target execution")
-    Log.d("Navigation", "🎯 Target parameters: executionId=$executionId, targetSiteExecutionId=$targetSiteExecutionId")
-    Log.d("Navigation", "🔗 Generated route: $route")
-    Log.d("Navigation", "🧭 This will load CiltDetailScreen and auto-navigate to sequence execution")
-    Log.d("Navigation", "=== EXECUTING NAVIGATION COMMAND ===")
     navigate(route)
-    Log.d("Navigation", "✅ Navigation command sent - CiltDetailScreen should appear next")
 }
 
 fun NavController.navigateToOplList() {
     navigate(Screen.OplList.route)
 }
 
-fun NavController.navigateToProcedimientoList() {
-    navigate(Screen.ProcedimientoList.route)
+fun NavController.navigateToProcedureList() {
+    navigate(Screen.ProcedureList.route)
 }
 
 fun NavController.navigateToSequence(

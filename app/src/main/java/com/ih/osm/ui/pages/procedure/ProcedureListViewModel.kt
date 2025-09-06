@@ -1,20 +1,19 @@
-package com.ih.osm.ui.pages.procedimiento
+package com.ih.osm.ui.pages.procedure
 
 import android.content.Context
-import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.R
 import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.NodeCardItem
-import com.ih.osm.domain.model.ProcedimientoCiltData
 import com.ih.osm.domain.model.toNodeItemList
 import com.ih.osm.domain.repository.network.NetworkRepository
 import com.ih.osm.domain.usecase.level.GetLevelsUseCase
-import com.ih.osm.domain.usecase.procedimiento.CreateCiltExecutionUseCase
-import com.ih.osm.domain.usecase.procedimiento.GetProcedimientosByLevelUseCase
+import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCase
+import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
-import com.ih.osm.ui.pages.procedimiento.action.ProcedimientoListAction
+import com.ih.osm.ui.pages.procedure.action.ProcedureListAction
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -23,18 +22,18 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ProcedimientoListViewModel
+class ProcedureListViewModel
     @Inject
     constructor(
         private val getLevelsUseCase: GetLevelsUseCase,
-        private val getProcedimientosByLevelUseCase: GetProcedimientosByLevelUseCase,
+        private val getProcedureByLevelUseCase: GetProcedureByLevelUseCase,
         private val createCiltExecutionUseCase: CreateCiltExecutionUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val networkRepository: NetworkRepository,
         @ApplicationContext private val context: Context,
-    ) : BaseViewModel<ProcedimientoListViewModel.UiState>(UiState()) {
+    ) : BaseViewModel<ProcedureListViewModel.UiState>(UiState()) {
         data class UiState(
-            val procedimientoData: ProcedimientoCiltData? = null,
+            val procedureData: CiltProcedureData? = null,
             val isLoading: Boolean = false,
             val message: String = EMPTY,
             val currentFilter: String = EMPTY,
@@ -52,10 +51,10 @@ class ProcedimientoListViewModel
             handleGetLevels()
         }
 
-        fun handleAction(action: ProcedimientoListAction) {
+        fun handleAction(action: ProcedureListAction) {
             when (action) {
-                is ProcedimientoListAction.UpdateList -> handleUpdateProcedimientoList()
-                is ProcedimientoListAction.SetLevel -> handleSetLevel(action.id, action.key)
+                is ProcedureListAction.UpdateList -> handleUpdateProcedureList()
+                is ProcedureListAction.SetLevel -> handleSetLevel(action.id, action.key)
             }
         }
 
@@ -129,8 +128,8 @@ class ProcedimientoListViewModel
                 val newKey = key.plus(1)
                 val list = getLevelById(id, newKey)
                 checkLastLevelSection(id)
-                // Load Procedimientos for the selected level
-                handleGetProcedimientosByLevel(id)
+                // Load Procedures for the selected level
+                handleGetProcedureByLevel(id)
                 setState { copy(nodeLevelList = list) }
             }
         }
@@ -140,15 +139,15 @@ class ProcedimientoListViewModel
             setState { copy(lastLevelCompleted = isEmpty) }
         }
 
-        private fun handleGetProcedimientosByLevel(levelId: String) {
+        private fun handleGetProcedureByLevel(levelId: String) {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
                 kotlin.runCatching {
-                    callUseCase { getProcedimientosByLevelUseCase(levelId) }
-                }.onSuccess { procedimientoData ->
+                    callUseCase { getProcedureByLevelUseCase(levelId) }
+                }.onSuccess { procedureData ->
                     setState {
                         copy(
-                            procedimientoData = procedimientoData,
+                            procedureData = procedureData,
                             message = EMPTY,
                             isLoading = false,
                         )
@@ -156,11 +155,11 @@ class ProcedimientoListViewModel
                 }.onFailure { exception ->
                     setState {
                         copy(
-                            procedimientoData = null,
+                            procedureData = null,
                             isLoading = false,
                             message =
                                 context.getString(
-                                    R.string.error_loading_procedimientos,
+                                    R.string.error_loading_procedures,
                                     exception.localizedMessage,
                                 ),
                         )
@@ -169,17 +168,17 @@ class ProcedimientoListViewModel
             }
         }
 
-        private fun handleUpdateProcedimientoList() {
+        private fun handleUpdateProcedureList() {
             viewModelScope.launch {
                 // Reload from the current selected level
                 val currentSelectedLevel = getState().selectedLevelList.values.lastOrNull()
                 if (currentSelectedLevel?.isNotEmpty() == true) {
-                    handleGetProcedimientosByLevel(currentSelectedLevel)
+                    handleGetProcedureByLevel(currentSelectedLevel)
                 } else {
                     setState {
                         copy(
-                            procedimientoData = null,
-                            message = context.getString(R.string.select_level_procedimientos),
+                            procedureData = null,
+                            message = context.getString(R.string.select_level_to_view_procedures),
                         )
                     }
                 }
@@ -187,7 +186,6 @@ class ProcedimientoListViewModel
         }
 
         fun clearNavigationData() {
-            Log.d("ProcedimientoListViewModel", "Clearing navigation data")
             setState {
                 copy(
                     createdExecutionData = null,
@@ -198,7 +196,6 @@ class ProcedimientoListViewModel
         }
 
         fun clearAllExecutionState() {
-            Log.d("ProcedimientoListViewModel", "Clearing all execution state")
             setState {
                 copy(
                     createdExecutionData = null,
@@ -209,29 +206,15 @@ class ProcedimientoListViewModel
         }
 
         fun createExecution(
-            sequence: ProcedimientoCiltData.Sequence,
+            sequence: CiltProcedureData.Sequence,
             positionId: Int,
             levelId: String,
         ) {
-            Log.d(
-                "ProcedimientoListViewModel",
-                "🔧 CREATE EXECUTION REQUEST - sequence: ${sequence.id}, positionId: $positionId, levelId: $levelId",
-            )
-            Log.d("ProcedimientoListViewModel", "🚀 Starting execution creation process...")
-
             viewModelScope.launch(Dispatchers.IO) {
-                Log.d("ProcedimientoListViewModel", "💬 Inside coroutine - preparing API call...")
-                Log.d("ProcedimientoListViewModel", "🔄 Setting loading state - creatingExecutionForSequence = ${sequence.id}")
                 setState { copy(creatingExecutionForSequence = sequence.id) }
-                Log.d(
-                    "ProcedimientoListViewModel",
-                    "📊 Loading state updated - creatingExecutionForSequence = ${getState().creatingExecutionForSequence}",
-                )
 
                 try {
-                    Log.d("ProcedimientoListViewModel", "🔐 Getting user session...")
                     val session = getSessionUseCase()
-                    Log.d("ProcedimientoListViewModel", "👤 Session userId: ${session.userId}")
 
                     val request =
                         GenerateCiltExecutionRequest(
@@ -239,39 +222,26 @@ class ProcedimientoListViewModel
                             userId = session.userId.toIntOrNull() ?: 1,
                         )
 
-                    Log.d(
-                        "ProcedimientoListViewModel",
-                        "🌐 API CALL - Creating new execution for sequence ${sequence.id}, userId: ${session.userId.toIntOrNull() ?: 1}",
-                    )
                     val response = networkRepository.generateCiltExecution(request)
                     val executionId = response.data.siteExecutionId
-                    Log.d("ProcedimientoListViewModel", "✅ API SUCCESS - Generated execution with siteExecutionId: $executionId")
-                    Log.d("ProcedimientoListViewModel", "🆔 NEW EXECUTION CREATED - ID: $executionId")
 
                     setState {
                         copy(
                             creatingExecutionForSequence = null,
                             createdExecutionData = Pair(sequence.id, executionId),
-                            message = "Ejecución creada exitosamente",
+                            message = context.getString(R.string.execution_created_successfully),
                         )
                     }
-
-                    Log.d(
-                        "ProcedimientoListViewModel",
-                        "🎉 EXECUTION CREATION COMPLETED - sequenceId: ${sequence.id}, executionId: $executionId",
-                    )
-                    Log.d(
-                        "ProcedimientoListViewModel",
-                        "🔄 STATE UPDATED - createdExecutionData will trigger navigation to CiltDetailScreen",
-                    )
                 } catch (e: Exception) {
-                    Log.e("ProcedimientoListViewModel", "❌ API ERROR - Failed to create execution", e)
-                    Log.e("ProcedimientoListViewModel", "🛑 Error details: ${e.localizedMessage}")
                     setState {
                         copy(
                             creatingExecutionForSequence = null,
                             createdExecutionData = null,
-                            message = "Error al crear ejecución: ${e.localizedMessage}",
+                            message =
+                                context.getString(
+                                    R.string.error_creating_execution,
+                                    e.localizedMessage,
+                                ),
                         )
                     }
                 }

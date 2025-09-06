@@ -1,6 +1,6 @@
 package com.ih.osm.domain.model
 
-data class Procedimiento(
+data class Procedure(
     val id: Int,
     val title: String,
     val objective: String,
@@ -13,12 +13,12 @@ data class Procedimiento(
     val createdAt: String,
     val updatedAt: String,
     val deletedAt: String? = null,
-    val details: List<ProcedimientoDetail> = emptyList(),
+    val details: List<ProcedureDetail> = emptyList(),
 ) {
     companion object {
-        fun mockProcedimientoList(): List<Procedimiento> =
+        fun mockProcedureList(): List<Procedure> =
             listOf(
-                Procedimiento(
+                Procedure(
                     id = 1,
                     title = "Procedimiento de Limpieza",
                     objective = "Establecer métodos de limpieza efectivos",
@@ -32,7 +32,7 @@ data class Procedimiento(
                     updatedAt = "2025-05-16T21:39:48.000Z",
                     details =
                         listOf(
-                            ProcedimientoDetail(
+                            ProcedureDetail(
                                 id = 1,
                                 procedureId = 1,
                                 order = 1,
@@ -40,7 +40,7 @@ data class Procedimiento(
                                 text = "Preparar materiales de limpieza",
                                 mediaUrl = "",
                             ),
-                            ProcedimientoDetail(
+                            ProcedureDetail(
                                 id = 2,
                                 procedureId = 1,
                                 order = 2,
@@ -50,7 +50,7 @@ data class Procedimiento(
                             ),
                         ),
                 ),
-                Procedimiento(
+                Procedure(
                     id = 2,
                     title = "Procedimiento de Arranque",
                     objective = "Pasos para arranque seguro de equipos",
@@ -64,7 +64,7 @@ data class Procedimiento(
                     updatedAt = "2025-05-16T21:39:48.000Z",
                     details =
                         listOf(
-                            ProcedimientoDetail(
+                            ProcedureDetail(
                                 id = 3,
                                 procedureId = 2,
                                 order = 1,
@@ -74,7 +74,7 @@ data class Procedimiento(
                             ),
                         ),
                 ),
-                Procedimiento(
+                Procedure(
                     id = 3,
                     title = "Procedimiento de Paro",
                     objective = "Método seguro para parar equipos",
@@ -92,7 +92,7 @@ data class Procedimiento(
     }
 }
 
-data class ProcedimientoDetail(
+data class ProcedureDetail(
     val id: Int,
     val procedureId: Int,
     val order: Int,

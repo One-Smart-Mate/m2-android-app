@@ -85,7 +85,7 @@ import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToCiltRoutine
 import com.ih.osm.ui.navigation.navigateToOplList
-import com.ih.osm.ui.navigation.navigateToProcedimientoList
+import com.ih.osm.ui.navigation.navigateToProcedureList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -151,8 +151,8 @@ fun HomeScreenV2(
                         navController.navigateToOplList()
                     }
 
-                    HomeActionClick.PROCEDIMIENTO_NAVIGATION -> {
-                        navController.navigateToProcedimientoList()
+                    HomeActionClick.PROCEDURE_NAVIGATION -> {
+                        navController.navigateToProcedureList()
                     }
                 }
             },
@@ -366,13 +366,13 @@ private fun HomeContent(
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
 
-                // Procedimientos Generales Section
+                // General Procedures Section
                 HomeSectionCardItem(
-                    title = stringResource(R.string.procedimientos_generales),
+                    title = stringResource(R.string.general_procedures),
                     icon = Icons.Outlined.List,
-                    description = stringResource(R.string.ver_procedimientos),
+                    description = stringResource(R.string.view_procedures),
                 ) {
-                    onClick(HomeActionClick.PROCEDIMIENTO_NAVIGATION)
+                    onClick(HomeActionClick.PROCEDURE_NAVIGATION)
                 }
 
                 HomeSectionCardItem(
@@ -482,7 +482,7 @@ enum class HomeActionClick {
     NAVIGATION,
     CILT_ROUTINE,
     OPL_NAVIGATION,
-    PROCEDIMIENTO_NAVIGATION,
+    PROCEDURE_NAVIGATION,
 }
 
 @Composable

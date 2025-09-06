@@ -1,6 +1,6 @@
 package com.ih.osm.domain.model
 
-data class ProcedimientoCiltData(
+data class CiltProcedureData(
     val positions: List<Position>,
 ) {
     data class Position(
@@ -114,8 +114,8 @@ data class ProcedimientoCiltData(
     )
 
     companion object {
-        fun mockData(): ProcedimientoCiltData =
-            ProcedimientoCiltData(
+        fun mockData(): CiltProcedureData =
+            CiltProcedureData(
                 positions =
                     listOf(
                         Position(

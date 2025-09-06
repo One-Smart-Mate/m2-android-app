@@ -1,4 +1,4 @@
-package com.ih.osm.ui.components.procedimiento
+package com.ih.osm.ui.components.procedure
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -30,15 +30,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ih.osm.R
-import com.ih.osm.domain.model.Procedimiento
+import com.ih.osm.domain.model.Procedure
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
-fun ProcedimientoItemCard(
-    procedimiento: Procedimiento,
+fun ProcedureItemCard(
+    procedure: Procedure,
     onClick: () -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
@@ -68,7 +68,7 @@ fun ProcedimientoItemCard(
                     modifier = Modifier.weight(1f),
                 ) {
                     Text(
-                        text = procedimiento.title,
+                        text = procedure.title,
                         style =
                             MaterialTheme.typography.titleMedium.copy(
                                 fontWeight = FontWeight.Bold,
@@ -77,7 +77,7 @@ fun ProcedimientoItemCard(
                     )
                     CustomSpacer(space = SpacerSize.TINY)
                     Text(
-                        text = procedimiento.objective,
+                        text = procedure.objective,
                         style =
                             MaterialTheme.typography.bodyMedium.copy(
                                 color = getTextColor().copy(alpha = 0.7f),
@@ -86,7 +86,14 @@ fun ProcedimientoItemCard(
                 }
                 Icon(
                     imageVector = if (isExpanded) Icons.Filled.KeyboardArrowUp else Icons.Filled.KeyboardArrowDown,
-                    contentDescription = if (isExpanded) stringResource(R.string.collapse) else stringResource(R.string.expand),
+                    contentDescription =
+                        if (isExpanded) {
+                            stringResource(R.string.collapse)
+                        } else {
+                            stringResource(
+                                R.string.expand,
+                            )
+                        },
                     tint = MaterialTheme.colorScheme.primary,
                     modifier = Modifier.size(24.dp),
                 )
@@ -100,14 +107,14 @@ fun ProcedimientoItemCard(
 
                     // Creator and reviewer info
                     Text(
-                        text = stringResource(R.string.opl_created_by, procedimiento.creatorName),
+                        text = stringResource(R.string.opl_created_by, procedure.creatorName),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
                             ),
                     )
                     Text(
-                        text = stringResource(R.string.opl_reviewed_by, procedimiento.reviewerName),
+                        text = stringResource(R.string.opl_reviewed_by, procedure.reviewerName),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
@@ -115,10 +122,10 @@ fun ProcedimientoItemCard(
                     )
 
                     // Procedure steps
-                    if (procedimiento.details.isNotEmpty()) {
+                    if (procedure.details.isNotEmpty()) {
                         CustomSpacer()
                         Text(
-                            text = "Pasos del procedimiento:",
+                            text = stringResource(R.string.procedure_steps),
                             style =
                                 MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Medium,
@@ -126,7 +133,7 @@ fun ProcedimientoItemCard(
                                 ),
                         )
                         CustomSpacer(space = SpacerSize.TINY)
-                        procedimiento.details.forEachIndexed { index, detail ->
+                        procedure.details.forEachIndexed { index, detail ->
                             Text(
                                 text = "${index + 1}. ${detail.text}",
                                 style =
@@ -139,7 +146,7 @@ fun ProcedimientoItemCard(
                     } else {
                         CustomSpacer()
                         Text(
-                            text = "No hay pasos definidos para este procedimiento",
+                            text = stringResource(R.string.no_steps_defined_for_procedure),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
                                     color = getTextColor().copy(alpha = 0.5f),
@@ -149,7 +156,7 @@ fun ProcedimientoItemCard(
 
                     CustomSpacer()
                     Text(
-                        text = "${procedimiento.details.size} ${stringResource(R.string.steps)}",
+                        text = "${procedure.details.size} ${stringResource(R.string.steps)}",
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.primary,

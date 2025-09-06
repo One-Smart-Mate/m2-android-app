@@ -1,8 +1,7 @@
-package com.ih.osm.ui.pages.procedimiento
+package com.ih.osm.ui.pages.procedure
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -31,101 +30,73 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ih.osm.R
+import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.NodeCardItem
-import com.ih.osm.domain.model.ProcedimientoCiltData
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
 import com.ih.osm.ui.components.SpacerSize
-import com.ih.osm.ui.components.procedimiento.ProcedimientoCiltCard
+import com.ih.osm.ui.components.procedure.CiltProcedureCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.navigation.navigateToCiltDetailWithTarget
 import com.ih.osm.ui.pages.createcard.SectionItemCard
-import com.ih.osm.ui.pages.procedimiento.action.ProcedimientoListAction
+import com.ih.osm.ui.pages.procedure.action.ProcedureListAction
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
-fun ProcedimientoListScreen(
+fun ProcedureListScreen(
     navController: NavController,
-    viewModel: ProcedimientoListViewModel = hiltViewModel(),
+    viewModel: ProcedureListViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    Log.d("ProcedimientoListScreen", "Screen recomposed - isLoading: ${state.isLoading}")
-    Log.d("ProcedimientoListScreen", "procedimientoData is null: ${state.procedimientoData == null}")
-    Log.d("ProcedimientoListScreen", "creatingExecutionForSequence: ${state.creatingExecutionForSequence}")
-    Log.d("ProcedimientoListScreen", "createdExecutionData: ${state.createdExecutionData}")
-
     // Clear any stale execution state when screen is first displayed
     LaunchedEffect(Unit) {
-        Log.d("ProcedimientoListScreen", "Screen initialized, ensuring clean state")
         if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            Log.d("ProcedimientoListScreen", "Found stale execution state, clearing...")
             viewModel.clearAllExecutionState()
-        }
-    }
-    state.procedimientoData?.let { data ->
-        Log.d("ProcedimientoListScreen", "Positions count: ${data.positions.size}")
-        data.positions.forEach { position ->
-            Log.d("ProcedimientoListScreen", "Position: ${position.name}, CiltMasters: ${position.ciltMasters.size}")
         }
     }
 
     // Handle navigation after successful execution creation
     LaunchedEffect(state.createdExecutionData) {
         state.createdExecutionData?.let { (sequenceId, siteExecutionId) ->
-            Log.d("ProcedimientoListScreen", "🚀 NAVIGATION TRIGGER - New execution created")
-            Log.d("ProcedimientoListScreen", "🎯 Target siteExecutionId: $siteExecutionId for sequence: $sequenceId")
-            Log.d("ProcedimientoListScreen", "🧭 About to navigate to CiltDetailScreen with target execution")
             try {
-                // Use 0 as dummy executionId since we want to show general rutinas view,
+                // Use 0 as dummy executionId since we want to show general routines view,
                 // but with automatic transition to the specific siteExecutionId
                 navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
-                Log.d("ProcedimientoListScreen", "✅ Navigation command executed successfully")
-                Log.d("ProcedimientoListScreen", "🔄 User will now see CiltDetailScreen, then auto-navigate to sequence execution")
             } catch (e: Exception) {
-                Log.e("ProcedimientoListScreen", "❌ Navigation failed with error", e)
             }
             viewModel.clearNavigationData()
-            Log.d("ProcedimientoListScreen", "Navigation data cleared")
-            Log.d("ProcedimientoListScreen", "Navigation data cleared")
         }
     }
 
     // Clean up state when leaving the screen
     DisposableEffect(navController) {
         onDispose {
-            Log.d("ProcedimientoListScreen", "Screen disposed, clearing all execution state")
             viewModel.clearAllExecutionState()
         }
     }
 
     if (state.isLoading) {
-        Log.d("ProcedimientoListScreen", "Showing loading screen")
-        LoadingScreen(text = "Cargando procedimientos...")
+        LoadingScreen(text = stringResource(R.string.loading_procedures))
     } else {
-        Log.d("ProcedimientoListScreen", "Showing content screen")
-        ProcedimientoListContent(
+        ProcedureListContent(
             navController = navController,
-            procedimientoData = state.procedimientoData,
+            procedureData = state.procedureData,
             levelList = state.nodeLevelList,
             selectedLevelList = state.selectedLevelList,
             creatingExecutionForSequence = state.creatingExecutionForSequence,
             onAction = { action ->
-                if (action is ProcedimientoListAction.SetLevel) {
+                if (action is ProcedureListAction.SetLevel) {
                     viewModel.handleAction(action)
                 }
             },
             onCreateExecution = { sequence, positionId, levelId ->
-                Log.d("ProcedimientoListScreen", "Creating execution for sequence: ${sequence.id}")
-                Log.d("ProcedimientoListScreen", "Calling viewModel.createExecution...")
                 try {
                     viewModel.createExecution(sequence, positionId, levelId)
-                    Log.d("ProcedimientoListScreen", "viewModel.createExecution call completed")
                 } catch (e: Exception) {
-                    Log.e("ProcedimientoListScreen", "Error calling viewModel.createExecution", e)
                 }
             },
             onNavigateToExecution = { executionId ->
@@ -137,20 +108,16 @@ fun ProcedimientoListScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProcedimientoListContent(
+fun ProcedureListContent(
     navController: NavController,
-    procedimientoData: ProcedimientoCiltData?,
+    procedureData: CiltProcedureData?,
     levelList: Map<Int, List<NodeCardItem>>,
     selectedLevelList: Map<Int, String>,
     creatingExecutionForSequence: Int?,
-    onAction: (ProcedimientoListAction) -> Unit,
-    onCreateExecution: (ProcedimientoCiltData.Sequence, Int, String) -> Unit,
+    onAction: (ProcedureListAction) -> Unit,
+    onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
     onNavigateToExecution: (Int) -> Unit,
 ) {
-    Log.d("ProcedimientoListContent", "Content composable started")
-    Log.d("ProcedimientoListContent", "procedimientoData: ${procedimientoData != null}")
-    Log.d("ProcedimientoListContent", "levelList size: ${levelList.size}")
-    Log.d("ProcedimientoListContent", "selectedLevelList size: ${selectedLevelList.size}")
     Scaffold { padding ->
         LazyColumn(
             modifier = Modifier.defaultScreen(padding),
@@ -165,7 +132,7 @@ fun ProcedimientoListContent(
                 ) {
                     CustomAppBar(
                         navController = navController,
-                        title = stringResource(id = R.string.procedimientos_screen_title),
+                        title = stringResource(id = R.string.general_procedures),
                     )
                     CustomSpacer(space = SpacerSize.SMALL)
                 }
@@ -175,7 +142,7 @@ fun ProcedimientoListContent(
                 LevelContent(
                     levelList = levelList,
                     onLevelClick = { item, key ->
-                        onAction(ProcedimientoListAction.SetLevel(item.id, key))
+                        onAction(ProcedureListAction.SetLevel(item.id, key))
                     },
                     selectedLevelList = selectedLevelList,
                 )
@@ -185,9 +152,7 @@ fun ProcedimientoListContent(
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
-            Log.d("ProcedimientoListContent", "Checking positions - isEmpty: ${procedimientoData?.positions?.isEmpty()}")
-            if (procedimientoData?.positions?.isEmpty() != false) {
-                Log.d("ProcedimientoListContent", "Showing empty state")
+            if (procedureData?.positions?.isEmpty() != false) {
                 item {
                     Box(
                         modifier =
@@ -200,7 +165,7 @@ fun ProcedimientoListContent(
                             horizontalAlignment = Alignment.CenterHorizontally,
                         ) {
                             Text(
-                                text = stringResource(id = R.string.procedimientos_list_empty_title),
+                                text = stringResource(id = R.string.no_procedures_found),
                                 style =
                                     MaterialTheme.typography.bodyLarge
                                         .copy(
@@ -209,7 +174,7 @@ fun ProcedimientoListContent(
                             )
                             CustomSpacer()
                             Text(
-                                text = stringResource(id = R.string.procedimientos_list_empty_subtitle),
+                                text = stringResource(id = R.string.select_level_to_view_available_procedures),
                                 style =
                                     MaterialTheme.typography.bodyMedium
                                         .copy(
@@ -220,9 +185,7 @@ fun ProcedimientoListContent(
                     }
                 }
             } else {
-                Log.d("ProcedimientoListContent", "Showing positions data")
-                procedimientoData?.positions?.forEach { position ->
-                    Log.d("ProcedimientoListContent", "Processing position: ${position.name}")
+                procedureData?.positions?.forEach { position ->
                     item {
                         Text(
                             text = position.name,
@@ -237,8 +200,7 @@ fun ProcedimientoListContent(
                     }
 
                     items(position.ciltMasters) { ciltMaster ->
-                        Log.d("ProcedimientoListContent", "Rendering CiltMaster: ${ciltMaster.ciltName}")
-                        ProcedimientoCiltCard(
+                        CiltProcedureCard(
                             ciltMaster = ciltMaster,
                             positionId = position.id,
                             levelId = selectedLevelList.values.lastOrNull() ?: "528",
@@ -298,12 +260,12 @@ fun LevelContent(
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
 @Composable
-private fun ProcedimientoListScreenPreview() {
+private fun ProcedureListScreenPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            ProcedimientoListContent(
+            ProcedureListContent(
                 navController = rememberNavController(),
-                procedimientoData = ProcedimientoCiltData.mockData(),
+                procedureData = CiltProcedureData.mockData(),
                 levelList = emptyMap(),
                 selectedLevelList = emptyMap(),
                 creatingExecutionForSequence = null,

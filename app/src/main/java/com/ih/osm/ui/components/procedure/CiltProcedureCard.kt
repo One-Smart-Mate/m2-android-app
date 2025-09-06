@@ -1,6 +1,5 @@
-package com.ih.osm.ui.components.procedimiento
+package com.ih.osm.ui.components.procedure
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -39,23 +38,21 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ih.osm.R
-import com.ih.osm.domain.model.ProcedimientoCiltData
+import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
-fun ProcedimientoCiltCard(
-    ciltMaster: ProcedimientoCiltData.CiltMaster,
+fun CiltProcedureCard(
+    ciltMaster: CiltProcedureData.CiltMaster,
     positionId: Int,
     levelId: String,
     creatingExecutionForSequence: Int?,
-    onCreateExecution: (ProcedimientoCiltData.Sequence, Int, String) -> Unit,
+    onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
     onNavigateToExecution: (Int) -> Unit,
 ) {
-    Log.d("ProcedimientoCiltCard", "Creating card for: ${ciltMaster.ciltName}")
-    Log.d("ProcedimientoCiltCard", "Sequences count: ${ciltMaster.sequences.size}")
     var isExpanded by remember { mutableStateOf(false) }
 
     Card(
@@ -146,7 +143,7 @@ fun ProcedimientoCiltCard(
                     if (ciltMaster.sequences.isNotEmpty()) {
                         CustomSpacer()
                         Text(
-                            text = "Secuencias disponibles:",
+                            text = stringResource(R.string.available_sequences),
                             style =
                                 MaterialTheme.typography.bodyMedium.copy(
                                     fontWeight = FontWeight.Medium,
@@ -157,11 +154,6 @@ fun ProcedimientoCiltCard(
 
                         Column {
                             ciltMaster.sequences.sortedBy { it.order }.forEach { sequence ->
-                                Log.d(
-                                    "ProcedimientoCiltCard",
-                                    "Rendering sequence: ${sequence.ciltTypeName}, executions: ${sequence.executions.size}",
-                                )
-
                                 SequenceCard(
                                     sequence = sequence,
                                     positionId = positionId,
@@ -173,13 +165,9 @@ fun ProcedimientoCiltCard(
 
                                 // Show executions for this sequence if available
                                 if (sequence.executions.isNotEmpty()) {
-                                    Log.d("ProcedimientoCiltCard", "Showing ${sequence.executions.size} executions for sequence")
                                     sequence.executions.forEach { execution ->
-                                        Log.d("ProcedimientoCiltCard", "Rendering execution: ${execution.id}")
                                         ExecutionCard(execution = execution)
                                     }
-                                } else {
-                                    Log.d("ProcedimientoCiltCard", "No executions for sequence ${sequence.ciltTypeName}")
                                 }
 
                                 CustomSpacer(space = SpacerSize.SMALL)
@@ -188,7 +176,7 @@ fun ProcedimientoCiltCard(
                     } else {
                         CustomSpacer()
                         Text(
-                            text = "No hay secuencias definidas para este CILT",
+                            text = stringResource(R.string.no_sequences_defined),
                             style =
                                 MaterialTheme.typography.bodySmall.copy(
                                     color = getTextColor().copy(alpha = 0.5f),
@@ -198,7 +186,11 @@ fun ProcedimientoCiltCard(
 
                     CustomSpacer()
                     Text(
-                        text = "${ciltMaster.sequences.size} secuencias",
+                        text =
+                            stringResource(
+                                R.string.number_of_sequences,
+                                ciltMaster.sequences.size,
+                            ),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = MaterialTheme.colorScheme.primary,
@@ -213,11 +205,11 @@ fun ProcedimientoCiltCard(
 
 @Composable
 private fun SequenceCard(
-    sequence: ProcedimientoCiltData.Sequence,
+    sequence: CiltProcedureData.Sequence,
     positionId: Int,
     levelId: String,
     creatingExecutionForSequence: Int?,
-    onCreateExecution: (ProcedimientoCiltData.Sequence, Int, String) -> Unit,
+    onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
     onNavigateToExecution: (Int) -> Unit,
 ) {
     val sequenceColor =
@@ -226,8 +218,6 @@ private fun SequenceCard(
         } catch (e: Exception) {
             MaterialTheme.colorScheme.primary
         }
-
-    Log.d("SequenceCard", "Sequence ${sequence.ciltTypeName} - executions: ${sequence.executions.size}")
 
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -267,7 +257,12 @@ private fun SequenceCard(
                             ),
                     )
                     Text(
-                        text = "Orden: ${sequence.order} • ${sequence.standardTime} min",
+                        text =
+                            stringResource(
+                                R.string.order_and_time,
+                                sequence.order,
+                                sequence.standardTime,
+                            ),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
@@ -287,20 +282,12 @@ private fun SequenceCard(
 
             Button(
                 onClick = {
-                    Log.d("SequenceCard", "Execute button clicked for sequence: ${sequence.id}")
-                    Log.d("SequenceCard", "creatingExecutionForSequence: $creatingExecutionForSequence")
                     val isCreatingThisSequence = creatingExecutionForSequence == sequence.id
-                    Log.d("SequenceCard", "isCreatingThisSequence: $isCreatingThisSequence")
                     if (!isCreatingThisSequence) {
-                        Log.d("SequenceCard", "About to call onCreateExecution with positionId: $positionId, levelId: $levelId")
                         try {
                             onCreateExecution(sequence, positionId, levelId)
-                            Log.d("SequenceCard", "onCreateExecution call completed successfully")
                         } catch (e: Exception) {
-                            Log.e("SequenceCard", "Error calling onCreateExecution", e)
                         }
-                    } else {
-                        Log.d("SequenceCard", "Execution already in progress for this sequence, ignoring click")
                     }
                 },
                 enabled = creatingExecutionForSequence != sequence.id,
@@ -312,15 +299,15 @@ private fun SequenceCard(
                         strokeWidth = 2.dp,
                     )
                     CustomSpacer(space = SpacerSize.TINY)
-                    Text("Creando...")
+                    Text(stringResource(R.string.creating))
                 } else {
                     Icon(
                         Icons.Filled.PlayArrow,
-                        contentDescription = "Crear ejecución",
+                        contentDescription = stringResource(R.string.create_execution),
                         modifier = Modifier.size(16.dp),
                     )
                     CustomSpacer(space = SpacerSize.TINY)
-                    Text("Ejecutar")
+                    Text(stringResource(R.string.execute))
                 }
             }
         }
@@ -328,9 +315,7 @@ private fun SequenceCard(
 }
 
 @Composable
-private fun ExecutionCard(execution: ProcedimientoCiltData.Execution) {
-    Log.d("ExecutionCard", "Creating execution card for ID: ${execution.id}")
-
+private fun ExecutionCard(execution: CiltProcedureData.Execution) {
     Card(
         modifier =
             Modifier
@@ -370,13 +355,13 @@ private fun ExecutionCard(execution: ProcedimientoCiltData.Execution) {
                 ) {
                     Icon(
                         imageVector = Icons.Filled.Check,
-                        contentDescription = "Tiempo",
+                        contentDescription = stringResource(R.string.time),
                         tint = getTextColor().copy(alpha = 0.6f),
                         modifier = Modifier.size(14.dp),
                     )
                     CustomSpacer(space = SpacerSize.TINY)
                     Text(
-                        text = "${execution.duration} min",
+                        text = stringResource(R.string.execution_minutes, execution.duration),
                         style =
                             MaterialTheme.typography.bodySmall.copy(
                                 color = getTextColor().copy(alpha = 0.6f),
@@ -388,7 +373,7 @@ private fun ExecutionCard(execution: ProcedimientoCiltData.Execution) {
             CustomSpacer(space = SpacerSize.TINY)
 
             Text(
-                text = execution.route ?: "Sin ruta especificada",
+                text = execution.route ?: stringResource(R.string.no_path_specified),
                 style =
                     MaterialTheme.typography.bodySmall.copy(
                         color = getTextColor().copy(alpha = 0.7f),

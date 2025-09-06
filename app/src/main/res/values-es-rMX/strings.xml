@@ -324,4 +324,29 @@
     <string name="forgot_fast_password">¿Olvidaste tu contraseña rápida?</string>
     <string name="recover_fast_password">Recuperar contraseña rápida</string>
     <string name="enter_phone_number">Ingresa tu número de celular</string>
+
+    <string name="available_sequences">Secuencias disponibles:</string>
+    <string name="no_sequences_defined">No hay secuencias definidas para este CILT</string>
+    <string name="number_of_sequences">%1$d secuencias</string>
+    <string name="order_and_time">Orden: %1$d • %2$d min</string>
+    <string name="creating">Creando...</string>
+    <string name="create_execution">Crear ejecución</string>
+    <string name="execute">Ejecutar</string>
+    <string name="time">Tiempo</string>
+    <string name="execution_minutes">%1$d min</string>
+    <string name="no_path_specified">Sin ruta especificada</string>
+    <string name="loading_procedures">Cargando procedimientos...</string>
+    <string name="general_procedures">Procedimientos Generales</string>
+    <string name="no_procedures_found">No se encontraron procedimientos</string>
+    <string name="select_level_to_view_available_procedures">Selecciona un nivel para ver los procedimientos disponibles</string>
+    <string name="view_procedures">Ver procedimientos generales</string>
+    <string name="error_loading_procedures">Error cargando procedimientos: %1$s</string>
+    <string name="select_level_to_view_procedures">Selecciona un nivel para ver los procedimientos</string>
+    <string name="execution_created_successfully">Ejecución creada exitosamente</string>
+    <string name="error_creating_execution">Error al crear ejecución: %1$s</string>
+    <string name="procedure_steps">Pasos del procedimiento:</string>
+    <string name="no_steps_defined_for_procedure">No hay pasos definidos para este procedimiento</string>
+    <string name="no_execution_found">No se encontró ejecución</string>
+    <string name="completed">Completed</string>
+    <string name="sequence_completed_status_r">Secuencia Completada (Status: R)</string>
 </resources>

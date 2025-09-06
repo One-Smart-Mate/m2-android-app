@@ -76,10 +76,10 @@ import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
-import com.ih.osm.domain.usecase.procedimiento.CreateCiltExecutionUseCase
-import com.ih.osm.domain.usecase.procedimiento.CreateCiltExecutionUseCaseImpl
-import com.ih.osm.domain.usecase.procedimiento.GetProcedimientosByLevelUseCase
-import com.ih.osm.domain.usecase.procedimiento.GetProcedimientosByLevelUseCaseImpl
+import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCase
+import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCase
+import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
@@ -211,9 +211,7 @@ interface DomainBindingModule {
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
 
     @Binds
-    fun bindGetProcedimientosByLevelUseCase(
-        getProcedimientosByLevelUseCaseImpl: GetProcedimientosByLevelUseCaseImpl,
-    ): GetProcedimientosByLevelUseCase
+    fun bindGetProcedureByLevelUseCase(getProcedureByLevelUseCaseImpl: GetProcedureByLevelUseCaseImpl): GetProcedureByLevelUseCase
 
     @Binds
     fun bindCreateCiltExecutionUseCase(createCiltExecutionUseCaseImpl: CreateCiltExecutionUseCaseImpl): CreateCiltExecutionUseCase
