@@ -348,7 +348,7 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
-/*
+
                 HomeSectionCardItem(
                     title = stringResource(R.string.cilt_routine),
                     icon = Icons.Outlined.CheckCircle,
@@ -356,8 +356,6 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.CILT_ROUTINE)
                 }
-
- */
 
                 // OPL Section
                 HomeSectionCardItem(
@@ -367,7 +365,7 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
-/*
+
                 // General Procedures Section
                 HomeSectionCardItem(
                     title = stringResource(R.string.general_procedures),
@@ -385,7 +383,6 @@ private fun HomeContent(
                     onShowDialog()
                 }
 
- */
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
         }

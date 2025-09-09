@@ -18,6 +18,7 @@ import com.ih.osm.domain.model.Execution
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.isValidExecution
+import com.ih.osm.domain.model.validate
 import com.ih.osm.domain.usecase.card.DeleteCardUseCase
 import com.ih.osm.domain.usecase.card.SyncCardUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
@@ -157,17 +158,17 @@ class SequenceViewModel
                     callUseCase { getSequenceUseCase(sequenceId) }
                 }.onSuccess { sequence ->
                     val execution = sequence.executions.find { it.id == executionId }
-                    val isValidExecution = true
+                    val isValidExecution = execution?.isValidExecution(context).defaultIfNull(true)
                     setState {
-//                        copy(
-//                            isLoading = false,
-//                            sequence = sequence,
-//                            execution = execution,
-//                            bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
-//                            enableStartButton = isValidExecution,
-//                            enableStartExecution = isValidExecution && execution?.status != "A",
-//                            isParamOk = execution?.nok.defaultIfNull(true),
-//                        )
+                        copy(
+                            isLoading = false,
+                            sequence = sequence,
+                            execution = execution,
+                            bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
+                            enableStartButton = isValidExecution,
+                            enableStartExecution = isValidExecution && execution?.status != "A",
+                            isParamOk = execution?.nok.defaultIfNull(true),
+                        )
                         copy(
                             isLoading = false,
                             sequence = sequence,

@@ -130,8 +130,12 @@ fun String.isExpired(): Boolean {
     return dueDate?.before(todayDate).defaultIfNull(false)
 }
 
-fun String.isCardExpired(referenceDateString: String): Boolean {
+fun String.isCardExpired(
+    referenceDateString: String,
+    status: String,
+): Boolean {
     if (this.isEmpty() || this.isBlank()) return false
+    if (status == "C" || status == "R") return false
     val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
     val referenceDate = referenceDateString.toDate(ISO, TimeZone.getTimeZone("UTC"))
     return dueDate?.before(referenceDate).defaultIfNull(false)
