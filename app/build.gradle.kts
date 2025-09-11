@@ -35,11 +35,6 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
-        kapt {
-            arguments {
-                arg("room.schemaLocation", "$projectDir/schemas")
-            }
-        }
     }
 
     buildTypes {
@@ -73,10 +68,6 @@ android {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
-    kotlinOptions {
-        jvmTarget = "1.8"
-        freeCompilerArgs = listOf("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
-    }
     buildFeatures {
         compose = true
         buildConfig = true
@@ -91,6 +82,9 @@ android {
     }
     kapt {
         correctErrorTypes = true
+        arguments {
+            arg("room.schemaLocation", "$projectDir/schemas")
+        }
     }
     hilt {
         enableAggregatingTask = true
@@ -114,6 +108,10 @@ android {
 
     kotlin {
         tasks.getByPath("preBuild").dependsOn("ktlintFormat")
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
+            freeCompilerArgs.add("-XXLanguage:+PropertyParamAnnotationDefaultTargetMode")
+        }
     }
 }
 
@@ -161,7 +159,7 @@ dependencies {
     kapt(libs.androidx.room.compiler)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.core.splashscreen)
-    implementation(libs.compose)
+    implementation(libs.glide.compose)
 
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.analytics)
