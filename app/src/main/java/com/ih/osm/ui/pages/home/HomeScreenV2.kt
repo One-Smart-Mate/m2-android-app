@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Build
+import androidx.compose.material.icons.outlined.Call
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.List
 import androidx.compose.material.icons.outlined.Lock
@@ -84,6 +85,7 @@ import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToCiltRoutine
 import com.ih.osm.ui.navigation.navigateToOplList
+import com.ih.osm.ui.navigation.navigateToProcedureList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -148,6 +150,10 @@ fun HomeScreenV2(
                     HomeActionClick.OPL_NAVIGATION -> {
                         navController.navigateToOplList()
                     }
+
+                    HomeActionClick.PROCEDURE_NAVIGATION -> {
+                        navController.navigateToProcedureList()
+                    }
                 }
             },
             state = state,
@@ -156,6 +162,10 @@ fun HomeScreenV2(
             onDismissDialog = { viewModel.hideFastPasswordDialog() },
             onBlockDialog = { viewModel.blockFastPasswordDialog() },
             onPasswordChange = { viewModel.updateFastPassword(it) },
+            onForgotFastPassword = { viewModel.showForgotFastPasswordDialog() },
+            onDismissForgotFastPasswordDialog = { viewModel.hideForgotFastPasswordDialog() },
+            onPhoneNumberChange = { viewModel.updatePhoneNumber(it) },
+            onSendFastPassword = { viewModel.process(HomeAction.SendFastPassword(it)) },
         )
     }
 
@@ -182,6 +192,7 @@ fun HomeScreenV2(
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
                     scope.launch {
                         snackBarHostState.showSnackbar(message = state.message)
+                        viewModel.process(HomeAction.CleanMessage)
                     }
                 }
                 if (state.updateApp) {
@@ -216,6 +227,10 @@ private fun HomeContent(
     onDismissDialog: () -> Unit,
     onBlockDialog: () -> Unit,
     onPasswordChange: (String) -> Unit,
+    onForgotFastPassword: () -> Unit,
+    onDismissForgotFastPasswordDialog: () -> Unit,
+    onPhoneNumberChange: (String) -> Unit,
+    onSendFastPassword: (String) -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -333,7 +348,7 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
-
+/*
                 HomeSectionCardItem(
                     title = stringResource(R.string.cilt_routine),
                     icon = Icons.Outlined.CheckCircle,
@@ -341,6 +356,8 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.CILT_ROUTINE)
                 }
+
+ */
 
                 // OPL Section
                 HomeSectionCardItem(
@@ -350,7 +367,16 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
-
+/*
+                // General Procedures Section
+                HomeSectionCardItem(
+                    title = stringResource(R.string.general_procedures),
+                    icon = Icons.Outlined.List,
+                    description = stringResource(R.string.view_procedures),
+                ) {
+                    onClick(HomeActionClick.PROCEDURE_NAVIGATION)
+                }
+*/
                 HomeSectionCardItem(
                     title = stringResource(R.string.fast_password),
                     icon = Icons.Outlined.Lock,
@@ -358,6 +384,7 @@ private fun HomeContent(
                 ) {
                     onShowDialog()
                 }
+
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
         }
@@ -368,34 +395,8 @@ private fun HomeContent(
                         onDismissDialog()
                     }
                 },
-                confirmButton = {
-                    TextButton(
-                        onClick = {
-                            onFastLogin(state.fastPassword)
-                        },
-                    ) {
-                        Text(
-                            text = stringResource(R.string.accept),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.primary,
-                        )
-                    }
-                },
-                dismissButton = {
-                    if (!state.isDialogBlocked) {
-                        TextButton(
-                            onClick = {
-                                onDismissDialog()
-                            },
-                        ) {
-                            Text(
-                                text = stringResource(R.string.cancel),
-                                style = MaterialTheme.typography.labelLarge,
-                                color = MaterialTheme.colorScheme.secondary,
-                            )
-                        }
-                    }
-                },
+                confirmButton = { },
+                dismissButton = { },
                 title = {
                     Text(
                         text = stringResource(R.string.fast_password),
@@ -407,7 +408,12 @@ private fun HomeContent(
                             label = stringResource(R.string.enter_fast_password),
                             icon = Icons.Outlined.Lock,
                             isPassword = true,
-                            onChange = { onPasswordChange(it) },
+                            onChange = {
+                                onPasswordChange(it)
+                                if (it.length == 4) {
+                                    onFastLogin(it)
+                                }
+                            },
                         )
                         if (!state.isDialogBlocked) {
                             TextButton(onClick = { onBlockDialog() }) {
@@ -418,6 +424,51 @@ private fun HomeContent(
                                 )
                             }
                         }
+
+                        TextButton(onClick = { onForgotFastPassword() }) {
+                            Text(
+                                text = stringResource(R.string.forgot_fast_password),
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.labelLarge,
+                            )
+                        }
+                    }
+                },
+                shape = RoundedCornerShape(16.dp),
+                containerColor = MaterialTheme.colorScheme.surface,
+            )
+        }
+
+        if (state.showForgotFastPasswordDialog) {
+            AlertDialog(
+                onDismissRequest = { onDismissForgotFastPasswordDialog() },
+                confirmButton = {
+                    TextButton(onClick = {
+                        onSendFastPassword(state.phoneNumber)
+                    }) {
+                        Text(stringResource(R.string.accept))
+                    }
+                },
+                dismissButton = {
+                    TextButton(onClick = {
+                        onDismissForgotFastPasswordDialog()
+                    }) {
+                        Text(stringResource(R.string.cancel))
+                    }
+                },
+                title = {
+                    Text(
+                        text = stringResource(R.string.recover_fast_password),
+                    )
+                },
+                text = {
+                    Column {
+                        CustomTextField(
+                            label = stringResource(R.string.enter_phone_number),
+                            icon = Icons.Outlined.Call,
+                            isPassword = false,
+                            onChange = { onPhoneNumberChange(it) },
+                        )
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
@@ -434,6 +485,7 @@ enum class HomeActionClick {
     NAVIGATION,
     CILT_ROUTINE,
     OPL_NAVIGATION,
+    PROCEDURE_NAVIGATION,
 }
 
 @Composable

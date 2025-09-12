@@ -14,12 +14,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Menu
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
@@ -71,7 +74,9 @@ import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.fromIsoToNormalDate
 import com.ih.osm.ui.extensions.isWithinExecutionWindow
+import com.ih.osm.ui.navigation.Screen
 import com.ih.osm.ui.navigation.navigateToCreateCard
+import com.ih.osm.ui.navigation.navigateToSequence
 import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.PaddingToolbar
 import kotlinx.coroutines.CoroutineScope
@@ -82,6 +87,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun CiltDetailScreen(
     executionId: Int,
+    targetSiteExecutionId: Int = -1,
     navController: NavController,
     viewModel: CiltRoutineViewModel = hiltViewModel(),
 ) {
@@ -93,11 +99,23 @@ fun CiltDetailScreen(
 
     val isLoading = state.isLoading
 
-    val execution = viewModel.getExecutionById(executionId)
+    val execution =
+        if (executionId == 0 && targetSiteExecutionId != -1) {
+            // When coming from procedures, find execution by siteExecutionId
+            val foundExecution = viewModel.getExecutionBySiteExecutionId(targetSiteExecutionId)
+            foundExecution
+        } else {
+            val foundExecution = viewModel.getExecutionById(executionId)
+            foundExecution
+        }
 
     val opl = state.opl
     val remediationOpl = state.remediationOpl
     val superiorId = state.superiorId
+
+    LaunchedEffect(Unit) {
+        viewModel.process(CiltAction.GetCilts)
+    }
 
     LaunchedEffect(state.ciltData) {
         if (state.ciltData != null) {
@@ -105,9 +123,53 @@ fun CiltDetailScreen(
         }
     }
 
+    // Auto-navigate to sequence when coming from Procedures
+    var hasNavigated by remember { mutableStateOf(false) }
+
     LaunchedEffect(state.isSequenceFinished) {
         if (state.isSequenceFinished) {
-            navController.popBackStack()
+            // Reset hasNavigated flag when sequence is finished
+            hasNavigated = false
+
+            // When coming from Procedures (targetSiteExecutionId != -1), go back to routines
+            if (targetSiteExecutionId != -1) {
+                // Force complete destruction by popping back to CiltScreen
+                val success = navController.popBackStack(Screen.Cilt.route, false)
+                if (!success) {
+                    // Fallback: navigate fresh
+                    navController.navigate(Screen.Cilt.route) {
+                        popUpTo(navController.graph.startDestinationId)
+                        launchSingleTop = true
+                    }
+                }
+            } else {
+                navController.popBackStack()
+            }
+
+            // Reset the sequence finished flag immediately after navigation
+            viewModel.resetSequenceFinishedFlag()
+        }
+    }
+
+    LaunchedEffect(targetSiteExecutionId, hasNavigated) {
+        if (targetSiteExecutionId != -1 && execution != null && state.ciltData != null && !hasNavigated) {
+            // Find the sequence that contains this execution
+            val sequence =
+                state.ciltData?.positions
+                    ?.flatMap { it.ciltMasters }
+                    ?.flatMap { it.sequences }
+                    ?.find { sequence ->
+                        val hasExecution =
+                            sequence.executions.any { it.siteExecutionId == targetSiteExecutionId }
+                        hasExecution
+                    }
+
+            if (sequence != null) {
+                // Navigate to the sequence after a small delay to ensure smooth transition
+                delay(500)
+                hasNavigated = true
+                navController.navigateToSequence(sequence.id, execution.id)
+            }
         }
     }
 
@@ -170,6 +232,14 @@ fun CiltDetailScreen(
                     }
                 }
         }
+    } else {
+        // Show empty screen or error message
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(stringResource(R.string.no_execution_found))
+        }
     }
 
     SnackbarHost(hostState = snackBarHostState) {
@@ -227,6 +297,9 @@ fun ExecutionDetailContent(
     val isEvidenceAtFinal = viewModel.isEvidenceAtFinal.value
     val evidenceUrisBefore = viewModel.evidenceUrisBefore
     val evidenceUrisAfter = viewModel.evidenceUrisAfter
+
+    // Check if execution is completed (status = "R" means completed)
+    val isCompleted = execution.status == "R"
 
     var elapsedTime by remember { mutableStateOf(0) }
     val totalDuration = execution.duration ?: 0
@@ -403,32 +476,68 @@ fun ExecutionDetailContent(
             allowExecuteAfterDue = execution.allowExecuteAfterDue,
         )
 
-    if (!isStarted) {
-        CustomButton(
-            text = stringResource(R.string.start_sequence),
-            buttonType = ButtonType.DEFAULT,
-            onClick = {
-                if (canExecute) {
-                    onAction(CiltAction.StartExecution(execution.id))
-                } else {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message =
-                                message
-                                    ?: context.getString(R.string.execution_out_of_window),
-                        )
+    // Only show start/finish buttons if execution is not completed (status != "R")
+    if (!isCompleted) {
+        if (!isStarted) {
+            CustomButton(
+                text = stringResource(R.string.start_sequence),
+                buttonType = ButtonType.DEFAULT,
+                onClick = {
+                    if (canExecute) {
+                        onAction(CiltAction.StartExecution(execution.id))
+                    } else {
+                        coroutineScope.launch {
+                            snackbarHostState.showSnackbar(
+                                message =
+                                    message
+                                        ?: context.getString(R.string.execution_out_of_window),
+                            )
+                        }
                     }
-                }
-            },
-        )
-    } else if (isStarted) {
-        CustomButton(
-            text = stringResource(R.string.finish_sequence),
-            buttonType = ButtonType.DEFAULT,
-            onClick = {
-                onAction(CiltAction.StopExecution(execution.id))
-            },
-        )
+                },
+            )
+        } else if (isStarted) {
+            CustomButton(
+                text = stringResource(R.string.finish_sequence),
+                buttonType = ButtonType.DEFAULT,
+                onClick = {
+                    onAction(CiltAction.StopExecution(execution.id))
+                },
+            )
+        }
+    } else {
+        // Show completion status
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .background(
+                        MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        RoundedCornerShape(12.dp),
+                    )
+                    .padding(16.dp),
+            contentAlignment = Alignment.Center,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+            ) {
+                Icon(
+                    Icons.Filled.CheckCircle,
+                    contentDescription = stringResource(R.string.completed),
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp),
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = stringResource(R.string.sequence_completed_status_r),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary,
+                    fontWeight = FontWeight.Bold,
+                )
+            }
+        }
     }
 
     Spacer(modifier = Modifier.height(8.dp))
@@ -478,36 +587,54 @@ fun ExecutionDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    CustomTextField(
-        modifier =
-            Modifier.fillMaxWidth(),
-        label = stringResource(R.string.parameter_found),
-        placeholder = stringResource(R.string.enter_parameter_found),
-        icon = Icons.Outlined.Menu,
-        onChange = { onAction(CiltAction.SetParameterFound(it)) },
-    )
+    if (!isCompleted) {
+        CustomTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(R.string.parameter_found),
+            placeholder = stringResource(R.string.enter_parameter_found),
+            icon = Icons.Outlined.Menu,
+            onChange = { onAction(CiltAction.SetParameterFound(it)) },
+        )
+    } else {
+        // Show read-only field for completed executions
+        InfoItem(
+            label = stringResource(R.string.parameter_found),
+            value = execution.initialParameter ?: "N/A",
+        )
+    }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CameraLauncher { imageUri ->
-            onAction(CiltAction.AddEvidenceBefore(execution.id, imageUri))
-            onAction(CiltAction.SetEvidenceAtCreation(true))
+    // Only show camera for evidence if execution is not completed
+    if (!isCompleted) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CameraLauncher { imageUri ->
+                onAction(CiltAction.AddEvidenceBefore(execution.id, imageUri))
+                onAction(CiltAction.SetEvidenceAtCreation(true))
+            }
         }
     }
 
     SectionImagesEvidence(
         imageEvidences =
-            evidenceUrisBefore.map { uri ->
-                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.INITIAL.name)
+            if (isCompleted) {
+                // For completed executions, we would need to get the actual evidence from the execution
+                // For now, showing empty list, but this should be populated with actual evidence data
+                emptyList()
+            } else {
+                evidenceUrisBefore.map { uri ->
+                    Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.INITIAL.name)
+                }
             },
         onDeleteEvidence = { evidence ->
-            onAction(CiltAction.RemoveEvidenceBefore(evidence.url))
+            if (!isCompleted) {
+                onAction(CiltAction.RemoveEvidenceBefore(evidence.url))
+            }
         },
     )
 
@@ -536,36 +663,54 @@ fun ExecutionDetailContent(
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    CustomTextField(
-        modifier =
-            Modifier.fillMaxWidth(),
-        label = stringResource(R.string.final_parameter),
-        placeholder = stringResource(R.string.enter_final_parameter),
-        icon = Icons.Outlined.Menu,
-        onChange = { onAction(CiltAction.SetFinalParameter(it)) },
-    )
+    if (!isCompleted) {
+        CustomTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(R.string.final_parameter),
+            placeholder = stringResource(R.string.enter_final_parameter),
+            icon = Icons.Outlined.Menu,
+            onChange = { onAction(CiltAction.SetFinalParameter(it)) },
+        )
+    } else {
+        // Show read-only field for completed executions
+        InfoItem(
+            label = stringResource(R.string.final_parameter),
+            value = execution.finalParameter ?: "N/A",
+        )
+    }
 
     Spacer(modifier = Modifier.height(8.dp))
 
-    Box(
-        modifier =
-            Modifier
-                .fillMaxWidth(),
-        contentAlignment = Alignment.Center,
-    ) {
-        CameraLauncher { imageUri ->
-            onAction(CiltAction.AddEvidenceAfter(execution.id, imageUri))
-            onAction(CiltAction.SetEvidenceAtFinal(true))
+    // Only show camera for final evidence if execution is not completed
+    if (!isCompleted) {
+        Box(
+            modifier =
+                Modifier
+                    .fillMaxWidth(),
+            contentAlignment = Alignment.Center,
+        ) {
+            CameraLauncher { imageUri ->
+                onAction(CiltAction.AddEvidenceAfter(execution.id, imageUri))
+                onAction(CiltAction.SetEvidenceAtFinal(true))
+            }
         }
     }
 
     SectionImagesEvidence(
         imageEvidences =
-            evidenceUrisAfter.map { uri ->
-                Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.FINAL.name)
+            if (isCompleted) {
+                // For completed executions, we would need to get the actual evidence from the execution
+                // For now, showing empty list, but this should be populated with actual evidence data
+                emptyList()
+            } else {
+                evidenceUrisAfter.map { uri ->
+                    Evidence.fromCreateEvidence("", uri.toString(), EvidenceType.FINAL.name)
+                }
             },
         onDeleteEvidence = { evidence ->
-            onAction(CiltAction.RemoveEvidenceAfter(evidence.url))
+            if (!isCompleted) {
+                onAction(CiltAction.RemoveEvidenceAfter(evidence.url))
+            }
         },
     )
 

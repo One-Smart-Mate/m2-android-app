@@ -4,14 +4,18 @@ import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CiltEvidenceResponse
 import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateCardResponse
+import com.ih.osm.data.model.CreateCiltExecutionRequest
+import com.ih.osm.data.model.CreateCiltExecutionResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
+import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
+import com.ih.osm.data.model.GetCiltProcedureResponse
 import com.ih.osm.data.model.GetCiltResponse
-import com.ih.osm.data.model.GetCiltsRequest
 import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
@@ -22,7 +26,10 @@ import com.ih.osm.data.model.GetSequenceResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
+import com.ih.osm.data.model.RefreshTokenRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SendFastPasswordRequest
+import com.ih.osm.data.model.SendFastPasswordResponse
 import com.ih.osm.data.model.SolutionResponse
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StartSequenceExecutionResponse
@@ -141,10 +148,8 @@ interface ApiService {
         @Path("roleName") roleName: String,
     ): Call<GetEmployeesResponse>
 
-    @POST("cilt-mstr/user")
-    fun getCilts(
-        @Body body: GetCiltsRequest,
-    ): Call<GetCiltResponse>
+    @GET("cilt-sequences-executions/of-day")
+    fun getCilts(): Call<GetCiltResponse>
 
     @GET("/opl-mstr/{id}")
     fun getOplById(
@@ -180,4 +185,29 @@ interface ApiService {
     fun getSequence(
         @Path("id") id: Int,
     ): Call<GetSequenceResponse>
+
+    @POST("auth/send-fastpassword-by-phone")
+    fun sendFastPassword(
+        @Body body: SendFastPasswordRequest,
+    ): Call<SendFastPasswordResponse>
+
+    @GET("cilt-mstr-position-levels/level/{levelId}/recent-executions")
+    fun getCiltProcedureByLevel(
+        @Path("levelId") levelId: String,
+    ): Call<GetCiltProcedureResponse>
+
+    @POST("cilt-sequences-executions/create")
+    fun createCiltExecution(
+        @Body body: CreateCiltExecutionRequest,
+    ): Call<CreateCiltExecutionResponse>
+
+    @POST("cilt-sequences-executions/generate")
+    fun generateCiltExecution(
+        @Body body: GenerateCiltExecutionRequest,
+    ): Call<GenerateCiltExecutionResponse>
+
+    @POST("auth/refresh-token")
+    fun refreshToken(
+        @Body body: RefreshTokenRequest,
+    ): Call<LoginResponse>
 }

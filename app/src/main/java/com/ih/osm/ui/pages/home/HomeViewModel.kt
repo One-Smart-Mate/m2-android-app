@@ -13,7 +13,7 @@ import com.ih.osm.core.network.NetworkConnectionStatus
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.core.workmanager.WorkManagerUUID
 import com.ih.osm.data.model.FastLoginRequest
-import com.ih.osm.data.model.toDomain
+import com.ih.osm.data.model.SendFastPasswordRequest
 import com.ih.osm.data.model.toSession
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
@@ -23,6 +23,7 @@ import com.ih.osm.domain.repository.session.SessionRepository
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.login.FastLoginUseCase
+import com.ih.osm.domain.usecase.login.SendFastPasswordUseCase
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
@@ -53,6 +54,7 @@ class HomeViewModel
         private val sharedPreferences: SharedPreferences,
         private val sessionRepository: SessionRepository,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
+        private val sendFastPasswordUseCase: SendFastPasswordUseCase,
         @ApplicationContext private val context: Context,
         savedStateHandle: SavedStateHandle,
     ) : BaseViewModel<HomeViewModel.UiState>(UiState()) {
@@ -72,6 +74,8 @@ class HomeViewModel
             val fastPassword: String = EMPTY,
             val isDialogBlocked: Boolean = false,
             val fastLoginSuccessful: Boolean = false,
+            val showForgotFastPasswordDialog: Boolean = false,
+            val phoneNumber: String = EMPTY,
         )
 
         fun process(action: HomeAction) {
@@ -84,6 +88,8 @@ class HomeViewModel
                 }
 
                 is HomeAction.FastLogin -> handleFastLogin(action.fastPassword)
+                is HomeAction.CleanMessage -> cleanMessage()
+                is HomeAction.SendFastPassword -> handleSendFastPassword(action.phoneNumber)
             }
         }
 
@@ -92,6 +98,7 @@ class HomeViewModel
             val syncCatalogs = savedStateHandle.get<String>(ARG_SYNC_CATALOG).orEmpty()
             handleSyncCatalogs(syncCatalogs)
             checkPreferences()
+            restoreFastPasswordBlocked()
         }
 
         private fun handleSyncLocalCards(appContext: Context) {
@@ -404,10 +411,10 @@ class HomeViewModel
                         )
                     }
                 }.onSuccess { loginResponse ->
-                    val user = loginResponse.toDomain()
                     val session = loginResponse.toSession()
 
                     sessionRepository.save(session)
+                    sharedPreferences.saveFastPasswordBlocked(false)
 
                     handleGetSession()
 
@@ -455,10 +462,66 @@ class HomeViewModel
         }
 
         fun blockFastPasswordDialog() {
+            sharedPreferences.saveFastPasswordBlocked(true)
             setState { copy(isDialogBlocked = true) }
         }
 
         fun consumeFastLoginSuccess() {
             setState { copy(fastLoginSuccessful = false) }
+        }
+
+        fun cleanMessage() {
+            setState { copy(message = EMPTY) }
+        }
+
+        private fun restoreFastPasswordBlocked() {
+            val blocked = sharedPreferences.isFastPasswordBlocked()
+            if (blocked) {
+                setState { copy(isDialogBlocked = true, showFastPasswordDialog = true) }
+            }
+        }
+
+        fun showForgotFastPasswordDialog() {
+            setState { copy(showForgotFastPasswordDialog = true) }
+        }
+
+        fun hideForgotFastPasswordDialog() {
+            setState { copy(showForgotFastPasswordDialog = false) }
+        }
+
+        fun updatePhoneNumber(phoneNumber: String) {
+            setState { copy(phoneNumber = phoneNumber) }
+        }
+
+        private fun handleSendFastPassword(phoneNumber: String) {
+            viewModelScope.launch {
+                setState { copy(isLoading = true, message = EMPTY) }
+
+                kotlin.runCatching {
+                    callUseCase {
+                        sendFastPasswordUseCase(
+                            SendFastPasswordRequest(
+                                phoneNumber = phoneNumber,
+                            ),
+                        )
+                    }
+                }.onSuccess {
+                    setState {
+                        copy(
+                            isLoading = false,
+                            showForgotFastPasswordDialog = false,
+                            phoneNumber = EMPTY,
+                        )
+                    }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    setState {
+                        copy(
+                            isLoading = false,
+                            message = it.localizedMessage.orEmpty(),
+                        )
+                    }
+                }
+            }
         }
     }

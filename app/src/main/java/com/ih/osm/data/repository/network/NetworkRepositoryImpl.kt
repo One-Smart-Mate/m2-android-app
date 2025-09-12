@@ -5,14 +5,20 @@ import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.api.ApiService
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.CreateCiltExecutionRequest
+import com.ih.osm.data.model.CreateCiltExecutionResponse
 import com.ih.osm.data.model.CreateDefinitiveSolutionRequest
 import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
-import com.ih.osm.data.model.GetCiltsRequest
+import com.ih.osm.data.model.GenerateCiltExecutionRequest
+import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
+import com.ih.osm.data.model.RefreshTokenRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SendFastPasswordRequest
+import com.ih.osm.data.model.SendFastPasswordResponse
 import com.ih.osm.data.model.StartSequenceExecutionRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
@@ -21,6 +27,7 @@ import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
+import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
@@ -250,7 +257,7 @@ class NetworkRepositoryImpl
             userId: String,
             date: String,
         ): CiltData {
-            val response = apiService.getCilts(GetCiltsRequest(userId.toInt(), date)).execute()
+            val response = apiService.getCilts().execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody?.data != null) {
                 responseBody.toDomain()
@@ -312,6 +319,62 @@ class NetworkRepositoryImpl
             val response = apiService.getSequence(id).execute()
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse {
+            val response = apiService.sendFastPassword(body).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteCiltProcedureByLevel(levelId: String): CiltProcedureData {
+            try {
+                val response = apiService.getCiltProcedureByLevel(levelId).execute()
+
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()!!
+
+                    val domainData = responseBody.toDomain()
+                    return domainData
+                } else {
+                    error(response.getErrorMessage())
+                }
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
+        override suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
+            val response = apiService.createCiltExecution(request).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse {
+            val response = apiService.generateCiltExecution(request).execute()
+
+            return if (response.isSuccessful && response.body() != null) {
+                val responseBody = response.body()!!
+
+                responseBody
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse {
+            val response = apiService.refreshToken(body).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!
             } else {
                 error(response.getErrorMessage())
             }

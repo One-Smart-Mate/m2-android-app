@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.cilt
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -105,12 +106,33 @@ class CiltRoutineViewModel
         private fun handleGetCilts() {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
+                Log.d("CiltRoutineViewModel", "Starting getCilts...")
 
                 val date = getCurrentDate()
+                Log.d("CiltRoutineViewModel", "Using date: $date")
 
                 kotlin.runCatching {
                     callUseCase { getCiltsUseCase(date) }
                 }.onSuccess { data ->
+                    Log.d("CiltRoutineViewModel", "getCilts successful - positions: ${data.positions.size}")
+                    data.positions.forEach { position ->
+                        Log.d("CiltRoutineViewModel", "Position: ${position.name}")
+                        position.ciltMasters.forEach { master ->
+                            Log.d("CiltRoutineViewModel", "  Master: ${master.ciltName}")
+                            master.sequences.forEach { sequence ->
+                                Log.d(
+                                    "CiltRoutineViewModel",
+                                    "    Sequence: ${sequence.id} - ${sequence.ciltTypeName} (${sequence.executions.size} executions)",
+                                )
+                                sequence.executions.forEach { execution ->
+                                    Log.d(
+                                        "CiltRoutineViewModel",
+                                        "      Execution: ID=${execution.id}, siteExecutionId=${execution.siteExecutionId}",
+                                    )
+                                }
+                            }
+                        }
+                    }
                     setState {
                         copy(
                             ciltData = data,
@@ -119,6 +141,7 @@ class CiltRoutineViewModel
                         )
                     }
                 }.onFailure {
+                    Log.e("CiltRoutineViewModel", "getCilts failed", it)
                     LoggerHelperManager.logException(it)
                     setState {
                         copy(
@@ -282,9 +305,14 @@ class CiltRoutineViewModel
                     sharedPreferences.removeCiltCard()
                     setState { copy(isUploadingEvidence = true) }
                     uploadPendingEvidences(executionId)
+                    Log.d("CiltRoutineViewModel", "✅ SEQUENCE EXECUTION COMPLETED SUCCESSFULLY")
+                    Log.d("CiltRoutineViewModel", "🔄 Setting isSequenceFinished = true - This will trigger navigation")
+                    Log.d("CiltRoutineViewModel", "📍 Navigation trigger: isSequenceFinished will cause CiltDetailScreen to redirect")
                     setState {
                         copy(isUploadingEvidence = false, isSequenceFinished = true)
                     }
+                    Log.d("CiltRoutineViewModel", "🎯 STATE UPDATED - isSequenceFinished = ${state.isSequenceFinished}")
+                    Log.d("CiltRoutineViewModel", "⏭️ NAVIGATION SHOULD START NOW - CiltDetailScreen will detect this change")
                     resetExecutionState()
                     notificationManager.buildNotificationSequenceFinished()
                 }.onFailure {
@@ -334,6 +362,35 @@ class CiltRoutineViewModel
                 ?.find { it.id == executionId }
         }
 
+        fun getExecutionBySiteExecutionId(siteExecutionId: Int): Execution? {
+            Log.d("CiltRoutineViewModel", "Searching for execution with siteExecutionId: $siteExecutionId")
+            val ciltData = state.value.ciltData
+            Log.d("CiltRoutineViewModel", "CiltData available: ${ciltData != null}")
+            Log.d("CiltRoutineViewModel", "Positions count: ${ciltData?.positions?.size}")
+
+            val allExecutions =
+                ciltData?.positions
+                    ?.flatMap { position ->
+                        Log.d("CiltRoutineViewModel", "Position: ${position.name}, Masters: ${position.ciltMasters.size}")
+                        position.ciltMasters
+                    }
+                    ?.flatMap { master ->
+                        Log.d("CiltRoutineViewModel", "Master: ${master.ciltName}, Sequences: ${master.sequences.size}")
+                        master.sequences
+                    }
+                    ?.flatMap { sequence ->
+                        Log.d("CiltRoutineViewModel", "Sequence: ${sequence.id}, Executions: ${sequence.executions.size}")
+                        sequence.executions.forEach { exec ->
+                            Log.d("CiltRoutineViewModel", "  Execution ID: ${exec.id}, siteExecutionId: ${exec.siteExecutionId}")
+                        }
+                        sequence.executions
+                    }
+
+            val foundExecution = allExecutions?.find { it.siteExecutionId == siteExecutionId }
+            Log.d("CiltRoutineViewModel", "Found execution: ${foundExecution != null} (${foundExecution?.siteExecutionId})")
+            return foundExecution
+        }
+
         fun getSuperiorIdFromExecutionLevelId(
             executionId: Int,
             onResult: (String?) -> Unit = {},
@@ -370,6 +427,8 @@ class CiltRoutineViewModel
         }
 
         fun resetSequenceFinishedFlag() {
+            Log.d("CiltRoutineViewModel", "🧹 RESET SEQUENCE FINISHED FLAG")
+            Log.d("CiltRoutineViewModel", "🔄 Resetting isSequenceFinished to false after navigation completed")
             setState { copy(isSequenceFinished = false) }
         }
 
@@ -382,6 +441,9 @@ class CiltRoutineViewModel
                 }
 
                 is CiltAction.StopExecution -> {
+                    Log.d("CiltRoutineViewModel", "🛑 STOP EXECUTION REQUESTED")
+                    Log.d("CiltRoutineViewModel", "🆔 Execution ID: ${action.executionId}")
+                    Log.d("CiltRoutineViewModel", "📊 Current state - isStarted: ${isStarted.value}, isFinished: ${isFinished.value}")
                     stopSequenceExecution(
                         executionId = action.executionId,
                         initialParameter = parameterFound.value,
@@ -459,5 +521,14 @@ class CiltRoutineViewModel
             isEvidenceAtFinal.value = false
             evidenceUrisBefore.clear()
             evidenceUrisAfter.clear()
+            // Also clear any loaded OPLs
+            setState {
+                copy(
+                    opl = null,
+                    remediationOpl = null,
+                    superiorId = null,
+                    message = EMPTY,
+                )
+            }
         }
     }

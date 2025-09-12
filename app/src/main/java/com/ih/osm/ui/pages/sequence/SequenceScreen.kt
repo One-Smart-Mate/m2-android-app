@@ -85,8 +85,6 @@ import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTinySmall
 import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.utils.EMPTY
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
@@ -119,6 +117,7 @@ fun SequenceScreen(
             enableCompleteButton = state.enableCompleteButton,
             enableStartExecution = state.enableStartExecution,
             maxTimeDuration = state.duration,
+            elapsedTime = state.elapsedTime,
             isParamOk = state.isParamOk,
             superiorId = state.superiorId,
             card = state.card,
@@ -208,15 +207,16 @@ fun SequenceContent(
     enableCompleteButton: Boolean,
     enableStartExecution: Boolean,
     maxTimeDuration: Int = 0,
+    elapsedTime: Int = 0,
     isParamOk: Boolean,
     superiorId: Int,
     card: Card? = null,
     onAction: (SequenceViewModel.SequenceAction) -> Unit = {},
     onShowDialog: () -> Unit = {},
 ) {
+    // Check if execution is completed (status = "R" means completed)
+    val isCompleted = execution?.status == "R"
     val scrollState = rememberScrollState()
-    var initialParam by remember { mutableStateOf(EMPTY) }
-    var finalParam by remember { mutableStateOf(EMPTY) }
 
     Scaffold { paddingValues ->
         Column(
@@ -326,19 +326,49 @@ fun SequenceContent(
             // Counter
 
             if (enableCompleteButton) {
-                SequenceTimer(totalDuration = maxTimeDuration)
+                SequenceTimer(totalDuration = maxTimeDuration, elapsedTime = elapsedTime)
             }
 
-            if (enableStartButton) {
+            // Only show start button if execution is not completed (status != "R")
+            if (enableStartButton && !isCompleted) {
                 CustomButton(text = stringResource(R.string.start_sequence)) {
                     onAction(SequenceViewModel.SequenceAction.StartSequence)
+                }
+            } else if (isCompleted) {
+                // Show completion status
+                Card(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                    colors =
+                        CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                        ),
+                ) {
+                    Row(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                    ) {
+                        Text(
+                            text = stringResource(R.string.sequence_finished),
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold,
+                        )
+                    }
                 }
             }
             CustomSpacer()
 
-            if (enableCompleteButton) {
+            // Only show finish button if execution is not completed
+            if (enableCompleteButton && !isCompleted) {
                 CustomButton(text = stringResource(R.string.finish_sequence)) {
-                    onAction(SequenceViewModel.SequenceAction.CompleteSequence(initialParam, finalParam))
+                    onAction(SequenceViewModel.SequenceAction.CompleteSequence)
                 }
             }
 
@@ -376,13 +406,14 @@ fun SequenceContent(
             )
             CustomSpacer()
 
-            if (enableStartExecution) {
+            // Only show editable fields if execution is not completed
+            if (enableStartExecution && !isCompleted) {
                 CustomTextField(
                     label = stringResource(R.string.parameter_found),
                     icon = Icons.Outlined.Create,
                     modifier = Modifier.fillMaxWidth(),
                 ) { value ->
-                    initialParam = value
+                    onAction(SequenceViewModel.SequenceAction.UpdateInitialParameter(value))
                 }
                 CustomSpacer()
                 Box(
@@ -404,6 +435,12 @@ fun SequenceContent(
                 SectionImagesEvidence(imageEvidences = evidences.filter { it.type == EvidenceType.INITIAL.name }) {
                     onAction(SequenceViewModel.SequenceAction.RemoveEvidence(it))
                 }
+            } else if (isCompleted && enableStartExecution) {
+                AnatomyHorizontalSection(
+                    title = stringResource(R.string.parameter_found),
+                    description = execution.initialParameter ?: "N/A",
+                )
+                CustomSpacer()
             }
 
             CustomSpacer()
@@ -412,13 +449,14 @@ fun SequenceContent(
             }
             CustomSpacer(space = SpacerSize.LARGE)
 
-            if (enableStartExecution) {
+            // Only show final parameter field if execution is not completed
+            if (enableStartExecution && !isCompleted) {
                 CustomTextField(
                     label = stringResource(R.string.final_parameter),
                     icon = Icons.Outlined.Create,
                     modifier = Modifier.fillMaxWidth(),
                 ) { value ->
-                    finalParam = value
+                    onAction(SequenceViewModel.SequenceAction.UpdateFinalParameter(value))
                 }
                 CustomSpacer()
 
@@ -443,6 +481,12 @@ fun SequenceContent(
                     onAction(SequenceViewModel.SequenceAction.RemoveEvidence(it))
                 }
                 CustomSpacer()
+            } else if (isCompleted && enableStartExecution) {
+                AnatomyHorizontalSection(
+                    title = stringResource(R.string.final_parameter),
+                    description = execution.finalParameter ?: "N/A",
+                )
+                CustomSpacer()
             }
             CustomButton(text = stringResource(R.string.view_remediation)) {
                 onAction(SequenceViewModel.SequenceAction.GetRemediationOpl)
@@ -462,7 +506,8 @@ fun SequenceContent(
                     },
             )
 
-            if (enableStartExecution && card == null) {
+            // Only show parameter OK radio buttons if execution is not completed
+            if (enableStartExecution && card == null && !isCompleted) {
                 Column(
                     modifier =
                         Modifier
@@ -504,7 +549,8 @@ fun SequenceContent(
             }
             CustomSpacer()
 
-            if (isParamOk.not() && card == null && enableStartExecution) {
+            // Only show generate card button if execution is not completed
+            if (isParamOk.not() && card == null && enableStartExecution && !isCompleted) {
                 CustomButton(text = stringResource(R.string.generate_am_card)) {
                     navController.navigateToCreateCard("cilt:$superiorId")
                 }
@@ -514,7 +560,12 @@ fun SequenceContent(
                 ExpandableCard(
                     title = stringResource(R.string.card),
                 ) {
-                    CardItemListV2(card = card, onClick = {}, onAction = {}, isActionsEnabled = false)
+                    CardItemListV2(
+                        card = card,
+                        onClick = {},
+                        onAction = {},
+                        isActionsEnabled = false,
+                    )
                 }
             }
 
@@ -538,16 +589,11 @@ fun SequenceContent(
 }
 
 @Composable
-fun SequenceTimer(totalDuration: Int) {
-    var elapsedTime by remember { mutableStateOf(0) }
+fun SequenceTimer(
+    totalDuration: Int,
+    elapsedTime: Int,
+) {
     val progress = if (totalDuration > 0) elapsedTime / totalDuration.toFloat() else 0f
-
-    LaunchedEffect(Unit) {
-        while (elapsedTime <= totalDuration) {
-            delay(1000L)
-            elapsedTime += 1
-        }
-    }
 
     Column(
         modifier =

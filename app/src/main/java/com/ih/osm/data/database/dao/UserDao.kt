@@ -17,4 +17,10 @@ interface UserDao {
 
     @Delete
     suspend fun deleteUser(userEntity: UserEntity): Int
+
+    @Query("UPDATE USER_TABLE SET token = :token WHERE user_id = :userId")
+    suspend fun updateToken(
+        userId: String,
+        token: String,
+    )
 }

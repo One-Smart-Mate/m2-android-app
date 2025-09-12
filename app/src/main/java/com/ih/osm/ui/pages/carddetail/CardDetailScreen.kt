@@ -171,7 +171,7 @@ fun CardInformationContent(card: Card) {
                 card.cardDefinitiveSolutionDate
             }
 
-        val isExpired = card.dueDate.isCardExpired(referenceDateString)
+        val isExpired = card.dueDate.isCardExpired(referenceDateString, card.status)
 
         SectionTag(
             title = stringResource(id = R.string.due_date),

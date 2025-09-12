@@ -1,0 +1,40 @@
+package com.ih.osm.data.model
+
+data class GenerateCiltExecutionResponse(
+    val data: GeneratedExecution,
+)
+
+data class GeneratedExecution(
+    val siteId: Int,
+    val siteExecutionId: Int,
+    val positionId: Int,
+    val ciltId: Int,
+    val ciltSecuenceId: Int,
+    val levelId: Int,
+    val route: String?,
+    val userId: Int,
+    val userWhoExecutedId: Int?,
+    val specialWarning: String?,
+    val machineStatus: String?,
+    val secuenceSchedule: String,
+    val allowExecuteBefore: Boolean,
+    val allowExecuteBeforeMinutes: Int,
+    val toleranceBeforeMinutes: Int,
+    val toleranceAfterMinutes: Int,
+    val allowExecuteAfterDue: Boolean,
+    val secuenceStart: String?,
+    val secuenceStop: String?,
+    val duration: Int,
+    val realDuration: String?,
+    val standardOk: String,
+    val initialParameter: String?,
+    val evidenceAtCreation: Boolean,
+    val finalParameter: String?,
+    val evidenceAtFinal: Boolean,
+    val nok: Boolean,
+    val stoppageReason: Boolean,
+    val machineStopped: Boolean,
+    val amTagId: Int?,
+    val referencePoint: String,
+    val secuenceList: String,
+)

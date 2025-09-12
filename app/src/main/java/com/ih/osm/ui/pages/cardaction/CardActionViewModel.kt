@@ -86,7 +86,7 @@ class CardActionViewModel
         fun process(action: CardAction) {
             when (action) {
                 is CardAction.SearchEmployee -> handleOnSearchEmployee(action.query)
-                is CardAction.SetEmployee -> setState { copy(selectedEmployee = action.employee) }
+                is CardAction.SetEmployee -> setState { copy(selectedEmployee = action.employee, filteredEmployeeList = emptyList()) }
                 is CardAction.SetComment -> setState { copy(comments = action.comment) }
                 is CardAction.AddEvidence -> handleAddEvidence(action.uri, action.type)
                 is CardAction.DeleteEvidence -> handleDeleteEvidence(action.evidence)

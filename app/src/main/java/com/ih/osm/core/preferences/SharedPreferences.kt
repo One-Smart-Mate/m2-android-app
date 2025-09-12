@@ -28,6 +28,8 @@ class SharedPreferences
             private const val NOTIFICATION_APP_VERSION = "app_version"
             private const val DUE_DATE_PREFERENCES = "due_date"
             private const val CILT_CARD_PREFERENCES = "cilt_card"
+
+            private const val FAST_PASSWORD_BLOCKED = "fast_password_blocked"
         }
 
         init {
@@ -173,5 +175,17 @@ class SharedPreferences
                     remove(CILT_CARD_PREFERENCES)
                 }
             }
+        }
+
+        fun saveFastPasswordBlocked(blocked: Boolean) {
+            sharedPreferences?.let {
+                it.edit(commit = true) {
+                    putBoolean(FAST_PASSWORD_BLOCKED, blocked)
+                }
+            }
+        }
+
+        fun isFastPasswordBlocked(): Boolean {
+            return sharedPreferences?.getBoolean(FAST_PASSWORD_BLOCKED, false) ?: false
         }
     }

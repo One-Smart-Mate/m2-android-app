@@ -6,7 +6,10 @@ import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
+import com.ih.osm.data.model.RefreshTokenRequest
 import com.ih.osm.data.model.RestorePasswordRequest
+import com.ih.osm.data.model.SendFastPasswordRequest
+import com.ih.osm.data.model.SendFastPasswordResponse
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.User
@@ -64,5 +67,13 @@ class AuthRepositoryImpl
 
         override suspend fun fastLogin(body: FastLoginRequest): LoginResponse {
             return networkRepository.fastLogin(body)
+        }
+
+        override suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse {
+            return networkRepository.sendFastPassword(body)
+        }
+
+        override suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse {
+            return networkRepository.refreshToken(body)
         }
     }

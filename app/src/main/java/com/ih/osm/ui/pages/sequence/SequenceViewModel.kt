@@ -18,6 +18,7 @@ import com.ih.osm.domain.model.Execution
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.isValidExecution
+import com.ih.osm.domain.model.validate
 import com.ih.osm.domain.usecase.card.DeleteCardUseCase
 import com.ih.osm.domain.usecase.card.SyncCardUseCase
 import com.ih.osm.domain.usecase.cilt.GetOplByIdUseCase
@@ -31,6 +32,9 @@ import com.ih.osm.ui.extensions.getCurrentDateTimeUtc
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -49,6 +53,8 @@ class SequenceViewModel
         private val syncCardUseCase: SyncCardUseCase,
         private val stopSequenceExecutionUseCase: StopSequenceExecutionUseCase,
     ) : BaseViewModel<SequenceViewModel.UiState>(UiState()) {
+        private var timerJob: Job? = null
+
         data class UiState(
             val isLoading: Boolean = true,
             val evidences: List<Evidence> = emptyList(),
@@ -64,10 +70,14 @@ class SequenceViewModel
             val enableCompleteButton: Boolean = false,
             val enableStartExecution: Boolean = false,
             val duration: Int = 0,
+            val initialParameter: String = "",
+            val finalParameter: String = "",
             val isParamOk: Boolean = true,
             val superiorId: Int = 0,
             val card: Card? = null,
             val navigateBack: Boolean = false,
+            val elapsedTime: Int = 0,
+            val isTimerRunning: Boolean = false,
         )
 
         sealed class SequenceAction {
@@ -87,11 +97,15 @@ class SequenceViewModel
 
             data object StartSequence : SequenceAction()
 
-            data class CompleteSequence(val initialParameter: String, val finalParameter: String) : SequenceAction()
+            data object CompleteSequence : SequenceAction()
 
             data object ToggleOkParam : SequenceAction()
 
             data object CleanSequenceInformation : SequenceAction()
+
+            data class UpdateInitialParameter(val value: String) : SequenceAction()
+
+            data class UpdateFinalParameter(val value: String) : SequenceAction()
         }
 
         fun process(action: SequenceAction) {
@@ -115,8 +129,11 @@ class SequenceViewModel
                     setState { copy(isParamOk = isParamOk) }
                 }
 
-                is SequenceAction.CompleteSequence -> handleCompleteSequence(action.initialParameter, action.finalParameter)
+                is SequenceAction.CompleteSequence -> handleCompleteSequence()
+
                 is SequenceAction.CleanSequenceInformation -> cleanSequenceInformation()
+                is SequenceAction.UpdateInitialParameter -> setState { copy(initialParameter = action.value) }
+                is SequenceAction.UpdateFinalParameter -> setState { copy(finalParameter = action.value) }
             }
         }
 
@@ -141,17 +158,17 @@ class SequenceViewModel
                     callUseCase { getSequenceUseCase(sequenceId) }
                 }.onSuccess { sequence ->
                     val execution = sequence.executions.find { it.id == executionId }
-                    val isValidExecution = true
+                    val isValidExecution = execution?.isValidExecution(context).defaultIfNull(true)
                     setState {
-//                        copy(
-//                            isLoading = false,
-//                            sequence = sequence,
-//                            execution = execution,
-//                            bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
-//                            enableStartButton = isValidExecution,
-//                            enableStartExecution = isValidExecution && execution?.status != "A",
-//                            isParamOk = execution?.nok.defaultIfNull(true),
-//                        )
+                        copy(
+                            isLoading = false,
+                            sequence = sequence,
+                            execution = execution,
+                            bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
+                            enableStartButton = isValidExecution,
+                            enableStartExecution = isValidExecution && execution?.status != "A",
+                            isParamOk = execution?.nok.defaultIfNull(true),
+                        )
                         copy(
                             isLoading = false,
                             sequence = sequence,
@@ -254,6 +271,7 @@ class SequenceViewModel
                         )
                     }
                     notificationManager.buildNotificationSequenceStarted()
+                    startTimer()
                 }.onFailure {
                     val isExecutionStarted =
                         it.localizedMessage.orEmpty().lowercase().contains(
@@ -273,6 +291,27 @@ class SequenceViewModel
                     }
                 }
             }
+        }
+
+        fun startTimer() {
+            if (getState().isTimerRunning) return
+
+            timerJob?.cancel()
+            timerJob =
+                viewModelScope.launch {
+                    setState { copy(isTimerRunning = true) }
+                    while (isActive) {
+                        delay(1000L)
+                        val next = getState().elapsedTime + 1
+                        setState { copy(elapsedTime = next) }
+                    }
+                }
+        }
+
+        fun stopTimer() {
+            timerJob?.cancel()
+            timerJob = null
+            setState { copy(isTimerRunning = false) }
         }
 
         private fun getDuration(): Int {
@@ -305,10 +344,7 @@ class SequenceViewModel
             }
         }
 
-        fun handleCompleteSequence(
-            initialParameter: String,
-            finalParameter: String,
-        ) {
+        fun handleCompleteSequence() {
             viewModelScope.launch {
                 val state = getState()
                 setState { copy(isLoading = true) }
@@ -357,9 +393,9 @@ class SequenceViewModel
                     StopSequenceExecutionRequest(
                         id = state.execution?.id.defaultIfNull(0),
                         stopDate = stopDate,
-                        initialParameter = initialParameter,
+                        initialParameter = state.initialParameter,
                         evidenceAtCreation = state.evidences.any { it.type == EvidenceType.INITIAL.name },
-                        finalParameter = finalParameter,
+                        finalParameter = state.finalParameter,
                         evidenceAtFinal = state.evidences.any { it.type == EvidenceType.FINAL.name },
                         nok = state.isParamOk,
                         amTagId = remoteCardId,
@@ -368,6 +404,7 @@ class SequenceViewModel
                 kotlin.runCatching {
                     callUseCase { stopSequenceExecutionUseCase(request, state.evidences) }
                 }.onSuccess {
+                    stopTimer()
                     notificationManager.buildNotificationSequenceFinished()
                     setState { copy(isLoading = false, navigateBack = true) }
                 }.onFailure {

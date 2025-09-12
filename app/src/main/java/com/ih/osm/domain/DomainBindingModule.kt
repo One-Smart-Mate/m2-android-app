@@ -56,6 +56,10 @@ import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.login.FastLoginUseCaseImpl
 import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCaseImpl
+import com.ih.osm.domain.usecase.login.RefreshTokenUseCase
+import com.ih.osm.domain.usecase.login.RefreshTokenUseCaseImpl
+import com.ih.osm.domain.usecase.login.SendFastLoginUseCaseImpl
+import com.ih.osm.domain.usecase.login.SendFastPasswordUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCaseImpl
 import com.ih.osm.domain.usecase.notifications.GetFirebaseNotificationUseCase
@@ -72,6 +76,10 @@ import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCase
 import com.ih.osm.domain.usecase.preclassifier.GetPreclassifiersUseCaseImpl
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
+import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCase
+import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCase
+import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
@@ -203,6 +211,12 @@ interface DomainBindingModule {
     fun bindGetOplsByLevelUseCase(getOplsByLevelUseCaseImpl: GetOplsByLevelUseCaseImpl): GetOplsByLevelUseCase
 
     @Binds
+    fun bindGetProcedureByLevelUseCase(getProcedureByLevelUseCaseImpl: GetProcedureByLevelUseCaseImpl): GetProcedureByLevelUseCase
+
+    @Binds
+    fun bindCreateCiltExecutionUseCase(createCiltExecutionUseCaseImpl: CreateCiltExecutionUseCaseImpl): CreateCiltExecutionUseCase
+
+    @Binds
     fun bindFastLoginUseCase(fastLoginUseCaseImpl: FastLoginUseCaseImpl): FastLoginUseCase
 
     @Binds
@@ -216,4 +230,10 @@ interface DomainBindingModule {
 
     @Binds
     fun bindDeleteCardUseCase(deleteCardUseCaseImpl: DeleteCardUseCaseImpl): DeleteCardUseCase
+
+    @Binds
+    fun bindSendFastPasswordUseCase(sendFastPasswordUseCase: SendFastLoginUseCaseImpl): SendFastPasswordUseCase
+
+    @Binds
+    fun bindRefreshTokenUseCase(refreshTokenUseCaseImpl: RefreshTokenUseCaseImpl): RefreshTokenUseCase
 }
