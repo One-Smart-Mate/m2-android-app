@@ -13,7 +13,5 @@ class GetCardTypeUseCaseImpl
     constructor(
         private val repo: CardTypeRepository,
     ) : GetCardTypeUseCase {
-        override suspend fun invoke(id: String): CardType? {
-            return repo.get(id)
-        }
+        override suspend fun invoke(id: String): CardType? = repo.get(id)
     }

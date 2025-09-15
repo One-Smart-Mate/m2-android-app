@@ -19,8 +19,8 @@ class SyncFirebaseTokenUseCaseImpl
         private val sharedPreferences: SharedPreferences,
         private val updateTokenUseCase: UpdateTokenUseCase,
     ) : SyncFirebaseTokenUseCase {
-        override suspend fun invoke(): Boolean {
-            return try {
+        override suspend fun invoke(): Boolean =
+            try {
                 val firebaseToken = FirebaseMessaging.getInstance().token.await()
                 var storedToken =
                     firebaseToken.ifEmpty {
@@ -39,5 +39,4 @@ class SyncFirebaseTokenUseCaseImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 false
             }
-        }
     }

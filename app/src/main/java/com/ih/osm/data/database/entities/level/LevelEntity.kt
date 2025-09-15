@@ -24,8 +24,8 @@ data class LevelEntity(
     val status: String,
 )
 
-fun LevelEntity.toDomain(): Level {
-    return Level(
+fun LevelEntity.toDomain(): Level =
+    Level(
         id = this.id,
         ownerId = this.ownerId,
         ownerName = this.ownerName,
@@ -34,4 +34,3 @@ fun LevelEntity.toDomain(): Level {
         description = this.description,
         status = this.status,
     )
-}

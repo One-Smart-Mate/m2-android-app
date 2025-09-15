@@ -57,8 +57,8 @@ data class CardTypeEntity(
     val cardTypeMethodology: String?,
 )
 
-fun CardTypeEntity.toDomain(): CardType {
-    return CardType(
+fun CardTypeEntity.toDomain(): CardType =
+    CardType(
         id = this.id,
         methodology = this.methodology,
         name = this.name,
@@ -83,4 +83,3 @@ fun CardTypeEntity.toDomain(): CardType {
         videosDurationPs = this.videosDurationPs.defaultIfNull(0),
         cardTypeMethodology = this.cardTypeMethodology,
     )
-}

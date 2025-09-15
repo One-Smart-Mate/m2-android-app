@@ -95,7 +95,8 @@ fun ExecutionCard(
                 ) {
                     Text(
                         text =
-                            execution.secuenceSchedule.parseUTCToLocal()
+                            execution.secuenceSchedule
+                                .parseUTCToLocal()
                                 .toHourMinuteString(),
                         style =
                             MaterialTheme.typography.titleMedium
@@ -107,8 +108,7 @@ fun ExecutionCard(
                                 .background(
                                     color = execution.getStatusColor(),
                                     shape = MaterialTheme.shapes.small,
-                                )
-                                .padding(horizontal = 12.dp, vertical = 4.dp),
+                                ).padding(horizontal = 12.dp, vertical = 4.dp),
                     ) {
                         Text(
                             text = execution.getStatus(),

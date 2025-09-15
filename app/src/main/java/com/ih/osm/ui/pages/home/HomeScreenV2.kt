@@ -196,7 +196,8 @@ fun HomeScreenV2(
                     }
                 }
                 if (state.updateApp) {
-                    context.getActivity<MainActivity>()
+                    context
+                        .getActivity<MainActivity>()
                         ?.showUpdateDialog()
                 }
             }
@@ -569,8 +570,7 @@ private fun HomeAppBarV2(
                         .background(
                             shape = RoundedCornerShape(Radius8),
                             color = Color.Gray.copy(alpha = 0.1f),
-                        )
-                        .padding(PaddingTiny),
+                        ).padding(PaddingTiny),
             )
         }
         CustomSpacer(space = SpacerSize.SMALL)

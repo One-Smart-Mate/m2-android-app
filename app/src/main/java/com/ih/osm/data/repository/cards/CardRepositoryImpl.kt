@@ -37,24 +37,20 @@ class CardRepositoryImpl
 
         override suspend fun getAll(): List<Card> {
             val cards =
-                dao.getAll().map {
-                    val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
-                    it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
-                }.sortedBy { it.id }
+                dao
+                    .getAll()
+                    .map {
+                        val hasLocalSolutions = solutionRepo.getAllByCard(it.uuid)
+                        it.toDomain(hasLocalSolutions = hasLocalSolutions.isNotEmpty())
+                    }.sortedBy { it.id }
             return cards
         }
 
-        override suspend fun getLastCardId(): String? {
-            return dao.getLastCardId()
-        }
+        override suspend fun getLastCardId(): String? = dao.getLastCardId()
 
-        override suspend fun getLastSiteCardId(): Long? {
-            return dao.getLastSiteCardId()
-        }
+        override suspend fun getLastSiteCardId(): Long? = dao.getLastSiteCardId()
 
-        override suspend fun save(card: Card): Long {
-            return dao.insert(card.toEntity())
-        }
+        override suspend fun save(card: Card): Long = dao.insert(card.toEntity())
 
         override suspend fun getAllLocal(): List<Card> {
             val localCards = dao.getAllLocal(stored = STORED_LOCAL).toMutableList()
@@ -65,15 +61,17 @@ class CardRepositoryImpl
                 }
             }
             val sortedCards =
-                localCards.toSet().map { cardEntity ->
-                    val evidences =
-                        evidenceRepo.getAllByCard(cardEntity.uuid)
-                    val hasLocalSolutions = solutionRepo.getAllByCard(cardEntity.uuid)
-                    cardEntity.toDomain(
-                        evidences = evidences,
-                        hasLocalSolutions = hasLocalSolutions.isNotEmpty(),
-                    )
-                }.sortedBy { it.siteCardId }
+                localCards
+                    .toSet()
+                    .map { cardEntity ->
+                        val evidences =
+                            evidenceRepo.getAllByCard(cardEntity.uuid)
+                        val hasLocalSolutions = solutionRepo.getAllByCard(cardEntity.uuid)
+                        cardEntity.toDomain(
+                            evidences = evidences,
+                            hasLocalSolutions = hasLocalSolutions.isNotEmpty(),
+                        )
+                    }.sortedBy { it.siteCardId }
             return sortedCards
         }
 
@@ -95,10 +93,11 @@ class CardRepositoryImpl
 
         override suspend fun getByZone(superiorId: String): List<Card> {
             val siteId = authRepo.getSiteId()
-            return dao.getByZone(
-                siteId,
-                superiorId,
-            ).map { it.toDomain(hasLocalSolutions = false) }
+            return dao
+                .getByZone(
+                    siteId,
+                    superiorId,
+                ).map { it.toDomain(hasLocalSolutions = false) }
         }
 
         override suspend fun deleteAll() {
@@ -110,22 +109,16 @@ class CardRepositoryImpl
             return networkRepository.getRemoteCardsByUser(siteId)
         }
 
-        override suspend fun getRemote(cardId: String): Card? {
-            return networkRepository.getRemoteCardDetail(cardId)
-        }
+        override suspend fun getRemote(cardId: String): Card? = networkRepository.getRemoteCardDetail(cardId)
 
-        override suspend fun saveRemote(card: CreateCardRequest): Card {
-            return networkRepository.saveRemoteCard(card)
-        }
+        override suspend fun saveRemote(card: CreateCardRequest): Card = networkRepository.saveRemoteCard(card)
 
         override suspend fun getRemoteByZone(superiorId: String): List<Card> {
             val siteId = authRepo.getSiteId()
             return networkRepository.getRemoteCardsZone(superiorId, siteId)
         }
 
-        override suspend fun updateRemoteMechanic(body: UpdateMechanicRequest) {
-            return networkRepository.updateRemoteMechanic(body)
-        }
+        override suspend fun updateRemoteMechanic(body: UpdateMechanicRequest) = networkRepository.updateRemoteMechanic(body)
 
         override suspend fun getRemoteByLevelMachine(levelMachine: String): List<Card> {
             val siteId = authRepo.getSiteId()

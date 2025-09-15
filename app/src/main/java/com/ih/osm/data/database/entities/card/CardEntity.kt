@@ -145,19 +145,18 @@ data class CardEntity(
     val cardLocation: String,
 )
 
-fun CardEntity.validateDate(): String {
-    return if (this.stored == STORED_REMOTE) {
+fun CardEntity.validateDate(): String =
+    if (this.stored == STORED_REMOTE) {
         creationDate.toFormatDate(ISO_FORMAT)
     } else {
         creationDate.toFormatDate(NORMAL_FORMAT)
     }
-}
 
 fun CardEntity.toDomain(
     evidences: List<Evidence> = emptyList(),
     hasLocalSolutions: Boolean,
-): Card {
-    return Card(
+): Card =
+    Card(
         id = this.cardId,
         siteCardId = this.siteCardId,
         siteId = this.siteId,
@@ -223,4 +222,3 @@ fun CardEntity.toDomain(
         cardLocation = this.cardLocation,
         hasLocalSolutions = hasLocalSolutions,
     )
-}

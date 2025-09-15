@@ -84,7 +84,8 @@ class MainActivity : ComponentActivity() {
 
     private fun observeNetworkChanges() {
         val networkRequest =
-            NetworkRequest.Builder()
+            NetworkRequest
+                .Builder()
                 .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
                 .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
                 .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
@@ -135,14 +136,14 @@ class MainActivity : ComponentActivity() {
     }
 
     fun showUpdateDialog() {
-        AlertDialog.Builder(this)
+        AlertDialog
+            .Builder(this)
             .setTitle(getString(R.string.update_title))
             .setMessage(getString(R.string.update_description))
             .setCancelable(false)
             .setPositiveButton(getString(R.string.update_list)) { _, _ ->
                 openPlayStore()
-            }
-            .setNegativeButton(getString(R.string.update_cancel)) { _, _ ->
+            }.setNegativeButton(getString(R.string.update_cancel)) { _, _ ->
                 this.finish()
             }.show()
     }

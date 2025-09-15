@@ -35,15 +35,14 @@ class FileHelper
             initFilePath()
         }
 
-        fun getFileUri(): Uri? {
-            return getLocalFile()?.let {
+        fun getFileUri(): Uri? =
+            getLocalFile()?.let {
                 FileProvider.getUriForFile(
                     context,
                     BuildConfig.APPLICATION_ID + ".provider",
                     it,
                 )
             }
-        }
 
         private fun initFilePath() {
             val localPath = sharedPreferences.getLogPath()
@@ -61,14 +60,13 @@ class FileHelper
             }
         }
 
-        private fun getLocalFile(): File? {
-            return if (File(this.path).exists()) {
+        private fun getLocalFile(): File? =
+            if (File(this.path).exists()) {
                 File(this.path)
             } else {
                 sharedPreferences.saveLogFile(EMPTY)
                 null
             }
-        }
 
         fun logCreateCard(card: Card) {
             try {
@@ -174,8 +172,8 @@ class FileHelper
             }
         }
 
-        fun getDuration(uri: Uri): Long {
-            return try {
+        fun getDuration(uri: Uri): Long =
+            try {
                 MediaMetadataRetriever().use { retriever ->
                     retriever.setDataSource(context, uri)
                     val durationStr = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)
@@ -185,7 +183,6 @@ class FileHelper
                 FirebaseCrashlytics.getInstance().recordException(e)
                 0L
             }
-        }
 
         fun logNotification(data: Any) {
             try {

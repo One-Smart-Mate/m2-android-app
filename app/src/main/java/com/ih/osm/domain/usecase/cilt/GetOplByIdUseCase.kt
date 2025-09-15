@@ -13,7 +13,5 @@ class GetOplByIdUseCaseImpl
     constructor(
         private val repository: CiltRepository,
     ) : GetOplByIdUseCase {
-        override suspend fun invoke(id: String): Opl {
-            return repository.getOplById(id)
-        }
+        override suspend fun invoke(id: String): Opl = repository.getOplById(id)
     }

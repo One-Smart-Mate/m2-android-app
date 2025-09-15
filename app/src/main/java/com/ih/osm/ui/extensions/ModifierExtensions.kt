@@ -16,30 +16,26 @@ import com.ih.osm.ui.theme.PaddingTiny
 fun Modifier.headerContent(
     paddingTop: Dp,
     showBackground: Boolean = true,
-): Modifier {
-    return if (showBackground) {
+): Modifier =
+    if (showBackground) {
         this
             .fillMaxWidth()
             .background(
                 color = MaterialTheme.colorScheme.primary,
-            )
-            .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
+            ).padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
     } else {
         this
             .fillMaxWidth()
             .padding(start = PaddingNormal, end = PaddingNormal, top = paddingTop)
     }
-}
 
 @Composable
-fun Modifier.scaffold(): Modifier {
-    return this
+fun Modifier.scaffold(): Modifier =
+    this
         .fillMaxSize()
-}
 
 @Composable
-fun Modifier.defaultScreen(padding: PaddingValues): Modifier {
-    return this
+fun Modifier.defaultScreen(padding: PaddingValues): Modifier =
+    this
         .fillMaxSize()
         .padding(vertical = padding.calculateTopPadding(), horizontal = PaddingTiny)
-}

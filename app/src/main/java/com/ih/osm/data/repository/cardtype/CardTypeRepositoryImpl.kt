@@ -16,13 +16,12 @@ class CardTypeRepositoryImpl
         private val dao: CardTypeDao,
         private val authRepository: AuthRepository,
     ) : CardTypeRepository {
-        override suspend fun getAll(filter: String): List<CardType> {
-            return if (filter.isEmpty()) {
+        override suspend fun getAll(filter: String): List<CardType> =
+            if (filter.isEmpty()) {
                 dao.getAll().map { it.toDomain() }
             } else {
                 dao.getByMethodology(filter).map { it.toDomain() }
             }
-        }
 
         override suspend fun saveAll(list: List<CardType>) {
             dao.deleteAll()
@@ -31,9 +30,7 @@ class CardTypeRepositoryImpl
             }
         }
 
-        override suspend fun get(id: String): CardType? {
-            return dao.get(id)?.toDomain()
-        }
+        override suspend fun get(id: String): CardType? = dao.get(id)?.toDomain()
 
         override suspend fun deleteAll() {
             dao.deleteAll()

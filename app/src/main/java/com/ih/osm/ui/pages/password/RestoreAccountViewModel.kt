@@ -126,18 +126,19 @@ class RestoreAccountViewModel
             viewModelScope.launch {
                 val email = getState().email
                 val request = RestorePasswordRequest(email = email)
-                kotlin.runCatching {
-                    callUseCase { sendRestorePasswordCodeUseCase(request) }
-                }.onSuccess {
-                    setState { copy(isLoading = false, currentStep = 2) }
-                }.onFailure {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = getErrorMessage(it.localizedMessage.orEmpty()),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { sendRestorePasswordCodeUseCase(request) }
+                    }.onSuccess {
+                        setState { copy(isLoading = false, currentStep = 2) }
+                    }.onFailure {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = getErrorMessage(it.localizedMessage.orEmpty()),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -145,18 +146,19 @@ class RestoreAccountViewModel
             viewModelScope.launch {
                 val state = getState()
                 val request = RestorePasswordRequest(email = state.email, resetCode = state.code)
-                kotlin.runCatching {
-                    callUseCase { verifyPasswordCodeUseCase(request) }
-                }.onSuccess {
-                    setState { copy(isLoading = false, currentStep = 3) }
-                }.onFailure {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = getErrorMessage(it.localizedMessage.orEmpty()),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { verifyPasswordCodeUseCase(request) }
+                    }.onSuccess {
+                        setState { copy(isLoading = false, currentStep = 3) }
+                    }.onFailure {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = getErrorMessage(it.localizedMessage.orEmpty()),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -169,19 +171,20 @@ class RestoreAccountViewModel
                         resetCode = state.code,
                         newPassword = state.password,
                     )
-                kotlin.runCatching {
-                    callUseCase { resetPasswordUseCase(request) }
-                }.onSuccess {
-                    notificationManager.buildNotificationSuccessChangePassword()
-                    setState { copy(isLoading = false, isComplete = true) }
-                }.onFailure {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = getErrorMessage(it.localizedMessage.orEmpty()),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { resetPasswordUseCase(request) }
+                    }.onSuccess {
+                        notificationManager.buildNotificationSuccessChangePassword()
+                        setState { copy(isLoading = false, isComplete = true) }
+                    }.onFailure {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = getErrorMessage(it.localizedMessage.orEmpty()),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -190,8 +193,8 @@ class RestoreAccountViewModel
             handleCheckEmail()
         }
 
-        private fun getErrorMessage(error: String): String {
-            return when (error) {
+        private fun getErrorMessage(error: String): String =
+            when (error) {
                 "User not found" -> context.getString(R.string.user_not_found)
                 "Wrong reset code" -> context.getString(R.string.wrong_reset_code)
                 "ResetCode must be longer than or equal to 6 characters" ->
@@ -206,7 +209,6 @@ class RestoreAccountViewModel
 
                 else -> context.getString(R.string.something_went_wrong)
             }
-        }
 
         fun cleanMessage() {
             setState { copy(message = EMPTY) }

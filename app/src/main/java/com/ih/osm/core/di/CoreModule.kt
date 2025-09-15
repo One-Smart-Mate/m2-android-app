@@ -25,7 +25,5 @@ object CoreModule {
     fun provideFileHelper(
         @ApplicationContext context: Context,
         sharedPreferences: SharedPreferences,
-    ): FileHelper {
-        return FileHelper(context, sharedPreferences)
-    }
+    ): FileHelper = FileHelper(context, sharedPreferences)
 }

@@ -12,9 +12,7 @@ class EvidenceRepositoryImpl
     constructor(
         private val dao: EvidenceDao,
     ) : EvidenceRepository {
-        override suspend fun save(evidence: Evidence): Long {
-            return dao.insert(evidence.toEntity())
-        }
+        override suspend fun save(evidence: Evidence): Long = dao.insert(evidence.toEntity())
 
         override suspend fun delete(id: String) {
             dao.delete(id)
@@ -28,7 +26,5 @@ class EvidenceRepositoryImpl
             dao.deleteByCard(uuid)
         }
 
-        override suspend fun getAllByCard(uuid: String): List<Evidence> {
-            return dao.getAllByCard(uuid).map { it.toDomain() }
-        }
+        override suspend fun getAllByCard(uuid: String): List<Evidence> = dao.getAllByCard(uuid).map { it.toDomain() }
     }

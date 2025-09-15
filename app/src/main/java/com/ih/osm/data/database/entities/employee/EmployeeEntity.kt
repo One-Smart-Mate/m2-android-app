@@ -16,10 +16,9 @@ data class EmployeeEntity(
     val email: String,
 )
 
-fun EmployeeEntity.toDomain(): Employee {
-    return Employee(
+fun EmployeeEntity.toDomain(): Employee =
+    Employee(
         id = this.id,
         name = this.name,
         email = this.email,
     )
-}

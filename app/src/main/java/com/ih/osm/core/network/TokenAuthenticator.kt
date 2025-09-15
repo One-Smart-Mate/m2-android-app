@@ -41,7 +41,8 @@ class TokenAuthenticator
                 userDao.updateToken(user.userId, newToken)
             }
 
-            return response.request.newBuilder()
+            return response.request
+                .newBuilder()
                 .header("Authorization", "Bearer $newToken")
                 .build()
         }

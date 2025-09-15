@@ -14,7 +14,5 @@ class FastLoginUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : FastLoginUseCase {
-        override suspend fun invoke(body: FastLoginRequest): LoginResponse {
-            return authRepository.fastLogin(body)
-        }
+        override suspend fun invoke(body: FastLoginRequest): LoginResponse = authRepository.fastLogin(body)
     }

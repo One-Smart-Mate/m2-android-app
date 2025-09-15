@@ -63,32 +63,28 @@ class AppFirebaseMessaging : FirebaseMessagingService() {
     }
 }
 
-enum class FirebaseNotificationType(val type: String) {
+enum class FirebaseNotificationType(
+    val type: String,
+) {
     SYNC_REMOTE_CATALOGS("SYNC_REMOTE_CATALOGS"),
     UNKNOWN(EMPTY),
     SYNC_REMOTE_CARDS("SYNC_REMOTE_CARDS"),
     UPDATE_APP("UPDATE_APP"),
 }
 
-fun RemoteMessage.getType(): String {
-    return this.data[FirebaseMessageProps.MESSAGE_TYPE].orEmpty()
-}
+fun RemoteMessage.getType(): String = this.data[FirebaseMessageProps.MESSAGE_TYPE].orEmpty()
 
-fun RemoteMessage.getAppVersion(): String {
-    return this.data[FirebaseMessageProps.APP_VERSION].orEmpty()
-}
+fun RemoteMessage.getAppVersion(): String = this.data[FirebaseMessageProps.APP_VERSION].orEmpty()
 
-fun RemoteMessage.getTitle(): String {
-    return this.data[FirebaseMessageProps.TITLE].defaultIfNull(
+fun RemoteMessage.getTitle(): String =
+    this.data[FirebaseMessageProps.TITLE].defaultIfNull(
         this.notification?.title.orEmpty(),
     )
-}
 
-fun RemoteMessage.getDescription(): String {
-    return this.data[FirebaseMessageProps.DESCRIPTION].defaultIfNull(
+fun RemoteMessage.getDescription(): String =
+    this.data[FirebaseMessageProps.DESCRIPTION].defaultIfNull(
         this.notification?.body.orEmpty(),
     )
-}
 
 object FirebaseMessageProps {
     const val MESSAGE_TYPE = "notification_type"

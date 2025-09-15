@@ -14,7 +14,5 @@ class LoginUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : LoginUseCase {
-        override suspend fun invoke(data: LoginRequest): LoginResponse {
-            return authRepository.login(data)
-        }
+        override suspend fun invoke(data: LoginRequest): LoginResponse = authRepository.login(data)
     }

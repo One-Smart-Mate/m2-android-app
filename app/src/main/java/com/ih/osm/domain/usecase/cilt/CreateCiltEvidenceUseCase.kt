@@ -14,7 +14,5 @@ class CreateCiltEvidenceUseCaseImpl
     constructor(
         private val repository: CiltRepository,
     ) : CreateCiltEvidenceUseCase {
-        override suspend fun invoke(body: CiltEvidenceRequest): CiltSequenceEvidence {
-            return repository.createEvidence(body)
-        }
+        override suspend fun invoke(body: CiltEvidenceRequest): CiltSequenceEvidence = repository.createEvidence(body)
     }

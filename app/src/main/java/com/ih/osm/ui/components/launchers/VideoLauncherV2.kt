@@ -141,8 +141,7 @@ fun VideoLauncherV2(
                                                         context,
                                                         "Error: ${event.cause?.localizedMessage}",
                                                         Toast.LENGTH_SHORT,
-                                                    )
-                                                    .show()
+                                                    ).show()
                                             } else {
                                                 scope.launch {
                                                     Log.e(
@@ -209,7 +208,8 @@ fun VideoLauncherV2(
 fun VideoRecordTime(time: Long) {
     Column(
         modifier =
-            Modifier.padding(top = 30.dp)
+            Modifier
+                .padding(top = 30.dp)
                 .padding(10.dp)
                 .background(Color.Black, shape = RoundedCornerShape(8.dp)),
     ) {
@@ -217,7 +217,8 @@ fun VideoRecordTime(time: Long) {
             "${stringResource(R.string.record_video)}: ${time.formatTime()}",
             style =
                 MaterialTheme
-                    .typography.bodyMedium.copy(color = Color.White),
+                    .typography.bodyMedium
+                    .copy(color = Color.White),
             modifier = Modifier.padding(10.dp),
         )
     }

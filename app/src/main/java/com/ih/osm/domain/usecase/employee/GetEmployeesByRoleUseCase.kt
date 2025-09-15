@@ -13,7 +13,5 @@ class GetEmployeesByRoleUseCaseImpl
     constructor(
         private val employeeRepository: EmployeeRepository,
     ) : GetEmployeesByRoleUseCase {
-        override suspend fun invoke(roleName: String): List<Employee> {
-            return employeeRepository.getByRole(roleName)
-        }
+        override suspend fun invoke(roleName: String): List<Employee> = employeeRepository.getByRole(roleName)
     }

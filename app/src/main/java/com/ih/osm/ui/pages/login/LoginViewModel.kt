@@ -81,32 +81,33 @@ class LoginViewModel
                 val password = getState().password
                 val timezone = TimeZone.getDefault().id
                 Log.e("test", " Email: $email, Password: $password, Timezone: $timezone")
-                kotlin.runCatching {
-                    callUseCase {
-                        loginUseCase(
-                            LoginRequest(
-                                email = email,
-                                password = password,
-                                timezone = timezone,
-                                platform = ANDROID_SO.uppercase(),
-                            ),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            loginUseCase(
+                                LoginRequest(
+                                    email = email,
+                                    password = password,
+                                    timezone = timezone,
+                                    platform = ANDROID_SO.uppercase(),
+                                ),
+                            )
+                        }
+                    }.onSuccess { loginResponse ->
+                        val user = loginResponse.toDomain()
+                        val session = loginResponse.toSession()
+                        LoggerHelperManager.logUser(user)
+                        sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
+                        handleSaveUserAndSession(user, session)
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                }.onSuccess { loginResponse ->
-                    val user = loginResponse.toDomain()
-                    val session = loginResponse.toSession()
-                    LoggerHelperManager.logUser(user)
-                    sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
-                    handleSaveUserAndSession(user, session)
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
 
@@ -115,17 +116,18 @@ class LoginViewModel
             session: Session,
         ) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { saveUserUseCase(user) }
-                    callUseCase { saveSessionUseCase(session) }
-                }.onSuccess {
-                    handleSyncFirebaseToken()
-                    setDefaultPreferences()
-                    setState { copy(isLoading = false, isAuthenticated = true) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { saveUserUseCase(user) }
+                        callUseCase { saveSessionUseCase(session) }
+                    }.onSuccess {
+                        handleSyncFirebaseToken()
+                        setDefaultPreferences()
+                        setState { copy(isLoading = false, isAuthenticated = true) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState { copy(isLoading = false, message = it.localizedMessage.orEmpty()) }
+                    }
             }
         }
 
@@ -136,11 +138,12 @@ class LoginViewModel
         }
 
         private suspend fun handleSyncFirebaseToken() {
-            kotlin.runCatching {
-                callUseCase { syncFirebaseTokenUseCase() }
-            }.onFailure {
-                LoggerHelperManager.logException(it)
-                FirebaseCrashlytics.getInstance().recordException(it)
-            }
+            kotlin
+                .runCatching {
+                    callUseCase { syncFirebaseTokenUseCase() }
+                }.onFailure {
+                    LoggerHelperManager.logException(it)
+                    FirebaseCrashlytics.getInstance().recordException(it)
+                }
         }
     }

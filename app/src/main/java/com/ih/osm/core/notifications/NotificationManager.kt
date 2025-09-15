@@ -20,7 +20,9 @@ import kotlin.random.Random
 
 class NotificationManager
     @Inject
-    constructor(private val context: Context) {
+    constructor(
+        private val context: Context,
+    ) {
         private fun getChannelId(): String = "${Random.nextInt(1000, 9000)}"
 
         private fun getNotificationId(): Int = Random.nextInt(100, 900)
@@ -149,7 +151,8 @@ class NotificationManager
                     PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
                 )
 
-            return NotificationCompat.Builder(context, channelId)
+            return NotificationCompat
+                .Builder(context, channelId)
                 .setContentTitle(title)
                 .setContentText(description)
                 .setSmallIcon(icon)

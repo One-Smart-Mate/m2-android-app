@@ -10,7 +10,9 @@ import com.ih.osm.ui.utils.VIDEO_CLOSE
 import com.ih.osm.ui.utils.VIDEO_CREATION
 import com.ih.osm.ui.utils.VIDEO_PS
 
-enum class EvidenceType(type: String) {
+enum class EvidenceType(
+    type: String,
+) {
     IMCR(IMG_CREATION),
     VICR(VIDEO_CREATION),
     AUCR(AUDIO_CREATION),

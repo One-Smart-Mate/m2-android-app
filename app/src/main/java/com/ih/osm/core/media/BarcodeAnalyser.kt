@@ -15,7 +15,8 @@ class BarcodeAnalyser(
     @OptIn(ExperimentalGetImage::class)
     override fun analyze(imageProxy: ImageProxy) {
         val options =
-            BarcodeScannerOptions.Builder()
+            BarcodeScannerOptions
+                .Builder()
                 .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
                 .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
                 .build()
@@ -24,13 +25,13 @@ class BarcodeAnalyser(
         val mediaImage = imageProxy.image
         mediaImage?.let {
             val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-            scanner.process(image)
+            scanner
+                .process(image)
                 .addOnSuccessListener { barcodes ->
                     if (barcodes.size > 0) {
                         callback(true)
                     }
-                }
-                .addOnFailureListener {
+                }.addOnFailureListener {
                     callback(false)
                 }
         }

@@ -72,28 +72,30 @@ class AccountViewModel
         private fun handleLogout() {
             setState { copy(isLoading = true) }
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { logoutUseCase() }
-                }.onSuccess {
-                    setState { copy(logout = true) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { logoutUseCase() }
+                    }.onSuccess {
+                        setState { copy(logout = true) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                    }
             }
         }
 
         private fun handleSyncCatalogs() {
             setState { copy(isLoading = true) }
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { syncCatalogsUseCase(syncCards = false) }
-                }.onSuccess {
-                    setState { copy(isLoading = false, message = "Successfully sync!") }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { syncCatalogsUseCase(syncCards = false) }
+                    }.onSuccess {
+                        setState { copy(isLoading = false, message = "Successfully sync!") }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
+                    }
             }
         }
     }

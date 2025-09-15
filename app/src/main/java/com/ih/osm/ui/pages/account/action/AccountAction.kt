@@ -5,5 +5,7 @@ sealed class AccountAction {
 
     data object SyncCatalogs : AccountAction()
 
-    data class SetSwitch(val checked: Boolean) : AccountAction()
+    data class SetSwitch(
+        val checked: Boolean,
+    ) : AccountAction()
 }

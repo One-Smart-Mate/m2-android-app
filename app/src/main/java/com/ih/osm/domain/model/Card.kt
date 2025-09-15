@@ -123,8 +123,8 @@ data class Card(
     val hasLocalSolutions: Boolean,
 ) {
     companion object {
-        fun mock(): Card {
-            return Card(
+        fun mock(): Card =
+            Card(
                 "179",
                 1,
                 "1",
@@ -189,7 +189,6 @@ data class Card(
                 cardLocation = "Procesos/Mixer 1 /Bomba 1",
                 hasLocalSolutions = true,
             )
-        }
 
         fun fromCreateCard(
             areaId: Long,
@@ -204,8 +203,8 @@ data class Card(
             hasAudios: Int,
             evidences: List<Evidence>,
             uuid: String,
-        ): Card {
-            return Card(
+        ): Card =
+            Card(
                 id = EMPTY,
                 siteCardId = 0,
                 siteId = EMPTY,
@@ -270,12 +269,11 @@ data class Card(
                 cardLocation = EMPTY,
                 hasLocalSolutions = false,
             )
-        }
     }
 }
 
-fun Card.priorityValue(): String {
-    return if (
+fun Card.priorityValue(): String =
+    if (
         this.priorityId.isNullOrBlank().not() &&
         this.priorityCode.isNullOrBlank().not() &&
         this.priorityDescription.isNullOrBlank().not()
@@ -284,10 +282,9 @@ fun Card.priorityValue(): String {
     } else {
         EMPTY
     }
-}
 
-fun Card.preclassifierValue(): String {
-    return if (
+fun Card.preclassifierValue(): String =
+    if (
         this.preclassifierId.isBlank().not() &&
         this.preclassifierCode.isBlank().not() &&
         this.preclassifierDescription.isBlank().not()
@@ -296,19 +293,17 @@ fun Card.preclassifierValue(): String {
     } else {
         EMPTY
     }
-}
 
 @Composable
-fun Card.getStatus(): String {
-    return when (status) {
+fun Card.getStatus(): String =
+    when (status) {
         STATUS_P, STATUS_A, STATUS_V -> stringResource(id = R.string.open)
         STATUS_R, STATUS_C -> stringResource(id = R.string.closed)
         else -> stringResource(id = R.string.open)
     }
-}
 
-fun String.toCardFilter(context: Context): String {
-    return when (this) {
+fun String.toCardFilter(context: Context): String =
+    when (this) {
         context.getString(R.string.all_open_cards) -> ALL_OPEN_CARDS
         context.getString(R.string.my_open_cards) -> MY_OPEN_CARDS
         context.getString(R.string.assigned_cards) -> ASSIGNED_CARDS
@@ -317,13 +312,12 @@ fun String.toCardFilter(context: Context): String {
         context.getString(R.string.closed_cards) -> CLOSED_CARDS
         else -> EMPTY
     }
-}
 
 fun List<Card>.filterByStatus(
     filter: String,
     userId: String,
-): List<Card> {
-    return when (filter) {
+): List<Card> =
+    when (filter) {
         ALL_OPEN_CARDS -> {
             this.filter {
                 it.status == STATUS_A ||
@@ -386,12 +380,11 @@ fun List<Card>.filterByStatus(
 
         else -> this
     }
-}
 
 fun Card.isClosed() = this.status == STATUS_R || this.cardManagerCloseDate.isNullOrEmpty().not()
 
-fun Card.toEntity(): CardEntity {
-    return CardEntity(
+fun Card.toEntity(): CardEntity =
+    CardEntity(
         cardId = this.id,
         siteCardId = this.siteCardId,
         siteId = this.siteId,
@@ -454,19 +447,19 @@ fun Card.toEntity(): CardEntity {
         stored = this.stored ?: STORED_REMOTE,
         cardLocation = this.cardLocation,
     )
-}
 
 fun List<Card>.toLocalCards() = this.filter { it.stored == STORED_LOCAL || it.hasLocalSolutions }
 
-fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest {
-    return CreateCardRequest(
+fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardRequest =
+    CreateCardRequest(
         siteId = this.siteId?.toInt().defaultIfNull(0),
         cardUUID = this.uuid,
         cardCreationDate = this.creationDate,
         nodeId = this.areaId.toInt(),
         priorityId =
             if (this.priorityId.isNullOrBlank().not()) {
-                this.priorityId?.toInt()
+                this.priorityId
+                    ?.toInt()
                     .defaultIfNull(0)
             } else {
                 0
@@ -480,59 +473,48 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         appSo = ANDROID_SO,
         appVersion = BuildConfig.VERSION_NAME,
     )
-}
 
-fun Card.getCreationDate(): String {
-    return this.creationDateFormatted.defaultIfNull(
+fun Card.getCreationDate(): String =
+    this.creationDateFormatted.defaultIfNull(
         creationDate,
     )
-}
 
-fun Card.validateProvisionalDate(): String {
-    return if (this.stored == STORED_REMOTE) {
+fun Card.validateProvisionalDate(): String =
+    if (this.stored == STORED_REMOTE) {
         cardProvisionalSolutionDate.toFormatDate(ISO_FORMAT)
     } else {
         cardProvisionalSolutionDate.toFormatDate(NORMAL_FORMAT)
     }
-}
 
-fun Card.validateCloseDate(): String {
-    return if (this.stored == STORED_REMOTE) {
+fun Card.validateCloseDate(): String =
+    if (this.stored == STORED_REMOTE) {
         cardDefinitiveSolutionDate.toFormatDate(ISO_FORMAT)
     } else {
         cardDefinitiveSolutionDate.toFormatDate(NORMAL_FORMAT)
     }
-}
 
-fun Card.cardTitle(): String {
-    return this.cardTypeName.orEmpty()
-}
+fun Card.cardTitle(): String = this.cardTypeName.orEmpty()
 
-fun Card.cardSiteTitle(): String {
-    return if (this.isLocalCard()) {
+fun Card.cardSiteTitle(): String =
+    if (this.isLocalCard()) {
         EMPTY
     } else {
         "#${this.siteCardId}"
     }
-}
 
-fun Card.enableProvisionalSolution(): Boolean {
-    return this.userProvisionalSolutionId.isNullOrEmpty() ||
+fun Card.enableProvisionalSolution(): Boolean =
+    this.userProvisionalSolutionId.isNullOrEmpty() ||
         this.userProvisionalSolutionName.isNullOrBlank() ||
         this.userAppProvisionalSolutionId.isNullOrBlank() ||
         this.userAppProvisionalSolutionName.isNullOrBlank()
-}
 
-fun Card.enableDefinitiveSolution(): Boolean {
-    return this.userDefinitiveSolutionId.isNullOrEmpty() ||
+fun Card.enableDefinitiveSolution(): Boolean =
+    this.userDefinitiveSolutionId.isNullOrEmpty() ||
         this.userDefinitiveSolutionName.isNullOrBlank() ||
         this.userAppDefinitiveSolutionId.isNullOrBlank() ||
         this.userAppDefinitiveSolutionName.isNullOrBlank()
-}
 
-fun Card.enableAssignMechanic(): Boolean {
-    return this.mechanicId.isNullOrEmpty() || this.mechanicName.isNullOrEmpty()
-}
+fun Card.enableAssignMechanic(): Boolean = this.mechanicId.isNullOrEmpty() || this.mechanicName.isNullOrEmpty()
 
 fun Card.isLocalCard() = stored == STORED_LOCAL
 

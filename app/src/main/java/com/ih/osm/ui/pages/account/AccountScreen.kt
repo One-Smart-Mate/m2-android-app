@@ -268,11 +268,12 @@ private fun shareUri(
         context.startActivity(intent)
     } catch (e: Exception) {
         LoggerHelperManager.logException(e)
-        Toast.makeText(
-            context,
-            "Can't share the data $uri",
-            Toast.LENGTH_SHORT,
-        ).show()
+        Toast
+            .makeText(
+                context,
+                "Can't share the data $uri",
+                Toast.LENGTH_SHORT,
+            ).show()
     }
 }
 

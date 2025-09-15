@@ -12,9 +12,7 @@ class ProcedureRepositoryImpl
     constructor(
         private val networkRepository: NetworkRepository,
     ) : ProcedureRepository {
-        override suspend fun getRemoteByLevel(levelId: String): CiltProcedureData {
-            return networkRepository.getRemoteCiltProcedureByLevel(levelId)
-        }
+        override suspend fun getRemoteByLevel(levelId: String): CiltProcedureData = networkRepository.getRemoteCiltProcedureByLevel(levelId)
 
         override suspend fun getByLevel(levelId: String): CiltProcedureData {
             // For now, we return mock data for local
@@ -22,7 +20,6 @@ class ProcedureRepositoryImpl
             return CiltProcedureData.mockData()
         }
 
-        override suspend fun createExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
-            return networkRepository.createCiltExecution(request)
-        }
+        override suspend fun createExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse =
+            networkRepository.createCiltExecution(request)
     }

@@ -12,13 +12,12 @@ class AndroidAudioRecorder(
     private var recorder: MediaRecorder? = null
 
     @Suppress("DEPRECATION")
-    private fun createRecorder(): MediaRecorder {
-        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+    private fun createRecorder(): MediaRecorder =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             MediaRecorder(context)
         } else {
             MediaRecorder()
         }
-    }
 
     override fun start(outputFile: File) {
         createRecorder().apply {

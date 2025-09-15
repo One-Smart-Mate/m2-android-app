@@ -55,8 +55,7 @@ fun ExpandableCard(
                     .fillMaxWidth()
                     .clickable {
                         isExpanded.value = isExpanded.value.not()
-                    }
-                    .padding(PaddingNormal),
+                    }.padding(PaddingNormal),
             horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(text = title)

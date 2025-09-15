@@ -58,14 +58,12 @@ fun PreviewImage(
                                     offset =
                                         if (scale == 1f) Offset(0f, 0f) else offset + pan
                                 }
-                            }
-                            .graphicsLayer(
+                            }.graphicsLayer(
                                 scaleX = scale,
                                 scaleY = scale,
                                 translationX = offset.x,
                                 translationY = offset.y,
-                            )
-                            .fillMaxSize(),
+                            ).fillMaxSize(),
                 )
                 Box(modifier = Modifier.padding(horizontal = PaddingNormal)) {
                     CustomIconButton(text = EMPTY, icon = Icons.Outlined.Close) {

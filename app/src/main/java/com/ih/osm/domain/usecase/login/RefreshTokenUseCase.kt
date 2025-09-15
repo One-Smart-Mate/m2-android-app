@@ -14,7 +14,5 @@ class RefreshTokenUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : RefreshTokenUseCase {
-        override suspend fun invoke(body: RefreshTokenRequest): LoginResponse {
-            return authRepository.refreshToken(body)
-        }
+        override suspend fun invoke(body: RefreshTokenRequest): LoginResponse = authRepository.refreshToken(body)
     }

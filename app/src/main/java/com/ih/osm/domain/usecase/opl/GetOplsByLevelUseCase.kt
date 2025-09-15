@@ -14,11 +14,10 @@ class GetOplsByLevelUseCaseImpl
     constructor(
         private val repo: OplRepository,
     ) : GetOplsByLevelUseCase {
-        override suspend fun invoke(levelId: String): List<Opl> {
-            return if (NetworkConnection.isConnected()) {
+        override suspend fun invoke(levelId: String): List<Opl> =
+            if (NetworkConnection.isConnected()) {
                 repo.getRemoteByLevel(levelId = levelId)
             } else {
                 repo.getByLevel(levelId = levelId)
             }
-        }
     }

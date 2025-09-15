@@ -18,11 +18,10 @@ data class PreclassifierEntity(
     val cardTypeId: String,
 )
 
-fun PreclassifierEntity.toDomain(): Preclassifier {
-    return Preclassifier(
+fun PreclassifierEntity.toDomain(): Preclassifier =
+    Preclassifier(
         id = this.id,
         code = this.code,
         description = this.description,
         cardTypeId = this.cardTypeId,
     )
-}

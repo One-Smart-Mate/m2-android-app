@@ -69,8 +69,7 @@ fun CustomTag(
                     .background(
                         color = containerColor,
                         shape = RoundedCornerShape(20.dp),
-                    )
-                    .padding(vertical = 6.dp, horizontal = 10.dp)
+                    ).padding(vertical = 6.dp, horizontal = 10.dp)
             }
 
             TagType.OUTLINE -> {
@@ -86,8 +85,7 @@ fun CustomTag(
                                 MaterialTheme.colorScheme.primary
                             },
                         shape = RoundedCornerShape(20.dp),
-                    )
-                    .padding(vertical = 2.dp, horizontal = 12.dp)
+                    ).padding(vertical = 2.dp, horizontal = 12.dp)
             }
         }
 

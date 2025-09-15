@@ -13,7 +13,5 @@ class GetUserUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : GetUserUseCase {
-        override suspend fun invoke(): User? {
-            return authRepository.get()
-        }
+        override suspend fun invoke(): User? = authRepository.get()
     }

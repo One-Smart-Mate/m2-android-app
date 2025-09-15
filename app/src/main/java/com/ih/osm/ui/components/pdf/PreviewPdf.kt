@@ -177,7 +177,8 @@ private fun PdfViewerContent(
                         val w = (page.width * factor).toInt()
                         val h = (page.height * factor).toInt()
                         val bmp =
-                            Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888)
+                            Bitmap
+                                .createBitmap(w, h, Bitmap.Config.ARGB_8888)
                                 .apply { eraseColor(android.graphics.Color.WHITE) }
                         page.render(bmp, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY)
                         pages += bmp
@@ -256,8 +257,7 @@ private fun PdfViewerContent(
                                 }
                             scope.launch { listState.animateScrollToItem(target) }
                         }
-                    }
-                    .onSizeChanged { containerSize = it },
+                    }.onSizeChanged { containerSize = it },
             ) {
                 when {
                     isLoading ->

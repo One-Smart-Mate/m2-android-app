@@ -25,33 +25,19 @@ class AuthRepositoryImpl
         private val dao: UserDao,
         private val networkRepository: NetworkRepository,
     ) : AuthRepository {
-        override suspend fun login(data: LoginRequest): LoginResponse {
-            return networkRepository.login(data)
-        }
+        override suspend fun login(data: LoginRequest): LoginResponse = networkRepository.login(data)
 
-        override suspend fun sendRestorePasswordCode(data: RestorePasswordRequest) {
-            return networkRepository.sendRestorePasswordCode(data)
-        }
+        override suspend fun sendRestorePasswordCode(data: RestorePasswordRequest) = networkRepository.sendRestorePasswordCode(data)
 
-        override suspend fun verifyPasswordCode(data: RestorePasswordRequest) {
-            return networkRepository.verifyPasswordCode(data)
-        }
+        override suspend fun verifyPasswordCode(data: RestorePasswordRequest) = networkRepository.verifyPasswordCode(data)
 
-        override suspend fun resetPassword(data: RestorePasswordRequest) {
-            return networkRepository.resetPassword(data)
-        }
+        override suspend fun resetPassword(data: RestorePasswordRequest) = networkRepository.resetPassword(data)
 
-        override suspend fun updateToken(data: UpdateTokenRequest) {
-            return networkRepository.updateToken(data)
-        }
+        override suspend fun updateToken(data: UpdateTokenRequest) = networkRepository.updateToken(data)
 
-        override suspend fun save(user: User): Long {
-            return dao.insertUser(user.toEntity())
-        }
+        override suspend fun save(user: User): Long = dao.insertUser(user.toEntity())
 
-        override suspend fun get(): User? {
-            return dao.getUser().toDomain()
-        }
+        override suspend fun get(): User? = dao.getUser().toDomain()
 
         override suspend fun logout(): Int {
             val user = dao.getUser() ?: return 0
@@ -61,19 +47,12 @@ class AuthRepositoryImpl
             return dao.deleteUser(user)
         }
 
-        override suspend fun getSiteId(): String {
-            return dao.getUser()?.siteId.orEmpty()
-        }
+        override suspend fun getSiteId(): String = dao.getUser()?.siteId.orEmpty()
 
-        override suspend fun fastLogin(body: FastLoginRequest): LoginResponse {
-            return networkRepository.fastLogin(body)
-        }
+        override suspend fun fastLogin(body: FastLoginRequest): LoginResponse = networkRepository.fastLogin(body)
 
-        override suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse {
-            return networkRepository.sendFastPassword(body)
-        }
+        override suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse =
+            networkRepository.sendFastPassword(body)
 
-        override suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse {
-            return networkRepository.refreshToken(body)
-        }
+        override suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse = networkRepository.refreshToken(body)
     }

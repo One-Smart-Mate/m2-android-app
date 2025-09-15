@@ -79,15 +79,14 @@ fun QrCamera(
     }
 }
 
-private fun getScannerOptions(): ScanOptions {
-    return ScanOptions().apply {
+private fun getScannerOptions(): ScanOptions =
+    ScanOptions().apply {
         setDesiredBarcodeFormats(ScanOptions.QR_CODE)
         setPrompt("")
         setCameraId(0)
         setBeepEnabled(true)
         setOrientationLocked(false)
     }
-}
 
 //    val localContext = LocalContext.current
 //    val lifecycleOwner = LocalLifecycleOwner.current

@@ -14,7 +14,5 @@ class CreateCiltExecutionUseCaseImpl
     constructor(
         private val repo: ProcedureRepository,
     ) : CreateCiltExecutionUseCase {
-        override suspend fun invoke(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
-            return repo.createExecution(request)
-        }
+        override suspend fun invoke(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse = repo.createExecution(request)
     }

@@ -13,7 +13,5 @@ class GetSequenceUseCaseImpl
     constructor(
         private val repository: CiltRepository,
     ) : GetSequenceUseCase {
-        override suspend fun invoke(sequenceId: Int): Sequence {
-            return repository.getSequence(sequenceId)
-        }
+        override suspend fun invoke(sequenceId: Int): Sequence = repository.getSequence(sequenceId)
     }

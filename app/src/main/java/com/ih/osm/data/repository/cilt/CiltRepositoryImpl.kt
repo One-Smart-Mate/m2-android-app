@@ -24,23 +24,15 @@ data class CiltRepositoryImpl
             return networkRepository.getCilts(userId, date)
         }
 
-        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution {
-            return networkRepository.startSequenceExecution(body)
-        }
+        override suspend fun startSequenceExecution(body: StartSequenceExecutionRequest): SequenceExecution =
+            networkRepository.startSequenceExecution(body)
 
-        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution {
-            return networkRepository.stopSequenceExecution(body)
-        }
+        override suspend fun stopSequenceExecution(body: StopSequenceExecutionRequest): SequenceExecution =
+            networkRepository.stopSequenceExecution(body)
 
-        override suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence {
-            return networkRepository.createEvidence(body)
-        }
+        override suspend fun createEvidence(body: CiltEvidenceRequest): CiltSequenceEvidence = networkRepository.createEvidence(body)
 
-        override suspend fun getOplById(id: String): Opl {
-            return networkRepository.getOplById(id)
-        }
+        override suspend fun getOplById(id: String): Opl = networkRepository.getOplById(id)
 
-        override suspend fun getSequence(id: Int): Sequence {
-            return networkRepository.getSequence(id)
-        }
+        override suspend fun getSequence(id: Int): Sequence = networkRepository.getSequence(id)
     }

@@ -11,9 +11,7 @@ class OplRepositoryImpl
     constructor(
         private val networkRepository: NetworkRepository,
     ) : OplRepository {
-        override suspend fun getRemoteByLevel(levelId: String): List<Opl> {
-            return networkRepository.getRemoteOplsByLevel(levelId)
-        }
+        override suspend fun getRemoteByLevel(levelId: String): List<Opl> = networkRepository.getRemoteOplsByLevel(levelId)
 
         override suspend fun getByLevel(levelId: String): List<Opl> {
             // For now, we return an empty list for local data

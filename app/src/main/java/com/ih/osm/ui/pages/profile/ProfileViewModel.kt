@@ -36,28 +36,29 @@ class ProfileViewModel
         private fun handleGetUser() {
             setState { copy(state = LCE.Loading) }
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getUserUseCase() }
-                }.onSuccess { user ->
-                    user?.let {
-                        val dueDateString = sharedPreferences.getDueDate()
-                        val remainingDays = calculateRemainingDays(dueDateString)
-                        val subscriptionText = context.getString(R.string.subscription_remaining_days, remainingDays)
-                        setState {
-                            copy(
-                                state = LCE.Success(it),
-                                subscriptionText = subscriptionText,
-                            )
+                kotlin
+                    .runCatching {
+                        callUseCase { getUserUseCase() }
+                    }.onSuccess { user ->
+                        user?.let {
+                            val dueDateString = sharedPreferences.getDueDate()
+                            val remainingDays = calculateRemainingDays(dueDateString)
+                            val subscriptionText = context.getString(R.string.subscription_remaining_days, remainingDays)
+                            setState {
+                                copy(
+                                    state = LCE.Success(it),
+                                    subscriptionText = subscriptionText,
+                                )
+                            }
                         }
+                    }.onFailure {
+                        setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
                     }
-                }.onFailure {
-                    setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
-                }
             }
         }
 
-        private fun calculateRemainingDays(dueDateString: String): Int {
-            return try {
+        private fun calculateRemainingDays(dueDateString: String): Int =
+            try {
                 val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
                 val dueDate = sdf.parse(dueDateString)
                 val today = Date()
@@ -67,5 +68,4 @@ class ProfileViewModel
             } catch (e: Exception) {
                 0
             }
-        }
     }

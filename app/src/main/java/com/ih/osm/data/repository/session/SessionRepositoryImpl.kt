@@ -28,7 +28,5 @@ class SessionRepositoryImpl
             }
         }
 
-        override suspend fun getSiteId(): String? {
-            return get()?.siteId
-        }
+        override suspend fun getSiteId(): String? = get()?.siteId
     }

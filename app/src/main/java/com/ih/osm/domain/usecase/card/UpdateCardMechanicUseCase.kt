@@ -27,7 +27,12 @@ class UpdateCardMechanicUseCaseImpl
             mechanicId: String,
             uuid: String,
         ): Card {
-            val userId = sessionRepo.get()?.userId.orEmpty().toInt()
+            val userId =
+                sessionRepo
+                    .get()
+                    ?.userId
+                    .orEmpty()
+                    .toInt()
             val card = cardRepo.get(uuid) ?: error("Card $uuid not found")
             val request = UpdateMechanicRequest(card.id.toInt(), mechanicId.toInt(), userId)
             cardRepo.updateRemoteMechanic(request)

@@ -28,9 +28,7 @@ fun openAppSettings(context: Context) {
 }
 
 @Composable
-fun getContext(): Context {
-    return LocalContext.current
-}
+fun getContext(): Context = LocalContext.current
 
 fun Context.createImageFile(): File {
     val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())

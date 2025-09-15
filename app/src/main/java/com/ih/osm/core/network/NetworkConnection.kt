@@ -30,9 +30,11 @@ object NetworkConnection {
         val networkCapabilities = connectivityManager.activeNetwork
         val actNw = connectivityManager.getNetworkCapabilities(networkCapabilities)
         return when {
-            actNw?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
+            actNw
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)
                 .defaultIfNull(false) -> NetworkStatus.WIFI_CONNECTED
-            actNw?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
+            actNw
+                ?.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)
                 .defaultIfNull(false) -> NetworkStatus.DATA_CONNECTED
             else -> NetworkStatus.NO_INTERNET_ACCESS
         }

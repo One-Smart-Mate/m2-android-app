@@ -17,9 +17,7 @@ class PreclassifierRepositoryImpl
         private val networkRepository: NetworkRepository,
         private val authRepository: AuthRepository,
     ) : PreclassifierRepository {
-        override suspend fun getAll(): List<Preclassifier> {
-            return dao.getAll().map { it.toDomain() }
-        }
+        override suspend fun getAll(): List<Preclassifier> = dao.getAll().map { it.toDomain() }
 
         override suspend fun saveAll(list: List<Preclassifier>) {
             dao.deleteAll()
@@ -28,9 +26,7 @@ class PreclassifierRepositoryImpl
             }
         }
 
-        override suspend fun get(id: String): Preclassifier? {
-            return dao.get(id)?.toDomain()
-        }
+        override suspend fun get(id: String): Preclassifier? = dao.get(id)?.toDomain()
 
         override suspend fun deleteAll() {
             dao.deleteAll()

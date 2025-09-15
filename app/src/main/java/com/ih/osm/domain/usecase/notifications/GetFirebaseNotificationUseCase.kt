@@ -25,8 +25,8 @@ data class GetFirebaseNotificationUseCaseImpl
             syncCatalogs: Boolean,
             syncCards: Boolean,
             appUpdate: Boolean,
-        ): FirebaseNotificationType {
-            return try {
+        ): FirebaseNotificationType =
+            try {
                 if (remove) {
                     when {
                         syncCards -> {
@@ -73,5 +73,4 @@ data class GetFirebaseNotificationUseCaseImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 FirebaseNotificationType.UNKNOWN
             }
-        }
     }

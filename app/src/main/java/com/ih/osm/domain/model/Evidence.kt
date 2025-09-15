@@ -40,8 +40,8 @@ data class Evidence(
             url: String,
             type: String,
             parentType: EvidenceParentType = EvidenceParentType.CARD,
-        ): Evidence {
-            return Evidence(
+        ): Evidence =
+            Evidence(
                 id = UUID.randomUUID().toString(),
                 cardId = cardId,
                 siteId = EMPTY,
@@ -53,89 +53,75 @@ data class Evidence(
                 deletedAt = null,
                 parentType = parentType,
             )
-        }
     }
 }
 
-fun Evidence.toEntity(): EvidenceEntity {
-    return EvidenceEntity(
+fun Evidence.toEntity(): EvidenceEntity =
+    EvidenceEntity(
         cardId = this.cardId,
         url = this.url,
         type = this.type,
     )
-}
 
-fun List<Evidence>.toImages(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toImages(): List<Evidence> =
+    this.filter {
         it.type == IMG_CREATION || it.type == IMG_CLOSE || it.type == IMG_PS
     }
-}
 
-fun List<Evidence>.toImagesAtCreation(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toImagesAtCreation(): List<Evidence> =
+    this.filter {
         it.type == IMG_CREATION
     }
-}
 
-fun List<Evidence>.toImagesAtProvisionalSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toImagesAtProvisionalSolution(): List<Evidence> =
+    this.filter {
         it.type == IMG_PS
     }
-}
 
-fun List<Evidence>.toImagesAtDefinitiveSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toImagesAtDefinitiveSolution(): List<Evidence> =
+    this.filter {
         it.type == IMG_CLOSE
     }
-}
 
-fun List<Evidence>.toVideos(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toVideos(): List<Evidence> =
+    this.filter {
         it.type == VIDEO_CREATION || it.type == VIDEO_PS || it.type == VIDEO_CLOSE
     }
-}
 
-fun List<Evidence>.toVideosAtCreation(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toVideosAtCreation(): List<Evidence> =
+    this.filter {
         it.type == VIDEO_CREATION
     }
-}
 
-fun List<Evidence>.toVideosAtProvisionalSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toVideosAtProvisionalSolution(): List<Evidence> =
+    this.filter {
         it.type == VIDEO_PS
     }
-}
 
-fun List<Evidence>.toVideosAtDefinitiveSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toVideosAtDefinitiveSolution(): List<Evidence> =
+    this.filter {
         it.type == VIDEO_CLOSE
     }
-}
 
-fun List<Evidence>.toAudios(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toAudios(): List<Evidence> =
+    this.filter {
         it.type == AUDIO_CREATION || it.type == AUDIO_CLOSE || it.type == AUDIO_PS
     }
-}
 
-fun List<Evidence>.toAudiosAtCreation(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toAudiosAtCreation(): List<Evidence> =
+    this.filter {
         it.type == AUDIO_CREATION
     }
-}
 
-fun List<Evidence>.toAudiosAtProvisionalSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toAudiosAtProvisionalSolution(): List<Evidence> =
+    this.filter {
         it.type == AUDIO_PS
     }
-}
 
-fun List<Evidence>.toAudiosAtDefinitiveSolution(): List<Evidence> {
-    return this.filter {
+fun List<Evidence>.toAudiosAtDefinitiveSolution(): List<Evidence> =
+    this.filter {
         it.type == AUDIO_CLOSE
     }
-}
 
 fun List<Evidence>.hasAudios(): Int {
     val result =

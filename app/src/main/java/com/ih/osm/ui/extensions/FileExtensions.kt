@@ -12,8 +12,8 @@ import java.nio.charset.StandardCharsets
 fun getFileFromUri(
     context: Context,
     uri: Uri,
-): File? {
-    return when (uri.scheme) {
+): File? =
+    when (uri.scheme) {
         "file" -> {
             // Directly handle file:// URI
             File(uri.path)
@@ -24,7 +24,6 @@ fun getFileFromUri(
         }
         else -> null
     }
-}
 
 fun getFileFromContentUri(
     context: Context,

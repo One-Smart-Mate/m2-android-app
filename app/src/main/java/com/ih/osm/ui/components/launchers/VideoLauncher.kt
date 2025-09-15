@@ -87,7 +87,6 @@ fun VideoLauncher(onComplete: (uri: Uri) -> Unit) {
 private fun checkPermission(
     context: Context,
     permission: String,
-): Boolean {
-    return ContextCompat.checkSelfPermission(context, permission) ==
+): Boolean =
+    ContextCompat.checkSelfPermission(context, permission) ==
         PackageManager.PERMISSION_GRANTED
-}

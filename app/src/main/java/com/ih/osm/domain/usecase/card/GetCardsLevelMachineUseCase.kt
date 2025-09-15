@@ -14,11 +14,10 @@ class GetCardsLevelMachineUseCaseImpl
     constructor(
         private val cardRepository: CardRepository,
     ) : GetCardsLevelMachineUseCase {
-        override suspend fun invoke(levelMachine: String): List<Card> {
-            return if (NetworkConnection.isConnected()) {
+        override suspend fun invoke(levelMachine: String): List<Card> =
+            if (NetworkConnection.isConnected()) {
                 cardRepository.getRemoteByLevelMachine(levelMachine = levelMachine)
             } else {
                 emptyList()
             }
-        }
     }

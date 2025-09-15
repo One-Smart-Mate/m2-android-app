@@ -20,8 +20,8 @@ data class EvidenceEntity(
     val type: String,
 )
 
-fun EvidenceEntity.toDomain(): Evidence {
-    return Evidence(
+fun EvidenceEntity.toDomain(): Evidence =
+    Evidence(
         id = this.id.toString(),
         cardId = this.cardId,
         url = this.url,
@@ -32,4 +32,3 @@ fun EvidenceEntity.toDomain(): Evidence {
         status = STATUS_A,
         siteId = EMPTY,
     )
-}

@@ -63,24 +63,24 @@ fun ModernAudioRecorderComponent(
                     recordingFilePath = outputFile.absolutePath
 
                     audioRecorder =
-                        AudioRecord.Builder()
+                        AudioRecord
+                            .Builder()
                             .setAudioSource(MediaRecorder.AudioSource.MIC)
                             .setAudioFormat(
-                                AudioFormat.Builder()
+                                AudioFormat
+                                    .Builder()
                                     .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
                                     .setSampleRate(44100)
                                     .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
                                     .build(),
-                            )
-                            .setBufferSizeInBytes(
+                            ).setBufferSizeInBytes(
                                 2 *
                                     AudioRecord.getMinBufferSize(
                                         44100,
                                         AudioFormat.CHANNEL_IN_MONO,
                                         AudioFormat.ENCODING_PCM_16BIT,
                                     ),
-                            )
-                            .build()
+                            ).build()
 
                     audioRecorder?.apply {
                         startRecording()

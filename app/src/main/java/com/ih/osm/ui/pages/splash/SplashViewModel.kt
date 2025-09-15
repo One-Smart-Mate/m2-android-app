@@ -62,30 +62,32 @@ class SplashViewModel
 
         private fun handleGetSession() {
             viewModelScope.launch(coroutineContext) {
-                kotlin.runCatching {
-                    getSessionUseCase()
-                }.onSuccess {
-                    val route =
-                        if (it != null) {
-                            FirebaseCrashlytics.getInstance().setUserId(it.userId)
-                            Screen.HomeV2.route
-                        } else {
-                            Screen.Login.route
-                        }
-                    navigateToScreen(route)
-                }.onFailure {
-                    navigateToScreen(Screen.Login.route)
-                }
+                kotlin
+                    .runCatching {
+                        getSessionUseCase()
+                    }.onSuccess {
+                        val route =
+                            if (it != null) {
+                                FirebaseCrashlytics.getInstance().setUserId(it.userId)
+                                Screen.HomeV2.route
+                            } else {
+                                Screen.Login.route
+                            }
+                        navigateToScreen(route)
+                    }.onFailure {
+                        navigateToScreen(Screen.Login.route)
+                    }
             }
         }
 
         private fun handleSyncFirebaseToken() {
             viewModelScope.launch(coroutineContext) {
-                kotlin.runCatching {
-                    syncFirebaseTokenUseCase()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                }
+                kotlin
+                    .runCatching {
+                        syncFirebaseTokenUseCase()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                    }
             }
         }
 

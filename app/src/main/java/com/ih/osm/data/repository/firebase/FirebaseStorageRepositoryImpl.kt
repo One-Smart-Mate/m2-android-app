@@ -23,8 +23,8 @@ class FirebaseStorageRepositoryImpl
         private val firebaseStorage: FirebaseStorage,
         private val gerSessionUseCase: GetSessionUseCase,
     ) : FirebaseStorageRepository {
-        override suspend fun uploadEvidence(evidence: Evidence): String {
-            return try {
+        override suspend fun uploadEvidence(evidence: Evidence): String =
+            try {
                 val siteId = gerSessionUseCase().siteId.defaultIfNull("0")
                 val evidenceType = EvidenceType.valueOf(evidence.type)
                 val evidenceName = getEvidenceFileName(evidenceType)
@@ -44,7 +44,6 @@ class FirebaseStorageRepositoryImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 EMPTY
             }
-        }
 
         private fun getEvidenceFileName(type: EvidenceType): String {
             val timeStamp: String = Date().YYYY_MM_DD_HH_MM_SS
@@ -91,8 +90,8 @@ class FirebaseStorageRepositoryImpl
             return firebaseStorage.reference.child(path)
         }
 
-        override suspend fun deleteEvidence(cardUUID: String): Boolean {
-            return try {
+        override suspend fun deleteEvidence(cardUUID: String): Boolean =
+            try {
                 val siteId = gerSessionUseCase().siteId.defaultIfNull("0")
 
                 val imagesReference =
@@ -117,5 +116,4 @@ class FirebaseStorageRepositoryImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 false
             }
-        }
     }

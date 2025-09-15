@@ -13,8 +13,7 @@ class GetSessionUseCaseImpl
     constructor(
         private val sessionRepository: SessionRepository,
     ) : GetSessionUseCase {
-        override suspend fun invoke(): Session {
-            return sessionRepository.get()
+        override suspend fun invoke(): Session =
+            sessionRepository.get()
                 ?: throw IllegalStateException("No session found")
-        }
     }

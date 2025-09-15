@@ -58,9 +58,7 @@ class SharedPreferences
             }
         }
 
-        fun getNetworkPreference(): String {
-            return sharedPreferences?.getString(NETWORK_PREFERENCES, EMPTY).orEmpty()
-        }
+        fun getNetworkPreference(): String = sharedPreferences?.getString(NETWORK_PREFERENCES, EMPTY).orEmpty()
 
         fun saveLogFile(path: String) {
             sharedPreferences?.let {
@@ -70,9 +68,7 @@ class SharedPreferences
             }
         }
 
-        fun getLogPath(): String {
-            return sharedPreferences?.getString(LOG_FILE_PREFERENCES, EMPTY).orEmpty()
-        }
+        fun getLogPath(): String = sharedPreferences?.getString(LOG_FILE_PREFERENCES, EMPTY).orEmpty()
 
         fun saveLastSyncDate() {
             sharedPreferences?.let {
@@ -85,9 +81,7 @@ class SharedPreferences
             }
         }
 
-        fun getLastSyncDate(): String {
-            return sharedPreferences?.getString(LAST_SYNC_PREFERENCES, EMPTY).orEmpty()
-        }
+        fun getLastSyncDate(): String = sharedPreferences?.getString(LAST_SYNC_PREFERENCES, EMPTY).orEmpty()
 
         fun saveFirebaseToken(token: String) {
             sharedPreferences?.let {
@@ -97,9 +91,7 @@ class SharedPreferences
             }
         }
 
-        fun getFirebaseToken(): String {
-            return sharedPreferences?.getString(FIREBASE_TOKEN_PREFERENCES, EMPTY).orEmpty()
-        }
+        fun getFirebaseToken(): String = sharedPreferences?.getString(FIREBASE_TOKEN_PREFERENCES, EMPTY).orEmpty()
 
         fun saveNotificationType(type: String = EMPTY) {
             sharedPreferences?.let {
@@ -109,12 +101,13 @@ class SharedPreferences
             }
         }
 
-        fun getNotificationType(): String {
-            return sharedPreferences?.getString(
-                NOTIFICATION_TYPE_PREFERENCES,
-                EMPTY,
-            ).orEmpty().uppercase()
-        }
+        fun getNotificationType(): String =
+            sharedPreferences
+                ?.getString(
+                    NOTIFICATION_TYPE_PREFERENCES,
+                    EMPTY,
+                ).orEmpty()
+                .uppercase()
 
         fun removeNotification(withAppVersion: Boolean = false) {
             sharedPreferences?.let {
@@ -135,9 +128,7 @@ class SharedPreferences
             }
         }
 
-        fun getAppVersion(): String {
-            return sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
-        }
+        fun getAppVersion(): String = sharedPreferences?.getString(NOTIFICATION_APP_VERSION, EMPTY).orEmpty()
 
         fun saveDueDate(dueDate: String) {
             sharedPreferences?.let {
@@ -147,9 +138,7 @@ class SharedPreferences
             }
         }
 
-        fun getDueDate(): String {
-            return sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
-        }
+        fun getDueDate(): String = sharedPreferences?.getString(DUE_DATE_PREFERENCES, EMPTY).orEmpty()
 
         fun saveCiltCard(card: Card) {
             val json = Gson().toJson(card)
@@ -185,7 +174,5 @@ class SharedPreferences
             }
         }
 
-        fun isFastPasswordBlocked(): Boolean {
-            return sharedPreferences?.getBoolean(FAST_PASSWORD_BLOCKED, false) ?: false
-        }
+        fun isFastPasswordBlocked(): Boolean = sharedPreferences?.getBoolean(FAST_PASSWORD_BLOCKED, false) ?: false
     }

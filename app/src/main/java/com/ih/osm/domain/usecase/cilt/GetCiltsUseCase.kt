@@ -13,7 +13,5 @@ class GetCiltsUseCaseImpl
     constructor(
         private val repository: CiltRepository,
     ) : GetCiltsUseCase {
-        override suspend fun invoke(date: String): CiltData {
-            return repository.getCilts(date)
-        }
+        override suspend fun invoke(date: String): CiltData = repository.getCilts(date)
     }

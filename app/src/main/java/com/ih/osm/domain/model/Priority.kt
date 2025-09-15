@@ -14,18 +14,16 @@ data class Priority(
     val status: String,
 )
 
-fun Priority.toEntity(): PriorityEntity {
-    return PriorityEntity(
+fun Priority.toEntity(): PriorityEntity =
+    PriorityEntity(
         id = this.id,
         code = this.code,
         description = this.description,
         days = this.days,
         status = this.status,
     )
-}
 
-fun List<Priority>.toNodeItemCard(): List<NodeCardItem> {
-    return this.map {
+fun List<Priority>.toNodeItemCard(): List<NodeCardItem> =
+    this.map {
         NodeCardItem(id = it.id, name = it.code, description = it.description)
     }
-}

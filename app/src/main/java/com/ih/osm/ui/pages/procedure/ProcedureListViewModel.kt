@@ -60,36 +60,37 @@ class ProcedureListViewModel
 
         private fun handleGetLevels() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getLevelsUseCase() }
-                }.onSuccess { levels ->
-                    val levelList = levels.toNodeItemList()
+                kotlin
+                    .runCatching {
+                        callUseCase { getLevelsUseCase() }
+                    }.onSuccess { levels ->
+                        val levelList = levels.toNodeItemList()
 
-                    // Initialize the first level with root elements (superiorId = "0")
-                    val rootLevels = levelList.filter { it.superiorId == "0" }
+                        // Initialize the first level with root elements (superiorId = "0")
+                        val rootLevels = levelList.filter { it.superiorId == "0" }
 
-                    val initialNodeLevelList =
-                        if (rootLevels.isNotEmpty()) {
-                            mapOf(0 to rootLevels)
-                        } else {
-                            emptyMap()
+                        val initialNodeLevelList =
+                            if (rootLevels.isNotEmpty()) {
+                                mapOf(0 to rootLevels)
+                            } else {
+                                emptyMap()
+                            }
+
+                        setState {
+                            copy(
+                                levelList = levelList,
+                                nodeLevelList = initialNodeLevelList,
+                                isLoading = false,
+                            )
                         }
-
-                    setState {
-                        copy(
-                            levelList = levelList,
-                            nodeLevelList = initialNodeLevelList,
-                            isLoading = false,
-                        )
+                    }.onFailure {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                }.onFailure {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
 
@@ -142,29 +143,30 @@ class ProcedureListViewModel
         private fun handleGetProcedureByLevel(levelId: String) {
             viewModelScope.launch {
                 setState { copy(isLoading = true) }
-                kotlin.runCatching {
-                    callUseCase { getProcedureByLevelUseCase(levelId) }
-                }.onSuccess { procedureData ->
-                    setState {
-                        copy(
-                            procedureData = procedureData,
-                            message = EMPTY,
-                            isLoading = false,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getProcedureByLevelUseCase(levelId) }
+                    }.onSuccess { procedureData ->
+                        setState {
+                            copy(
+                                procedureData = procedureData,
+                                message = EMPTY,
+                                isLoading = false,
+                            )
+                        }
+                    }.onFailure { exception ->
+                        setState {
+                            copy(
+                                procedureData = null,
+                                isLoading = false,
+                                message =
+                                    context.getString(
+                                        R.string.error_loading_procedures,
+                                        exception.localizedMessage,
+                                    ),
+                            )
+                        }
                     }
-                }.onFailure { exception ->
-                    setState {
-                        copy(
-                            procedureData = null,
-                            isLoading = false,
-                            message =
-                                context.getString(
-                                    R.string.error_loading_procedures,
-                                    exception.localizedMessage,
-                                ),
-                        )
-                    }
-                }
             }
         }
 

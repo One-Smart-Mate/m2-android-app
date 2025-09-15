@@ -26,9 +26,7 @@ class EmployeeRepositoryImpl
             dao.deleteAll()
         }
 
-        override suspend fun getAll(): List<Employee> {
-            return dao.getAll().map { it.toDomain() }
-        }
+        override suspend fun getAll(): List<Employee> = dao.getAll().map { it.toDomain() }
 
         override suspend fun getAllRemote(): List<Employee> {
             val siteId = authRepository.getSiteId()

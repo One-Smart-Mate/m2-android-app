@@ -111,88 +111,91 @@ class CiltRoutineViewModel
                 val date = getCurrentDate()
                 Log.d("CiltRoutineViewModel", "Using date: $date")
 
-                kotlin.runCatching {
-                    callUseCase { getCiltsUseCase(date) }
-                }.onSuccess { data ->
-                    Log.d("CiltRoutineViewModel", "getCilts successful - positions: ${data.positions.size}")
-                    data.positions.forEach { position ->
-                        Log.d("CiltRoutineViewModel", "Position: ${position.name}")
-                        position.ciltMasters.forEach { master ->
-                            Log.d("CiltRoutineViewModel", "  Master: ${master.ciltName}")
-                            master.sequences.forEach { sequence ->
-                                Log.d(
-                                    "CiltRoutineViewModel",
-                                    "    Sequence: ${sequence.id} - ${sequence.ciltTypeName} (${sequence.executions.size} executions)",
-                                )
-                                sequence.executions.forEach { execution ->
+                kotlin
+                    .runCatching {
+                        callUseCase { getCiltsUseCase(date) }
+                    }.onSuccess { data ->
+                        Log.d("CiltRoutineViewModel", "getCilts successful - positions: ${data.positions.size}")
+                        data.positions.forEach { position ->
+                            Log.d("CiltRoutineViewModel", "Position: ${position.name}")
+                            position.ciltMasters.forEach { master ->
+                                Log.d("CiltRoutineViewModel", "  Master: ${master.ciltName}")
+                                master.sequences.forEach { sequence ->
                                     Log.d(
                                         "CiltRoutineViewModel",
-                                        "      Execution: ID=${execution.id}, siteExecutionId=${execution.siteExecutionId}",
+                                        "    Sequence: ${sequence.id} - ${sequence.ciltTypeName} (${sequence.executions.size} executions)",
                                     )
+                                    sequence.executions.forEach { execution ->
+                                        Log.d(
+                                            "CiltRoutineViewModel",
+                                            "      Execution: ID=${execution.id}, siteExecutionId=${execution.siteExecutionId}",
+                                        )
+                                    }
                                 }
                             }
                         }
+                        setState {
+                            copy(
+                                ciltData = data,
+                                isLoading = false,
+                                message = EMPTY,
+                            )
+                        }
+                    }.onFailure {
+                        Log.e("CiltRoutineViewModel", "getCilts failed", it)
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                ciltData = null,
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                    setState {
-                        copy(
-                            ciltData = data,
-                            isLoading = false,
-                            message = EMPTY,
-                        )
-                    }
-                }.onFailure {
-                    Log.e("CiltRoutineViewModel", "getCilts failed", it)
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            ciltData = null,
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
 
         private fun getOplById(id: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getOplByIdUseCase(id) }
-                }.onSuccess { opl ->
-                    setState { copy(opl = opl) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_loading_opls,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getOplByIdUseCase(id) }
+                    }.onSuccess { opl ->
+                        setState { copy(opl = opl) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_loading_opls,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                            )
+                        }
                     }
-                }
             }
         }
 
         private fun getRemediationOplById(id: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getOplByIdUseCase(id) }
-                }.onSuccess { opl ->
-                    setState { copy(remediationOpl = opl) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_loading_remediation_opl,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getOplByIdUseCase(id) }
+                    }.onSuccess { opl ->
+                        setState { copy(remediationOpl = opl) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_loading_remediation_opl,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -204,22 +207,23 @@ class CiltRoutineViewModel
                         id = executionId,
                         startDate = startDate,
                     )
-                kotlin.runCatching {
-                    callUseCase { startSequenceExecutionUseCase(request) }
-                }.onSuccess {
-                    notificationManager.buildNotificationSequenceStarted()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_starting_sequence,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { startSequenceExecutionUseCase(request) }
+                    }.onSuccess {
+                        notificationManager.buildNotificationSequenceStarted()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_starting_sequence,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -260,20 +264,21 @@ class CiltRoutineViewModel
                 val localCard = sharedPreferences.getCiltCard()
 
                 if (localCard != null) {
-                    kotlin.runCatching {
-                        callUseCase { syncCardUseCase(localCard) }
-                    }.onSuccess { syncedCard ->
-                        remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
-                    }.onFailure {
-                        LoggerHelperManager.logException(it)
-                        setState {
-                            copy(
-                                isLoading = false,
-                                message = context.getString(R.string.error_syncing_card),
-                            )
+                    kotlin
+                        .runCatching {
+                            callUseCase { syncCardUseCase(localCard) }
+                        }.onSuccess { syncedCard ->
+                            remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
+                        }.onFailure {
+                            LoggerHelperManager.logException(it)
+                            setState {
+                                copy(
+                                    isLoading = false,
+                                    message = context.getString(R.string.error_syncing_card),
+                                )
+                            }
+                            return@launch
                         }
-                        return@launch
-                    }
                 }
 
                 if (nok && remoteCardId == 0) {
@@ -299,34 +304,35 @@ class CiltRoutineViewModel
                         amTagId = if (nok) remoteCardId else 0,
                     )
 
-                kotlin.runCatching {
-                    callUseCase { stopSequenceExecutionUseCase(request, emptyList()) }
-                }.onSuccess {
-                    sharedPreferences.removeCiltCard()
-                    setState { copy(isUploadingEvidence = true) }
-                    uploadPendingEvidences(executionId)
-                    Log.d("CiltRoutineViewModel", "✅ SEQUENCE EXECUTION COMPLETED SUCCESSFULLY")
-                    Log.d("CiltRoutineViewModel", "🔄 Setting isSequenceFinished = true - This will trigger navigation")
-                    Log.d("CiltRoutineViewModel", "📍 Navigation trigger: isSequenceFinished will cause CiltDetailScreen to redirect")
-                    setState {
-                        copy(isUploadingEvidence = false, isSequenceFinished = true)
+                kotlin
+                    .runCatching {
+                        callUseCase { stopSequenceExecutionUseCase(request, emptyList()) }
+                    }.onSuccess {
+                        sharedPreferences.removeCiltCard()
+                        setState { copy(isUploadingEvidence = true) }
+                        uploadPendingEvidences(executionId)
+                        Log.d("CiltRoutineViewModel", "✅ SEQUENCE EXECUTION COMPLETED SUCCESSFULLY")
+                        Log.d("CiltRoutineViewModel", "🔄 Setting isSequenceFinished = true - This will trigger navigation")
+                        Log.d("CiltRoutineViewModel", "📍 Navigation trigger: isSequenceFinished will cause CiltDetailScreen to redirect")
+                        setState {
+                            copy(isUploadingEvidence = false, isSequenceFinished = true)
+                        }
+                        Log.d("CiltRoutineViewModel", "🎯 STATE UPDATED - isSequenceFinished = ${state.isSequenceFinished}")
+                        Log.d("CiltRoutineViewModel", "⏭️ NAVIGATION SHOULD START NOW - CiltDetailScreen will detect this change")
+                        resetExecutionState()
+                        notificationManager.buildNotificationSequenceFinished()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_stopping_sequence,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                            )
+                        }
                     }
-                    Log.d("CiltRoutineViewModel", "🎯 STATE UPDATED - isSequenceFinished = ${state.isSequenceFinished}")
-                    Log.d("CiltRoutineViewModel", "⏭️ NAVIGATION SHOULD START NOW - CiltDetailScreen will detect this change")
-                    resetExecutionState()
-                    notificationManager.buildNotificationSequenceFinished()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_stopping_sequence,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                        )
-                    }
-                }
             }
         }
 
@@ -344,23 +350,24 @@ class CiltRoutineViewModel
                             type = evidence.type,
                             createdAt = createdAt,
                         )
-                    kotlin.runCatching {
-                        callUseCase { createCiltEvidenceUseCase(request) }
-                    }.onFailure {
-                        LoggerHelperManager.logException(it)
-                    }
+                    kotlin
+                        .runCatching {
+                            callUseCase { createCiltEvidenceUseCase(request) }
+                        }.onFailure {
+                            LoggerHelperManager.logException(it)
+                        }
                 }
             }
             pendingEvidences.clear()
         }
 
-        fun getExecutionById(executionId: Int): Execution? {
-            return state.value.ciltData?.positions
+        fun getExecutionById(executionId: Int): Execution? =
+            state.value.ciltData
+                ?.positions
                 ?.flatMap { it.ciltMasters }
                 ?.flatMap { it.sequences }
                 ?.flatMap { it.executions }
                 ?.find { it.id == executionId }
-        }
 
         fun getExecutionBySiteExecutionId(siteExecutionId: Int): Execution? {
             Log.d("CiltRoutineViewModel", "Searching for execution with siteExecutionId: $siteExecutionId")
@@ -369,16 +376,15 @@ class CiltRoutineViewModel
             Log.d("CiltRoutineViewModel", "Positions count: ${ciltData?.positions?.size}")
 
             val allExecutions =
-                ciltData?.positions
+                ciltData
+                    ?.positions
                     ?.flatMap { position ->
                         Log.d("CiltRoutineViewModel", "Position: ${position.name}, Masters: ${position.ciltMasters.size}")
                         position.ciltMasters
-                    }
-                    ?.flatMap { master ->
+                    }?.flatMap { master ->
                         Log.d("CiltRoutineViewModel", "Master: ${master.ciltName}, Sequences: ${master.sequences.size}")
                         master.sequences
-                    }
-                    ?.flatMap { sequence ->
+                    }?.flatMap { sequence ->
                         Log.d("CiltRoutineViewModel", "Sequence: ${sequence.id}, Executions: ${sequence.executions.size}")
                         sequence.executions.forEach { exec ->
                             Log.d("CiltRoutineViewModel", "  Execution ID: ${exec.id}, siteExecutionId: ${exec.siteExecutionId}")
@@ -407,22 +413,23 @@ class CiltRoutineViewModel
                     return@launch
                 }
 
-                kotlin.runCatching {
-                    getLevelsUseCase()
-                }.onSuccess { levels ->
-                    // Convert levelId to String before comparison
-                    // Finds the level that matches the level ID
-                    val matchingLevel = levels.find { it.id == levelId.toString() }
-                    // Retrieves the superior ID from the matching level
-                    val id = matchingLevel?.superiorId
-                    // Updates the ViewModel state and returns the result via the callback
-                    setState { copy(superiorId = id) }
-                    onResult(id)
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(superiorId = null) }
-                    onResult(null)
-                }
+                kotlin
+                    .runCatching {
+                        getLevelsUseCase()
+                    }.onSuccess { levels ->
+                        // Convert levelId to String before comparison
+                        // Finds the level that matches the level ID
+                        val matchingLevel = levels.find { it.id == levelId.toString() }
+                        // Retrieves the superior ID from the matching level
+                        val id = matchingLevel?.superiorId
+                        // Updates the ViewModel state and returns the result via the callback
+                        setState { copy(superiorId = id) }
+                        onResult(id)
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState { copy(superiorId = null) }
+                        onResult(null)
+                    }
             }
         }
 

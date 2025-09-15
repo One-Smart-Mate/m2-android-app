@@ -32,14 +32,15 @@ class CardDetailViewModel
 
         private fun handleGetCardDetail(uuid: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardDetailUseCase(uuid = uuid) }
-                }.onSuccess {
-                    setState { copy(state = LCE.Success(it)) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardDetailUseCase(uuid = uuid) }
+                    }.onSuccess {
+                        setState { copy(state = LCE.Success(it)) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState { copy(state = LCE.Fail(it.localizedMessage.orEmpty())) }
+                    }
             }
         }
     }

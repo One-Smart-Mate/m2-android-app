@@ -155,7 +155,8 @@ fun CiltDetailScreen(
         if (targetSiteExecutionId != -1 && execution != null && state.ciltData != null && !hasNavigated) {
             // Find the sequence that contains this execution
             val sequence =
-                state.ciltData?.positions
+                state.ciltData
+                    ?.positions
                     ?.flatMap { it.ciltMasters }
                     ?.flatMap { it.sequences }
                     ?.find { sequence ->
@@ -415,8 +416,7 @@ fun ExecutionDetailContent(
                         Color(0xFFEEEEEE)
                     },
                     shape = RoundedCornerShape(8.dp),
-                )
-                .padding(12.dp),
+                ).padding(12.dp),
     ) {
         Text(
             text =
@@ -515,8 +515,7 @@ fun ExecutionDetailContent(
                     .background(
                         MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
                         RoundedCornerShape(12.dp),
-                    )
-                    .padding(16.dp),
+                    ).padding(16.dp),
             contentAlignment = Alignment.Center,
         ) {
             Row(

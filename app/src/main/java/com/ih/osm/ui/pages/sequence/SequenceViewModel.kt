@@ -81,9 +81,14 @@ class SequenceViewModel
         )
 
         sealed class SequenceAction {
-            data class AddEvidence(val uri: Uri, val type: EvidenceType) : SequenceAction()
+            data class AddEvidence(
+                val uri: Uri,
+                val type: EvidenceType,
+            ) : SequenceAction()
 
-            data class RemoveEvidence(val evidence: Evidence) : SequenceAction()
+            data class RemoveEvidence(
+                val evidence: Evidence,
+            ) : SequenceAction()
 
             data object GetOpl : SequenceAction()
 
@@ -103,9 +108,13 @@ class SequenceViewModel
 
             data object CleanSequenceInformation : SequenceAction()
 
-            data class UpdateInitialParameter(val value: String) : SequenceAction()
+            data class UpdateInitialParameter(
+                val value: String,
+            ) : SequenceAction()
 
-            data class UpdateFinalParameter(val value: String) : SequenceAction()
+            data class UpdateFinalParameter(
+                val value: String,
+            ) : SequenceAction()
         }
 
         fun process(action: SequenceAction) {
@@ -154,35 +163,36 @@ class SequenceViewModel
                     handleCheckCard()
                     return@launch
                 }
-                kotlin.runCatching {
-                    callUseCase { getSequenceUseCase(sequenceId) }
-                }.onSuccess { sequence ->
-                    val execution = sequence.executions.find { it.id == executionId }
-                    val isValidExecution = execution?.isValidExecution(context).defaultIfNull(true)
-                    setState {
-                        copy(
-                            isLoading = false,
-                            sequence = sequence,
-                            execution = execution,
-                            bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
-                            enableStartButton = isValidExecution,
-                            enableStartExecution = isValidExecution && execution?.status != "A",
-                            isParamOk = execution?.nok.defaultIfNull(true),
-                        )
-                        copy(
-                            isLoading = false,
-                            sequence = sequence,
-                            execution = execution,
-                            bannerMessage = EMPTY,
-                            enableStartButton = isValidExecution,
-                            enableStartExecution = isValidExecution,
-                            isParamOk = execution?.nok.defaultIfNull(true),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getSequenceUseCase(sequenceId) }
+                    }.onSuccess { sequence ->
+                        val execution = sequence.executions.find { it.id == executionId }
+                        val isValidExecution = execution?.isValidExecution(context).defaultIfNull(true)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                sequence = sequence,
+                                execution = execution,
+                                bannerMessage = if (isValidExecution) EMPTY else execution?.validate(context)?.second.orEmpty(),
+                                enableStartButton = isValidExecution,
+                                enableStartExecution = isValidExecution && execution?.status != "A",
+                                isParamOk = execution?.nok.defaultIfNull(true),
+                            )
+                            copy(
+                                isLoading = false,
+                                sequence = sequence,
+                                execution = execution,
+                                bannerMessage = EMPTY,
+                                enableStartButton = isValidExecution,
+                                enableStartExecution = isValidExecution,
+                                isParamOk = execution?.nok.defaultIfNull(true),
+                            )
+                        }
+                        handleGetLevels()
+                    }.onFailure {
+                        setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
                     }
-                    handleGetLevels()
-                }.onFailure {
-                    setState { copy(message = it.localizedMessage.orEmpty(), isLoading = false) }
-                }
             }
         }
 
@@ -215,13 +225,14 @@ class SequenceViewModel
             viewModelScope.launch {
                 if (getState().opl == null) {
                     val oplId = getState().execution?.referenceOplSopId.toString()
-                    kotlin.runCatching {
-                        callUseCase { getOplByIdUseCase(oplId) }
-                    }.onSuccess {
-                        setState { copy(opl = it, showBottomSheet = true) }
-                    }.onFailure {
-                        setState { copy(message = it.localizedMessage.orEmpty()) }
-                    }
+                    kotlin
+                        .runCatching {
+                            callUseCase { getOplByIdUseCase(oplId) }
+                        }.onSuccess {
+                            setState { copy(opl = it, showBottomSheet = true) }
+                        }.onFailure {
+                            setState { copy(message = it.localizedMessage.orEmpty()) }
+                        }
                 } else {
                     setState { copy(showBottomSheet = true) }
                 }
@@ -232,13 +243,14 @@ class SequenceViewModel
             viewModelScope.launch {
                 if (getState().oplRemediation == null) {
                     val oplId = getState().execution?.remediationOplSopId.toString()
-                    kotlin.runCatching {
-                        callUseCase { getOplByIdUseCase(oplId) }
-                    }.onSuccess {
-                        setState { copy(oplRemediation = it, showBottomSheetRemediation = true) }
-                    }.onFailure {
-                        setState { copy(message = it.localizedMessage.orEmpty()) }
-                    }
+                    kotlin
+                        .runCatching {
+                            callUseCase { getOplByIdUseCase(oplId) }
+                        }.onSuccess {
+                            setState { copy(oplRemediation = it, showBottomSheetRemediation = true) }
+                        }.onFailure {
+                            setState { copy(message = it.localizedMessage.orEmpty()) }
+                        }
                 } else {
                     setState { copy(showBottomSheetRemediation = true) }
                 }
@@ -253,43 +265,44 @@ class SequenceViewModel
                 }
                 setState { copy(enableStartButton = false) }
 
-                kotlin.runCatching {
-                    callUseCase {
-                        startSequenceUseCase(
-                            StartSequenceExecutionRequest(
-                                id = getState().execution?.id.defaultIfNull(0),
-                                startDate = getCurrentDateTimeUtc(),
-                            ),
-                        )
-                    }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            enableStartButton = false,
-                            enableCompleteButton = true,
-                            duration = getDuration(),
-                        )
-                    }
-                    notificationManager.buildNotificationSequenceStarted()
-                    startTimer()
-                }.onFailure {
-                    val isExecutionStarted =
-                        it.localizedMessage.orEmpty().lowercase().contains(
-                            "The CILT sequence has already been started".lowercase(),
-                        )
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_starting_sequence,
-                                    it.localizedMessage.orEmpty(),
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            startSequenceUseCase(
+                                StartSequenceExecutionRequest(
+                                    id = getState().execution?.id.defaultIfNull(0),
+                                    startDate = getCurrentDateTimeUtc(),
                                 ),
-                            enableStartButton = !isExecutionStarted,
-                            enableCompleteButton = isExecutionStarted,
-                            duration = getDuration(),
-                        )
+                            )
+                        }
+                    }.onSuccess {
+                        setState {
+                            copy(
+                                enableStartButton = false,
+                                enableCompleteButton = true,
+                                duration = getDuration(),
+                            )
+                        }
+                        notificationManager.buildNotificationSequenceStarted()
+                        startTimer()
+                    }.onFailure {
+                        val isExecutionStarted =
+                            it.localizedMessage.orEmpty().lowercase().contains(
+                                "The CILT sequence has already been started".lowercase(),
+                            )
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_starting_sequence,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                                enableStartButton = !isExecutionStarted,
+                                enableCompleteButton = isExecutionStarted,
+                                duration = getDuration(),
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -327,20 +340,29 @@ class SequenceViewModel
 
         private fun handleGetLevels() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getLevelsUSeCase() }
-                }.onSuccess { levels ->
-                    val levelId = getState().execution?.levelId.defaultIfNull(0).toString()
-                    setState {
-                        copy(
-                            superiorId =
-                                levels.find { it.id == levelId }?.superiorId?.toInt()
-                                    .defaultIfNull(0),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getLevelsUSeCase() }
+                    }.onSuccess { levels ->
+                        val levelId =
+                            getState()
+                                .execution
+                                ?.levelId
+                                .defaultIfNull(0)
+                                .toString()
+                        setState {
+                            copy(
+                                superiorId =
+                                    levels
+                                        .find { it.id == levelId }
+                                        ?.superiorId
+                                        ?.toInt()
+                                        .defaultIfNull(0),
+                            )
+                        }
+                    }.onFailure {
+                        setState { copy(superiorId = 0) }
                     }
-                }.onFailure {
-                    setState { copy(superiorId = 0) }
-                }
             }
         }
 
@@ -362,20 +384,21 @@ class SequenceViewModel
                 var remoteCardId = 0
 
                 if (state.card != null) {
-                    kotlin.runCatching {
-                        callUseCase { syncCardUseCase(card = state.card) }
-                    }.onSuccess { syncedCard ->
-                        remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
-                    }.onFailure {
-                        LoggerHelperManager.logException(it)
-                        setState {
-                            copy(
-                                isLoading = false,
-                                message = context.getString(R.string.error_syncing_card),
-                            )
+                    kotlin
+                        .runCatching {
+                            callUseCase { syncCardUseCase(card = state.card) }
+                        }.onSuccess { syncedCard ->
+                            remoteCardId = syncedCard?.id?.toIntOrNull() ?: 0
+                        }.onFailure {
+                            LoggerHelperManager.logException(it)
+                            setState {
+                                copy(
+                                    isLoading = false,
+                                    message = context.getString(R.string.error_syncing_card),
+                                )
+                            }
+                            return@launch
                         }
-                        return@launch
-                    }
                 }
 
                 if (state.isParamOk.not() && remoteCardId == 0) {
@@ -401,25 +424,26 @@ class SequenceViewModel
                         amTagId = remoteCardId,
                     )
 
-                kotlin.runCatching {
-                    callUseCase { stopSequenceExecutionUseCase(request, state.evidences) }
-                }.onSuccess {
-                    stopTimer()
-                    notificationManager.buildNotificationSequenceFinished()
-                    setState { copy(isLoading = false, navigateBack = true) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            message =
-                                context.getString(
-                                    R.string.error_stopping_sequence,
-                                    it.localizedMessage.orEmpty(),
-                                ),
-                            isLoading = false,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { stopSequenceExecutionUseCase(request, state.evidences) }
+                    }.onSuccess {
+                        stopTimer()
+                        notificationManager.buildNotificationSequenceFinished()
+                        setState { copy(isLoading = false, navigateBack = true) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                message =
+                                    context.getString(
+                                        R.string.error_stopping_sequence,
+                                        it.localizedMessage.orEmpty(),
+                                    ),
+                                isLoading = false,
+                            )
+                        }
                     }
-                }
             }
         }
 
@@ -434,13 +458,14 @@ class SequenceViewModel
             viewModelScope.launch {
                 if (getState().card != null) {
                     setState { copy(isLoading = true) }
-                    kotlin.runCatching {
-                        callUseCase { deleteCardUseCase(getState().card?.uuid.orEmpty()) }
-                    }.onSuccess {
-                        setState { copy(navigateBack = true) }
-                    }.onFailure {
-                        setState { copy(navigateBack = true) }
-                    }
+                    kotlin
+                        .runCatching {
+                            callUseCase { deleteCardUseCase(getState().card?.uuid.orEmpty()) }
+                        }.onSuccess {
+                            setState { copy(navigateBack = true) }
+                        }.onFailure {
+                            setState { copy(navigateBack = true) }
+                        }
                 } else {
                     setState { copy(navigateBack = true) }
                 }

@@ -54,7 +54,10 @@ private object Route {
     const val SEQUENCE = "$SEQUENCE_PATH/{$ARG_SEQUENCE_ID}/{$ARG_EXECUTION_ID}"
 }
 
-sealed class Screen(val route: String, val path: String = EMPTY) {
+sealed class Screen(
+    val route: String,
+    val path: String = EMPTY,
+) {
     data object Login : Screen(Route.LOGIN)
 
     // data object Home : Screen(Route.HOME, Route.HOME_PATH)

@@ -23,23 +23,17 @@ class SolutionRepositoryImpl
             dao.deleteAll()
         }
 
-        override suspend fun getAllByCard(uuid: String): List<SolutionEntity> {
-            return dao.getAllByCard(uuid)
-        }
+        override suspend fun getAllByCard(uuid: String): List<SolutionEntity> = dao.getAllByCard(uuid)
 
         override suspend fun deleteAllByCard(uuid: String) {
             dao.deleteAllByCard(uuid)
         }
 
-        override suspend fun getAll(): List<SolutionEntity> {
-            return dao.getAll()
-        }
+        override suspend fun getAll(): List<SolutionEntity> = dao.getAll()
 
-        override suspend fun saveRemoteDefinitive(body: CreateDefinitiveSolutionRequest): Card {
-            return networkRepository.saveRemoteDefinitiveSolution(body)
-        }
+        override suspend fun saveRemoteDefinitive(body: CreateDefinitiveSolutionRequest): Card =
+            networkRepository.saveRemoteDefinitiveSolution(body)
 
-        override suspend fun saveRemoteProvisional(body: CreateProvisionalSolutionRequest): Card {
-            return networkRepository.saveRemoteProvisionalSolution(body)
-        }
+        override suspend fun saveRemoteProvisional(body: CreateProvisionalSolutionRequest): Card =
+            networkRepository.saveRemoteProvisionalSolution(body)
     }

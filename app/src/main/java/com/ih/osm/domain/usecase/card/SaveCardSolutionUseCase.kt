@@ -90,7 +90,9 @@ class SaveCardSolutionUseCaseImpl
                                     cardId = cardId.toInt(),
                                     userDefinitiveSolutionId = userSolutionId.toInt(),
                                     userAppDefinitiveSolutionId =
-                                        userAppSolution?.userId?.toInt()
+                                        userAppSolution
+                                            ?.userId
+                                            ?.toInt()
                                             .defaultIfNull(0),
                                     evidences = remoteEvidences,
                                     comments = comments,
@@ -122,7 +124,9 @@ class SaveCardSolutionUseCaseImpl
                                     cardId = cardId.toInt(),
                                     userProvisionalSolutionId = userSolutionId.toInt(),
                                     userAppProvisionalSolutionId =
-                                        userAppSolution?.userId?.toInt()
+                                        userAppSolution
+                                            ?.userId
+                                            ?.toInt()
                                             .defaultIfNull(0),
                                     evidences = remoteEvidences,
                                     comments = comments,

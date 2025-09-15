@@ -20,12 +20,11 @@ data class PriorityEntity(
     val status: String,
 )
 
-fun PriorityEntity.toDomain(): Priority {
-    return Priority(
+fun PriorityEntity.toDomain(): Priority =
+    Priority(
         id = this.id,
         code = this.code,
         description = this.description,
         days = this.days,
         status = this.status,
     )
-}

@@ -287,8 +287,7 @@ fun PdfCardItem(
                                         .background(
                                             color = Color(0xFFDC3545).copy(alpha = 0.9f),
                                             shape = RoundedCornerShape(4.dp),
-                                        )
-                                        .padding(horizontal = 6.dp, vertical = 2.dp),
+                                        ).padding(horizontal = 6.dp, vertical = 2.dp),
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.pdf_label),
@@ -315,8 +314,7 @@ fun PdfCardItem(
                                                 bottomStart = 12.dp,
                                                 bottomEnd = 12.dp,
                                             ),
-                                    )
-                                    .padding(PaddingSmall),
+                                    ).padding(PaddingSmall),
                         ) {
                             val displayName =
                                 when {
@@ -425,8 +423,7 @@ private fun PdfDefaultView(
                     .background(
                         color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                         shape = RoundedCornerShape(8.dp),
-                    )
-                    .padding(horizontal = PaddingSmall, vertical = 4.dp),
+                    ).padding(horizontal = PaddingSmall, vertical = 4.dp),
         ) {
             Icon(
                 imageVector = Icons.Default.Info,

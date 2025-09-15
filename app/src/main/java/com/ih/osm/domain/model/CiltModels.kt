@@ -102,13 +102,9 @@ fun List<Execution>.sortByTime(): List<Execution> {
         }
 }
 
-fun Execution.stopMachine(): Boolean {
-    return this.machineStopped == true
-}
+fun Execution.stopMachine(): Boolean = this.machineStopped == true
 
-fun Execution.stoppageReason(): Boolean {
-    return this.stoppageReason == true
-}
+fun Execution.stoppageReason(): Boolean = this.stoppageReason == true
 
 data class Execution(
     val id: Int,
@@ -194,12 +190,11 @@ fun Execution.getStatusColor(): Color {
     }
 }
 
-fun Execution.getStatusTextColor(): Color {
-    return when (this.getStatus()) {
+fun Execution.getStatusTextColor(): Color =
+    when (this.getStatus()) {
         "Pendiente", "En tiempo" -> Color.Black
         else -> Color.White
     }
-}
 
 fun Execution.validate(context: Context): Pair<Int, String> {
     val time = this.secuenceSchedule.parseUTCToLocal().toHourMinuteString()
@@ -208,14 +203,20 @@ fun Execution.validate(context: Context): Pair<Int, String> {
     val timeInMinutes = getMinutesDifference(currentTime, time)
 
     val timeBefore =
-        scheduleDate?.toCalendar().apply {
-            this?.add(Calendar.MINUTE, -allowExecuteBeforeMinutes)
-        }?.time?.format()
+        scheduleDate
+            ?.toCalendar()
+            .apply {
+                this?.add(Calendar.MINUTE, -allowExecuteBeforeMinutes)
+            }?.time
+            ?.format()
 
     val timeAfter =
-        scheduleDate?.toCalendar().apply {
-            this?.add(Calendar.MINUTE, toleranceAfterMinutes)
-        }?.time?.format()
+        scheduleDate
+            ?.toCalendar()
+            .apply {
+                this?.add(Calendar.MINUTE, toleranceAfterMinutes)
+            }?.time
+            ?.format()
 
     Log.e("test", "Time: $time")
     Log.e("test", "currentTime: $currentTime")
@@ -249,9 +250,7 @@ fun Execution.validate(context: Context): Pair<Int, String> {
     }
 }
 
-fun Execution.isValidExecution(context: Context): Boolean {
-    return validate(context).first == 1
-}
+fun Execution.isValidExecution(context: Context): Boolean = validate(context).first == 1
 
 data class CiltEvidence(
     val id: Int,

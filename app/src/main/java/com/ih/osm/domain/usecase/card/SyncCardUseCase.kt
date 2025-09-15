@@ -26,8 +26,8 @@ class SyncCardUseCaseImpl
         private val evidenceRepository: EvidenceRepository,
         private val authRepository: AuthRepository,
     ) : SyncCardUseCase {
-        override suspend fun invoke(card: Card): Card? {
-            return try {
+        override suspend fun invoke(card: Card): Card? =
+            try {
                 val evidences = mutableListOf<CreateEvidenceRequest>()
                 card.evidences?.forEach { evidence ->
                     val url = firebaseStorageRepository.uploadEvidence(evidence)
@@ -67,5 +67,4 @@ class SyncCardUseCaseImpl
                 FirebaseCrashlytics.getInstance().recordException(e)
                 null
             }
-        }
     }

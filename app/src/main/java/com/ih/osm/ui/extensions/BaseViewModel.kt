@@ -18,9 +18,7 @@ abstract class BaseViewModel<S : Any>(
         _state.value = update(_state.value)
     }
 
-    suspend fun <T> callUseCase(call: suspend () -> T): T {
-        return withContext(Dispatchers.IO) { call() }
-    }
+    suspend fun <T> callUseCase(call: suspend () -> T): T = withContext(Dispatchers.IO) { call() }
 
     fun getState() = _state.value
 

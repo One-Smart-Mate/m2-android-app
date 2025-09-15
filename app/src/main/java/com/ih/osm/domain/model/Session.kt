@@ -29,8 +29,8 @@ data class Session(
     }
 }
 
-fun Session.toEntity(): SessionEntity {
-    return SessionEntity(
+fun Session.toEntity(): SessionEntity =
+    SessionEntity(
         userId = this.userId,
         name = this.name,
         email = this.email,
@@ -41,4 +41,3 @@ fun Session.toEntity(): SessionEntity {
         companyName = this.companyName,
         siteName = this.siteName,
     )
-}

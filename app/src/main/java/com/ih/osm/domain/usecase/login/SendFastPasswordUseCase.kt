@@ -14,7 +14,5 @@ class SendFastLoginUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : SendFastPasswordUseCase {
-        override suspend fun invoke(body: SendFastPasswordRequest): SendFastPasswordResponse {
-            return authRepository.sendFastPassword(body)
-        }
+        override suspend fun invoke(body: SendFastPasswordRequest): SendFastPasswordResponse = authRepository.sendFastPassword(body)
     }

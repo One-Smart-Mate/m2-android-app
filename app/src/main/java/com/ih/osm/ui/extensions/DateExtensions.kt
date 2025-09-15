@@ -43,17 +43,16 @@ val Date.DayMonthWithTimeZone: String
 fun String.toDate(
     format: String,
     timeZone: TimeZone = TimeZone.getDefault(),
-): Date? {
-    return SimpleDateFormat(format, Locale.getDefault()).apply {
-        this.timeZone = timeZone
-    }.parse(this)
-}
+): Date? =
+    SimpleDateFormat(format, Locale.getDefault())
+        .apply {
+            this.timeZone = timeZone
+        }.parse(this)
 
-fun Date.toCalendar(): Calendar {
-    return Calendar.getInstance().apply {
+fun Date.toCalendar(): Calendar =
+    Calendar.getInstance().apply {
         time = this@toCalendar
     }
-}
 
 val Date.DayAndDateWithYear: String
     get() =
@@ -187,9 +186,7 @@ fun String?.fromIsoToNormalDate(): String {
     }
 }
 
-fun getCurrentDate(): String {
-    return SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
-}
+fun getCurrentDate(): String = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 
 fun getCurrentDateTimeUtc(): String {
     val sdf = SimpleDateFormat(ISO, Locale.US)
@@ -230,8 +227,8 @@ fun Int.toMinutesAndSeconds(): String {
     }
 }
 
-fun calculateRemainingDaysFromIso(dueDateString: String): Int {
-    return try {
+fun calculateRemainingDaysFromIso(dueDateString: String): Int =
+    try {
         val sdf =
             SimpleDateFormat(ISO, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
@@ -245,7 +242,6 @@ fun calculateRemainingDaysFromIso(dueDateString: String): Int {
         FirebaseCrashlytics.getInstance().recordException(e)
         0
     }
-}
 
 fun String.isWithinExecutionWindow(
     context: Context,
@@ -365,8 +361,8 @@ fun String.parseUTCToLocal(outputFormat: String = NORMAL_FORMAT): String {
     return date?.let { localFormat.format(it) }.orEmpty()
 }
 
-fun String.toHourMinuteString(): String {
-    return try {
+fun String.toHourMinuteString(): String =
+    try {
         val inputFormat = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault())
         val date = inputFormat.parse(this)
         val outputFormat = SimpleDateFormat(HH_MM, Locale.getDefault())
@@ -374,10 +370,9 @@ fun String.toHourMinuteString(): String {
     } catch (e: Exception) {
         this
     }
-}
 
-fun Calendar.toHourMinuteString(): String {
-    return try {
+fun Calendar.toHourMinuteString(): String =
+    try {
         val inputFormat = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault())
         val date = inputFormat.parse(Calendar.getInstance().time.YYYY_MM_DD_HH_MM_SS)
         val outputFormat = SimpleDateFormat(HH_MM, Locale.getDefault())
@@ -385,7 +380,6 @@ fun Calendar.toHourMinuteString(): String {
     } catch (e: Exception) {
         "00:00"
     }
-}
 
 fun getMinutesDifference(
     time1: String,

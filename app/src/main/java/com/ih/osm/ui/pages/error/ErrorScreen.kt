@@ -49,8 +49,7 @@ fun ErrorScreen(
                 .fillMaxSize()
                 .background(
                     color = MaterialTheme.colorScheme.error,
-                )
-                .padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal),
+                ).padding(top = 36.dp, start = PaddingNormal, end = PaddingNormal),
     ) {
         item {
             Icon(

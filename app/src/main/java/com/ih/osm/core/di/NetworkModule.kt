@@ -33,9 +33,7 @@ object NetworkModule {
     fun provideTokenAuthenticator(
         userDao: UserDao,
         refreshTokenUseCaseProvider: Provider<RefreshTokenUseCase>,
-    ): TokenAuthenticator {
-        return TokenAuthenticator(userDao, refreshTokenUseCaseProvider)
-    }
+    ): TokenAuthenticator = TokenAuthenticator(userDao, refreshTokenUseCaseProvider)
 
     @Provides
     fun providesClientOkHttp(
@@ -43,7 +41,8 @@ object NetworkModule {
         authInterceptor: AuthInterceptor,
         tokenAuthenticator: TokenAuthenticator,
     ): OkHttpClient =
-        OkHttpClient.Builder()
+        OkHttpClient
+            .Builder()
             .addInterceptor(authInterceptor)
             .authenticator(tokenAuthenticator)
             .addInterceptor(loggingInterceptor)
@@ -61,14 +60,14 @@ object NetworkModule {
         baseUrl: String,
         okHttpClient: OkHttpClient,
     ): Retrofit =
-        Retrofit.Builder()
+        Retrofit
+            .Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(
                 GsonConverterFactory.create(
                     GsonBuilder().create(),
                 ),
-            )
-            .client(okHttpClient)
+            ).client(okHttpClient)
             .build()
 
     @Provides

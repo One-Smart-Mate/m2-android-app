@@ -212,8 +212,7 @@ fun OplItemCard(
                             .background(
                                 color = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
                                 shape = RoundedCornerShape(Radius8),
-                            )
-                            .padding(horizontal = PaddingSmall, vertical = PaddingTiny),
+                            ).padding(horizontal = PaddingSmall, vertical = PaddingTiny),
                 ) {
                     Text(
                         text = "${opl.details.size} ${stringResource(id = R.string.steps)}",
@@ -306,8 +305,7 @@ fun OplItemCard(
                                     .background(
                                         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f),
                                         shape = RoundedCornerShape(8.dp),
-                                    )
-                                    .padding(PaddingNormal),
+                                    ).padding(PaddingNormal),
                             contentAlignment = Alignment.Center,
                         ) {
                             Text(

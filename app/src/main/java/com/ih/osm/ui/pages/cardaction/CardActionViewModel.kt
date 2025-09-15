@@ -159,57 +159,52 @@ class CardActionViewModel
         private fun imagesQuantity(
             actionType: CardItemSheetAction,
             cardType: CardType?,
-        ): Int {
-            return when (actionType) {
+        ): Int =
+            when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.quantityImagesPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.quantityImagesClose
                 else -> 0
             }.defaultIfNull(0)
-        }
 
         private fun videoQuantity(
             actionType: CardItemSheetAction,
             cardType: CardType?,
-        ): Int {
-            return when (actionType) {
+        ): Int =
+            when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.quantityVideosPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.quantityVideosClose
                 else -> 0
             }.defaultIfNull(0)
-        }
 
         private fun audiosQuantity(
             actionType: CardItemSheetAction,
             cardType: CardType?,
-        ): Int {
-            return when (actionType) {
+        ): Int =
+            when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.quantityAudiosPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.quantityAudiosClose
                 else -> 0
             }.defaultIfNull(0)
-        }
 
         private fun audiosDuration(
             actionType: CardItemSheetAction,
             cardType: CardType?,
-        ): Int {
-            return when (actionType) {
+        ): Int =
+            when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.audiosDurationPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.audiosDurationClose
                 else -> 0
             }.defaultIfNull(0)
-        }
 
         private fun videoDuration(
             actionType: CardItemSheetAction,
             cardType: CardType?,
-        ): Int {
-            return when (actionType) {
+        ): Int =
+            when (actionType) {
                 is CardItemSheetAction.ProvisionalSolution -> cardType?.videosDurationPs
                 is CardItemSheetAction.DefinitiveSolution -> cardType?.videosDurationClose
                 else -> 0
             }.defaultIfNull(0)
-        }
 
 //
         private fun handleDeleteEvidence(evidence: Evidence) {
@@ -248,21 +243,22 @@ class CardActionViewModel
                     }
                     return@launch
                 }
-                kotlin.runCatching {
-                    callUseCase {
-                        updateCardMechanicUseCase(
-                            mechanicId = state.selectedEmployee?.id.orEmpty(),
-                            uuid = state.card?.uuid.orEmpty(),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            updateCardMechanicUseCase(
+                                mechanicId = state.selectedEmployee?.id.orEmpty(),
+                                uuid = state.card?.uuid.orEmpty(),
+                            )
+                        }
+                    }.onSuccess {
+                        setState { copy(isActionSuccess = true) }
+                        buildNotification()
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                }.onSuccess {
-                    setState { copy(isActionSuccess = true) }
-                    buildNotification()
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
@@ -286,25 +282,26 @@ class CardActionViewModel
                     } else {
                         PROVISIONAL_SOLUTION
                     }
-                kotlin.runCatching {
-                    callUseCase {
-                        saveCardSolutionUseCase(
-                            solutionType = actionType,
-                            cardId = state.card?.uuid.toString(),
-                            comments = state.comments,
-                            userSolutionId = state.selectedEmployee.id,
-                            evidences = state.evidences,
-                            saveLocal = true,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            saveCardSolutionUseCase(
+                                solutionType = actionType,
+                                cardId = state.card?.uuid.toString(),
+                                comments = state.comments,
+                                userSolutionId = state.selectedEmployee.id,
+                                evidences = state.evidences,
+                                saveLocal = true,
+                            )
+                        }
+                    }.onSuccess {
+                        setState { copy(isActionSuccess = true) }
+                        buildNotification()
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                }.onSuccess {
-                    setState { copy(isActionSuccess = true) }
-                    buildNotification()
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
@@ -344,62 +341,64 @@ class CardActionViewModel
         private fun handleGetCardDetail(uuid: String) {
             setState { copy(isLoading = true) }
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardDetailUseCase(uuid, false) }
-                }.onSuccess {
-                    setState { copy(card = it) }
-                    handleGetCardType(it.cardTypeId.orEmpty())
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardDetailUseCase(uuid, false) }
+                    }.onSuccess {
+                        setState { copy(card = it) }
+                        handleGetCardType(it.cardTypeId.orEmpty())
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
         private fun handleGetCardType(cardTypeId: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardTypeUseCase(cardTypeId) }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            cardType = cardType,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardTypeUseCase(cardTypeId) }
+                    }.onSuccess {
+                        setState {
+                            copy(
+                                cardType = cardType,
+                            )
+                        }
+                        handleGetEmployees()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                    handleGetEmployees()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
         private fun handleGetEmployees() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    val actionType = getState().actionType
-                    if (actionType == CardItemSheetAction.AssignMechanic) {
-                        callUseCase { getEmployeesByRoleUseCase("mechanic") }
-                    } else {
-                        callUseCase { getEmployeesUseCase() }
+                kotlin
+                    .runCatching {
+                        val actionType = getState().actionType
+                        if (actionType == CardItemSheetAction.AssignMechanic) {
+                            callUseCase { getEmployeesByRoleUseCase("mechanic") }
+                        } else {
+                            callUseCase { getEmployeesUseCase() }
+                        }
+                    }.onSuccess {
+                        setState { copy(employeeList = it) }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                }.onSuccess {
-                    setState { copy(employeeList = it) }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
-        private fun getScreenTitle(action: CardItemSheetAction): String {
-            return when (action) {
+        private fun getScreenTitle(action: CardItemSheetAction): String =
+            when (action) {
                 is CardItemSheetAction.AssignMechanic -> context.getString(R.string.assign_mechanic)
                 is CardItemSheetAction.DefinitiveSolution -> context.getString(R.string.definitive_solution)
                 is CardItemSheetAction.ProvisionalSolution -> context.getString(R.string.provisional_solution)
             }
-        }
 
         private fun cleanScreenStates(message: String = EMPTY) {
             setState { copy(isLoading = false, message = message) }

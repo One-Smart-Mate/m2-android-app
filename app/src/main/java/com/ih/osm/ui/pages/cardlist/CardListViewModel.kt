@@ -89,28 +89,30 @@ class CardListViewModel
 
                 kotlinx.coroutines.delay(3000)
 
-                kotlin.runCatching {
-                    callUseCase { syncCatalogsUseCase(syncCards = true) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { syncCatalogsUseCase(syncCards = true) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                    }
 
-                kotlin.runCatching {
-                    callUseCase { getCardsUseCase(syncRemote = true, localCards = false) }
-                }.onSuccess { cards ->
-                    setState {
-                        copy(
-                            cards = cards.sortedByDescending { it.siteCardId },
-                            isLoading = false,
-                            message = EMPTY,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardsUseCase(syncRemote = true, localCards = false) }
+                    }.onSuccess { cards ->
+                        setState {
+                            copy(
+                                cards = cards.sortedByDescending { it.siteCardId },
+                                isLoading = false,
+                                message = EMPTY,
+                            )
+                        }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(isLoading = false, message = it.localizedMessage.orEmpty())
+                        }
                     }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(isLoading = false, message = it.localizedMessage.orEmpty())
-                    }
-                }
             }
         }
 
@@ -136,33 +138,35 @@ class CardListViewModel
 
         private fun handleGeCards() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardsUseCase(syncRemote = false) }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            cards = it.sortedByDescending { item -> item.siteCardId },
-                            isLoading = false,
-                            message = EMPTY,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardsUseCase(syncRemote = false) }
+                    }.onSuccess {
+                        setState {
+                            copy(
+                                cards = it.sortedByDescending { item -> item.siteCardId },
+                                isLoading = false,
+                                message = EMPTY,
+                            )
+                        }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
         private fun handleGetSession() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getSessionUseCase() }
-                }.onSuccess { session ->
-                    setState { copy(session = session) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getSessionUseCase() }
+                    }.onSuccess { session ->
+                        setState { copy(session = session) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
@@ -170,10 +174,11 @@ class CardListViewModel
             viewModelScope.launch {
                 val cards = getCardsUseCase(syncRemote = false)
                 val filteredCards =
-                    cards.filterByStatus(
-                        filter = filter.toCardFilter(context = context),
-                        userId = getState().session?.userId.orEmpty(),
-                    ).sortedByDescending { it.siteCardId }
+                    cards
+                        .filterByStatus(
+                            filter = filter.toCardFilter(context = context),
+                            userId = getState().session?.userId.orEmpty(),
+                        ).sortedByDescending { it.siteCardId }
                 setState { copy(cards = filteredCards) }
             }
         }

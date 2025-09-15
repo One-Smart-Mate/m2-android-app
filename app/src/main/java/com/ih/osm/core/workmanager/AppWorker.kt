@@ -20,8 +20,8 @@ class AppWorker
         private val syncCardsUseCase: SyncCardsUseCase,
         private val notificationManager: NotificationManager,
     ) : CoroutineWorker(appContext, workerParams) {
-        override suspend fun doWork(): Result {
-            return try {
+        override suspend fun doWork(): Result =
+            try {
                 notificationManager.buildNotification(
                     title = applicationContext.getString(R.string.sync_cards_title),
                     description = applicationContext.getString(R.string.sync_cards_start),
@@ -39,5 +39,4 @@ class AppWorker
                 e.printStackTrace()
                 Result.failure()
             }
-        }
     }

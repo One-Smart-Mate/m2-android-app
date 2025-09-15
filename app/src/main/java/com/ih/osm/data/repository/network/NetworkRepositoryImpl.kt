@@ -229,7 +229,14 @@ class NetworkRepositoryImpl
         private fun <T> Response<T>.getErrorMessage(): String {
             val instance = FirebaseCrashlytics.getInstance()
             try {
-                val data = JSONObject(this.errorBody()?.charStream()?.readText().orEmpty())
+                val data =
+                    JSONObject(
+                        this
+                            .errorBody()
+                            ?.charStream()
+                            ?.readText()
+                            .orEmpty(),
+                    )
                 val message = data.getString("message")
                 instance.setCustomKey("Custom_Error_API_Service ", message)
                 instance.log(message)

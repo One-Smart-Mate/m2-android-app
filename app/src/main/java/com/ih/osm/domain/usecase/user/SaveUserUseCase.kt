@@ -13,7 +13,5 @@ class SaveUserUseCaseImpl
     constructor(
         private val authRepository: AuthRepository,
     ) : SaveUserUseCase {
-        override suspend fun invoke(user: User): Long {
-            return authRepository.save(user)
-        }
+        override suspend fun invoke(user: User): Long = authRepository.save(user)
     }

@@ -47,8 +47,8 @@ data class CardType(
     val cardTypeMethodology: String?,
 )
 
-fun CardType.toEntity(): CardTypeEntity {
-    return CardTypeEntity(
+fun CardType.toEntity(): CardTypeEntity =
+    CardTypeEntity(
         id = this.id,
         methodology = this.methodology,
         name = this.name,
@@ -73,13 +73,11 @@ fun CardType.toEntity(): CardTypeEntity {
         videosDurationPs = this.videosDurationPs.defaultIfNull(0),
         cardTypeMethodology = this.cardTypeMethodology,
     )
-}
 
-fun List<CardType>.toNodeItemList(): List<NodeCardItem> {
-    return this.map {
+fun List<CardType>.toNodeItemList(): List<NodeCardItem> =
+    this.map {
         NodeCardItem(id = it.id, name = it.methodology, description = it.name)
     }
-}
 
 // fun CardType.isBehavior() = this.methodology.lowercase() == CARD_BEHAIVIOR.lowercase() ||
 //  this.cardTypeMethodology?.lowercase() == CARD_TYPE_METHODOLOGY_C.lowercase()

@@ -58,36 +58,33 @@ fun NetworkCard(
 private fun getNetworkStatus(
     networkStatus: NetworkStatus,
     context: Context,
-): String {
-    return when (networkStatus) {
+): String =
+    when (networkStatus) {
         WIFI_CONNECTED -> context.getString(R.string.wifi_connected)
         WIFI_DISCONNECTED -> context.getString(R.string.wifi_disconnected)
         DATA_CONNECTED -> context.getString(R.string.data_mobile_connected)
         DATA_DISCONNECTED -> context.getString(R.string.data_mobile_disconnected)
         NO_INTERNET_ACCESS -> context.getString(R.string.no_internet_access)
     }
-}
 
-private fun getNetworkStatusIcon(networkStatus: NetworkStatus): Int {
-    return when (networkStatus) {
+private fun getNetworkStatusIcon(networkStatus: NetworkStatus): Int =
+    when (networkStatus) {
         WIFI_CONNECTED -> R.drawable.ic_wifi
         WIFI_DISCONNECTED -> R.drawable.ic_wifi_off
         DATA_CONNECTED -> R.drawable.ic_mobile_data_on
         DATA_DISCONNECTED -> R.drawable.ic_mobile_data_off
         NO_INTERNET_ACCESS -> R.drawable.ic_signal_off
     }
-}
 
 @Composable
-private fun getNetworkStatusColor(networkStatus: NetworkStatus): Color {
-    return when (networkStatus) {
+private fun getNetworkStatusColor(networkStatus: NetworkStatus): Color =
+    when (networkStatus) {
         WIFI_CONNECTED, DATA_CONNECTED -> Color.Green
         WIFI_DISCONNECTED,
         DATA_DISCONNECTED,
         -> Color.Red.copy(alpha = 0.4f)
         NO_INTERNET_ACCESS -> Color.Yellow.copy(alpha = 0.4f)
     }
-}
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")

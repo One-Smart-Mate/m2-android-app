@@ -50,7 +50,12 @@ class SaveCardUseCaseImpl
             }
             val updatedCard =
                 card.copy(
-                    id = lastCardId.defaultIfNull("0").toLong().plus(1).toString(),
+                    id =
+                        lastCardId
+                            .defaultIfNull("0")
+                            .toLong()
+                            .plus(1)
+                            .toString(),
                     siteCardId = lastSiteCardId.defaultIfNull(0).plus(1),
                     siteId = user?.siteId,
                     cardTypeColor = cardType?.color.orEmpty(),

@@ -15,8 +15,8 @@ data class Level(
     val status: String,
 )
 
-fun Level.toEntity(): LevelEntity {
-    return LevelEntity(
+fun Level.toEntity(): LevelEntity =
+    LevelEntity(
         id = this.id,
         ownerId = this.ownerId.orEmpty(),
         ownerName = this.ownerName.orEmpty(),
@@ -25,10 +25,9 @@ fun Level.toEntity(): LevelEntity {
         description = this.description,
         status = this.status,
     )
-}
 
-fun List<Level>.toNodeItemList(): List<NodeCardItem> {
-    return this.map {
+fun List<Level>.toNodeItemList(): List<NodeCardItem> =
+    this.map {
         NodeCardItem(
             id = it.id,
             name = it.name,
@@ -36,4 +35,3 @@ fun List<Level>.toNodeItemList(): List<NodeCardItem> {
             superiorId = it.superiorId,
         )
     }
-}

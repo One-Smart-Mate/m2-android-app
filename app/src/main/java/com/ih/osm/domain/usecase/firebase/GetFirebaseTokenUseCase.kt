@@ -15,12 +15,11 @@ class GetFirebaseTokenUseCaseImpl
     constructor(
         private val firebaseMessaging: FirebaseMessaging,
     ) : GetFirebaseTokenUseCase {
-        override suspend fun invoke(): String {
-            return try {
+        override suspend fun invoke(): String =
+            try {
                 firebaseMessaging.token.await()
             } catch (e: Exception) {
                 LoggerHelperManager.logException(e)
                 EMPTY
             }
-        }
     }

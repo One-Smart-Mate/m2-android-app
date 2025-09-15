@@ -24,17 +24,13 @@ class LevelRepositoryImpl
             }
         }
 
-        override suspend fun getAll(): List<Level> {
-            return dao.getAll().map { it.toDomain() }
-        }
+        override suspend fun getAll(): List<Level> = dao.getAll().map { it.toDomain() }
 
         override suspend fun deleteAll() {
             dao.deleteAll()
         }
 
-        override suspend fun get(id: String): Level? {
-            return dao.get(id)?.toDomain()
-        }
+        override suspend fun get(id: String): Level? = dao.get(id)?.toDomain()
 
         override suspend fun getAllRemote(): List<Level> {
             val siteId = authRepository.getSiteId()

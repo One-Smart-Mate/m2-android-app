@@ -4,21 +4,29 @@ import android.content.Context
 import com.ih.osm.ui.utils.EMPTY
 
 sealed class HomeAction {
-    data class SyncCatalogs(val syncCatalogs: String = EMPTY) : HomeAction()
+    data class SyncCatalogs(
+        val syncCatalogs: String = EMPTY,
+    ) : HomeAction()
 
     data object GetCards : HomeAction()
 
     // data object SetIsSync : Action()
 
-    data class SyncLocalCards(val context: Context) : HomeAction()
+    data class SyncLocalCards(
+        val context: Context,
+    ) : HomeAction()
 
 //    data object ClearMessage : Action()
 
     data object SyncRemoteCards : HomeAction()
 
-    data class FastLogin(val fastPassword: String) : HomeAction()
+    data class FastLogin(
+        val fastPassword: String,
+    ) : HomeAction()
 
     data object CleanMessage : HomeAction()
 
-    data class SendFastPassword(val phoneNumber: String) : HomeAction()
+    data class SendFastPassword(
+        val phoneNumber: String,
+    ) : HomeAction()
 }

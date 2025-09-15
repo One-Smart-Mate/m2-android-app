@@ -28,8 +28,8 @@ class CleanCatalogsUseCaseImpl
         private val evidenceRepo: EvidenceRepository,
         private val solutionRepo: SolutionRepository,
     ) : CleanCatalogsUseCase {
-        override suspend fun invoke(): Boolean {
-            return try {
+        override suspend fun invoke(): Boolean =
+            try {
                 cardRepo.deleteAll()
                 preclassifierRepo.deleteAll()
                 priorityRepo.deleteAll()
@@ -44,5 +44,4 @@ class CleanCatalogsUseCaseImpl
                 FirebaseCrashlytics.getInstance().log(e.localizedMessage.orEmpty())
                 false
             }
-        }
     }

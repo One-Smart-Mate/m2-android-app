@@ -14,7 +14,5 @@ class StartSequenceExecutionUseCaseImpl
     constructor(
         private val repository: CiltRepository,
     ) : StartSequenceExecutionUseCase {
-        override suspend fun invoke(body: StartSequenceExecutionRequest): SequenceExecution {
-            return repository.startSequenceExecution(body)
-        }
+        override suspend fun invoke(body: StartSequenceExecutionRequest): SequenceExecution = repository.startSequenceExecution(body)
     }

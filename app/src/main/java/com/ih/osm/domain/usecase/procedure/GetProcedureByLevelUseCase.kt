@@ -14,11 +14,10 @@ class GetProcedureByLevelUseCaseImpl
     constructor(
         private val repo: ProcedureRepository,
     ) : GetProcedureByLevelUseCase {
-        override suspend fun invoke(levelId: String): CiltProcedureData {
-            return if (NetworkConnection.isConnected()) {
+        override suspend fun invoke(levelId: String): CiltProcedureData =
+            if (NetworkConnection.isConnected()) {
                 repo.getRemoteByLevel(levelId = levelId)
             } else {
                 repo.getByLevel(levelId = levelId)
             }
-        }
     }

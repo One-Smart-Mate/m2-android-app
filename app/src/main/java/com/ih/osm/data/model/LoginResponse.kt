@@ -4,7 +4,11 @@ import com.google.gson.annotations.SerializedName
 import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 
-data class LoginResponse(val data: UserWrapper, val status: Int, val message: String)
+data class LoginResponse(
+    val data: UserWrapper,
+    val status: Int,
+    val message: String,
+)
 
 fun LoginResponse.toDomain(): User {
     val site = this.data.sites.firstOrNull()

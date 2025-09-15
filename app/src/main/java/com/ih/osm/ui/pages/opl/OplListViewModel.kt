@@ -49,36 +49,37 @@ class OplListViewModel
 
         private fun handleGetLevels() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getLevelsUseCase() }
-                }.onSuccess { levels ->
-                    val levelList = levels.toNodeItemList()
+                kotlin
+                    .runCatching {
+                        callUseCase { getLevelsUseCase() }
+                    }.onSuccess { levels ->
+                        val levelList = levels.toNodeItemList()
 
-                    // Initialize the first level with root elements (superiorId = "0")
-                    val rootLevels = levelList.filter { it.superiorId == "0" }
+                        // Initialize the first level with root elements (superiorId = "0")
+                        val rootLevels = levelList.filter { it.superiorId == "0" }
 
-                    val initialNodeLevelList =
-                        if (rootLevels.isNotEmpty()) {
-                            mapOf(0 to rootLevels)
-                        } else {
-                            emptyMap()
+                        val initialNodeLevelList =
+                            if (rootLevels.isNotEmpty()) {
+                                mapOf(0 to rootLevels)
+                            } else {
+                                emptyMap()
+                            }
+
+                        setState {
+                            copy(
+                                levelList = levelList,
+                                nodeLevelList = initialNodeLevelList,
+                                isLoading = false,
+                            )
                         }
-
-                    setState {
-                        copy(
-                            levelList = levelList,
-                            nodeLevelList = initialNodeLevelList,
-                            isLoading = false,
-                        )
+                    }.onFailure {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                }.onFailure {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
 
@@ -130,27 +131,28 @@ class OplListViewModel
 
         private fun handleGetOplsByLevel(levelId: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getOplsByLevelUseCase(levelId) }
-                }.onSuccess { oplList ->
-                    setState {
-                        copy(
-                            oplList = oplList,
-                            message = EMPTY,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getOplsByLevelUseCase(levelId) }
+                    }.onSuccess { oplList ->
+                        setState {
+                            copy(
+                                oplList = oplList,
+                                message = EMPTY,
+                            )
+                        }
+                    }.onFailure { exception ->
+                        setState {
+                            copy(
+                                oplList = emptyList(),
+                                message =
+                                    context.getString(
+                                        R.string.error_loading_opls,
+                                        exception.localizedMessage,
+                                    ),
+                            )
+                        }
                     }
-                }.onFailure { exception ->
-                    setState {
-                        copy(
-                            oplList = emptyList(),
-                            message =
-                                context.getString(
-                                    R.string.error_loading_opls,
-                                    exception.localizedMessage,
-                                ),
-                        )
-                    }
-                }
             }
         }
 

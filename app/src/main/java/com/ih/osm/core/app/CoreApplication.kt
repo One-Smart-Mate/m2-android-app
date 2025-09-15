@@ -14,13 +14,16 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class CoreApplication : Application(), Configuration.Provider {
+class CoreApplication :
+    Application(),
+    Configuration.Provider {
     @Inject
     lateinit var workerFactory: CustomWorkerFactory
 
     override val workManagerConfiguration: Configuration
         get() =
-            Configuration.Builder()
+            Configuration
+                .Builder()
                 .setMinimumLoggingLevel(Log.DEBUG)
                 .setWorkerFactory(workerFactory)
                 .build()
@@ -36,7 +39,5 @@ class CustomWorkerFactory
             appContext: Context,
             workerClassName: String,
             workerParameters: WorkerParameters,
-        ): ListenableWorker {
-            return AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager)
-        }
+        ): ListenableWorker = AppWorker(appContext, workerParameters, syncCardsUseCase, notificationManager)
     }

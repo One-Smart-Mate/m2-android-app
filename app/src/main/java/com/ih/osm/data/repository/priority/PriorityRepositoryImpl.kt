@@ -17,9 +17,7 @@ class PriorityRepositoryImpl
         private val dao: PriorityDao,
         private val authRepository: AuthRepository,
     ) : PriorityRepository {
-        override suspend fun getAll(): List<Priority> {
-            return dao.getAll().map { it.toDomain() }
-        }
+        override suspend fun getAll(): List<Priority> = dao.getAll().map { it.toDomain() }
 
         override suspend fun saveAll(list: List<Priority>) {
             dao.deleteAll()
@@ -28,9 +26,7 @@ class PriorityRepositoryImpl
             }
         }
 
-        override suspend fun get(id: String): Priority? {
-            return dao.get(id)?.toDomain()
-        }
+        override suspend fun get(id: String): Priority? = dao.get(id)?.toDomain()
 
         override suspend fun deleteAll() {
             dao.deleteAll()

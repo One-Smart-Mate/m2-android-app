@@ -31,8 +31,8 @@ data class User(
     }
 }
 
-fun User.toEntity(): UserEntity {
-    return UserEntity(
+fun User.toEntity(): UserEntity =
+    UserEntity(
         userId = this.userId,
         name = this.name,
         email = this.email,
@@ -44,4 +44,3 @@ fun User.toEntity(): UserEntity {
         companyName = this.companyName,
         siteName = this.siteName,
     )
-}

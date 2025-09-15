@@ -193,7 +193,8 @@ class HomeViewModel
                         }
                         return@launch
                     }
-                    if (syncCatalogs != LOAD_CATALOGS && state.networkStatus == NetworkStatus.DATA_CONNECTED &&
+                    if (syncCatalogs != LOAD_CATALOGS &&
+                        state.networkStatus == NetworkStatus.DATA_CONNECTED &&
                         sharedPreferences.getNetworkPreference().isEmpty()
                     ) {
                         setState {
@@ -214,41 +215,43 @@ class HomeViewModel
 
         private fun handleGetCatalogs() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { syncCatalogsUseCase(syncCards = true) }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            showSyncCatalogs = false,
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { syncCatalogsUseCase(syncCards = true) }
+                    }.onSuccess {
+                        setState {
+                            copy(
+                                showSyncCatalogs = false,
+                            )
+                        }
+                        handleGetSession()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
                     }
-                    handleGetSession()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                }
             }
         }
 
         private fun handleGetCards(syncRemote: Boolean = false) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardsUseCase(syncRemote = syncRemote) }
-                }.onSuccess { cards ->
-                    val hasLocalCards = cards.toLocalCards().isNotEmpty()
-                    setState {
-                        copy(
-                            cards = cards,
-                            showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardsUseCase(syncRemote = syncRemote) }
+                    }.onSuccess { cards ->
+                        val hasLocalCards = cards.toLocalCards().isNotEmpty()
+                        setState {
+                            copy(
+                                cards = cards,
+                                showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
+                            )
+                        }
+                        if (hasLocalCards) {
+                            checkLastUpdate()
+                        }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                    if (hasLocalCards) {
-                        checkLastUpdate()
-                    }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
@@ -307,15 +310,16 @@ class HomeViewModel
         private fun handleGetSession() {
             setState { copy(isLoading = true) }
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getSessionUseCase() }
-                }.onSuccess { session ->
-                    handleGetCards()
-                    setState { copy(session = session) }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getSessionUseCase() }
+                    }.onSuccess { session ->
+                        handleGetCards()
+                        setState { copy(session = session) }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
@@ -400,40 +404,41 @@ class HomeViewModel
             viewModelScope.launch {
                 setState { copy(isLoading = true, message = EMPTY) }
 
-                kotlin.runCatching {
-                    callUseCase {
-                        fastLoginUseCase(
-                            FastLoginRequest(
-                                fastPassword = fastPassword,
-                                timezone = TimeZone.getDefault().id,
-                                platform = ANDROID_SO.uppercase(),
-                            ),
-                        )
-                    }
-                }.onSuccess { loginResponse ->
-                    val session = loginResponse.toSession()
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            fastLoginUseCase(
+                                FastLoginRequest(
+                                    fastPassword = fastPassword,
+                                    timezone = TimeZone.getDefault().id,
+                                    platform = ANDROID_SO.uppercase(),
+                                ),
+                            )
+                        }
+                    }.onSuccess { loginResponse ->
+                        val session = loginResponse.toSession()
 
-                    sessionRepository.save(session)
-                    sharedPreferences.saveFastPasswordBlocked(false)
+                        sessionRepository.save(session)
+                        sharedPreferences.saveFastPasswordBlocked(false)
 
-                    handleGetSession()
+                        handleGetSession()
 
-                    setState {
-                        copy(
-                            isLoading = false,
-                            fastLoginSuccessful = true,
-                            session = session,
-                        )
+                        setState {
+                            copy(
+                                isLoading = false,
+                                fastLoginSuccessful = true,
+                                session = session,
+                            )
+                        }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
 
@@ -497,31 +502,32 @@ class HomeViewModel
             viewModelScope.launch {
                 setState { copy(isLoading = true, message = EMPTY) }
 
-                kotlin.runCatching {
-                    callUseCase {
-                        sendFastPasswordUseCase(
-                            SendFastPasswordRequest(
-                                phoneNumber = phoneNumber,
-                            ),
-                        )
+                kotlin
+                    .runCatching {
+                        callUseCase {
+                            sendFastPasswordUseCase(
+                                SendFastPasswordRequest(
+                                    phoneNumber = phoneNumber,
+                                ),
+                            )
+                        }
+                    }.onSuccess {
+                        setState {
+                            copy(
+                                isLoading = false,
+                                showForgotFastPasswordDialog = false,
+                                phoneNumber = EMPTY,
+                            )
+                        }
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                message = it.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
-                }.onSuccess {
-                    setState {
-                        copy(
-                            isLoading = false,
-                            showForgotFastPasswordDialog = false,
-                            phoneNumber = EMPTY,
-                        )
-                    }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    setState {
-                        copy(
-                            isLoading = false,
-                            message = it.localizedMessage.orEmpty(),
-                        )
-                    }
-                }
             }
         }
     }

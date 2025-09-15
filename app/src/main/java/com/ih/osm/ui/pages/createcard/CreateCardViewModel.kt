@@ -283,60 +283,64 @@ class CreateCardViewModel
 
         private fun handleGetPreclassifiers(id: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getPreclassifiersUseCase() }
-                }.onSuccess {
-                    setState {
-                        copy(preclassifierList = it.filter { it.cardTypeId == id }.toNodeItemCard())
+                kotlin
+                    .runCatching {
+                        callUseCase { getPreclassifiersUseCase() }
+                    }.onSuccess {
+                        setState {
+                            copy(preclassifierList = it.filter { it.cardTypeId == id }.toNodeItemCard())
+                        }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
         private fun handleGetCardTypes() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardTypesUseCase() }
-                }.onSuccess {
-                    setState { copy(cardTypeList = it.toNodeItemList()) }
-                    handleGetLevels()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardTypesUseCase() }
+                    }.onSuccess {
+                        setState { copy(cardTypeList = it.toNodeItemList()) }
+                        handleGetLevels()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
         private fun handleGetPriorities() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getPrioritiesUseCase() }
-                }.onSuccess {
-                    setState { copy(priorityList = it.toNodeItemCard()) }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getPrioritiesUseCase() }
+                    }.onSuccess {
+                        setState { copy(priorityList = it.toNodeItemCard()) }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
         private fun handleGetLevels() {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getLevelsUseCase() }
-                }.onSuccess {
-                    setState { copy(levelList = it.toNodeItemList(), levelsLoaded = true) }
-                    cleanScreenStates()
-                    checkCatalogs()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getLevelsUseCase() }
+                    }.onSuccess {
+                        setState { copy(levelList = it.toNodeItemList(), levelsLoaded = true) }
+                        cleanScreenStates()
+                        checkCatalogs()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
@@ -347,7 +351,10 @@ class CreateCardViewModel
                 val card =
                     Card.fromCreateCard(
                         areaId = state.lastSelectedLevel.toLong(),
-                        level = state.selectedLevelList.keys.last().toLong(),
+                        level =
+                            state.selectedLevelList.keys
+                                .last()
+                                .toLong(),
                         priorityId = state.selectedPriority,
                         cardTypeValue = EMPTY,
                         cardTypeId = state.selectedCardType,
@@ -359,55 +366,58 @@ class CreateCardViewModel
                         evidences = state.evidences,
                         uuid = state.uuid,
                     )
-                kotlin.runCatching {
-                    callUseCase { saveCardUseCase(card) }
-                }.onSuccess {
-                    setState { copy(isCardSuccess = true) }
-                    if (isCiltMode) {
-                        sharedPreferences.saveCiltCard(it)
+                kotlin
+                    .runCatching {
+                        callUseCase { saveCardUseCase(card) }
+                    }.onSuccess {
+                        setState { copy(isCardSuccess = true) }
+                        if (isCiltMode) {
+                            sharedPreferences.saveCiltCard(it)
+                        }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        firebaseAnalyticsHelper.logCreateCardException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    firebaseAnalyticsHelper.logCreateCardException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
         private fun handleGetCardType(id: String) {
             viewModelScope.launch {
-                kotlin.runCatching {
-                    callUseCase { getCardTypeUseCase(id) }
-                }.onSuccess {
-                    it?.let {
-                        setState {
-                            copy(
-                                cardType = it,
-                                audioDuration = it.audiosDurationCreate.defaultIfNull(120),
-                            )
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardTypeUseCase(id) }
+                    }.onSuccess {
+                        it?.let {
+                            setState {
+                                copy(
+                                    cardType = it,
+                                    audioDuration = it.audiosDurationCreate.defaultIfNull(120),
+                                )
+                            }
+                            cleanScreenStates()
                         }
-                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
                     }
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
             }
         }
 
         private fun handleGetCardsZone() {
             viewModelScope.launch {
                 val id = getState().lastSelectedLevel
-                kotlin.runCatching {
-                    callUseCase { getCardsZoneUseCase(id) }
-                }.onSuccess {
-                    setState { copy(cardsZone = it) }
-                    cleanScreenStates()
-                }.onFailure {
-                    LoggerHelperManager.logException(it)
-                    cleanScreenStates(it.localizedMessage.orEmpty())
-                }
+                kotlin
+                    .runCatching {
+                        callUseCase { getCardsZoneUseCase(id) }
+                    }.onSuccess {
+                        setState { copy(cardsZone = it) }
+                        cleanScreenStates()
+                    }.onFailure {
+                        LoggerHelperManager.logException(it)
+                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }
             }
         }
 
