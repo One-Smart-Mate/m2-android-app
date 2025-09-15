@@ -45,10 +45,13 @@ fun CustomTextField(
     icon: ImageVector,
     maxLines: Int = 1,
     isPassword: Boolean = false,
+    value: String? = null,
     onChange: (String) -> Unit,
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
-    var text by rememberSaveable { mutableStateOf(EMPTY) }
+    var internalText by rememberSaveable { mutableStateOf(EMPTY) }
+
+    val text = value ?: internalText
 
     val leadingIcon = @Composable {
         Icon(
@@ -61,7 +64,9 @@ fun CustomTextField(
     TextField(
         value = text,
         onValueChange = {
-            text = it
+            if (value == null) {
+                internalText = it
+            }
             onChange(it)
         },
         modifier = modifier,

@@ -88,6 +88,7 @@ fun CardActionScreen(
             selectedEmployee = state.selectedEmployee,
             actionType = state.actionType,
             evidences = state.evidences,
+            comments = state.comments,
         )
     }
 
@@ -128,6 +129,7 @@ fun SolutionScreenContent(
     selectedEmployee: Employee? = null,
     actionType: CardItemSheetAction?,
     evidences: List<Evidence>,
+    comments: String,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -217,6 +219,7 @@ fun SolutionScreenContent(
                                     .fillMaxWidth(),
                             label = stringResource(R.string.comment_solution),
                             icon = Icons.Filled.Create,
+                            value = comments,
                         ) {
                             onAction(CardAction.SetComment(it))
                         }
@@ -244,8 +247,7 @@ fun EmployeeItemCard(
                 .background(
                     color = MaterialTheme.colorScheme.primaryContainer,
                     shape = RoundedCornerShape(12.dp),
-                )
-                .clickable {
+                ).clickable {
                     onClick()
                 },
     ) {
