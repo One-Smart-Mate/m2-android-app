@@ -349,4 +349,7 @@
     <string name="no_execution_found">No se encontró ejecución</string>
     <string name="completed">Completed</string>
     <string name="sequence_completed_status_r">Secuencia Completada (Status: R)</string>
+
+    <string name="logs_sent_success">Logs enviados correctamente</string>
+    <string name="logs_sent_error">Error al enviar logs</string>
 </resources>

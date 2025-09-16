@@ -1,5 +1,7 @@
 package com.ih.osm.ui.pages.account.action
 
+import android.net.Uri
+
 sealed class AccountAction {
     data object Logout : AccountAction()
 
@@ -7,5 +9,9 @@ sealed class AccountAction {
 
     data class SetSwitch(
         val checked: Boolean,
+    ) : AccountAction()
+
+    data class UploadLogs(
+        val uri: Uri,
     ) : AccountAction()
 }
