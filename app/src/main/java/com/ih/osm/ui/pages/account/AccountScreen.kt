@@ -1,8 +1,6 @@
 package com.ih.osm.ui.pages.account
 
 import android.annotation.SuppressLint
-import android.content.Context
-import android.content.Intent
 import android.content.res.Configuration
 import android.net.Uri
 import android.widget.Toast
@@ -45,7 +43,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.ih.osm.BuildConfig
 import com.ih.osm.R
-import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.ui.functions.openAppSettings
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
@@ -169,7 +166,10 @@ fun AccountContent(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth(),
                         ) {
-                            Text(stringResource(R.string.use_data_mobile), modifier = Modifier.weight(1f))
+                            Text(
+                                stringResource(R.string.use_data_mobile),
+                                modifier = Modifier.weight(1f),
+                            )
                             Switch(checked = checked, onCheckedChange = { isChecked ->
                                 onAction(AccountAction.SetSwitch(isChecked))
                             })
@@ -230,7 +230,7 @@ fun AccountContent(
                         tonalElevation = PaddingNormal,
                         modifier =
                             Modifier.clickable {
-                                shareUri(context, uri)
+                                uri?.let { onAction(AccountAction.UploadLogs(it)) }
                             },
                     )
                 }
@@ -252,28 +252,6 @@ fun AccountContent(
                 )
             }
         }
-    }
-}
-
-private fun shareUri(
-    context: Context,
-    uri: Uri?,
-) {
-    try {
-        val intent = Intent(Intent.ACTION_SEND)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        intent.setType("*/*")
-        intent.putExtra(Intent.EXTRA_STREAM, uri)
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
-    } catch (e: Exception) {
-        LoggerHelperManager.logException(e)
-        Toast
-            .makeText(
-                context,
-                "Can't share the data $uri",
-                Toast.LENGTH_SHORT,
-            ).show()
     }
 }
 

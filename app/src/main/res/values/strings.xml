@@ -350,4 +350,7 @@
     <string name="no_execution_found">No execution found</string>
     <string name="completed">Completed</string>
     <string name="sequence_completed_status_r">Sequence completed (Status: R)</string>
+
+    <string name="logs_sent_success">Logs sent successfully</string>
+    <string name="logs_sent_error">Failed to send logs</string>
 </resources>
