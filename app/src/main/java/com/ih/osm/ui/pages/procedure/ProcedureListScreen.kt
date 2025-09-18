@@ -52,30 +52,18 @@ fun ProcedureListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Clear any stale execution state when screen is first displayed
-    LaunchedEffect(Unit) {
-        if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            viewModel.clearAllExecutionState()
-        }
-    }
-
-    // Handle navigation after successful execution creation
-    LaunchedEffect(state.createdExecutionData) {
-        state.createdExecutionData?.let { (sequenceId, siteExecutionId) ->
-            try {
-                // Use 0 as dummy executionId since we want to show general routines view,
-                // but with automatic transition to the specific siteExecutionId
-                navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
-            } catch (e: Exception) {
-            }
-            viewModel.clearNavigationData()
+    // Handle navigation after execution is created
+    LaunchedEffect(state.executionCreated) {
+        state.executionCreated?.let { (sequenceId, siteExecutionId) ->
+            navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
+            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
         }
     }
 
     // Clean up state when leaving the screen
     DisposableEffect(navController) {
         onDispose {
-            viewModel.clearAllExecutionState()
+            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
         }
     }
 
@@ -94,13 +82,13 @@ fun ProcedureListScreen(
                 }
             },
             onCreateExecution = { sequence, positionId, levelId ->
-                try {
-                    viewModel.createExecution(sequence, positionId, levelId)
-                } catch (e: Exception) {
-                }
-            },
-            onNavigateToExecution = { executionId ->
-                // Navigate to execution detail if needed
+                viewModel.handleAction(
+                    ProcedureListAction.CreateExecution(
+                        sequence = sequence,
+                        positionId = positionId,
+                        levelId = levelId,
+                    ),
+                )
             },
         )
     }
@@ -116,7 +104,6 @@ fun ProcedureListContent(
     creatingExecutionForSequence: Int?,
     onAction: (ProcedureListAction) -> Unit,
     onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
-    onNavigateToExecution: (Int) -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -206,7 +193,6 @@ fun ProcedureListContent(
                             levelId = selectedLevelList.values.lastOrNull() ?: "528",
                             creatingExecutionForSequence = creatingExecutionForSequence,
                             onCreateExecution = onCreateExecution,
-                            onNavigateToExecution = onNavigateToExecution,
                         )
                     }
                 }
@@ -271,7 +257,6 @@ private fun ProcedureListScreenPreview() {
                 creatingExecutionForSequence = null,
                 onAction = {},
                 onCreateExecution = { _, _, _ -> },
-                onNavigateToExecution = {},
             )
         }
     }
