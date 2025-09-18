@@ -221,8 +221,6 @@ class ProcedureListViewModel
         }
 
         private fun handleNavigateToExecution(executionId: Int) {
-            // For consistency with the existing pattern, we could implement this
-            // Currently the navigation logic is in the UI, we'll move it here
         }
 
         private fun handleCreateExecution(

@@ -52,19 +52,10 @@ fun ProcedureListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Clear any stale execution state when screen is first displayed
-    LaunchedEffect(Unit) {
-        if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
-        }
-    }
-
     // Handle navigation after successful execution creation
     LaunchedEffect(state.navigationTarget) {
         state.navigationTarget?.let { (executionId, siteExecutionId) ->
             try {
-                // Use 0 as dummy executionId since we want to show general routines view,
-                // but with automatic transition to the specific siteExecutionId
                 navController.navigateToCiltDetailWithTarget(executionId, siteExecutionId)
             } catch (e: Exception) {
                 // Handle navigation error silently
