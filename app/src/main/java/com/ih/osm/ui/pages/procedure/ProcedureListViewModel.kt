@@ -45,6 +45,8 @@ class ProcedureListViewModel
             val creatingExecutionForSequence: Int? = null,
             // (sequenceId, executionId)
             val createdExecutionData: Pair<Int, Int>? = null,
+            // Navigation target for clean navigation handling
+            val navigationTarget: Pair<Int, Int>? = null,
         )
 
         init {
@@ -55,6 +57,15 @@ class ProcedureListViewModel
             when (action) {
                 is ProcedureListAction.UpdateList -> handleUpdateProcedureList()
                 is ProcedureListAction.SetLevel -> handleSetLevel(action.id, action.key)
+                is ProcedureListAction.CreateExecution ->
+                    handleCreateExecution(
+                        action.sequence,
+                        action.positionId,
+                        action.levelId,
+                    )
+                is ProcedureListAction.NavigateToExecution -> handleNavigateToExecution(action.executionId)
+                is ProcedureListAction.ClearNavigationData -> handleClearNavigationData()
+                is ProcedureListAction.ClearAllExecutionState -> handleClearAllExecutionState()
             }
         }
 
@@ -187,24 +198,39 @@ class ProcedureListViewModel
             }
         }
 
-        fun clearNavigationData() {
+        private fun handleClearNavigationData() {
             setState {
                 copy(
                     createdExecutionData = null,
                     creatingExecutionForSequence = null,
+                    navigationTarget = null,
                     message = EMPTY,
                 )
             }
         }
 
-        fun clearAllExecutionState() {
+        private fun handleClearAllExecutionState() {
             setState {
                 copy(
                     createdExecutionData = null,
                     creatingExecutionForSequence = null,
+                    navigationTarget = null,
                     message = EMPTY,
                 )
             }
+        }
+
+        private fun handleNavigateToExecution(executionId: Int) {
+            // For consistency with the existing pattern, we could implement this
+            // Currently the navigation logic is in the UI, we'll move it here
+        }
+
+        private fun handleCreateExecution(
+            sequence: CiltProcedureData.Sequence,
+            positionId: Int,
+            levelId: String,
+        ) {
+            createExecution(sequence, positionId, levelId)
         }
 
         fun createExecution(
@@ -231,6 +257,7 @@ class ProcedureListViewModel
                         copy(
                             creatingExecutionForSequence = null,
                             createdExecutionData = Pair(sequence.id, executionId),
+                            navigationTarget = Pair(0, executionId),
                             message = context.getString(R.string.execution_created_successfully),
                         )
                     }

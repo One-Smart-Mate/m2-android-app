@@ -282,13 +282,7 @@ private fun SequenceCard(
 
             Button(
                 onClick = {
-                    val isCreatingThisSequence = creatingExecutionForSequence == sequence.id
-                    if (!isCreatingThisSequence) {
-                        try {
-                            onCreateExecution(sequence, positionId, levelId)
-                        } catch (e: Exception) {
-                        }
-                    }
+                    onCreateExecution(sequence, positionId, levelId)
                 },
                 enabled = creatingExecutionForSequence != sequence.id,
                 modifier = Modifier.padding(start = 8.dp),

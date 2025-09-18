@@ -1,5 +1,7 @@
 package com.ih.osm.ui.pages.procedure.action
 
+import com.ih.osm.domain.model.CiltProcedureData
+
 sealed class ProcedureListAction {
     data object UpdateList : ProcedureListAction()
 
@@ -7,4 +9,18 @@ sealed class ProcedureListAction {
         val id: String,
         val key: Int,
     ) : ProcedureListAction()
+
+    data class CreateExecution(
+        val sequence: CiltProcedureData.Sequence,
+        val positionId: Int,
+        val levelId: String,
+    ) : ProcedureListAction()
+
+    data class NavigateToExecution(
+        val executionId: Int,
+    ) : ProcedureListAction()
+
+    data object ClearNavigationData : ProcedureListAction()
+
+    data object ClearAllExecutionState : ProcedureListAction()
 }

@@ -55,27 +55,28 @@ fun ProcedureListScreen(
     // Clear any stale execution state when screen is first displayed
     LaunchedEffect(Unit) {
         if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            viewModel.clearAllExecutionState()
+            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
         }
     }
 
     // Handle navigation after successful execution creation
-    LaunchedEffect(state.createdExecutionData) {
-        state.createdExecutionData?.let { (sequenceId, siteExecutionId) ->
+    LaunchedEffect(state.navigationTarget) {
+        state.navigationTarget?.let { (executionId, siteExecutionId) ->
             try {
                 // Use 0 as dummy executionId since we want to show general routines view,
                 // but with automatic transition to the specific siteExecutionId
-                navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
+                navController.navigateToCiltDetailWithTarget(executionId, siteExecutionId)
             } catch (e: Exception) {
+                // Handle navigation error silently
             }
-            viewModel.clearNavigationData()
+            viewModel.handleAction(ProcedureListAction.ClearNavigationData)
         }
     }
 
     // Clean up state when leaving the screen
     DisposableEffect(navController) {
         onDispose {
-            viewModel.clearAllExecutionState()
+            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
         }
     }
 
@@ -94,10 +95,13 @@ fun ProcedureListScreen(
                 }
             },
             onCreateExecution = { sequence, positionId, levelId ->
-                try {
-                    viewModel.createExecution(sequence, positionId, levelId)
-                } catch (e: Exception) {
-                }
+                viewModel.handleAction(
+                    ProcedureListAction.CreateExecution(
+                        sequence = sequence,
+                        positionId = positionId,
+                        levelId = levelId,
+                    ),
+                )
             },
             onNavigateToExecution = { executionId ->
                 // Navigate to execution detail if needed
