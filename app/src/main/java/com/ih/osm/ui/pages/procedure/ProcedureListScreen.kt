@@ -52,15 +52,11 @@ fun ProcedureListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Handle navigation after successful execution creation
-    LaunchedEffect(state.navigationTarget) {
-        state.navigationTarget?.let { (executionId, siteExecutionId) ->
-            try {
-                navController.navigateToCiltDetailWithTarget(executionId, siteExecutionId)
-            } catch (e: Exception) {
-                // Handle navigation error silently
-            }
-            viewModel.handleAction(ProcedureListAction.ClearNavigationData)
+    // Handle navigation after execution is created
+    LaunchedEffect(state.executionCreated) {
+        state.executionCreated?.let { (sequenceId, siteExecutionId) ->
+            navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
+            viewModel.handleAction(ProcedureListAction.ClearAllExecutionState)
         }
     }
 
@@ -94,9 +90,6 @@ fun ProcedureListScreen(
                     ),
                 )
             },
-            onNavigateToExecution = { executionId ->
-                // Navigate to execution detail if needed
-            },
         )
     }
 }
@@ -111,7 +104,6 @@ fun ProcedureListContent(
     creatingExecutionForSequence: Int?,
     onAction: (ProcedureListAction) -> Unit,
     onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
-    onNavigateToExecution: (Int) -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -201,7 +193,6 @@ fun ProcedureListContent(
                             levelId = selectedLevelList.values.lastOrNull() ?: "528",
                             creatingExecutionForSequence = creatingExecutionForSequence,
                             onCreateExecution = onCreateExecution,
-                            onNavigateToExecution = onNavigateToExecution,
                         )
                     }
                 }
@@ -266,7 +257,6 @@ private fun ProcedureListScreenPreview() {
                 creatingExecutionForSequence = null,
                 onAction = {},
                 onCreateExecution = { _, _, _ -> },
-                onNavigateToExecution = {},
             )
         }
     }

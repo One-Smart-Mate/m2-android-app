@@ -43,10 +43,7 @@ class ProcedureListViewModel
             val lastSelectedLevel: String = EMPTY,
             val lastLevelCompleted: Boolean = false,
             val creatingExecutionForSequence: Int? = null,
-            // (sequenceId, executionId)
-            val createdExecutionData: Pair<Int, Int>? = null,
-            // Navigation target for clean navigation handling
-            val navigationTarget: Pair<Int, Int>? = null,
+            val executionCreated: Pair<Int, Int>? = null, // (sequenceId, siteExecutionId)
         )
 
         init {
@@ -63,8 +60,6 @@ class ProcedureListViewModel
                         action.positionId,
                         action.levelId,
                     )
-                is ProcedureListAction.NavigateToExecution -> handleNavigateToExecution(action.executionId)
-                is ProcedureListAction.ClearNavigationData -> handleClearNavigationData()
                 is ProcedureListAction.ClearAllExecutionState -> handleClearAllExecutionState()
             }
         }
@@ -198,29 +193,14 @@ class ProcedureListViewModel
             }
         }
 
-        private fun handleClearNavigationData() {
-            setState {
-                copy(
-                    createdExecutionData = null,
-                    creatingExecutionForSequence = null,
-                    navigationTarget = null,
-                    message = EMPTY,
-                )
-            }
-        }
-
         private fun handleClearAllExecutionState() {
             setState {
                 copy(
-                    createdExecutionData = null,
                     creatingExecutionForSequence = null,
-                    navigationTarget = null,
+                    executionCreated = null,
                     message = EMPTY,
                 )
             }
-        }
-
-        private fun handleNavigateToExecution(executionId: Int) {
         }
 
         private fun handleCreateExecution(
@@ -254,8 +234,7 @@ class ProcedureListViewModel
                     setState {
                         copy(
                             creatingExecutionForSequence = null,
-                            createdExecutionData = Pair(sequence.id, executionId),
-                            navigationTarget = Pair(0, executionId),
+                            executionCreated = Pair(sequence.id, executionId),
                             message = context.getString(R.string.execution_created_successfully),
                         )
                     }
@@ -263,7 +242,6 @@ class ProcedureListViewModel
                     setState {
                         copy(
                             creatingExecutionForSequence = null,
-                            createdExecutionData = null,
                             message =
                                 context.getString(
                                     R.string.error_creating_execution,

@@ -51,7 +51,6 @@ fun CiltProcedureCard(
     levelId: String,
     creatingExecutionForSequence: Int?,
     onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
-    onNavigateToExecution: (Int) -> Unit,
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -160,7 +159,6 @@ fun CiltProcedureCard(
                                     levelId = levelId,
                                     creatingExecutionForSequence = creatingExecutionForSequence,
                                     onCreateExecution = onCreateExecution,
-                                    onNavigateToExecution = onNavigateToExecution,
                                 )
 
                                 // Show executions for this sequence if available
@@ -210,7 +208,6 @@ private fun SequenceCard(
     levelId: String,
     creatingExecutionForSequence: Int?,
     onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
-    onNavigateToExecution: (Int) -> Unit,
 ) {
     val sequenceColor =
         try {

@@ -16,11 +16,5 @@ sealed class ProcedureListAction {
         val levelId: String,
     ) : ProcedureListAction()
 
-    data class NavigateToExecution(
-        val executionId: Int,
-    ) : ProcedureListAction()
-
-    data object ClearNavigationData : ProcedureListAction()
-
     data object ClearAllExecutionState : ProcedureListAction()
 }
