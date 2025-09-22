@@ -298,7 +298,8 @@ fun Card.preclassifierValue(): String =
 fun Card.getStatus(): String =
     when (status) {
         STATUS_P, STATUS_A, STATUS_V -> stringResource(id = R.string.open)
-        STATUS_R, STATUS_C -> stringResource(id = R.string.closed)
+        STATUS_R -> stringResource(id = R.string.closed)
+        STATUS_C -> stringResource(id = R.string.canceled)
         else -> stringResource(id = R.string.open)
     }
 

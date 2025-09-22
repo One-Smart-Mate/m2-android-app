@@ -356,4 +356,6 @@
 
     <string name="fast_password_site_mismatch">Fast login is not possible because you belong to another site</string>
     <string name="fast_password_sent_success">Your fast password has been sent via WhatsApp</string>
+
+    <string name="canceled">Canceled</string>
 </resources>
