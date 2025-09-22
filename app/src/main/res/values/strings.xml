@@ -353,4 +353,9 @@
 
     <string name="logs_sent_success">Logs sent successfully</string>
     <string name="logs_sent_error">Failed to send logs</string>
+
+    <string name="fast_password_site_mismatch">Fast login is not possible because you belong to another site</string>
+    <string name="fast_password_sent_success">Your fast password has been sent via WhatsApp</string>
+
+    <string name="canceled">Canceled</string>
 </resources>

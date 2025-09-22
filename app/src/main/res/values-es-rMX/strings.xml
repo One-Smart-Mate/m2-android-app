@@ -352,4 +352,9 @@
 
     <string name="logs_sent_success">Logs enviados correctamente</string>
     <string name="logs_sent_error">Error al enviar logs</string>
+
+    <string name="fast_password_site_mismatch">No es posible iniciar sesión rápida porque perteneces a otro sitio</string>
+    <string name="fast_password_sent_success">Se ha enviado tu contraseña rápida por WhatsApp</string>
+
+    <string name="canceled">Cancelada</string>
 </resources>
