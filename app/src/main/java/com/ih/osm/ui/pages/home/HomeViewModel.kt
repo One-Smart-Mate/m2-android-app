@@ -416,9 +416,21 @@ class HomeViewModel
                             )
                         }
                     }.onSuccess { loginResponse ->
-                        val session = loginResponse.toSession()
+                        val newSession = loginResponse.toSession()
+                        val currentSiteId = sessionRepository.getSiteId()
 
-                        sessionRepository.save(session)
+                        if (currentSiteId != null && currentSiteId != newSession.siteId) {
+                            setState {
+                                copy(
+                                    isLoading = false,
+                                    message = context.getString(R.string.fast_password_site_mismatch),
+                                    fastLoginSuccessful = false,
+                                )
+                            }
+                            return@onSuccess
+                        }
+
+                        sessionRepository.save(newSession)
                         sharedPreferences.saveFastPasswordBlocked(false)
 
                         handleGetSession()
@@ -427,7 +439,7 @@ class HomeViewModel
                             copy(
                                 isLoading = false,
                                 fastLoginSuccessful = true,
-                                session = session,
+                                session = newSession,
                             )
                         }
                     }.onFailure {
@@ -517,6 +529,7 @@ class HomeViewModel
                                 isLoading = false,
                                 showForgotFastPasswordDialog = false,
                                 phoneNumber = EMPTY,
+                                message = context.getString(R.string.fast_password_sent_success),
                             )
                         }
                     }.onFailure {
