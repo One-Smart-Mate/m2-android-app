@@ -166,6 +166,7 @@ fun HomeScreenV2(
             onDismissForgotFastPasswordDialog = { viewModel.hideForgotFastPasswordDialog() },
             onPhoneNumberChange = { viewModel.updatePhoneNumber(it) },
             onSendFastPassword = { viewModel.process(HomeAction.SendFastPassword(it)) },
+            onCleanMessage = { viewModel.process(HomeAction.CleanMessage) },
         )
     }
 
@@ -190,9 +191,11 @@ fun HomeScreenV2(
             .distinctUntilChanged()
             .collect {
                 if (state.message.isNotEmpty() && state.isLoading.not()) {
-                    scope.launch {
-                        snackBarHostState.showSnackbar(message = state.message)
-                        viewModel.process(HomeAction.CleanMessage)
+                    if (!state.showFastPasswordDialog) {
+                        scope.launch {
+                            snackBarHostState.showSnackbar(message = state.message)
+                            viewModel.process(HomeAction.CleanMessage)
+                        }
                     }
                 }
                 if (state.updateApp) {
@@ -232,6 +235,7 @@ private fun HomeContent(
     onDismissForgotFastPasswordDialog: () -> Unit,
     onPhoneNumberChange: (String) -> Unit,
     onSendFastPassword: (String) -> Unit,
+    onCleanMessage: () -> Unit,
 ) {
     Scaffold(
         floatingActionButton = {
@@ -349,16 +353,16 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
-/*
-                HomeSectionCardItem(
-                    title = stringResource(R.string.cilt_routine),
-                    icon = Icons.Outlined.CheckCircle,
-                    description = stringResource(R.string.view_cilt_routines),
-                ) {
-                    onClick(HomeActionClick.CILT_ROUTINE)
-                }
+                /*
+                                HomeSectionCardItem(
+                                    title = stringResource(R.string.cilt_routine),
+                                    icon = Icons.Outlined.CheckCircle,
+                                    description = stringResource(R.string.view_cilt_routines),
+                                ) {
+                                    onClick(HomeActionClick.CILT_ROUTINE)
+                                }
 
- */
+                 */
 
                 // OPL Section
                 HomeSectionCardItem(
@@ -368,16 +372,16 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
-/*
-                // General Procedures Section
-                HomeSectionCardItem(
-                    title = stringResource(R.string.general_procedures),
-                    icon = Icons.Outlined.List,
-                    description = stringResource(R.string.view_procedures),
-                ) {
-                    onClick(HomeActionClick.PROCEDURE_NAVIGATION)
-                }
-*/
+                /*
+                                // General Procedures Section
+                                HomeSectionCardItem(
+                                    title = stringResource(R.string.general_procedures),
+                                    icon = Icons.Outlined.List,
+                                    description = stringResource(R.string.view_procedures),
+                                ) {
+                                    onClick(HomeActionClick.PROCEDURE_NAVIGATION)
+                                }
+                 */
                 HomeSectionCardItem(
                     title = stringResource(R.string.fast_password),
                     icon = Icons.Outlined.Lock,
@@ -390,6 +394,9 @@ private fun HomeContent(
             }
         }
         if (state.showFastPasswordDialog) {
+            val dialogSnackBarHostState = remember { SnackbarHostState() }
+            val scope = rememberCoroutineScope()
+
             AlertDialog(
                 onDismissRequest = {
                     if (!state.isDialogBlocked) {
@@ -433,11 +440,31 @@ private fun HomeContent(
                                 style = MaterialTheme.typography.labelLarge,
                             )
                         }
+
+                        SnackbarHost(
+                            hostState = dialogSnackBarHostState,
+                            snackbar = {
+                                Snackbar(
+                                    snackbarData = it,
+                                    containerColor = MaterialTheme.colorScheme.error,
+                                    contentColor = Color.White,
+                                )
+                            },
+                        )
                     }
                 },
                 shape = RoundedCornerShape(16.dp),
                 containerColor = MaterialTheme.colorScheme.surface,
             )
+
+            LaunchedEffect(state.message) {
+                if (state.message.isNotEmpty()) {
+                    scope.launch {
+                        dialogSnackBarHostState.showSnackbar(state.message)
+                        onCleanMessage()
+                    }
+                }
+            }
         }
 
         if (state.showForgotFastPasswordDialog) {
