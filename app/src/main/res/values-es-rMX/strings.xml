@@ -357,4 +357,8 @@
     <string name="fast_password_sent_success">Se ha enviado tu contraseña rápida por WhatsApp</string>
 
     <string name="canceled">Cancelada</string>
+
+    <string name="update_ready_title">Actualización lista</string>
+    <string name="update_ready_message">Se ha descargado una nueva versión. Reinicia la aplicación para aplicar la actualización.</string>
+    <string name="update_restart">Reiniciar</string>
 </resources>
