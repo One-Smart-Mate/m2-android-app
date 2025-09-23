@@ -186,8 +186,6 @@ class MainActivity : ComponentActivity() {
             .setCancelable(false)
             .setPositiveButton(getString(R.string.update_list)) { _, _ ->
                 openPlayStore()
-            }.setNegativeButton(getString(R.string.update_cancel)) { _, _ ->
-                this.finish()
             }.show()
     }
 
@@ -198,7 +196,7 @@ class MainActivity : ComponentActivity() {
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
             when {
                 appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
-                    appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE) -> {
+                        appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE) -> {
                     val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
@@ -208,7 +206,7 @@ class MainActivity : ComponentActivity() {
                 }
 
                 appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
-                    appUpdateInfo.isUpdateTypeAllowed(FLEXIBLE) -> {
+                        appUpdateInfo.isUpdateTypeAllowed(FLEXIBLE) -> {
                     val updateOptions = AppUpdateOptions.newBuilder(FLEXIBLE).build()
                     appUpdateManager.startUpdateFlowForResult(
                         appUpdateInfo,
