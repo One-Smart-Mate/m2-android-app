@@ -22,9 +22,12 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
+import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.appupdate.AppUpdateOptions
+import com.google.android.play.core.install.model.AppUpdateType.FLEXIBLE
 import com.google.android.play.core.install.model.AppUpdateType.IMMEDIATE
+import com.google.android.play.core.install.model.InstallStatus.DOWNLOADED
 import com.google.android.play.core.install.model.UpdateAvailability.UPDATE_AVAILABLE
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.file.FileHelper
@@ -45,6 +48,15 @@ class MainActivity : ComponentActivity() {
     lateinit var fileHelper: FileHelper
 
     private val splashViewModel: SplashViewModel by viewModels()
+
+    private val updateFlowResultLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.StartIntentSenderForResult(),
+        ) { result ->
+            if (result.resultCode != RESULT_OK) {
+                showUpdateDialog()
+            }
+        }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -67,6 +79,37 @@ class MainActivity : ComponentActivity() {
                 AppNavigation(startDestination = state.value)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val appUpdateManager = AppUpdateManagerFactory.create(this)
+        appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
+                appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
+            ) {
+                val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
+                appUpdateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    updateFlowResultLauncher,
+                    updateOptions,
+                )
+            }
+            if (appUpdateInfo.installStatus() == DOWNLOADED) {
+                showFlexibleUpdateReadyDialog(appUpdateManager)
+            }
+        }
+    }
+
+    private fun showFlexibleUpdateReadyDialog(appUpdateManager: AppUpdateManager) {
+        AlertDialog
+            .Builder(this)
+            .setTitle(getString(R.string.update_ready_title))
+            .setMessage(getString(R.string.update_ready_message))
+            .setCancelable(false)
+            .setPositiveButton(getString(R.string.update_restart)) { _, _ ->
+                appUpdateManager.completeUpdate()
+            }.show()
     }
 
     private fun initLogger() {
@@ -143,32 +186,40 @@ class MainActivity : ComponentActivity() {
             .setCancelable(false)
             .setPositiveButton(getString(R.string.update_list)) { _, _ ->
                 openPlayStore()
-            }.setNegativeButton(getString(R.string.update_cancel)) { _, _ ->
-                this.finish()
             }.show()
     }
 
     private fun handleAppUpdates() {
         val appUpdateManager = AppUpdateManagerFactory.create(this@MainActivity)
         val appUpdateInfoTask = appUpdateManager.appUpdateInfo
-        val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
-        val updateFlowResultLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.StartIntentSenderForResult(),
-            ) { result ->
-                if (result.resultCode != RESULT_OK) {
-                    showUpdateDialog()
-                }
-            }
+
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
-                appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE)
-            ) {
-                appUpdateManager.startUpdateFlowForResult(
-                    appUpdateInfo,
-                    updateFlowResultLauncher,
-                    updateOptions,
-                )
+            when {
+                appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
+                        appUpdateInfo.isUpdateTypeAllowed(IMMEDIATE) -> {
+                    val updateOptions = AppUpdateOptions.newBuilder(IMMEDIATE).build()
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        updateFlowResultLauncher,
+                        updateOptions,
+                    )
+                }
+
+                appUpdateInfo.updateAvailability() == UPDATE_AVAILABLE &&
+                        appUpdateInfo.isUpdateTypeAllowed(FLEXIBLE) -> {
+                    val updateOptions = AppUpdateOptions.newBuilder(FLEXIBLE).build()
+                    appUpdateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        updateFlowResultLauncher,
+                        updateOptions,
+                    )
+
+                    appUpdateManager.registerListener { state ->
+                        if (state.installStatus() == DOWNLOADED) {
+                            showFlexibleUpdateReadyDialog(appUpdateManager)
+                        }
+                    }
+                }
             }
         }
     }

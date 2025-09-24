@@ -358,4 +358,8 @@
     <string name="fast_password_sent_success">Your fast password has been sent via WhatsApp</string>
 
     <string name="canceled">Canceled</string>
+
+    <string name="update_ready_title">Update ready</string>
+    <string name="update_ready_message">A new version has been downloaded. Restart the app to apply the update.</string>
+    <string name="update_restart">Restart</string>
 </resources>
