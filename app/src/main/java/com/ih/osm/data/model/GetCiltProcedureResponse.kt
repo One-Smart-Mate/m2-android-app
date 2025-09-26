@@ -139,8 +139,8 @@ data class ProcedureExecution(
     val updatedAt: String,
     val deletedAt: String?,
     val evidences: List<Any>,
-    val referenceOplSop: ProcedureOpl,
-    val remediationOplSop: ProcedureOpl,
+    val referenceOplSop: ProcedureOpl?,
+    val remediationOplSop: ProcedureOpl?,
 )
 
 data class ProcedureOpl(
@@ -261,27 +261,31 @@ fun GetCiltProcedureResponse.toDomain() =
                                                             updatedAt = exec.updatedAt,
                                                             deletedAt = exec.deletedAt,
                                                             referenceOpl =
-                                                                CiltProcedureData.Opl(
-                                                                    id = exec.referenceOplSop.id,
-                                                                    title = exec.referenceOplSop.title,
-                                                                    objetive = exec.referenceOplSop.objetive,
-                                                                    creatorName = exec.referenceOplSop.creatorName,
-                                                                    reviewerName = exec.referenceOplSop.reviewerName,
-                                                                    oplType = exec.referenceOplSop.oplType,
-                                                                    ciltUsageCount = exec.referenceOplSop.ciltUsageCount,
-                                                                    lastUsedAt = exec.referenceOplSop.lastUsedAt,
-                                                                ),
+                                                                exec.referenceOplSop?.let { opl ->
+                                                                    CiltProcedureData.Opl(
+                                                                        id = opl.id,
+                                                                        title = opl.title,
+                                                                        objetive = opl.objetive,
+                                                                        creatorName = opl.creatorName,
+                                                                        reviewerName = opl.reviewerName,
+                                                                        oplType = opl.oplType,
+                                                                        ciltUsageCount = opl.ciltUsageCount,
+                                                                        lastUsedAt = opl.lastUsedAt,
+                                                                    )
+                                                                },
                                                             remediationOpl =
-                                                                CiltProcedureData.Opl(
-                                                                    id = exec.remediationOplSop.id,
-                                                                    title = exec.remediationOplSop.title,
-                                                                    objetive = exec.remediationOplSop.objetive,
-                                                                    creatorName = exec.remediationOplSop.creatorName,
-                                                                    reviewerName = exec.remediationOplSop.reviewerName,
-                                                                    oplType = exec.remediationOplSop.oplType,
-                                                                    ciltUsageCount = exec.remediationOplSop.ciltUsageCount,
-                                                                    lastUsedAt = exec.remediationOplSop.lastUsedAt,
-                                                                ),
+                                                                exec.remediationOplSop?.let { opl ->
+                                                                    CiltProcedureData.Opl(
+                                                                        id = opl.id,
+                                                                        title = opl.title,
+                                                                        objetive = opl.objetive,
+                                                                        creatorName = opl.creatorName,
+                                                                        reviewerName = opl.reviewerName,
+                                                                        oplType = opl.oplType,
+                                                                        ciltUsageCount = opl.ciltUsageCount,
+                                                                        lastUsedAt = opl.lastUsedAt,
+                                                                    )
+                                                                },
                                                         )
                                                     },
                                             )

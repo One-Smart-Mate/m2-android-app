@@ -50,6 +50,9 @@ private object Route {
     const val PROCEDURE_LIST_PATH = "procedure-list"
     const val PROCEDURE_LIST = PROCEDURE_LIST_PATH
 
+    const val POSITION_PROCEDURE_PATH = "position-procedure"
+    const val POSITION_PROCEDURE = POSITION_PROCEDURE_PATH
+
     const val SEQUENCE_PATH = "sequence"
     const val SEQUENCE = "$SEQUENCE_PATH/{$ARG_SEQUENCE_ID}/{$ARG_EXECUTION_ID}"
 }
@@ -96,6 +99,8 @@ sealed class Screen(
     data object OplList : Screen(Route.OPL_LIST, Route.OPL_LIST_PATH)
 
     data object ProcedureList : Screen(Route.PROCEDURE_LIST, Route.PROCEDURE_LIST_PATH)
+
+    data object PositionProcedure : Screen(Route.POSITION_PROCEDURE, Route.POSITION_PROCEDURE_PATH)
 
     data object Sequence : Screen(Route.SEQUENCE, Route.SEQUENCE_PATH)
 }

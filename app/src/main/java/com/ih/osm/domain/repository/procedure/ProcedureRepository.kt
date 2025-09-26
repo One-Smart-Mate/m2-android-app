@@ -9,5 +9,7 @@ interface ProcedureRepository {
 
     suspend fun getRemoteByLevel(levelId: String): CiltProcedureData
 
+    suspend fun getRemotePositionProcedures(): CiltProcedureData
+
     suspend fun createExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse
 }

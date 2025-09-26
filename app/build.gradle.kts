@@ -13,7 +13,7 @@ plugins {
 }
 
 android {
-    signingConfigs {
+    /*signingConfigs {
         getByName("debug") {
             storeFile = file("/Users/immanuel.diaz/Desktop/OSM_API_KEY/android-key")
             storePassword = "osm20240827"
@@ -21,6 +21,7 @@ android {
             keyPassword = "osm20240827"
         }
     }
+     */
     namespace = "com.ih.osm"
     compileSdk = 36
 
