@@ -24,6 +24,7 @@ import com.ih.osm.ui.pages.home.HomeScreenV2
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.opl.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
+import com.ih.osm.ui.pages.positionprocedure.PositionProcedureScreen
 import com.ih.osm.ui.pages.procedure.ProcedureListScreen
 import com.ih.osm.ui.pages.profile.ProfileScreen
 import com.ih.osm.ui.pages.qr.QrScannerScreen
@@ -167,6 +168,12 @@ fun AppNavigation(startDestination: String) {
         }
 
         composable(
+            Screen.PositionProcedure.route,
+        ) {
+            PositionProcedureScreen(navController = navController)
+        }
+
+        composable(
             route = Screen.Sequence.route,
             arguments =
                 listOf(
@@ -271,6 +278,10 @@ fun NavController.navigateToOplList() {
 
 fun NavController.navigateToProcedureList() {
     navigate(Screen.ProcedureList.route)
+}
+
+fun NavController.navigateToPositionProcedure() {
+    navigate(Screen.PositionProcedure.route)
 }
 
 fun NavController.navigateToSequence(

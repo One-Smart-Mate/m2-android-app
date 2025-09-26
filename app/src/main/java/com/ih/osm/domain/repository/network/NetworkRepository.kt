@@ -106,6 +106,8 @@ interface NetworkRepository {
 
     suspend fun getRemoteCiltProcedureByLevel(levelId: String): CiltProcedureData
 
+    suspend fun getRemotePositionProcedures(): CiltProcedureData
+
     suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse
 
     suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse

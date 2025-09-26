@@ -20,6 +20,7 @@ import com.ih.osm.data.model.GetEmployeesResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
 import com.ih.osm.data.model.GetOplsResponse
+import com.ih.osm.data.model.GetPositionProceduresResponse
 import com.ih.osm.data.model.GetPreclassifiersResponse
 import com.ih.osm.data.model.GetPrioritiesResponse
 import com.ih.osm.data.model.GetSequenceResponse
@@ -195,6 +196,9 @@ interface ApiService {
     fun getCiltProcedureByLevel(
         @Path("levelId") levelId: String,
     ): Call<GetCiltProcedureResponse>
+
+    @GET("cilt-mstr-position-levels/position/user")
+    fun getPositionProcedures(): Call<GetPositionProceduresResponse>
 
     @POST("cilt-sequences-executions/create")
     fun createCiltExecution(

@@ -41,6 +41,7 @@ import com.ih.osm.R
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.SpacerSize
+import com.ih.osm.ui.components.procedure.SequenceCard
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.theme.PaddingNormal
 
@@ -391,7 +392,7 @@ private fun ExecutionCard(execution: CiltProcedureData.Execution) {
                 )
             }
 
-            if (execution.referenceOpl.title.isNotEmpty()) {
+            if (execution.referenceOpl!!.title.isNotEmpty()) {
                 CustomSpacer(space = SpacerSize.TINY)
                 Text(
                     text = "📖 OPL: ${execution.referenceOpl.title}",

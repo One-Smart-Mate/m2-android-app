@@ -20,6 +20,8 @@ class ProcedureRepositoryImpl
             return CiltProcedureData.mockData()
         }
 
+        override suspend fun getRemotePositionProcedures(): CiltProcedureData = networkRepository.getRemotePositionProcedures()
+
         override suspend fun createExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse =
             networkRepository.createCiltExecution(request)
     }

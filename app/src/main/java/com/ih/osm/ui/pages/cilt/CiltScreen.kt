@@ -34,6 +34,8 @@ import com.ih.osm.ui.components.buttons.ButtonType
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
+import com.ih.osm.ui.navigation.navigateToPositionProcedure
+import com.ih.osm.ui.navigation.navigateToProcedureList
 import com.ih.osm.ui.pages.cilt.action.CiltAction
 import com.ih.osm.ui.theme.PaddingToolbar
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -135,7 +137,7 @@ fun CiltContent(
                             buttonType = ButtonType.DEFAULT,
                             textStyle = TextStyle(fontSize = 12.sp),
                         ) {
-                            //
+                            navController.navigateToPositionProcedure()
                         }
                         CustomButton(
                             text = stringResource(R.string.non_programmable_cilts),
@@ -143,7 +145,7 @@ fun CiltContent(
                             buttonType = ButtonType.DEFAULT,
                             textStyle = TextStyle(fontSize = 12.sp),
                         ) {
-                            //
+                            navController.navigateToProcedureList()
                         }
                     }
                 }
