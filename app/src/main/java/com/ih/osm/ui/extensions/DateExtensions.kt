@@ -45,10 +45,18 @@ fun String.toDate(
     format: String,
     timeZone: TimeZone = TimeZone.getDefault(),
 ): Date? =
-    SimpleDateFormat(format, Locale.getDefault())
-        .apply {
-            this.timeZone = timeZone
-        }.parse(this)
+    try {
+        val normalized = this.parseIsoOrRaw()
+
+        val sdf =
+            SimpleDateFormat(format, Locale.getDefault()).apply {
+                this.timeZone = timeZone
+            }
+        sdf.parse(normalized)
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        null
+    }
 
 fun Date.toCalendar(): Calendar =
     Calendar.getInstance().apply {
@@ -138,7 +146,10 @@ fun String.isCardExpired(
     if (status == "C" || status == "R") return false
     val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
     val referenceDate = referenceDateString.toDate(ISO_FORMAT_MILLIS, TimeZone.getTimeZone("UTC"))
-    return dueDate?.before(referenceDate).defaultIfNull(false)
+    if (dueDate == null || referenceDate == null) {
+        return false
+    }
+    return dueDate.before(referenceDate)
 }
 
 fun String?.fromIsoToFormattedDate(
@@ -187,8 +198,7 @@ fun String?.fromIsoToNormalDate(): String {
     }
 }
 
-fun getCurrentDate(): String =
-    SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
+fun getCurrentDate(): String = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 
 fun getCurrentDateTimeUtc(): String {
     val sdf = SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.US)
@@ -397,16 +407,18 @@ fun getMinutesDifference(
     return 0
 }
 
-private val isoFormatMillis = SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
-    timeZone = TimeZone.getTimeZone("UTC")
-}
+private val isoFormatMillis =
+    SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
 
-private val isoFormatSeconds = SimpleDateFormat(ISO_FORMAT, Locale.getDefault()).apply {
-    timeZone = TimeZone.getTimeZone("UTC")
-}
+private val isoFormatSeconds =
+    SimpleDateFormat(ISO_FORMAT, Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
 
-fun String.parseIsoOrRaw(): String {
-    return try {
+fun String.parseIsoOrRaw(): String =
+    try {
         val date = isoFormatMillis.parse(this)
         date?.let { SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(it) } ?: this
     } catch (e: ParseException) {
@@ -419,4 +431,3 @@ fun String.parseIsoOrRaw(): String {
             this
         }
     }
-}
