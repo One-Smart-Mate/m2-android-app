@@ -144,8 +144,25 @@ fun String.isCardExpired(
 ): Boolean {
     if (this.isEmpty() || this.isBlank()) return false
     if (status == "C" || status == "R") return false
-    val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
-    val referenceDate = referenceDateString.toDate(ISO_FORMAT_MILLIS, TimeZone.getTimeZone("UTC"))
+
+    val possibleFormats =
+        listOf(
+            SIMPLE_DATE_FORMAT,
+            NORMAL_FORMAT,
+            ISO_FORMAT,
+            ISO_FORMAT_MILLIS,
+        )
+
+    val dueDate =
+        possibleFormats.firstNotNullOfOrNull { fmt ->
+            this.toDate(fmt)
+        }
+
+    val referenceDate =
+        possibleFormats.firstNotNullOfOrNull { fmt ->
+            referenceDateString.toDate(fmt, TimeZone.getTimeZone("UTC"))
+        }
+
     if (dueDate == null || referenceDate == null) {
         return false
     }
@@ -198,7 +215,8 @@ fun String?.fromIsoToNormalDate(): String {
     }
 }
 
-fun getCurrentDate(): String = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
+fun getCurrentDate(): String =
+    SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 
 fun getCurrentDateTimeUtc(): String {
     val sdf = SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.US)
