@@ -17,6 +17,7 @@ import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Settings
@@ -44,6 +45,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ih.osm.BuildConfig
 import com.ih.osm.R
 import com.ih.osm.core.ui.functions.openAppSettings
+import com.ih.osm.data.model.Site
 import com.ih.osm.ui.components.CustomAppBar
 import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.LoadingScreen
@@ -71,6 +73,8 @@ fun AccountScreen(
             navController = navController,
             checked = state.checked,
             uri = state.uri,
+            sites = state.sites,
+            currentSiteId = state.currentSiteId,
             onAction = { action ->
                 viewModel.process(action)
             },
@@ -96,6 +100,8 @@ fun AccountContent(
     navController: NavController,
     checked: Boolean,
     uri: Uri? = null,
+    sites: List<Site> = emptyList(),
+    currentSiteId: String = "",
     onAction: (AccountAction) -> Unit,
 ) {
     val context = LocalContext.current
@@ -234,6 +240,28 @@ fun AccountContent(
                             },
                     )
                 }
+
+                if (sites.isNotEmpty()) {
+                    sites.forEach { site ->
+                        val isSelected = site.id == currentSiteId
+                        ListItem(
+                            headlineContent = {
+                                Text(site.name + if (isSelected) " (Actual)" else "")
+                            },
+                            leadingContent = {
+                                Icon(
+                                    Icons.Filled.KeyboardArrowRight,
+                                    contentDescription = site.name,
+                                )
+                            },
+                            tonalElevation = PaddingNormal,
+                            modifier =
+                                Modifier.clickable {
+                                },
+                        )
+                    }
+                }
+
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                 ListItem(

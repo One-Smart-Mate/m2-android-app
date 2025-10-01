@@ -99,11 +99,9 @@ class LoginViewModel
                         LoggerHelperManager.logUser(user)
                         sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
                         sharedPreferences.saveSites(loginResponse.data.sites)
-                        Log.d("Sites", "Sites guardados: ${loginResponse.data.sites}")
                         val defaultSite = loginResponse.data.sites.firstOrNull()
                         if (defaultSite != null) {
                             sharedPreferences.saveCurrentSiteId(defaultSite.id)
-                            Log.d("Sites", "Site por defecto guardado: $defaultSite")
                         }
                         handleSaveUserAndSession(user, session)
                     }.onFailure {
