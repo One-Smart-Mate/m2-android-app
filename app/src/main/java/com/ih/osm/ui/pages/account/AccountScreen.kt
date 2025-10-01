@@ -246,7 +246,7 @@ fun AccountContent(
                         val isSelected = site.id == currentSiteId
                         ListItem(
                             headlineContent = {
-                                Text(site.name + if (isSelected) " (Actual)" else "")
+                                Text(site.name + if (isSelected) " " + stringResource(R.string.current_site) else "")
                             },
                             leadingContent = {
                                 Icon(
@@ -257,6 +257,7 @@ fun AccountContent(
                             tonalElevation = PaddingNormal,
                             modifier =
                                 Modifier.clickable {
+                                    onAction(AccountAction.SelectSite(site))
                                 },
                         )
                     }

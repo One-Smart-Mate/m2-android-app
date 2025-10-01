@@ -215,8 +215,7 @@ fun String?.fromIsoToNormalDate(): String {
     }
 }
 
-fun getCurrentDate(): String =
-    SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
+fun getCurrentDate(): String = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 
 fun getCurrentDateTimeUtc(): String {
     val sdf = SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.US)
