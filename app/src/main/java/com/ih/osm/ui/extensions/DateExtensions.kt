@@ -6,6 +6,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.R
 import com.ih.osm.domain.model.ExecutionStatus
 import com.ih.osm.ui.utils.EMPTY
+import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -22,12 +23,12 @@ const val HH_MM = "HH:mm"
 
 const val EEE_MMM_DD_HH_MM_A = "EEE, MMM dd HH:mm a"
 
-const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.ss'Z'"
+const val ISO_FORMAT = "yyyy-MM-dd'T'HH:mm:ss'Z'"
 const val NORMAL_FORMAT = "yyyy-MM-dd HH:mm:ss"
 const val SIMPLE_DATE_FORMAT = "yyyy-MM-dd"
 const val TIME_STAMP_FORMAT = "yyyyMMdd_HHmmss"
 const val DD_MM_YYYY_HH_MM = "dd-MM-yyyy HH:mm"
-const val ISO = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+const val ISO_FORMAT_MILLIS = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 const val YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm"
 
 val Date.YYYY_MM_DD_HH_MM_SS: String
@@ -44,10 +45,18 @@ fun String.toDate(
     format: String,
     timeZone: TimeZone = TimeZone.getDefault(),
 ): Date? =
-    SimpleDateFormat(format, Locale.getDefault())
-        .apply {
-            this.timeZone = timeZone
-        }.parse(this)
+    try {
+        val normalized = this.parseIsoOrRaw()
+
+        val sdf =
+            SimpleDateFormat(format, Locale.getDefault()).apply {
+                this.timeZone = timeZone
+            }
+        sdf.parse(normalized)
+    } catch (e: Exception) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        null
+    }
 
 fun Date.toCalendar(): Calendar =
     Calendar.getInstance().apply {
@@ -135,13 +144,33 @@ fun String.isCardExpired(
 ): Boolean {
     if (this.isEmpty() || this.isBlank()) return false
     if (status == "C" || status == "R") return false
-    val dueDate = this.toDate(SIMPLE_DATE_FORMAT)
-    val referenceDate = referenceDateString.toDate(ISO, TimeZone.getTimeZone("UTC"))
-    return dueDate?.before(referenceDate).defaultIfNull(false)
+
+    val possibleFormats =
+        listOf(
+            SIMPLE_DATE_FORMAT,
+            NORMAL_FORMAT,
+            ISO_FORMAT,
+            ISO_FORMAT_MILLIS,
+        )
+
+    val dueDate =
+        possibleFormats.firstNotNullOfOrNull { fmt ->
+            this.toDate(fmt)
+        }
+
+    val referenceDate =
+        possibleFormats.firstNotNullOfOrNull { fmt ->
+            referenceDateString.toDate(fmt, TimeZone.getTimeZone("UTC"))
+        }
+
+    if (dueDate == null || referenceDate == null) {
+        return false
+    }
+    return dueDate.before(referenceDate)
 }
 
 fun String?.fromIsoToFormattedDate(
-    inputPattern: String = ISO,
+    inputPattern: String = ISO_FORMAT_MILLIS,
     outputPattern: String = YYYY_MM_DD_HH_MM,
 ): String {
     if (this.isNullOrBlank()) return ""
@@ -169,7 +198,7 @@ fun String?.fromIsoToNormalDate(): String {
 
     return try {
         val isoFormat =
-            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+            SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val date = isoFormat.parse(this)
@@ -186,10 +215,11 @@ fun String?.fromIsoToNormalDate(): String {
     }
 }
 
-fun getCurrentDate(): String = SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
+fun getCurrentDate(): String =
+    SimpleDateFormat(SIMPLE_DATE_FORMAT, Locale.getDefault()).format(Date())
 
 fun getCurrentDateTimeUtc(): String {
-    val sdf = SimpleDateFormat(ISO, Locale.US)
+    val sdf = SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.US)
     sdf.timeZone = TimeZone.getTimeZone("UTC")
     return sdf.format(Date())
 }
@@ -199,7 +229,7 @@ fun String?.toHourFromIso(): String {
 
     return try {
         val isoFormat =
-            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+            SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val date = isoFormat.parse(this)
@@ -230,7 +260,7 @@ fun Int.toMinutesAndSeconds(): String {
 fun calculateRemainingDaysFromIso(dueDateString: String): Int =
     try {
         val sdf =
-            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+            SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val dueDate = sdf.parse(dueDateString)
@@ -253,7 +283,7 @@ fun String.isWithinExecutionWindow(
 ): Pair<Boolean, String?> {
     return try {
         val sdf =
-            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+            SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val scheduleDate = sdf.parse(this) ?: return false to null
@@ -313,7 +343,7 @@ fun String.getExecutionStatus(
 ): ExecutionStatus {
     try {
         val sdf =
-            SimpleDateFormat(ISO, Locale.getDefault()).apply {
+            SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
                 timeZone = TimeZone.getTimeZone("UTC")
             }
         val scheduleDate = sdf.parse(this) ?: return ExecutionStatus.PENDING
@@ -394,3 +424,28 @@ fun getMinutesDifference(
     }
     return 0
 }
+
+private val isoFormatMillis =
+    SimpleDateFormat(ISO_FORMAT_MILLIS, Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+
+private val isoFormatSeconds =
+    SimpleDateFormat(ISO_FORMAT, Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }
+
+fun String.parseIsoOrRaw(): String =
+    try {
+        val date = isoFormatMillis.parse(this)
+        date?.let { SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(it) } ?: this
+    } catch (e: ParseException) {
+        FirebaseCrashlytics.getInstance().recordException(e)
+        try {
+            val date = isoFormatSeconds.parse(this)
+            date?.let { SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(it) } ?: this
+        } catch (e: ParseException) {
+            FirebaseCrashlytics.getInstance().recordException(e)
+            this
+        }
+    }

@@ -72,8 +72,8 @@ import com.ih.osm.ui.components.evidence.SectionImagesEvidence
 import com.ih.osm.ui.components.launchers.CameraLauncher
 import com.ih.osm.ui.components.opl.OplItemCard
 import com.ih.osm.ui.extensions.defaultScreen
-import com.ih.osm.ui.extensions.fromIsoToNormalDate
 import com.ih.osm.ui.extensions.isWithinExecutionWindow
+import com.ih.osm.ui.extensions.parseIsoOrRaw
 import com.ih.osm.ui.navigation.Screen
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.navigation.navigateToSequence
@@ -328,7 +328,7 @@ fun ExecutionDetailContent(
                 )
                 Text(
                     text =
-                        execution.secuenceSchedule.fromIsoToNormalDate(),
+                        execution.secuenceSchedule.parseIsoOrRaw(),
                     style = MaterialTheme.typography.bodyLarge,
                 )
             }
