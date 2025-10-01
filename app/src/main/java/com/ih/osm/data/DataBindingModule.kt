@@ -3,6 +3,7 @@ package com.ih.osm.data
 import com.ih.osm.data.repository.auth.AuthRepositoryImpl
 import com.ih.osm.data.repository.cards.CardRepositoryImpl
 import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
+import com.ih.osm.data.repository.catalog.CatalogRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
@@ -17,6 +18,7 @@ import com.ih.osm.data.repository.solution.SolutionRepositoryImpl
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
+import com.ih.osm.domain.repository.catalog.CatalogRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -77,4 +79,7 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindSessionRepository(sessionRepositoryImpl: SessionRepositoryImpl): SessionRepository
+
+    @Binds
+    fun bindCatalogRepository(catalogRepositoryImpl: CatalogRepositoryImpl): CatalogRepository
 }

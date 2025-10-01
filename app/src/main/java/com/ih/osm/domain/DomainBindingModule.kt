@@ -28,6 +28,8 @@ import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
+import com.ih.osm.domain.usecase.catalogs.GetCatalogsBySiteUseCase
+import com.ih.osm.domain.usecase.catalogs.GetCatalogsBySiteUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
@@ -236,4 +238,7 @@ interface DomainBindingModule {
 
     @Binds
     fun bindRefreshTokenUseCase(refreshTokenUseCaseImpl: RefreshTokenUseCaseImpl): RefreshTokenUseCase
+
+    @Binds
+    fun bindGetCatalogsBySiteUseCase(getCatalogsBySiteUseCaseImpl: GetCatalogsBySiteUseCaseImpl): GetCatalogsBySiteUseCase
 }

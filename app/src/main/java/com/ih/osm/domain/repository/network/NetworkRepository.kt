@@ -22,6 +22,7 @@ import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.Catalogs
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
@@ -111,4 +112,6 @@ interface NetworkRepository {
     suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse
 
     suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse
+
+    suspend fun getCatalogsBySite(siteId: String): Catalogs
 }
