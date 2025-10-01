@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.ih.osm.data.model.Site
 import com.ih.osm.domain.model.Card
 import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
 import com.ih.osm.ui.utils.EMPTY
@@ -30,6 +32,9 @@ class SharedPreferences
             private const val CILT_CARD_PREFERENCES = "cilt_card"
 
             private const val FAST_PASSWORD_BLOCKED = "fast_password_blocked"
+
+            private const val SITES_PREFERENCES = "sites"
+            private const val CURRENT_SITE_ID_PREFERENCES = "current_site_id"
         }
 
         init {
@@ -175,4 +180,42 @@ class SharedPreferences
         }
 
         fun isFastPasswordBlocked(): Boolean = sharedPreferences?.getBoolean(FAST_PASSWORD_BLOCKED, false) ?: false
+
+        fun saveSites(sites: List<Site>) {
+            val json = Gson().toJson(sites)
+            sharedPreferences?.let {
+                it.edit(commit = true) {
+                    putString(SITES_PREFERENCES, json)
+                }
+            }
+        }
+
+        fun getSites(): List<Site> {
+            val json = sharedPreferences?.getString(SITES_PREFERENCES, null) ?: return emptyList()
+            return try {
+                val type = object : TypeToken<List<Site>>() {}.type
+                Gson().fromJson(json, type)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+
+        fun saveCurrentSiteId(siteId: String) {
+            sharedPreferences?.let {
+                it.edit(commit = true) {
+                    putString(CURRENT_SITE_ID_PREFERENCES, siteId)
+                }
+            }
+        }
+
+        fun getCurrentSiteId(): String = sharedPreferences?.getString(CURRENT_SITE_ID_PREFERENCES, EMPTY).orEmpty()
+
+        fun clearSites() {
+            sharedPreferences?.let {
+                it.edit(commit = true) {
+                    remove(SITES_PREFERENCES)
+                    remove(CURRENT_SITE_ID_PREFERENCES)
+                }
+            }
+        }
     }
