@@ -11,6 +11,7 @@ import com.ih.osm.data.database.dao.evidence.EvidenceDao
 import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.dao.preclassifier.PreclassifierDao
 import com.ih.osm.data.database.dao.priority.PriorityDao
+import com.ih.osm.data.database.dao.site.SiteDao
 import com.ih.osm.data.database.dao.solution.SolutionDao
 import com.ih.osm.data.database.entities.SessionEntity
 import com.ih.osm.data.database.entities.UserEntity
@@ -21,6 +22,7 @@ import com.ih.osm.data.database.entities.evidence.EvidenceEntity
 import com.ih.osm.data.database.entities.level.LevelEntity
 import com.ih.osm.data.database.entities.preclassifier.PreclassifierEntity
 import com.ih.osm.data.database.entities.priority.PriorityEntity
+import com.ih.osm.data.database.entities.site.SiteEntity
 import com.ih.osm.data.database.entities.solution.SolutionEntity
 
 @Database(
@@ -35,8 +37,9 @@ import com.ih.osm.data.database.entities.solution.SolutionEntity
         EmployeeEntity::class,
         SolutionEntity::class,
         SessionEntity::class,
+        SiteEntity::class,
     ],
-    version = 6,
+    version = 7,
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun getUserDao(): UserDao
@@ -58,4 +61,6 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun getSolutionDao(): SolutionDao
 
     abstract fun getSessionDao(): SessionDao
+
+    abstract fun getSiteDao(): SiteDao
 }

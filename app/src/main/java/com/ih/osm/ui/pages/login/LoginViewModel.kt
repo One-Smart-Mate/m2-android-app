@@ -16,6 +16,8 @@ import com.ih.osm.domain.model.User
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.login.LoginUseCase
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
+import com.ih.osm.domain.usecase.site.SaveSitesUseCase
+import com.ih.osm.domain.usecase.site.SetCurrentSiteUseCase
 import com.ih.osm.domain.usecase.user.SaveUserUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.pages.login.action.LoginAction
@@ -36,6 +38,8 @@ class LoginViewModel
         private val saveUserUseCase: SaveUserUseCase,
         private val saveSessionUseCase: SaveSessionUseCase,
         private val syncFirebaseTokenUseCase: SyncFirebaseTokenUseCase,
+        private val saveSitesUseCase: SaveSitesUseCase,
+        private val setCurrentSiteUseCase: SetCurrentSiteUseCase,
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<LoginViewModel.UiState>(UiState()) {
@@ -98,11 +102,15 @@ class LoginViewModel
                         val session = loginResponse.toSession()
                         LoggerHelperManager.logUser(user)
                         sharedPreferences.saveDueDate(loginResponse.data.dueDate.orEmpty())
-                        sharedPreferences.saveSites(loginResponse.data.sites)
-                        val defaultSite = loginResponse.data.sites.firstOrNull()
-                        if (defaultSite != null) {
-                            sharedPreferences.saveCurrentSiteId(defaultSite.id)
+
+                        viewModelScope.launch {
+                            saveSitesUseCase(loginResponse.data.sites)
+                            val defaultSite = loginResponse.data.sites.firstOrNull()
+                            if (defaultSite != null) {
+                                setCurrentSiteUseCase(defaultSite.id)
+                            }
                         }
+
                         handleSaveUserAndSession(user, session)
                     }.onFailure {
                         LoggerHelperManager.logException(it)

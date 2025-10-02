@@ -14,6 +14,7 @@ import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
 import com.ih.osm.data.repository.priority.PriorityRepositoryImpl
 import com.ih.osm.data.repository.procedure.ProcedureRepositoryImpl
 import com.ih.osm.data.repository.session.SessionRepositoryImpl
+import com.ih.osm.data.repository.site.SiteRepositoryImpl
 import com.ih.osm.data.repository.solution.SolutionRepositoryImpl
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
@@ -29,6 +30,7 @@ import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.PriorityRepository
 import com.ih.osm.domain.repository.procedure.ProcedureRepository
 import com.ih.osm.domain.repository.session.SessionRepository
+import com.ih.osm.domain.repository.site.SiteRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import dagger.Binds
 import dagger.Module
@@ -82,4 +84,7 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindCatalogRepository(catalogRepositoryImpl: CatalogRepositoryImpl): CatalogRepository
+
+    @Binds
+    fun bindSiteRepository(siteRepositoryImpl: SiteRepositoryImpl): SiteRepository
 }
