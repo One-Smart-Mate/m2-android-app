@@ -12,17 +12,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -336,26 +339,30 @@ fun SequenceContent(
                 }
             } else if (isCompleted) {
                 // Show completion status
-                Card(
+                Box(
                     modifier =
                         Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                    colors =
-                        CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
-                        ),
+                            .padding(16.dp)
+                            .background(
+                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f),
+                                RoundedCornerShape(12.dp),
+                            ).padding(16.dp),
+                    contentAlignment = Alignment.Center,
                 ) {
                     Row(
-                        modifier =
-                            Modifier
-                                .fillMaxWidth()
-                                .padding(16.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
                     ) {
+                        Icon(
+                            Icons.Filled.CheckCircle,
+                            contentDescription = stringResource(R.string.completed),
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp),
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = stringResource(R.string.sequence_finished),
+                            text = stringResource(R.string.sequence_completed_status_r),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold,

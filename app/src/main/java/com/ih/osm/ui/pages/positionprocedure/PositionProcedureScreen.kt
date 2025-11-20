@@ -1,8 +1,7 @@
-package com.ih.osm.ui.pages.procedure
+package com.ih.osm.ui.pages.positionprocedure
 
 import android.annotation.SuppressLint
 import android.content.res.Configuration
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -11,8 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -23,7 +20,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -34,7 +30,6 @@ import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltMaster
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.Execution
-import com.ih.osm.domain.model.NodeCardItem
 import com.ih.osm.domain.model.Position
 import com.ih.osm.domain.model.Sequence
 import com.ih.osm.domain.model.UserInfo
@@ -46,16 +41,14 @@ import com.ih.osm.ui.components.cilt.CiltDetailSection
 import com.ih.osm.ui.extensions.defaultScreen
 import com.ih.osm.ui.extensions.getTextColor
 import com.ih.osm.ui.navigation.navigateToCiltDetailWithTarget
-import com.ih.osm.ui.pages.createcard.SectionItemCard
-import com.ih.osm.ui.pages.procedure.ProcedureListViewModel
-import com.ih.osm.ui.pages.procedure.action.ProcedureListAction
+import com.ih.osm.ui.pages.positionprocedure.PositionProcedureViewModel
 import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 
 @Composable
-fun ProcedureListScreen(
+fun PositionProcedureScreen(
     navController: NavController,
-    viewModel: ProcedureListViewModel = hiltViewModel(),
+    viewModel: PositionProcedureViewModel = hiltViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
@@ -86,20 +79,21 @@ fun ProcedureListScreen(
         }
     }
 
+    // Debug logs for UI rendering
+    android.util.Log.d("PositionProcedureScreen", "=== UI STATE DEBUG ===")
+    android.util.Log.d("PositionProcedureScreen", "state.isLoading: ${state.isLoading}")
+    android.util.Log.d("PositionProcedureScreen", "state.procedureData is null: ${state.procedureData == null}")
+    android.util.Log.d("PositionProcedureScreen", "state.procedureData?.positions?.size: ${state.procedureData?.positions?.size}")
+    android.util.Log.d("PositionProcedureScreen", "state.procedureData?.positions?.isEmpty(): ${state.procedureData?.positions?.isEmpty()}")
+    android.util.Log.d("PositionProcedureScreen", "state.message: '${state.message}'")
+
     if (state.isLoading) {
         LoadingScreen(text = stringResource(R.string.loading_procedures))
     } else {
-        ProcedureListContent(
+        PositionProcedureContent(
             navController = navController,
             procedureData = state.procedureData,
-            levelList = state.nodeLevelList,
-            selectedLevelList = state.selectedLevelList,
             creatingExecutionForSequence = state.creatingExecutionForSequence,
-            onAction = { action ->
-                if (action is ProcedureListAction.SetLevel) {
-                    viewModel.handleAction(action)
-                }
-            },
             onCreateExecution = { sequence, positionId, levelId ->
                 try {
                     viewModel.createExecution(sequence, positionId, levelId)
@@ -115,13 +109,10 @@ fun ProcedureListScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun ProcedureListContent(
+fun PositionProcedureContent(
     navController: NavController,
     procedureData: CiltProcedureData?,
-    levelList: Map<Int, List<NodeCardItem>>,
-    selectedLevelList: Map<Int, String>,
     creatingExecutionForSequence: Int?,
-    onAction: (ProcedureListAction) -> Unit,
     onCreateExecution: (CiltProcedureData.Sequence, Int, String) -> Unit,
     onNavigateToExecution: (Int) -> Unit,
 ) {
@@ -139,27 +130,27 @@ fun ProcedureListContent(
                 ) {
                     CustomAppBar(
                         navController = navController,
-                        title = stringResource(id = R.string.non_programmable_cilts),
+                        title = stringResource(id = R.string.download_third_party_cilt),
                     )
                     CustomSpacer(space = SpacerSize.SMALL)
                 }
             }
 
             item {
-                LevelContent(
-                    levelList = levelList,
-                    onLevelClick = { item, key ->
-                        onAction(ProcedureListAction.SetLevel(item.id, key))
-                    },
-                    selectedLevelList = selectedLevelList,
-                )
-            }
-
-            item {
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
-            if (procedureData?.positions?.isEmpty() != false) {
+            // Critical decision point logging
+            android.util.Log.d("PositionProcedureContent", "=== RENDER DECISION POINT ===")
+            android.util.Log.d("PositionProcedureContent", "procedureData is null: ${procedureData == null}")
+            android.util.Log.d("PositionProcedureContent", "procedureData?.positions is null: ${procedureData?.positions == null}")
+            android.util.Log.d("PositionProcedureContent", "procedureData?.positions?.isEmpty(): ${procedureData?.positions?.isEmpty()}")
+            android.util.Log.d("PositionProcedureContent", "procedureData?.positions?.size: ${procedureData?.positions?.size}")
+            val shouldShowEmptyMessage = procedureData?.positions?.isEmpty() != false
+            android.util.Log.d("PositionProcedureContent", "shouldShowEmptyMessage: $shouldShowEmptyMessage")
+
+            if (shouldShowEmptyMessage) {
+                android.util.Log.d("PositionProcedureContent", "=== SHOWING EMPTY MESSAGE ===")
                 item {
                     Box(
                         modifier =
@@ -181,7 +172,7 @@ fun ProcedureListContent(
                             )
                             CustomSpacer()
                             Text(
-                                text = stringResource(id = R.string.select_level_to_view_available_procedures),
+                                text = stringResource(id = R.string.no_procedures_found),
                                 style =
                                     MaterialTheme.typography.bodyMedium
                                         .copy(
@@ -192,6 +183,8 @@ fun ProcedureListContent(
                     }
                 }
             } else {
+                android.util.Log.d("PositionProcedureContent", "=== SHOWING PROCEDURE DATA ===")
+                android.util.Log.d("PositionProcedureContent", "About to render ${procedureData?.positions?.size} positions")
                 // Convert CiltProcedureData to CiltData format to reuse CILT components
                 val ciltData =
                     CiltData(
@@ -344,57 +337,17 @@ fun ProcedureListContent(
     }
 }
 
-@Composable
-fun LevelContent(
-    levelList: Map<Int, List<NodeCardItem>>,
-    onLevelClick: (NodeCardItem, key: Int) -> Unit,
-    selectedLevelList: Map<Int, String>,
-) {
-    AnimatedVisibility(visible = levelList.isNotEmpty()) {
-        Column {
-            CustomSpacer()
-
-            levelList.forEach { level ->
-                if (level.value.isNotEmpty()) {
-                    Text(
-                        text = "${stringResource(R.string.level)} ${level.key}",
-                        style =
-                            MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold),
-                    )
-                    CustomSpacer(space = SpacerSize.SMALL)
-                    LazyRow {
-                        items(level.value) { item ->
-                            SectionItemCard(
-                                title = item.name,
-                                description = item.description,
-                                selected = item.id == selectedLevelList[level.key],
-                            ) {
-                                onLevelClick(item, level.key)
-                            }
-                        }
-                    }
-                    CustomSpacer()
-                }
-            }
-        }
-    }
-}
-
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
 @Preview(showBackground = true, name = "light")
 @Composable
-private fun ProcedureListScreenPreview() {
+private fun PositionProcedureScreenPreview() {
     OsmAppTheme {
         Scaffold(modifier = Modifier.fillMaxSize()) {
-            ProcedureListContent(
+            PositionProcedureContent(
                 navController = rememberNavController(),
                 procedureData = CiltProcedureData.mockData(),
-                levelList = emptyMap(),
-                selectedLevelList = emptyMap(),
                 creatingExecutionForSequence = null,
-                onAction = {},
                 onCreateExecution = { _, _, _ -> },
                 onNavigateToExecution = {},
             )

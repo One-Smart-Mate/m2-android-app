@@ -98,8 +98,8 @@ data class CiltProcedureData(
         val createdAt: String,
         val updatedAt: String,
         val deletedAt: String?,
-        val referenceOpl: Opl,
-        val remediationOpl: Opl,
+        val referenceOpl: Opl?,
+        val remediationOpl: Opl?,
     )
 
     data class Opl(

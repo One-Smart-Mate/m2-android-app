@@ -85,7 +85,6 @@ import com.ih.osm.ui.navigation.navigateToAccount
 import com.ih.osm.ui.navigation.navigateToCardList
 import com.ih.osm.ui.navigation.navigateToCiltRoutine
 import com.ih.osm.ui.navigation.navigateToOplList
-import com.ih.osm.ui.navigation.navigateToProcedureList
 import com.ih.osm.ui.navigation.navigateToQrScanner
 import com.ih.osm.ui.pages.home.action.HomeAction
 import com.ih.osm.ui.theme.OsmAppTheme
@@ -149,10 +148,6 @@ fun HomeScreenV2(
 
                     HomeActionClick.OPL_NAVIGATION -> {
                         navController.navigateToOplList()
-                    }
-
-                    HomeActionClick.PROCEDURE_NAVIGATION -> {
-                        navController.navigateToProcedureList()
                     }
                 }
             },
@@ -353,16 +348,13 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }
-                /*
-                                HomeSectionCardItem(
-                                    title = stringResource(R.string.cilt_routine),
-                                    icon = Icons.Outlined.CheckCircle,
-                                    description = stringResource(R.string.view_cilt_routines),
-                                ) {
-                                    onClick(HomeActionClick.CILT_ROUTINE)
-                                }
-
-                 */
+                HomeSectionCardItem(
+                    title = stringResource(R.string.cilt_routine),
+                    icon = Icons.Outlined.CheckCircle,
+                    description = stringResource(R.string.view_cilt_routines),
+                ) {
+                    onClick(HomeActionClick.CILT_ROUTINE)
+                }
 
                 // OPL Section
                 HomeSectionCardItem(
@@ -372,16 +364,6 @@ private fun HomeContent(
                 ) {
                     onClick(HomeActionClick.OPL_NAVIGATION)
                 }
-                /*
-                                // General Procedures Section
-                                HomeSectionCardItem(
-                                    title = stringResource(R.string.general_procedures),
-                                    icon = Icons.Outlined.List,
-                                    description = stringResource(R.string.view_procedures),
-                                ) {
-                                    onClick(HomeActionClick.PROCEDURE_NAVIGATION)
-                                }
-                 */
                 HomeSectionCardItem(
                     title = stringResource(R.string.fast_password),
                     icon = Icons.Outlined.Lock,
@@ -513,7 +495,6 @@ enum class HomeActionClick {
     NAVIGATION,
     CILT_ROUTINE,
     OPL_NAVIGATION,
-    PROCEDURE_NAVIGATION,
 }
 
 @Composable

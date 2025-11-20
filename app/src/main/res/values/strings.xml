@@ -205,8 +205,8 @@
     <string name="view_cilt_routines">View CILT procedures</string>
     <string name="download_cilts">Download CILT\'s</string>
     <string name="update_cilts">Update</string>
-    <string name="download_third_party_cilt">Third-party CILT</string>
-    <string name="non_programmable_cilts">Non-programmable CILT\'s</string>
+    <string name="download_third_party_cilt">My position</string>
+    <string name="non_programmable_cilts">Other machines</string>
     <string name="position_label">Position</string>
     <string name="routine_label">Routine</string>
     <string name="description_label">Description</string>
@@ -332,6 +332,7 @@
     <string name="order_and_time">Order: %1$d • %2$d min</string>
     <string name="creating">Creating...</string>
     <string name="create_execution">Create execution</string>
+    <string name="create">Create</string>
     <string name="execute">Execute</string>
     <string name="time">Time</string>
     <string name="execution_minutes">%1$d min</string>

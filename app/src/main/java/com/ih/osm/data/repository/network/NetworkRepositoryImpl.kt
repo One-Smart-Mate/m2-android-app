@@ -358,6 +358,20 @@ class NetworkRepositoryImpl
             }
         }
 
+        override suspend fun getRemotePositionProcedures(): CiltProcedureData {
+            try {
+                val response = apiService.getPositionProcedures().execute()
+                if (response.isSuccessful && response.body() != null) {
+                    val responseBody = response.body()!!
+                    return responseBody.toDomain()
+                } else {
+                    error(response.getErrorMessage())
+                }
+            } catch (e: Exception) {
+                throw e
+            }
+        }
+
         override suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
             val response = apiService.createCiltExecution(request).execute()
             return if (response.isSuccessful && response.body() != null) {

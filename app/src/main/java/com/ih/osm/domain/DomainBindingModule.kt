@@ -80,6 +80,8 @@ import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCase
 import com.ih.osm.domain.usecase.priority.GetPrioritiesUseCaseImpl
 import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCase
 import com.ih.osm.domain.usecase.procedure.CreateCiltExecutionUseCaseImpl
+import com.ih.osm.domain.usecase.procedure.GetPositionProceduresUseCase
+import com.ih.osm.domain.usecase.procedure.GetPositionProceduresUseCaseImpl
 import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCase
 import com.ih.osm.domain.usecase.procedure.GetProcedureByLevelUseCaseImpl
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
@@ -224,6 +226,9 @@ interface DomainBindingModule {
 
     @Binds
     fun bindGetProcedureByLevelUseCase(getProcedureByLevelUseCaseImpl: GetProcedureByLevelUseCaseImpl): GetProcedureByLevelUseCase
+
+    @Binds
+    fun bindGetPositionProceduresUseCase(getPositionProceduresUseCaseImpl: GetPositionProceduresUseCaseImpl): GetPositionProceduresUseCase
 
     @Binds
     fun bindCreateCiltExecutionUseCase(createCiltExecutionUseCaseImpl: CreateCiltExecutionUseCaseImpl): CreateCiltExecutionUseCase
