@@ -3,6 +3,7 @@ package com.ih.osm.data
 import com.ih.osm.data.repository.auth.AuthRepositoryImpl
 import com.ih.osm.data.repository.cards.CardRepositoryImpl
 import com.ih.osm.data.repository.cardtype.CardTypeRepositoryImpl
+import com.ih.osm.data.repository.catalog.CatalogRepositoryImpl
 import com.ih.osm.data.repository.employee.EmployeeRepositoryImpl
 import com.ih.osm.data.repository.evidence.EvidenceRepositoryImpl
 import com.ih.osm.data.repository.firebase.FirebaseStorageRepositoryImpl
@@ -13,10 +14,12 @@ import com.ih.osm.data.repository.preclassifier.PreclassifierRepositoryImpl
 import com.ih.osm.data.repository.priority.PriorityRepositoryImpl
 import com.ih.osm.data.repository.procedure.ProcedureRepositoryImpl
 import com.ih.osm.data.repository.session.SessionRepositoryImpl
+import com.ih.osm.data.repository.site.SiteRepositoryImpl
 import com.ih.osm.data.repository.solution.SolutionRepositoryImpl
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.cards.CardRepository
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
+import com.ih.osm.domain.repository.catalog.CatalogRepository
 import com.ih.osm.domain.repository.employee.EmployeeRepository
 import com.ih.osm.domain.repository.evidence.EvidenceRepository
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
@@ -27,6 +30,7 @@ import com.ih.osm.domain.repository.preclassifier.PreclassifierRepository
 import com.ih.osm.domain.repository.priority.PriorityRepository
 import com.ih.osm.domain.repository.procedure.ProcedureRepository
 import com.ih.osm.domain.repository.session.SessionRepository
+import com.ih.osm.domain.repository.site.SiteRepository
 import com.ih.osm.domain.repository.solution.SolutionRepository
 import dagger.Binds
 import dagger.Module
@@ -77,4 +81,10 @@ internal interface DataBindingModule {
 
     @Binds
     fun bindSessionRepository(sessionRepositoryImpl: SessionRepositoryImpl): SessionRepository
+
+    @Binds
+    fun bindCatalogRepository(catalogRepositoryImpl: CatalogRepositoryImpl): CatalogRepository
+
+    @Binds
+    fun bindSiteRepository(siteRepositoryImpl: SiteRepositoryImpl): SiteRepository
 }

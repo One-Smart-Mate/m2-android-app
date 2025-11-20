@@ -14,6 +14,7 @@ import com.ih.osm.data.model.GenerateCiltExecutionResponse
 import com.ih.osm.data.model.GetCardDetailResponse
 import com.ih.osm.data.model.GetCardTypesResponse
 import com.ih.osm.data.model.GetCardsResponse
+import com.ih.osm.data.model.GetCatalogsBySiteResponse
 import com.ih.osm.data.model.GetCiltProcedureResponse
 import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetEmployeesResponse
@@ -210,4 +211,9 @@ interface ApiService {
     fun refreshToken(
         @Body body: RefreshTokenRequest,
     ): Call<LoginResponse>
+
+    @GET("catalog/{siteId}")
+    fun getCatalogsBySite(
+        @Path("siteId") siteId: String,
+    ): Call<GetCatalogsBySiteResponse>
 }

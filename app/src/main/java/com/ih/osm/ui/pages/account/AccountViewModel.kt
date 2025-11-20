@@ -7,10 +7,14 @@ import com.ih.osm.BuildConfig
 import com.ih.osm.R
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.preferences.SharedPreferences
+import com.ih.osm.data.model.Site
 import com.ih.osm.domain.repository.firebase.FirebaseStorageRepository
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.logout.LogoutUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
+import com.ih.osm.domain.usecase.site.GetCurrentSiteUseCase
+import com.ih.osm.domain.usecase.site.GetSitesUseCase
+import com.ih.osm.domain.usecase.site.SetCurrentSiteUseCase
 import com.ih.osm.ui.extensions.BaseViewModel
 import com.ih.osm.ui.extensions.getFileFromUri
 import com.ih.osm.ui.extensions.toZip
@@ -32,6 +36,9 @@ class AccountViewModel
         private val sharedPreferences: SharedPreferences,
         private val firebaseStorageRepository: FirebaseStorageRepository,
         private val getSessionUseCase: GetSessionUseCase,
+        private val getSitesUseCase: GetSitesUseCase,
+        private val getCurrentSiteUseCase: GetCurrentSiteUseCase,
+        private val setCurrentSiteUseCase: SetCurrentSiteUseCase,
         @ApplicationContext val context: Context,
     ) : BaseViewModel<AccountViewModel.UiState>(UiState()) {
         data class UiState(
@@ -40,11 +47,14 @@ class AccountViewModel
             val isLoading: Boolean = false,
             val checked: Boolean = false,
             val uri: Uri? = null,
+            val sites: List<Site> = emptyList(),
+            val currentSiteId: String = EMPTY,
         )
 
         init {
             getNetworkPreferences()
             getLogFile()
+            getSites()
         }
 
         private fun getLogFile() {
@@ -60,6 +70,7 @@ class AccountViewModel
                 is AccountAction.SyncCatalogs -> handleSyncCatalogs()
                 is AccountAction.SetSwitch -> handleOnSwitchChange(action.checked)
                 is AccountAction.UploadLogs -> handleUploadLogs(action.uri)
+                is AccountAction.SelectSite -> handleSelectSite(action.site)
             }
         }
 
@@ -159,6 +170,27 @@ class AccountViewModel
                             zipFile.delete()
                         }
                     }
+            }
+        }
+
+        private fun getSites() {
+            viewModelScope.launch {
+                val sites = getSitesUseCase()
+                val currentSiteId = getCurrentSiteUseCase()
+
+                setState {
+                    copy(
+                        sites = sites,
+                        currentSiteId = currentSiteId?.id.orEmpty(),
+                    )
+                }
+            }
+        }
+
+        private fun handleSelectSite(site: Site) {
+            viewModelScope.launch {
+                setCurrentSiteUseCase(site.id)
+                setState { copy(currentSiteId = site.id) }
             }
         }
     }
