@@ -15,7 +15,7 @@ plugins {
 android {
     signingConfigs {
         getByName("debug") {
-            storeFile = file("/Users/immanuel.diaz/Desktop/OSM_API_KEY/android-key")
+            storeFile = file("/Users/immanuel-diaz/AndroidStudioProjects/android-key")
             storePassword = "osm20240827"
             keyAlias = "android-key"
             keyPassword = "osm20240827"
