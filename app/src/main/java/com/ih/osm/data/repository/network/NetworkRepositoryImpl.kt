@@ -27,6 +27,7 @@ import com.ih.osm.data.model.toDomain
 import com.ih.osm.data.model.toDomainModel
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.Catalogs
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
@@ -390,6 +391,16 @@ class NetworkRepositoryImpl
             val response = apiService.refreshToken(body).execute()
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getCatalogsBySite(siteId: String): Catalogs {
+            val response = apiService.getCatalogsBySite(siteId).execute()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody?.data != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }

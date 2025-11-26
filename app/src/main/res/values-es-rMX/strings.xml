@@ -371,4 +371,6 @@
     <string name="machine_id_found">¡ID de máquina encontrado exitosamente!</string>
     <string name="processing_levels">Procesando jerarquía de ubicación, por favor espera...</string>
     <string name="machine_id_search_error">Error al buscar ID de máquina. Por favor intenta nuevamente.</string>
+
+    <string name="current_site">(Actual)</string>
 </resources>

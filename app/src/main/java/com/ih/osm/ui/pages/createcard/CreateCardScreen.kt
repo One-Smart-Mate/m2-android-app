@@ -56,7 +56,6 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.bumptech.glide.integration.compose.placeholder
-import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.ih.osm.R
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
@@ -526,9 +525,7 @@ fun PhotoCardItem(
             failure = placeholder(R.drawable.loading_image),
             loading = placeholder(R.drawable.loading_image),
             modifier = modifier.padding(PaddingTiny),
-        ) {
-            it.diskCacheStrategy(DiskCacheStrategy.ALL)
-        }
+        )
         if (showIcon) {
             Box {
                 CardItemIcon(icon = painterResource(id = R.drawable.ic_delete)) {

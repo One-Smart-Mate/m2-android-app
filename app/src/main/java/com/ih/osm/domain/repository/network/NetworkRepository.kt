@@ -22,6 +22,7 @@ import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
+import com.ih.osm.domain.model.Catalogs
 import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
@@ -214,4 +215,6 @@ interface NetworkRepository {
         siteId: String,
         machineId: String,
     ): List<Level>
+
+    suspend fun getCatalogsBySite(siteId: String): Catalogs
 }

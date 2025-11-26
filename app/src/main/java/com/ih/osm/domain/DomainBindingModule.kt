@@ -34,6 +34,8 @@ import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.CleanCatalogsUseCaseImpl
+import com.ih.osm.domain.usecase.catalogs.GetCatalogsBySiteUseCase
+import com.ih.osm.domain.usecase.catalogs.GetCatalogsBySiteUseCaseImpl
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCaseImpl
 import com.ih.osm.domain.usecase.cilt.CreateCiltEvidenceUseCase
@@ -100,6 +102,16 @@ import com.ih.osm.domain.usecase.session.GetSessionUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCaseImpl
 import com.ih.osm.domain.usecase.session.SaveSessionUseCase
 import com.ih.osm.domain.usecase.session.SaveSessionUseCaseImpl
+import com.ih.osm.domain.usecase.site.ClearSitesUseCase
+import com.ih.osm.domain.usecase.site.ClearSitesUseCaseImpl
+import com.ih.osm.domain.usecase.site.GetCurrentSiteUseCase
+import com.ih.osm.domain.usecase.site.GetCurrentSiteUseCaseImpl
+import com.ih.osm.domain.usecase.site.GetSitesUseCase
+import com.ih.osm.domain.usecase.site.GetSitesUseCaseImpl
+import com.ih.osm.domain.usecase.site.SaveSitesUseCase
+import com.ih.osm.domain.usecase.site.SaveSitesUseCaseImpl
+import com.ih.osm.domain.usecase.site.SetCurrentSiteUseCase
+import com.ih.osm.domain.usecase.site.SetCurrentSiteUseCaseImpl
 import com.ih.osm.domain.usecase.user.GetUserUseCase
 import com.ih.osm.domain.usecase.user.GetUserUseCaseImpl
 import com.ih.osm.domain.usecase.user.SaveUserUseCase
@@ -277,4 +289,22 @@ interface DomainBindingModule {
 
     @Binds
     fun bindRefreshCardsUseCase(refreshCardsUseCaseImpl: RefreshCardsUseCaseImpl): RefreshCardsUseCase
+
+    @Binds
+    fun bindGetCatalogsBySiteUseCase(getCatalogsBySiteUseCaseImpl: GetCatalogsBySiteUseCaseImpl): GetCatalogsBySiteUseCase
+
+    @Binds
+    fun bindGetSitesUseCase(getSitesUseCaseImpl: GetSitesUseCaseImpl): GetSitesUseCase
+
+    @Binds
+    fun bindGetCurrentSiteUseCase(getCurrentSiteUseCaseImpl: GetCurrentSiteUseCaseImpl): GetCurrentSiteUseCase
+
+    @Binds
+    fun bindSaveSitesUseCase(saveSitesUseCaseImpl: SaveSitesUseCaseImpl): SaveSitesUseCase
+
+    @Binds
+    fun bindSetCurrentSiteUseCase(setCurrentSiteUseCaseImpl: SetCurrentSiteUseCaseImpl): SetCurrentSiteUseCase
+
+    @Binds
+    fun bindClearSitesUseCase(clearSitesUseCaseImpl: ClearSitesUseCaseImpl): ClearSitesUseCase
 }
