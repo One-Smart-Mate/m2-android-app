@@ -61,11 +61,6 @@ fun LevelTreeLazyScreen(
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    // Load initial tree on first composition
-    LaunchedEffect(Unit) {
-        viewModel.loadInitialTree()
-    }
-
     // Show error messages in Snackbar
     LaunchedEffect(state.errorMessage) {
         state.errorMessage?.let { error ->

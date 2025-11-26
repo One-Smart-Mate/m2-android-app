@@ -81,10 +81,6 @@ fun CardListScreen(
             viewModel = viewModel,
         )
     }
-
-    LaunchedEffect(Unit) {
-        viewModel.load()
-    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)

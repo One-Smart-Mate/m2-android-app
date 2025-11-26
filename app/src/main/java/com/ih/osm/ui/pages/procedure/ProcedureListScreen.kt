@@ -52,13 +52,6 @@ fun ProcedureListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Clear any stale execution state when screen is first displayed
-    LaunchedEffect(Unit) {
-        if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            viewModel.clearAllExecutionState()
-        }
-    }
-
     // Handle navigation after successful execution creation
     LaunchedEffect(state.createdExecutionData) {
         state.createdExecutionData?.let { (_, siteExecutionId) ->

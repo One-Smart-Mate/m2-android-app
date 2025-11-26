@@ -1,6 +1,5 @@
 package com.ih.osm.domain.usecase.cardtype
 
-import android.util.Log
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.repository.cardtype.CardTypeRepository
 import com.ih.osm.ui.utils.EMPTY
@@ -22,17 +21,11 @@ class GetCardTypesUseCaseImpl
             syncRemote: Boolean,
             filter: String,
         ): List<CardType> {
-            Log.d("GetCardTypesUseCase", "===== EXECUTE: syncRemote=$syncRemote, filter='$filter' =====")
-
             if (syncRemote) {
-                Log.d("GetCardTypesUseCase", "Syncing from remote...")
                 val cardTypes = repo.getAllRemote()
-                Log.d("GetCardTypesUseCase", "Remote returned: ${cardTypes.size} card types")
                 repo.saveAll(cardTypes)
             }
 
-            val result = repo.getAll(filter)
-            Log.d("GetCardTypesUseCase", "SUCCESS: Returning ${result.size} card types")
-            return result
+            return repo.getAll(filter)
         }
     }

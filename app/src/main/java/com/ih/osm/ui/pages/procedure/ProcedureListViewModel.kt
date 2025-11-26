@@ -47,6 +47,8 @@ class ProcedureListViewModel
         )
 
         init {
+            // Clear any stale execution state when ViewModel is first created
+            clearAllExecutionState()
             handleGetLevels()
         }
 

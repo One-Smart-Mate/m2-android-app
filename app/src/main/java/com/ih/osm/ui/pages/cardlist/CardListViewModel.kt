@@ -46,6 +46,10 @@ class CardListViewModel
             private const val PAGE_SIZE = 20
         }
 
+        init {
+            load()
+        }
+
         data class UiState(
             val cards: List<Card> = emptyList(),
             val isLoading: Boolean = true,

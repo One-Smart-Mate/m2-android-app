@@ -52,8 +52,9 @@ class NetworkRepositoryImpl
     ) : NetworkRepository {
         override suspend fun login(data: LoginRequest): LoginResponse {
             val response = apiService.login(data).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody
             } else {
                 error(response.getErrorMessage())
             }
@@ -89,8 +90,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteCardTypes(siteId: String): List<CardType> {
             val response = apiService.getCardTypes(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -98,8 +100,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteEmployees(siteId: String): List<Employee> {
             val response = apiService.getEmployees(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -110,8 +113,9 @@ class NetworkRepositoryImpl
             roleName: String,
         ): List<Employee> {
             val response = apiService.getEmployeesByRole(siteId, roleName).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -119,8 +123,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteLevels(siteId: String): List<Level> {
             val response = apiService.getLevels(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -128,8 +133,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemotePreclassifiers(siteId: String): List<Preclassifier> {
             val response = apiService.getPreclassifiers(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -137,8 +143,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemotePriorities(siteId: String): List<Priority> {
             val response = apiService.getPriorities(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -146,8 +153,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteCardsByUser(siteId: String): List<Card> {
             val response = apiService.getCards(siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -159,8 +167,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): List<Card> {
             val response = apiService.getCards(siteId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -168,8 +177,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteCardDetail(cardId: String): Card? {
             val response = apiService.getCardDetail(cardId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -177,8 +187,9 @@ class NetworkRepositoryImpl
 
         override suspend fun saveRemoteCard(card: CreateCardRequest): Card {
             val response = apiService.createCard(card).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -189,8 +200,9 @@ class NetworkRepositoryImpl
             siteId: String,
         ): List<Card> {
             val response = apiService.getCardsZone(superiorId, siteId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -198,8 +210,9 @@ class NetworkRepositoryImpl
 
         override suspend fun saveRemoteDefinitiveSolution(createDefinitiveSolutionRequest: CreateDefinitiveSolutionRequest): Card {
             val response = apiService.saveDefinitiveSolution(createDefinitiveSolutionRequest).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -208,8 +221,9 @@ class NetworkRepositoryImpl
         override suspend fun saveRemoteProvisionalSolution(createProvisionalSolutionRequest: CreateProvisionalSolutionRequest): Card {
             val response =
                 apiService.saveProvisionalSolution(createProvisionalSolutionRequest).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -220,8 +234,9 @@ class NetworkRepositoryImpl
             siteId: String,
         ): List<Card> {
             val response = apiService.getCardsLevelMachine(siteId, levelMachine).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -236,8 +251,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteOplsByLevel(levelId: String): List<Opl> {
             val response = apiService.getOplsByLevel(levelId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -332,8 +348,9 @@ class NetworkRepositoryImpl
 
         override suspend fun fastLogin(body: FastLoginRequest): LoginResponse {
             val response = apiService.fastLogin(body).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody
             } else {
                 error(response.getErrorMessage())
             }
@@ -341,8 +358,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getSequence(id: Int): Sequence {
             val response = apiService.getSequence(id).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -350,8 +368,9 @@ class NetworkRepositoryImpl
 
         override suspend fun sendFastPassword(body: SendFastPasswordRequest): SendFastPasswordResponse {
             val response = apiService.sendFastPassword(body).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody
             } else {
                 error(response.getErrorMessage())
             }
@@ -359,8 +378,9 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteCiltProcedureByLevel(levelId: String): CiltProcedureData {
             val response = apiService.getCiltProcedureByLevel(levelId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -368,8 +388,9 @@ class NetworkRepositoryImpl
 
         override suspend fun createCiltExecution(request: CreateCiltExecutionRequest): CreateCiltExecutionResponse {
             val response = apiService.createCiltExecution(request).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody
             } else {
                 error(response.getErrorMessage())
             }
@@ -377,10 +398,8 @@ class NetworkRepositoryImpl
 
         override suspend fun generateCiltExecution(request: GenerateCiltExecutionRequest): GenerateCiltExecutionResponse {
             val response = apiService.generateCiltExecution(request).execute()
-
-            return if (response.isSuccessful && response.body() != null) {
-                val responseBody = response.body()!!
-
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
                 responseBody
             } else {
                 error(response.getErrorMessage())
@@ -389,8 +408,9 @@ class NetworkRepositoryImpl
 
         override suspend fun refreshToken(body: RefreshTokenRequest): LoginResponse {
             val response = apiService.refreshToken(body).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody
             } else {
                 error(response.getErrorMessage())
             }
@@ -413,8 +433,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): List<Card> {
             val response = apiService.getCardsByLevel(levelId, siteId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -426,8 +447,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): List<Level> {
             val response = apiService.getLevelsWithLocation(siteId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -439,8 +461,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): List<Level> {
             val response = apiService.getSiteLevels(siteId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -453,8 +476,9 @@ class NetworkRepositoryImpl
             depth: Int?,
         ): LevelTreeData {
             val response = apiService.getLevelTreeLazy(siteId, page, limit, depth).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.data.toDomainModel()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.data.toDomainModel()
             } else {
                 error(response.getErrorMessage())
             }
@@ -467,8 +491,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): List<Level> {
             val response = apiService.getChildrenLevels(siteId, parentId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }
@@ -480,11 +505,9 @@ class NetworkRepositoryImpl
             limit: Int?,
         ): LevelStats {
             val response = apiService.getLevelStats(siteId, page, limit).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response
-                    .body()!!
-                    .data.stats
-                    .toDomainModel()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.data.stats.toDomainModel()
             } else {
                 error(response.getErrorMessage())
             }
@@ -495,8 +518,9 @@ class NetworkRepositoryImpl
             machineId: String,
         ): List<Level> {
             val response = apiService.findLevelByMachineId(siteId, machineId).execute()
-            return if (response.isSuccessful && response.body() != null) {
-                response.body()!!.toDomain()
+            val responseBody = response.body()
+            return if (response.isSuccessful && responseBody != null) {
+                responseBody.toDomain()
             } else {
                 error(response.getErrorMessage())
             }

@@ -38,6 +38,10 @@ class LevelTreeLazyViewModel
         private val buildLazyHierarchyUseCase: BuildLazyHierarchyUseCase,
         private val getLevelStatsUseCase: GetLevelStatsUseCase,
     ) : BaseViewModel<LevelTreeLazyViewModel.UiState>(UiState()) {
+        init {
+            loadInitialTree()
+        }
+
         /**
          * UI state for the level tree screen
          *

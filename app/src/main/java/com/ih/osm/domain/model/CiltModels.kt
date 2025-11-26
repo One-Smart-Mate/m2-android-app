@@ -1,7 +1,6 @@
 package com.ih.osm.domain.model
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.ih.osm.R
 import com.ih.osm.ui.extensions.NORMAL_FORMAT
@@ -217,17 +216,6 @@ fun Execution.validate(context: Context): Pair<Int, String> {
                 this?.add(Calendar.MINUTE, toleranceAfterMinutes)
             }?.time
             ?.format()
-
-    Log.e("test", "Time: $time")
-    Log.e("test", "currentTime: $currentTime")
-    Log.e("test", "scheduleDate: $scheduleDate")
-    Log.e("test", "scheduleDate calendar: ${scheduleDate?.toCalendar()?.time}")
-    Log.e("test", "timeInMinutes: $timeInMinutes")
-    Log.e("test", "timeBefore: $timeBefore")
-    Log.e("test", "timeAfter: $timeAfter")
-    Log.e("test", "minutes toleranceBeforeMinutes: $allowExecuteBeforeMinutes")
-    Log.e("test", "minutes toleranceAfterMinutes: $toleranceAfterMinutes")
-    Log.e("test", "allowExecuteAfterDue: $allowExecuteAfterDue")
 
     if (scheduleDate?.toCalendar()?.before(Calendar.getInstance()).defaultIfNull(false)) {
         if (!this.allowExecuteAfterDue) {

@@ -1,7 +1,6 @@
 package com.ih.osm.domain.cache
 
 import android.content.Context
-import android.util.Log
 import com.ih.osm.domain.model.Level
 import com.ih.osm.domain.model.LevelStats
 import com.ih.osm.domain.repository.level.LevelRepository
@@ -46,19 +45,14 @@ class LevelCacheManager
          * @return List of cached child levels or null if cache miss
          */
         suspend fun getCachedChildren(parentId: String): List<Level>? {
-            Log.d("LevelCacheManager", "getCachedChildren: parentId=$parentId")
-
             val cacheKey = "$PREFIX_CHILDREN$parentId"
             if (!isCacheValid(cacheKey)) {
-                Log.d("LevelCacheManager", "Cache EXPIRED or MISSING")
                 return null
             }
 
-            // Get all levels and filter by parentId
             val allLevels = levelRepository.getAll()
             val children = allLevels.filter { it.superiorId == parentId }
 
-            Log.d("LevelCacheManager", "Found ${children.size} children")
             return if (children.isNotEmpty()) children else null
         }
 
@@ -102,16 +96,10 @@ class LevelCacheManager
             parentId: String,
             children: List<Level>,
         ) {
-            Log.d("LevelCacheManager", "cacheChildren: parentId=$parentId, count=${children.size}")
-
-            // Save children to database
             levelRepository.saveAll(children)
 
-            // Update cache timestamp
             val cacheKey = "$PREFIX_CHILDREN$parentId"
             setCacheTimestamp(cacheKey, System.currentTimeMillis())
-
-            Log.d("LevelCacheManager", "Cached successfully")
         }
 
         /**
@@ -203,12 +191,8 @@ class LevelCacheManager
          */
         private fun isCacheValid(key: String): Boolean {
             val timestamp = getCacheTimestamp(key) ?: return false
-            val now = System.currentTimeMillis()
-            val age = now - timestamp
-            val valid = age < CACHE_TTL_MS
-
-            Log.d("LevelCacheManager", "isCacheValid: key=$key, age=${age}ms, valid=$valid")
-            return valid
+            val age = System.currentTimeMillis() - timestamp
+            return age < CACHE_TTL_MS
         }
 
         /**
