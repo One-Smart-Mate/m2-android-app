@@ -10,6 +10,7 @@ const val ARG_ACTION_TYPE = "arg_action_type"
 const val ARG_EXECUTION_ID = "executionId"
 const val ARG_SEQUENCE_ID = "sequenceId"
 const val ARG_TARGET_SITE_EXECUTION_ID = "targetSiteExecutionId"
+const val ARG_SITE_NAME = "siteName"
 
 private object Route {
     const val LOGIN = "login"
@@ -52,6 +53,9 @@ private object Route {
 
     const val SEQUENCE_PATH = "sequence"
     const val SEQUENCE = "$SEQUENCE_PATH/{$ARG_SEQUENCE_ID}/{$ARG_EXECUTION_ID}"
+
+    const val LEVEL_TREE_LAZY_PATH = "level-tree-lazy"
+    const val LEVEL_TREE_LAZY = "$LEVEL_TREE_LAZY_PATH?$ARG_SITE_NAME={$ARG_SITE_NAME}"
 }
 
 sealed class Screen(
@@ -98,4 +102,6 @@ sealed class Screen(
     data object ProcedureList : Screen(Route.PROCEDURE_LIST, Route.PROCEDURE_LIST_PATH)
 
     data object Sequence : Screen(Route.SEQUENCE, Route.SEQUENCE_PATH)
+
+    data object LevelTreeLazy : Screen(Route.LEVEL_TREE_LAZY, Route.LEVEL_TREE_LAZY_PATH)
 }

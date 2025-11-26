@@ -13,14 +13,18 @@ plugins {
 }
 
 android {
+    /*
     signingConfigs {
-        getByName("debug") {
+        getByName("debug") {package:com.ih.osm
+  tag:LevelTreeLazyViewModel|GetLevelTreeLazyUseCase|GetChildrenLevelsUseCase|BuildLazyHierarchyUseCase|LevelCacheManager|GetPagedCardsUseCase
             storeFile = file("/Users/immanuel.diaz/Desktop/OSM_API_KEY/android-key")
             storePassword = "osm20240827"
             keyAlias = "android-key"
             keyPassword = "osm20240827"
         }
     }
+
+     */
     namespace = "com.ih.osm"
     compileSdk = 36
 

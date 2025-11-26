@@ -4,6 +4,8 @@ import com.ih.osm.data.database.dao.level.LevelDao
 import com.ih.osm.data.database.entities.level.toDomain
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.LevelStats
+import com.ih.osm.domain.model.LevelTreeData
 import com.ih.osm.domain.model.toEntity
 import com.ih.osm.domain.repository.auth.AuthRepository
 import com.ih.osm.domain.repository.level.LevelRepository
@@ -35,5 +37,52 @@ class LevelRepositoryImpl
         override suspend fun getAllRemote(): List<Level> {
             val siteId = authRepository.getSiteId()
             return networkRepository.getRemoteLevels(siteId)
+        }
+
+        override suspend fun getRemoteLevelsWithLocation(
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteLevelsWithLocation(siteId, page, limit)
+        }
+
+        override suspend fun getRemoteSiteLevels(
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteSiteLevels(siteId, page, limit)
+        }
+
+        override suspend fun getRemoteLevelTreeLazy(
+            page: Int?,
+            limit: Int?,
+            depth: Int?,
+        ): LevelTreeData {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteLevelTreeLazy(siteId, page, limit, depth)
+        }
+
+        override suspend fun getRemoteChildrenLevels(
+            parentId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteChildrenLevels(siteId, parentId, page, limit)
+        }
+
+        override suspend fun getRemoteLevelStats(
+            page: Int?,
+            limit: Int?,
+        ): LevelStats {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.getRemoteLevelStats(siteId, page, limit)
+        }
+
+        override suspend fun findByMachineId(machineId: String): List<Level> {
+            val siteId = authRepository.getSiteId()
+            return networkRepository.findLevelByMachineId(siteId, machineId)
         }
     }

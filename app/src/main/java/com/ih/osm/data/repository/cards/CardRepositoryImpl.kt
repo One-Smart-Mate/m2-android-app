@@ -109,6 +109,14 @@ class CardRepositoryImpl
             return networkRepository.getRemoteCardsByUser(siteId)
         }
 
+        override suspend fun getAllRemoteByUser(
+            page: Int?,
+            limit: Int?,
+        ): List<Card> {
+            val siteId = authRepo.getSiteId()
+            return networkRepository.getRemoteCardsByUser(siteId, page, limit)
+        }
+
         override suspend fun getRemote(cardId: String): Card? = networkRepository.getRemoteCardDetail(cardId)
 
         override suspend fun saveRemote(card: CreateCardRequest): Card = networkRepository.saveRemoteCard(card)
@@ -123,5 +131,14 @@ class CardRepositoryImpl
         override suspend fun getRemoteByLevelMachine(levelMachine: String): List<Card> {
             val siteId = authRepo.getSiteId()
             return networkRepository.getRemoteCardsLevelMachine(levelMachine, siteId)
+        }
+
+        override suspend fun getRemoteByLevel(
+            levelId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Card> {
+            val siteId = authRepo.getSiteId()
+            return networkRepository.getRemoteCardsByLevel(levelId, siteId, page, limit)
         }
     }

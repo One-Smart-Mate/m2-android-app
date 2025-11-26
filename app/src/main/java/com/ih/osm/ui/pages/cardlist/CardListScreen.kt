@@ -95,6 +95,8 @@ fun CardListContent(
     onAction: (CardListAction) -> Unit,
     viewModel: CardListViewModel,
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     Scaffold(
         floatingActionButton = {
             FloatingActionButton(onClick = {
@@ -139,7 +141,10 @@ fun CardListContent(
                 }
             }
 
-            items(cards) { card ->
+            items(
+                items = cards,
+                key = { card -> card.uuid },
+            ) { card ->
                 CardItemListV2(
                     card = card,
                     onClick = {
@@ -149,6 +154,26 @@ fun CardListContent(
                         onAction(CardListAction.Action(it, card.uuid))
                     },
                 )
+
+                if (cards.isNotEmpty() && card == cards.last() && state.hasMorePages && !state.isLoadingMore) {
+                    LaunchedEffect(card.uuid) {
+                        viewModel.loadMore()
+                    }
+                }
+            }
+
+            if (state.isLoadingMore) {
+                item {
+                    Box(
+                        modifier =
+                            Modifier
+                                .fillMaxWidth()
+                                .padding(Size120),
+                        contentAlignment = androidx.compose.ui.Alignment.Center,
+                    ) {
+                        androidx.compose.material3.CircularProgressIndicator()
+                    }
+                }
             }
         }
     }

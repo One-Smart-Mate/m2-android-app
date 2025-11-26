@@ -24,6 +24,7 @@ import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
+import com.ih.osm.data.model.toDomainModel
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.CiltData
@@ -31,6 +32,8 @@ import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
 import com.ih.osm.domain.model.Level
+import com.ih.osm.domain.model.LevelStats
+import com.ih.osm.domain.model.LevelTreeData
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
@@ -142,6 +145,19 @@ class NetworkRepositoryImpl
 
         override suspend fun getRemoteCardsByUser(siteId: String): List<Card> {
             val response = apiService.getCards(siteId).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteCardsByUser(
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Card> {
+            val response = apiService.getCards(siteId, page, limit).execute()
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!.toDomain()
             } else {
@@ -341,19 +357,11 @@ class NetworkRepositoryImpl
         }
 
         override suspend fun getRemoteCiltProcedureByLevel(levelId: String): CiltProcedureData {
-            try {
-                val response = apiService.getCiltProcedureByLevel(levelId).execute()
-
-                if (response.isSuccessful && response.body() != null) {
-                    val responseBody = response.body()!!
-
-                    val domainData = responseBody.toDomain()
-                    return domainData
-                } else {
-                    error(response.getErrorMessage())
-                }
-            } catch (e: Exception) {
-                throw e
+            val response = apiService.getCiltProcedureByLevel(levelId).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
             }
         }
 
@@ -382,6 +390,102 @@ class NetworkRepositoryImpl
             val response = apiService.refreshToken(body).execute()
             return if (response.isSuccessful && response.body() != null) {
                 response.body()!!
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteCardsByLevel(
+            levelId: String,
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Card> {
+            val response = apiService.getCardsByLevel(levelId, siteId, page, limit).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteLevelsWithLocation(
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val response = apiService.getLevelsWithLocation(siteId, page, limit).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteSiteLevels(
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val response = apiService.getSiteLevels(siteId, page, limit).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteLevelTreeLazy(
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+            depth: Int?,
+        ): LevelTreeData {
+            val response = apiService.getLevelTreeLazy(siteId, page, limit, depth).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.data.toDomainModel()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteChildrenLevels(
+            siteId: String,
+            parentId: String,
+            page: Int?,
+            limit: Int?,
+        ): List<Level> {
+            val response = apiService.getChildrenLevels(siteId, parentId, page, limit).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun getRemoteLevelStats(
+            siteId: String,
+            page: Int?,
+            limit: Int?,
+        ): LevelStats {
+            val response = apiService.getLevelStats(siteId, page, limit).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response
+                    .body()!!
+                    .data.stats
+                    .toDomainModel()
+            } else {
+                error(response.getErrorMessage())
+            }
+        }
+
+        override suspend fun findLevelByMachineId(
+            siteId: String,
+            machineId: String,
+        ): List<Level> {
+            val response = apiService.findLevelByMachineId(siteId, machineId).execute()
+            return if (response.isSuccessful && response.body() != null) {
+                response.body()!!.toDomain()
             } else {
                 error(response.getErrorMessage())
             }

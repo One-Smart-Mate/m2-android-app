@@ -361,4 +361,14 @@
     <string name="update_ready_title">Actualización lista</string>
     <string name="update_ready_message">Se ha descargado una nueva versión. Reinicia la aplicación para aplicar la actualización.</string>
     <string name="update_restart">Reiniciar</string>
+
+    <!-- Machine ID Search -->
+    <string name="required_machine_id">El ID de máquina es requerido</string>
+    <string name="machine_id_not_found">ID de máquina no encontrado. Por favor verifica e intenta nuevamente.</string>
+    <string name="search_by_machine_id">Buscar por ID de Máquina (Opcional)</string>
+    <string name="enter_machine_id">Ingresa el ID de máquina para auto-completar ubicación</string>
+    <string name="search">Buscar</string>
+    <string name="machine_id_found">¡ID de máquina encontrado exitosamente!</string>
+    <string name="processing_levels">Procesando jerarquía de ubicación, por favor espera...</string>
+    <string name="machine_id_search_error">Error al buscar ID de máquina. Por favor intenta nuevamente.</string>
 </resources>
