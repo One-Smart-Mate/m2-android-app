@@ -16,7 +16,8 @@ android {
 
     signingConfigs {
         getByName("debug") {
-            storeFile = file("/Users/immanuel-diaz/AndroidStudioProjects/android-key")
+            val userHome = System.getProperty("user.home")
+            storeFile = file("$userHome/AndroidStudioProjects/android-key")
             storePassword = "osm20240827"
             keyAlias = "android-key"
             keyPassword = "osm20240827"
@@ -169,7 +170,9 @@ dependencies {
 
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
-    implementation(libs.androidx.material)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.material3.icons)
+    implementation(libs.androidx.material3.icons.core)
 
     implementation(libs.androidx.work.runtime.ktx)
 
