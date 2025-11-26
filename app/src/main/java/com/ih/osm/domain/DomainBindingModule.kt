@@ -4,6 +4,8 @@ import com.ih.osm.data.repository.cilt.CiltRepositoryImpl
 import com.ih.osm.domain.repository.cilt.CiltRepository
 import com.ih.osm.domain.usecase.card.DeleteCardUseCase
 import com.ih.osm.domain.usecase.card.DeleteCardUseCaseImpl
+import com.ih.osm.domain.usecase.card.GetAllPagedCardsUseCase
+import com.ih.osm.domain.usecase.card.GetAllPagedCardsUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCase
 import com.ih.osm.domain.usecase.card.GetCardDetailUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardsLevelMachineUseCase
@@ -12,6 +14,10 @@ import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.card.GetCardsUseCaseImpl
 import com.ih.osm.domain.usecase.card.GetCardsZoneUseCase
 import com.ih.osm.domain.usecase.card.GetCardsZoneUseCaseImpl
+import com.ih.osm.domain.usecase.card.GetPagedCardsUseCase
+import com.ih.osm.domain.usecase.card.GetPagedCardsUseCaseImpl
+import com.ih.osm.domain.usecase.card.RefreshCardsUseCase
+import com.ih.osm.domain.usecase.card.RefreshCardsUseCaseImpl
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCase
 import com.ih.osm.domain.usecase.card.SaveCardSolutionUseCaseImpl
 import com.ih.osm.domain.usecase.card.SaveCardUseCase
@@ -52,6 +58,16 @@ import com.ih.osm.domain.usecase.firebase.GetFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.firebase.GetFirebaseTokenUseCaseImpl
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCase
 import com.ih.osm.domain.usecase.firebase.SyncFirebaseTokenUseCaseImpl
+import com.ih.osm.domain.usecase.level.BuildLazyHierarchyUseCase
+import com.ih.osm.domain.usecase.level.BuildLazyHierarchyUseCaseImpl
+import com.ih.osm.domain.usecase.level.FindLevelByMachineIdUseCase
+import com.ih.osm.domain.usecase.level.FindLevelByMachineIdUseCaseImpl
+import com.ih.osm.domain.usecase.level.GetChildrenLevelsUseCase
+import com.ih.osm.domain.usecase.level.GetChildrenLevelsUseCaseImpl
+import com.ih.osm.domain.usecase.level.GetLevelStatsUseCase
+import com.ih.osm.domain.usecase.level.GetLevelStatsUseCaseImpl
+import com.ih.osm.domain.usecase.level.GetLevelTreeLazyUseCase
+import com.ih.osm.domain.usecase.level.GetLevelTreeLazyUseCaseImpl
 import com.ih.osm.domain.usecase.level.GetLevelsUseCase
 import com.ih.osm.domain.usecase.level.GetLevelsUseCaseImpl
 import com.ih.osm.domain.usecase.login.FastLoginUseCase
@@ -248,6 +264,31 @@ interface DomainBindingModule {
 
     @Binds
     fun bindRefreshTokenUseCase(refreshTokenUseCaseImpl: RefreshTokenUseCaseImpl): RefreshTokenUseCase
+
+    // Pagination and lazy loading UseCases
+    @Binds
+    fun bindGetLevelTreeLazyUseCase(getLevelTreeLazyUseCaseImpl: GetLevelTreeLazyUseCaseImpl): GetLevelTreeLazyUseCase
+
+    @Binds
+    fun bindGetChildrenLevelsUseCase(getChildrenLevelsUseCaseImpl: GetChildrenLevelsUseCaseImpl): GetChildrenLevelsUseCase
+
+    @Binds
+    fun bindBuildLazyHierarchyUseCase(buildLazyHierarchyUseCaseImpl: BuildLazyHierarchyUseCaseImpl): BuildLazyHierarchyUseCase
+
+    @Binds
+    fun bindFindLevelByMachineIdUseCase(findLevelByMachineIdUseCaseImpl: FindLevelByMachineIdUseCaseImpl): FindLevelByMachineIdUseCase
+
+    @Binds
+    fun bindGetLevelStatsUseCase(getLevelStatsUseCaseImpl: GetLevelStatsUseCaseImpl): GetLevelStatsUseCase
+
+    @Binds
+    fun bindGetPagedCardsUseCase(getPagedCardsUseCaseImpl: GetPagedCardsUseCaseImpl): GetPagedCardsUseCase
+
+    @Binds
+    fun bindGetAllPagedCardsUseCase(getAllPagedCardsUseCaseImpl: GetAllPagedCardsUseCaseImpl): GetAllPagedCardsUseCase
+
+    @Binds
+    fun bindRefreshCardsUseCase(refreshCardsUseCaseImpl: RefreshCardsUseCaseImpl): RefreshCardsUseCase
 
     @Binds
     fun bindGetCatalogsBySiteUseCase(getCatalogsBySiteUseCaseImpl: GetCatalogsBySiteUseCaseImpl): GetCatalogsBySiteUseCase

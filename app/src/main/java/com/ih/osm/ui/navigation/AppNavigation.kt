@@ -21,6 +21,7 @@ import com.ih.osm.ui.pages.cilt.CiltScreen
 import com.ih.osm.ui.pages.createcard.CreateCardScreen
 import com.ih.osm.ui.pages.dev.DevScreen
 import com.ih.osm.ui.pages.home.HomeScreenV2
+import com.ih.osm.ui.pages.level.LevelTreeLazyScreen
 import com.ih.osm.ui.pages.login.LoginScreen
 import com.ih.osm.ui.pages.opl.OplListScreen
 import com.ih.osm.ui.pages.password.RestoreAccountScreen
@@ -186,6 +187,24 @@ fun AppNavigation(startDestination: String) {
                 executionId = executionId,
             )
         }
+
+        composable(
+            route = Screen.LevelTreeLazy.route,
+            arguments =
+                listOf(
+                    navArgument(ARG_SITE_NAME) {
+                        type = NavType.StringType
+                        nullable = true
+                        defaultValue = null
+                    },
+                ),
+        ) { backStackEntry ->
+            val siteName = backStackEntry.arguments?.getString(ARG_SITE_NAME)
+            LevelTreeLazyScreen(
+                navController = navController,
+                siteName = siteName,
+            )
+        }
     }
 }
 
@@ -278,4 +297,14 @@ fun NavController.navigateToSequence(
     executionId: Int,
 ) {
     navigate("${Screen.Sequence.path}/$sequenceId/$executionId")
+}
+
+fun NavController.navigateToLevelTreeLazy(siteName: String? = null) {
+    val route =
+        if (siteName != null) {
+            "${Screen.LevelTreeLazy.path}?$ARG_SITE_NAME=$siteName"
+        } else {
+            Screen.LevelTreeLazy.path
+        }
+    navigate(route)
 }

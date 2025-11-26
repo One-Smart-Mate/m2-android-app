@@ -363,5 +363,15 @@
     <string name="update_ready_message">A new version has been downloaded. Restart the app to apply the update.</string>
     <string name="update_restart">Restart</string>
 
+    <!-- Machine ID Search -->
+    <string name="required_machine_id">Machine ID is required</string>
+    <string name="machine_id_not_found">Machine ID not found. Please verify and try again.</string>
+    <string name="search_by_machine_id">Search by Machine ID (Optional)</string>
+    <string name="enter_machine_id">Enter machine ID to auto-fill location</string>
+    <string name="search">Search</string>
+    <string name="machine_id_found">Machine ID found successfully!</string>
+    <string name="processing_levels">Processing location hierarchy, please wait...</string>
+    <string name="machine_id_search_error">Error searching for Machine ID. Please try again.</string>
+
     <string name="current_site">(Current)</string>
 </resources>

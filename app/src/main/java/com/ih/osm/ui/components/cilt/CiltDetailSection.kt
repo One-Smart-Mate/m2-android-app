@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.ih.osm.R
 import com.ih.osm.domain.model.CiltData
@@ -25,6 +24,11 @@ import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.extensions.calculateRemainingDaysFromIso
 import com.ih.osm.ui.extensions.fromIsoToFormattedDate
 import com.ih.osm.ui.navigation.navigateToSequence
+import com.ih.osm.ui.theme.PaddingLarge
+import com.ih.osm.ui.theme.PaddingNormal
+import com.ih.osm.ui.theme.PaddingSmall
+import com.ih.osm.ui.theme.PaddingTiny
+import com.ih.osm.ui.theme.PaddingTinySmall
 
 @Composable
 fun CiltDetailSection(
@@ -41,24 +45,24 @@ fun CiltDetailSection(
                         containerColor = MaterialTheme.colorScheme.background,
                     ),
             ) {
-                Column(modifier = Modifier.padding(8.dp)) {
+                Column(modifier = Modifier.padding(PaddingTiny)) {
                     AnatomyHorizontalSection(
                         title = stringResource(R.string.routine_label),
                         description = cilt.ciltName,
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(PaddingTinySmall))
                     AnatomyHorizontalSection(
                         title = stringResource(R.string.position_label),
                         description = position.name,
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(PaddingTinySmall))
 
                     AnatomyHorizontalSection(
                         title = stringResource(R.string.description_label),
                         description = cilt.ciltDescription,
                     )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(PaddingTiny))
 
                     ExpandableCard(
                         title = stringResource(R.string.cilt_details),
@@ -93,15 +97,15 @@ fun CiltDetailSection(
                                 text = message,
                                 color = MaterialTheme.colorScheme.error,
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                                modifier = Modifier.padding(4.dp),
+                                modifier = Modifier.padding(PaddingTinySmall),
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(24.dp))
+                        Spacer(modifier = Modifier.height(PaddingLarge))
 
                         CiltDiagramSection(imageUrl = cilt.urlImgLayout)
 
-                        Spacer(modifier = Modifier.height(8.dp))
+                        Spacer(modifier = Modifier.height(PaddingTiny))
 
                         cilt.sequences.forEach { sequence ->
                             sequence.executions
@@ -112,13 +116,13 @@ fun CiltDetailSection(
                                     ) {
                                         navController.navigateToSequence(sequence.id, execution.id)
                                     }
-                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Spacer(modifier = Modifier.height(PaddingNormal))
                                 }
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(PaddingNormal))
         }
     }
 }
@@ -132,14 +136,14 @@ fun AnatomyHorizontalSection(
         modifier =
             Modifier
                 .fillMaxWidth()
-                .padding(vertical = 8.dp),
+                .padding(vertical = PaddingTiny),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
         )
-        Spacer(modifier = Modifier.width(12.dp))
+        Spacer(modifier = Modifier.width(PaddingSmall))
         Text(
             text = description,
             style = MaterialTheme.typography.bodyLarge,

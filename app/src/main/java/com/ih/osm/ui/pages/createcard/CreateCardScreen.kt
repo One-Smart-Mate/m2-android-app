@@ -7,6 +7,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -22,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -67,6 +69,7 @@ import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
+import com.ih.osm.ui.components.MachineIdSearchField
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
@@ -133,12 +136,27 @@ fun CreateCardScreen(
                 selectedPriority = state.selectedPriority,
                 levelList = state.nodeLevelList,
                 selectedLevelList = state.selectedLevelList,
-                lastLevelCompleted = state.lastLevelCompleted,
                 evidences = state.evidences,
                 audioDuration = state.audioDuration,
                 cardsZone = state.cardsZone,
                 coroutineScope = scope,
                 lazyColumState = lazyState,
+                // Loading states
+                isLoadingCardTypes = state.isLoadingCardTypes,
+                isLoadingPreclassifiers = state.isLoadingPreclassifiers,
+                isLoadingPriorities = state.isLoadingPriorities,
+                isLoadingLevels = state.isLoadingLevels,
+                // Machine ID search
+                machineIdSearchQuery = state.machineIdSearchQuery,
+                isSearchingMachineId = state.isSearchingMachineId,
+                machineIdSearchError = state.machineIdSearchError,
+                machineIdSearchSuccess = state.machineIdSearchSuccess,
+                onMachineIdSearchQueryChange = { query ->
+                    viewModel.updateMachineIdSearchQuery(query)
+                },
+                onMachineIdSearch = {
+                    viewModel.handleSearchByMachineId()
+                },
                 onAction = { action ->
                     viewModel.process(action)
                 },
@@ -187,12 +205,23 @@ fun CreateCardContent(
     levelList: Map<Int, List<NodeCardItem>>,
     selectedLevelList: Map<Int, String>,
     onAction: (CreateCardAction) -> Unit,
-    lastLevelCompleted: Boolean,
     evidences: List<Evidence>,
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
     lazyColumState: LazyListState,
+    // Loading states
+    isLoadingCardTypes: Boolean,
+    isLoadingPreclassifiers: Boolean,
+    isLoadingPriorities: Boolean,
+    isLoadingLevels: Boolean,
+    // Machine ID search
+    machineIdSearchQuery: String,
+    isSearchingMachineId: Boolean,
+    machineIdSearchError: String,
+    machineIdSearchSuccess: Boolean,
+    onMachineIdSearchQueryChange: (String) -> Unit,
+    onMachineIdSearch: () -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -210,20 +239,87 @@ fun CreateCardContent(
             }
             item {
                 CustomSpacer()
-                CardTypeContent(cardTypeList, onAction, selectedCardType)
-                PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
-                PriorityContent(priorityList, onAction, selectedPriority)
-                LevelContent(levelList, onLevelClick = { item, key ->
-                    onAction(CreateCardAction.SetLevel(item.id, key))
-                    coroutineScope.launch {
-                        lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
+
+                // Card Types with Loading Spinner
+                if (isLoadingCardTypes) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
                     }
-                }, selectedLevelList)
+                } else {
+                    CardTypeContent(cardTypeList, onAction, selectedCardType)
+                }
+
+                // Preclassifiers with Loading Spinner
+                if (isLoadingPreclassifiers && selectedCardType.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
+                }
+
+                // Priorities with Loading Spinner
+                if (isLoadingPriorities && selectedPreclassifier.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    PriorityContent(priorityList, onAction, selectedPriority)
+                }
+
+                // Machine ID Search - Only show after priority is selected
+                AnimatedVisibility(visible = selectedPriority.isNotEmpty()) {
+                    MachineIdSearchField(
+                        searchQuery = machineIdSearchQuery,
+                        isSearching = isSearchingMachineId,
+                        errorMessage = machineIdSearchError,
+                        successMessage = machineIdSearchSuccess,
+                        onSearchQueryChange = onMachineIdSearchQueryChange,
+                        onSearch = onMachineIdSearch,
+                    )
+                }
+
+                // Levels with Loading Spinner
+                if (isLoadingLevels && selectedPriority.isNotEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                        ) {
+                            CircularProgressIndicator()
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = "Loading levels...",
+                                style = MaterialTheme.typography.bodyMedium,
+                            )
+                        }
+                    }
+                } else {
+                    LevelContent(levelList, onLevelClick = { item, key ->
+                        onAction(CreateCardAction.SetLevel(item.id, key))
+                        coroutineScope.launch {
+                            lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
+                        }
+                    }, selectedLevelList)
+                }
+
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
             item {
-                AnimatedVisibility(visible = lastLevelCompleted) {
+                // Show card creation options when at least one level is selected
+                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
                     Column {
                         CustomSpacer()
                         HorizontalDivider()
@@ -251,7 +347,8 @@ fun CreateCardContent(
             }
 
             item {
-                AnimatedVisibility(visible = lastLevelCompleted) {
+                // Show comments and save button when at least one level is selected
+                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
                     Column {
                         HorizontalDivider()
                         CustomSpacer(space = SpacerSize.EXTRA_LARGE)

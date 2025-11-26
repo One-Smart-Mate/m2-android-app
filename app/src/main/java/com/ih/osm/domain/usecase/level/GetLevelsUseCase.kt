@@ -18,6 +18,7 @@ class GetLevelsUseCaseImpl
                 val list = repo.getAllRemote()
                 repo.saveAll(list)
             }
+
             return repo.getAll()
         }
     }

@@ -1,6 +1,7 @@
 package com.ih.osm.ui.pages.cardlist
 
 import android.content.Context
+import android.util.Log
 import androidx.lifecycle.viewModelScope
 import com.ih.osm.MainActivity
 import com.ih.osm.R
@@ -9,10 +10,12 @@ import com.ih.osm.core.network.NetworkConnection
 import com.ih.osm.core.preferences.SharedPreferences
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.NetworkStatus
+import com.ih.osm.domain.model.Result
 import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.User
 import com.ih.osm.domain.model.filterByStatus
 import com.ih.osm.domain.model.toCardFilter
+import com.ih.osm.domain.usecase.card.GetAllPagedCardsUseCase
 import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.session.GetSessionUseCase
@@ -31,22 +34,38 @@ import javax.inject.Inject
 class CardListViewModel
     @Inject
     constructor(
+        private val getAllPagedCardsUseCase: GetAllPagedCardsUseCase,
         private val getCardsUseCase: GetCardsUseCase,
         private val getSessionUseCase: GetSessionUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CardListViewModel.UiState>(UiState()) {
+        companion object {
+            private const val TAG = "CardListViewModel"
+            private const val PAGE_SIZE = 20
+        }
+
+        init {
+            load()
+        }
+
         data class UiState(
             val cards: List<Card> = emptyList(),
             val isLoading: Boolean = true,
+            val isLoadingMore: Boolean = false,
+            val currentPage: Int = 1,
+            val hasMorePages: Boolean = true,
             val message: String = EMPTY,
             val user: User? = null,
             val session: Session? = null,
         )
 
+        private var currentFilter: String = EMPTY
+
         fun load() {
-            handleGeCards()
+            Log.d(TAG, "load() called")
+            handleGetCards()
             handleGetSession()
         }
 
@@ -100,13 +119,9 @@ class CardListViewModel
                     .runCatching {
                         callUseCase { getCardsUseCase(syncRemote = true, localCards = false) }
                     }.onSuccess { cards ->
-                        setState {
-                            copy(
-                                cards = cards.sortedByDescending { it.siteCardId },
-                                isLoading = false,
-                                message = EMPTY,
-                            )
-                        }
+                        Log.d(TAG, "Sync complete: ${cards.size} cards synced to local DB")
+                        // After syncing, reload page 1 with pagination
+                        loadPage(page = 1, replace = true, syncRemote = false)
                     }.onFailure {
                         LoggerHelperManager.logException(it)
                         setState {
@@ -136,24 +151,111 @@ class CardListViewModel
             }
         }
 
-        private fun handleGeCards() {
+        private fun handleGetCards() {
+            Log.d(TAG, "handleGetCards() - Loading initial page")
+            viewModelScope.launch {
+                // Reset state and load first page
+                setState { copy(currentPage = 1, hasMorePages = true) }
+                loadPage(page = 1, replace = true, syncRemote = false)
+            }
+        }
+
+        private fun loadPage(
+            page: Int,
+            replace: Boolean = false,
+            syncRemote: Boolean = false,
+        ) {
+            Log.d(TAG, "loadPage() - page=$page, replace=$replace, syncRemote=$syncRemote")
+
             viewModelScope.launch {
                 kotlin
                     .runCatching {
-                        callUseCase { getCardsUseCase(syncRemote = false) }
-                    }.onSuccess {
-                        setState {
-                            copy(
-                                cards = it.sortedByDescending { item -> item.siteCardId },
-                                isLoading = false,
-                                message = EMPTY,
+                        callUseCase {
+                            getAllPagedCardsUseCase(
+                                page = page,
+                                limit = PAGE_SIZE,
+                                syncRemote = syncRemote,
                             )
                         }
-                    }.onFailure {
-                        LoggerHelperManager.logException(it)
-                        cleanScreenStates(it.localizedMessage.orEmpty())
+                    }.onSuccess { result ->
+                        when (result) {
+                            is Result.Success -> {
+                                val paginatedCards = result.data
+                                Log.d(
+                                    TAG,
+                                    "SUCCESS - Loaded ${paginatedCards.cards.size} cards for page $page. " +
+                                        "hasNextPage=${paginatedCards.hasNextPage}",
+                                )
+
+                                // Apply filter if active
+                                val filteredCards =
+                                    if (currentFilter.isNotEmpty()) {
+                                        paginatedCards.cards.filterByStatus(
+                                            filter = currentFilter,
+                                            userId = getState().session?.userId.orEmpty(),
+                                        )
+                                    } else {
+                                        paginatedCards.cards
+                                    }.sortedByDescending { it.siteCardId }
+
+                                setState {
+                                    copy(
+                                        cards = if (replace) filteredCards else cards + filteredCards,
+                                        currentPage = page,
+                                        hasMorePages = paginatedCards.hasNextPage,
+                                        isLoading = false,
+                                        isLoadingMore = false,
+                                        message = EMPTY,
+                                    )
+                                }
+                            }
+
+                            is Result.Error -> {
+                                Log.e(TAG, "ERROR - ${result.message}")
+                                setState {
+                                    copy(
+                                        isLoading = false,
+                                        isLoadingMore = false,
+                                        message = result.message,
+                                    )
+                                }
+                            }
+
+                            is Result.Loading -> {
+                                // Loading state already handled by isLoading/isLoadingMore flags
+                                Log.d(TAG, "Loading state")
+                            }
+                        }
+                    }.onFailure { exception ->
+                        LoggerHelperManager.logException(exception)
+                        Log.e(TAG, "EXCEPTION - ${exception.localizedMessage}", exception)
+                        setState {
+                            copy(
+                                isLoading = false,
+                                isLoadingMore = false,
+                                message = exception.localizedMessage.orEmpty(),
+                            )
+                        }
                     }
             }
+        }
+
+        fun loadMore() {
+            val state = getState()
+            Log.d(
+                TAG,
+                "loadMore() - currentPage=${state.currentPage}, hasMorePages=${state.hasMorePages}, isLoadingMore=${state.isLoadingMore}",
+            )
+
+            if (state.isLoadingMore || !state.hasMorePages) {
+                Log.d(TAG, "loadMore() - SKIPPED (already loading or no more pages)")
+                return
+            }
+
+            val nextPage = state.currentPage + 1
+            Log.d(TAG, "loadMore() - Loading page $nextPage")
+            setState { copy(isLoadingMore = true) }
+            loadPage(page = nextPage, replace = false, syncRemote = false)
         }
 
         private fun handleGetSession() {
@@ -172,14 +274,12 @@ class CardListViewModel
 
         fun handleFilterCards(filter: String) {
             viewModelScope.launch {
-                val cards = getCardsUseCase(syncRemote = false)
-                val filteredCards =
-                    cards
-                        .filterByStatus(
-                            filter = filter.toCardFilter(context = context),
-                            userId = getState().session?.userId.orEmpty(),
-                        ).sortedByDescending { it.siteCardId }
-                setState { copy(cards = filteredCards) }
+                currentFilter = filter.toCardFilter(context = context)
+                Log.d(TAG, "handleFilterCards() - filter='$currentFilter'")
+
+                // Reset pagination state and reload from page 1
+                setState { copy(currentPage = 1, hasMorePages = true, isLoading = true) }
+                loadPage(page = 1, replace = true, syncRemote = false)
             }
         }
 

@@ -18,6 +18,10 @@ import com.ih.osm.data.model.GetCatalogsBySiteResponse
 import com.ih.osm.data.model.GetCiltProcedureResponse
 import com.ih.osm.data.model.GetCiltResponse
 import com.ih.osm.data.model.GetEmployeesResponse
+import com.ih.osm.data.model.GetLevelByMachineIdResponse
+import com.ih.osm.data.model.GetLevelChildrenResponse
+import com.ih.osm.data.model.GetLevelStatsResponse
+import com.ih.osm.data.model.GetLevelTreeLazyResponse
 import com.ih.osm.data.model.GetLevelsResponse
 import com.ih.osm.data.model.GetOplByIdResponse
 import com.ih.osm.data.model.GetOplsResponse
@@ -44,6 +48,7 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
     @POST("auth/login")
@@ -54,6 +59,8 @@ interface ApiService {
     @GET("card/all/{siteId}")
     fun getCards(
         @Path("siteId") sitId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
     ): Call<GetCardsResponse>
 
     @GET("card-types/all/{siteId}")
@@ -84,6 +91,8 @@ interface ApiService {
     @GET("level/all/{siteId}")
     fun getLevels(
         @Path("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
     ): Call<GetLevelsResponse>
 
     @GET("users/all/{siteId}")
@@ -131,6 +140,8 @@ interface ApiService {
     fun getCardsLevelMachine(
         @Path("siteId") siteId: String,
         @Path("levelMachine") levelMachine: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
     ): Call<GetCardsResponse>
 
     @POST("card/update/mechanic")
@@ -211,6 +222,101 @@ interface ApiService {
     fun refreshToken(
         @Body body: RefreshTokenRequest,
     ): Call<LoginResponse>
+
+    /**
+     * Get cards by level ID with optional pagination
+     * @param levelId The level ID
+     * @param siteId The site ID (query parameter)
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     */
+    @GET("card/by-level/{levelId}")
+    fun getCardsByLevel(
+        @Path("levelId") levelId: String,
+        @Query("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+    ): Call<GetCardsResponse>
+
+    /**
+     * Get levels with location data with optional pagination
+     * @param siteId The site ID
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     */
+    @GET("level/all/{siteId}/location")
+    fun getLevelsWithLocation(
+        @Path("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+    ): Call<GetLevelsResponse>
+
+    /**
+     * Get site levels with optional pagination
+     * @param siteId The site ID
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     */
+    @GET("level/site/{siteId}")
+    fun getSiteLevels(
+        @Path("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+    ): Call<GetLevelsResponse>
+
+    /**
+     * Get level tree with lazy loading support
+     * @param siteId The site ID
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     * @param depth Tree depth to fetch (optional)
+     */
+    @GET("level/tree/{siteId}/lazy")
+    fun getLevelTreeLazy(
+        @Path("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+        @Query("depth") depth: Int? = null,
+    ): Call<GetLevelTreeLazyResponse>
+
+    /**
+     * Get children levels of a parent
+     * @param siteId The site ID
+     * @param parentId The parent level ID
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     */
+    @GET("level/tree/{siteId}/children/{parentId}")
+    fun getChildrenLevels(
+        @Path("siteId") siteId: String,
+        @Path("parentId") parentId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+    ): Call<GetLevelChildrenResponse>
+
+    /**
+     * Get level statistics for a site
+     * @param siteId The site ID
+     * @param page Page number (optional)
+     * @param limit Items per page (optional)
+     */
+    @GET("level/stats/{siteId}")
+    fun getLevelStats(
+        @Path("siteId") siteId: String,
+        @Query("page") page: Int? = null,
+        @Query("limit") limit: Int? = null,
+    ): Call<GetLevelStatsResponse>
+
+    /**
+     * Find a level by its machineId and get its full hierarchy path
+     * @param siteId The site ID
+     * @param machineId The levelMachineId to search for
+     */
+    @GET("level/machine/{siteId}/{machineId}")
+    fun findLevelByMachineId(
+        @Path("siteId") siteId: String,
+        @Path("machineId") machineId: String,
+    ): Call<GetLevelByMachineIdResponse>
 
     @GET("catalog/{siteId}")
     fun getCatalogsBySite(

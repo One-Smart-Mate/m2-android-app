@@ -113,10 +113,6 @@ fun CiltDetailScreen(
     val remediationOpl = state.remediationOpl
     val superiorId = state.superiorId
 
-    LaunchedEffect(Unit) {
-        viewModel.process(CiltAction.GetCilts)
-    }
-
     LaunchedEffect(state.ciltData) {
         if (state.ciltData != null) {
             viewModel.getSuperiorIdFromExecutionLevelId(executionId)

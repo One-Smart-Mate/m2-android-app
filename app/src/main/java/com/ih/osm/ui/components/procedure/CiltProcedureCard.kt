@@ -284,10 +284,7 @@ private fun SequenceCard(
                 onClick = {
                     val isCreatingThisSequence = creatingExecutionForSequence == sequence.id
                     if (!isCreatingThisSequence) {
-                        try {
-                            onCreateExecution(sequence, positionId, levelId)
-                        } catch (e: Exception) {
-                        }
+                        onCreateExecution(sequence, positionId, levelId)
                     }
                 },
                 enabled = creatingExecutionForSequence != sequence.id,

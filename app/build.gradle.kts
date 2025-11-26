@@ -13,6 +13,7 @@ plugins {
 }
 
 android {
+
     signingConfigs {
         getByName("debug") {
             storeFile = file("/Users/immanuel-diaz/AndroidStudioProjects/android-key")

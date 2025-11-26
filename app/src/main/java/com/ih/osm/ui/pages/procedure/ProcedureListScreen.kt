@@ -52,22 +52,12 @@ fun ProcedureListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    // Clear any stale execution state when screen is first displayed
-    LaunchedEffect(Unit) {
-        if (state.createdExecutionData != null || state.creatingExecutionForSequence != null) {
-            viewModel.clearAllExecutionState()
-        }
-    }
-
     // Handle navigation after successful execution creation
     LaunchedEffect(state.createdExecutionData) {
-        state.createdExecutionData?.let { (sequenceId, siteExecutionId) ->
-            try {
-                // Use 0 as dummy executionId since we want to show general routines view,
-                // but with automatic transition to the specific siteExecutionId
-                navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
-            } catch (e: Exception) {
-            }
+        state.createdExecutionData?.let { (_, siteExecutionId) ->
+            // Use 0 as dummy executionId since we want to show general routines view,
+            // but with automatic transition to the specific siteExecutionId
+            navController.navigateToCiltDetailWithTarget(0, siteExecutionId)
             viewModel.clearNavigationData()
         }
     }
@@ -94,10 +84,7 @@ fun ProcedureListScreen(
                 }
             },
             onCreateExecution = { sequence, positionId, levelId ->
-                try {
-                    viewModel.createExecution(sequence, positionId, levelId)
-                } catch (e: Exception) {
-                }
+                viewModel.createExecution(sequence, positionId, levelId)
             },
             onNavigateToExecution = { executionId ->
                 // Navigate to execution detail if needed

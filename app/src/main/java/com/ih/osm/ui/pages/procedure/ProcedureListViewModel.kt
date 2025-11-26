@@ -17,7 +17,6 @@ import com.ih.osm.ui.pages.procedure.action.ProcedureListAction
 import com.ih.osm.ui.utils.EMPTY
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -48,6 +47,8 @@ class ProcedureListViewModel
         )
 
         init {
+            // Clear any stale execution state when ViewModel is first created
+            clearAllExecutionState()
             handleGetLevels()
         }
 
@@ -212,41 +213,38 @@ class ProcedureListViewModel
             positionId: Int,
             levelId: String,
         ) {
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 setState { copy(creatingExecutionForSequence = sequence.id) }
-
-                try {
-                    val session = getSessionUseCase()
-
-                    val request =
-                        GenerateCiltExecutionRequest(
-                            sequenceId = sequence.id,
-                            userId = session.userId.toIntOrNull() ?: 1,
-                        )
-
-                    val response = networkRepository.generateCiltExecution(request)
-                    val executionId = response.data.siteExecutionId
-
-                    setState {
-                        copy(
-                            creatingExecutionForSequence = null,
-                            createdExecutionData = Pair(sequence.id, executionId),
-                            message = context.getString(R.string.execution_created_successfully),
-                        )
+                kotlin
+                    .runCatching {
+                        val session = callUseCase { getSessionUseCase() }
+                        val request =
+                            GenerateCiltExecutionRequest(
+                                sequenceId = sequence.id,
+                                userId = session.userId.toIntOrNull() ?: 1,
+                            )
+                        callUseCase { networkRepository.generateCiltExecution(request) }
+                    }.onSuccess { response ->
+                        setState {
+                            copy(
+                                creatingExecutionForSequence = null,
+                                createdExecutionData = Pair(sequence.id, response.data.siteExecutionId),
+                                message = context.getString(R.string.execution_created_successfully),
+                            )
+                        }
+                    }.onFailure { exception ->
+                        setState {
+                            copy(
+                                creatingExecutionForSequence = null,
+                                createdExecutionData = null,
+                                message =
+                                    context.getString(
+                                        R.string.error_creating_execution,
+                                        exception.localizedMessage,
+                                    ),
+                            )
+                        }
                     }
-                } catch (e: Exception) {
-                    setState {
-                        copy(
-                            creatingExecutionForSequence = null,
-                            createdExecutionData = null,
-                            message =
-                                context.getString(
-                                    R.string.error_creating_execution,
-                                    e.localizedMessage,
-                                ),
-                        )
-                    }
-                }
             }
         }
     }

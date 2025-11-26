@@ -1,6 +1,5 @@
 package com.ih.osm.domain.usecase.cilt
 
-import android.util.Log
 import com.ih.osm.data.model.CiltEvidenceRequest
 import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.domain.model.Evidence
@@ -30,7 +29,6 @@ class StopSequenceExecutionUseCaseImpl
             val response = repository.stopSequenceExecution(body)
             for (evidence in evidences) {
                 val uploadedUrl = firebaseRepository.uploadEvidence(evidence)
-                Log.e("test", "Evidence uploaded URL: $uploadedUrl")
                 if (uploadedUrl.isNotEmpty()) {
                     val request =
                         CiltEvidenceRequest(

@@ -49,10 +49,6 @@ fun CiltScreen(
     val coroutineScope = rememberCoroutineScope()
     val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-    LaunchedEffect(Unit) {
-        viewModel.process(CiltAction.GetCilts)
-    }
-
     LaunchedEffect(state.isSequenceFinished) {
         if (state.isSequenceFinished) {
             viewModel.process(CiltAction.GetCilts)

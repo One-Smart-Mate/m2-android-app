@@ -28,6 +28,7 @@ class GetCardsUseCaseImpl
                 repo.saveAll(remoteCards)
                 notificationUseCase(remove = true, syncCards = true)
             }
+
             return if (localCards) {
                 repo.getAllLocal()
             } else {

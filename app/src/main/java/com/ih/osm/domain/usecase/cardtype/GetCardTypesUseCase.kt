@@ -25,6 +25,7 @@ class GetCardTypesUseCaseImpl
                 val cardTypes = repo.getAllRemote()
                 repo.saveAll(cardTypes)
             }
+
             return repo.getAll(filter)
         }
     }
