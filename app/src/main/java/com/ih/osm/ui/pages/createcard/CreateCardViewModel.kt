@@ -2,6 +2,7 @@ package com.ih.osm.ui.pages.createcard
 
 import android.content.Context
 import android.net.Uri
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
@@ -36,11 +37,19 @@ import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.pages.createcard.action.CreateCardAction
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
 import java.util.UUID
 import javax.inject.Inject
 
 private const val TAG = "CreateCardViewModel"
+
+data class ScrollTarget(
+    val levelIndex: Int? = null,
+    val itemIndex: Int? = null,
+    val verticalIndex: Int? = null,
+)
 
 @HiltViewModel
 class CreateCardViewModel
@@ -59,6 +68,10 @@ class CreateCardViewModel
         private val sharedPreferences: SharedPreferences,
         @ApplicationContext private val context: Context,
     ) : BaseViewModel<CreateCardViewModel.UiState>(UiState()) {
+        // One-shot flow para notificar a la UI dónde hacer scroll
+        private val _scrollTarget = MutableSharedFlow<ScrollTarget>(replay = 0)
+        val scrollTarget = _scrollTarget.asSharedFlow()
+
         private var isCiltMode = false
         private var superiorIdCilt: String? = null
 
@@ -70,8 +83,8 @@ class CreateCardViewModel
             val selectedPreclassifier: String = "",
             val priorityList: List<NodeCardItem> = emptyList(),
             val selectedPriority: String = "",
-            val levelsByParent: Map<String, List<NodeCardItem>> = emptyMap(), // parentId -> children
-            val filteredNodeLevelList: Map<Int, List<NodeCardItem>> = mutableMapOf(), // for UI after search
+            val levelsByParent: Map<String, List<NodeCardItem>> = emptyMap(),
+            val filteredNodeLevelList: Map<Int, List<NodeCardItem>> = mutableMapOf(),
             val selectedLevelList: Map<Int, String> = mutableMapOf(),
             val lastSelectedLevel: String = "",
             val lastLevelCompleted: Boolean = false,
@@ -84,7 +97,7 @@ class CreateCardViewModel
             val cardsZone: List<Card> = emptyList(),
             val levelsLoaded: Boolean = false,
             val searchText: String = "",
-            // Loading states for sections
+            // Loading indicators
             val isLoadingCardTypes: Boolean = false,
             val isLoadingPreclassifiers: Boolean = false,
             val isLoadingPriorities: Boolean = false,
@@ -97,9 +110,9 @@ class CreateCardViewModel
             handleGetLevels()
         }
 
-        // =======================
+        // ============================================================
         // Actions
-        // =======================
+        // ============================================================
         fun process(action: CreateCardAction) {
             when (action) {
                 is CreateCardAction.SetCardType -> handleSetCardType(action.id)
@@ -113,6 +126,9 @@ class CreateCardViewModel
             }
         }
 
+        // ============================================================
+        // CILT Mode
+        // ============================================================
         fun setCiltMode(enabled: Boolean) {
             isCiltMode = enabled
             if (!enabled) superiorIdCilt = null
@@ -122,29 +138,49 @@ class CreateCardViewModel
             if (isCiltMode) superiorIdCilt = id
         }
 
+        // ============================================================
+        // Scroll request helpers (también puedes llamar estas desde UI si lo necesitas)
+        // ============================================================
+        fun requestHorizontalScroll(
+            levelIndex: Int,
+            itemIndex: Int,
+            verticalIndex: Int? = null,
+        ) {
+            viewModelScope.launch {
+                _scrollTarget.emit(ScrollTarget(levelIndex = levelIndex, itemIndex = itemIndex, verticalIndex = verticalIndex))
+            }
+        }
+
+        fun requestVerticalScroll(verticalIndex: Int) {
+            viewModelScope.launch {
+                _scrollTarget.emit(ScrollTarget(verticalIndex = verticalIndex))
+            }
+        }
+
+        // ============================================================
+        // Search Text
+        // ============================================================
         fun updateSearchText(text: String) {
             setState { copy(searchText = text) }
             filterLevels()
         }
 
-        // =======================
-        // CardType
-        // =======================
+        // ============================================================
+        // Card Types
+        // ============================================================
         private fun handleSetCardType(id: String) {
             viewModelScope.launch {
                 setState {
                     copy(
                         selectedCardType = id,
-                        preclassifierList = emptyList(),
                         selectedPreclassifier = "",
                         selectedPriority = "",
-                        priorityList = emptyList(),
-                        filteredNodeLevelList = emptyMap(),
                         selectedLevelList = emptyMap(),
-                        lastSelectedLevel = "",
+                        filteredNodeLevelList = emptyMap(),
                         evidences = emptyList(),
-                        lastLevelCompleted = false,
                         comment = "",
+                        lastSelectedLevel = "",
+                        lastLevelCompleted = false,
                     )
                 }
                 handleGetPreclassifiers(id)
@@ -157,8 +193,12 @@ class CreateCardViewModel
             viewModelScope.launch {
                 runCatching { callUseCase { getCardTypesUseCase() } }
                     .onSuccess { list ->
-                        setState { copy(cardTypeList = list.toNodeItemList(), isLoadingCardTypes = false) }
-                        handleGetLevels()
+                        setState {
+                            copy(
+                                cardTypeList = list.toNodeItemList(),
+                                isLoadingCardTypes = false,
+                            )
+                        }
                     }.onFailure {
                         setState { copy(isLoadingCardTypes = false, message = it.localizedMessage ?: "") }
                     }
@@ -169,14 +209,16 @@ class CreateCardViewModel
             viewModelScope.launch {
                 runCatching { callUseCase { getCardTypeUseCase(id) } }
                     .onSuccess { cardType ->
-                        cardType?.let { setState { copy(cardType = it, audioDuration = it.audiosDurationCreate.defaultIfNull(120)) } }
+                        cardType?.let {
+                            setState { copy(audioDuration = it.audiosDurationCreate.defaultIfNull(120), cardType = it) }
+                        }
                     }.onFailure { LoggerHelperManager.logException(it) }
             }
         }
 
-        // =======================
-        // Preclassifier
-        // =======================
+        // ============================================================
+        // Preclassifiers
+        // ============================================================
         private fun handleSetPreclassifier(id: String) {
             viewModelScope.launch {
                 setState { copy(selectedPreclassifier = id, selectedPriority = "", priorityList = emptyList()) }
@@ -190,24 +232,33 @@ class CreateCardViewModel
                 runCatching { callUseCase { getPreclassifiersUseCase() } }
                     .onSuccess { all ->
                         val filtered = all.filter { it.cardTypeId == cardTypeId }
-                        setState { copy(preclassifierList = filtered.toNodeItemCard(), isLoadingPreclassifiers = false) }
-                    }.onFailure { setState { copy(isLoadingPreclassifiers = false, message = it.localizedMessage ?: "") } }
+                        setState {
+                            copy(
+                                preclassifierList = filtered.toNodeItemCard(),
+                                isLoadingPreclassifiers = false,
+                            )
+                        }
+                    }.onFailure {
+                        setState { copy(isLoadingPreclassifiers = false, message = it.localizedMessage ?: "") }
+                    }
             }
         }
 
-        // =======================
-        // Priority
-        // =======================
+        // ============================================================
+        // Priorities
+        // ============================================================
         private fun handleSetPriority(id: String) {
+            val root = getState().levelsByParent["0"].orEmpty()
+            setState {
+                copy(
+                    selectedPriority = id,
+                    selectedLevelList = emptyMap(),
+                    filteredNodeLevelList = mapOf(0 to root),
+                )
+            }
+            // opcional: pedir scroll vertical al primer nivel (0)
             viewModelScope.launch {
-                val rootLevels = getState().levelsByParent["0"].orEmpty()
-                setState {
-                    copy(
-                        selectedPriority = id,
-                        filteredNodeLevelList = mapOf(0 to rootLevels),
-                        selectedLevelList = emptyMap(),
-                    )
-                }
+                _scrollTarget.emit(ScrollTarget(verticalIndex = 0, levelIndex = 0, itemIndex = 0))
             }
         }
 
@@ -215,113 +266,212 @@ class CreateCardViewModel
             setState { copy(isLoadingPriorities = true) }
             viewModelScope.launch {
                 runCatching { callUseCase { getPrioritiesUseCase() } }
-                    .onSuccess { list -> setState { copy(priorityList = list.toNodeItemCard(), isLoadingPriorities = false) } }
-                    .onFailure { setState { copy(isLoadingPriorities = false, message = it.localizedMessage ?: "") } }
+                    .onSuccess { list ->
+                        setState {
+                            copy(
+                                priorityList = list.toNodeItemCard(),
+                                isLoadingPriorities = false,
+                            )
+                        }
+                    }.onFailure {
+                        setState { copy(isLoadingPriorities = false, message = it.localizedMessage ?: "") }
+                    }
             }
         }
 
-        // =======================
+        // ============================================================
         // Levels
-        // =======================
+        // ============================================================
         private fun handleGetLevels() {
             setState { copy(isLoadingLevels = true) }
             viewModelScope.launch {
                 runCatching { callUseCase { getLevelsUseCase() } }
                     .onSuccess { levels ->
-                        val byParent = levels.groupBy { it.superiorId }.mapValues { it.value.toNodeItemList() }
-                        setState { copy(levelsByParent = byParent) }
+                        val byParent =
+                            levels
+                                .groupBy { it.superiorId }
+                                .mapValues { it.value.toNodeItemList() }
+
+                        setState { copy(levelsByParent = byParent, isLoadingLevels = false, levelsLoaded = true) }
                         filterLevels()
-                        setState { copy(levelsLoaded = true, isLoadingLevels = false) }
-                    }.onFailure { setState { copy(isLoadingLevels = false, message = it.localizedMessage ?: "") } }
+                    }.onFailure {
+                        setState { copy(isLoadingLevels = false, message = it.localizedMessage ?: "") }
+                    }
             }
         }
 
-        // Build filtered levels with full path and proper root-to-child order
         private fun filterLevels() {
-            val fullLevelsByParent = getState().levelsByParent
-            val search = getState().searchText
-            val filtered = mutableMapOf<Int, List<NodeCardItem>>()
+            val levels = getState().levelsByParent
+            val search = getState().searchText.trim()
 
+            // Si no hay búsqueda → mostrar solo el nivel raíz
             if (search.isBlank()) {
-                filtered[0] = fullLevelsByParent["0"].orEmpty()
-            } else {
-                val allNodes = fullLevelsByParent.values.flatten().associateBy { it.id }
-                val matchedNodes = allNodes.values.filter { it.name.contains(search, ignoreCase = true) }
-
-                matchedNodes.forEach { node ->
-                    val path = mutableListOf<NodeCardItem>()
-                    var current: NodeCardItem? = node
-                    while (current != null) {
-                        path.add(current)
-                        current = current.superiorId?.let { allNodes[it] }
-                    }
-                    path.reverse() // root -> leaf
-
-                    path.forEachIndexed { levelIndex, item ->
-                        val list = filtered.getOrDefault(levelIndex, emptyList())
-                        if (list.none { it.id == item.id }) {
-                            filtered[levelIndex] = list + item
-                        }
-                    }
+                setState {
+                    copy(
+                        filteredNodeLevelList = mapOf(0 to levels["0"].orEmpty()),
+                        selectedLevelList = emptyMap(),
+                        lastSelectedLevel = "",
+                        lastLevelCompleted = false,
+                    )
                 }
+                return
             }
 
-            // Sort filtered map by keys to ensure root-first order
-            val sortedFiltered = filtered.toSortedMap()
-            setState { copy(filteredNodeLevelList = sortedFiltered) }
-        }
+            // Mapa plano id → nodo
+            val allNodes = levels.values.flatten().associateBy { it.id }
 
-        // When selecting a level (either manually or from search), select full path
-        private fun handleSetLevel(
-            id: String,
-            key: Int,
-        ) {
-            val fullLevelsByParent = getState().levelsByParent
-            val allNodes = fullLevelsByParent.values.flatten().associateBy { it.id }
+            // Buscar coincidencias por nombre
+            val matches =
+                allNodes.values.filter {
+                    it.name.contains(search, ignoreCase = true)
+                }
 
-            // Build full path from root to selected node
+            if (matches.isEmpty()) {
+                setState { copy(filteredNodeLevelList = emptyMap()) }
+                return
+            }
+
+            // Vamos a construir SOLO la ruta del PRIMER match
+            val target = matches.first()
+
+            // Obtener path desde root → target
             val path = mutableListOf<NodeCardItem>()
-            var current: NodeCardItem? = allNodes[id]
+            var current: NodeCardItem? = target
+
             while (current != null) {
                 path.add(current)
                 current = current.superiorId?.let { allNodes[it] }
             }
-            path.reverse() // root -> selected node
 
-            val updatedSelectedLevelList = getState().selectedLevelList.toMutableMap()
-            val updatedFilteredNodeLevelList = getState().filteredNodeLevelList.toMutableMap()
+            path.reverse()
 
-            path.forEachIndexed { levelIndex, item ->
-                // mark the selected node in each level
-                updatedSelectedLevelList[levelIndex] = item.id
+            // Construir columnas
+            val newFiltered = mutableMapOf<Int, List<NodeCardItem>>()
+            val newSelected = mutableMapOf<Int, String>()
+            var matchedLevelIndex = 0
+            var matchedIndexInLevel = 0
 
-                // ensure children of each level are visible
-                val children = fullLevelsByParent[item.id].orEmpty()
-                if (children.isNotEmpty()) {
-                    updatedFilteredNodeLevelList[levelIndex + 1] = children
+            path.forEachIndexed { levelIndex, node ->
+
+                // Los hermanos en ese nivel:
+                val siblings =
+                    if (levelIndex == 0) {
+                        levels["0"].orEmpty() // nivel raíz
+                    } else {
+                        levels[path[levelIndex - 1].id].orEmpty() // hijos del padre
+                    }
+
+                newFiltered[levelIndex] = siblings
+                newSelected[levelIndex] = node.id
+
+                if (node.id == target.id) {
+                    matchedLevelIndex = levelIndex
+                    matchedIndexInLevel = siblings.indexOfFirst { it.id == node.id }.let { if (it >= 0) it else 0 }
                 }
             }
 
-            // Remove deeper levels beyond the selected path
-            val maxLevel = path.size
-            val keysToRemove = updatedFilteredNodeLevelList.keys.filter { it >= maxLevel + 1 }
-            keysToRemove.forEach { updatedFilteredNodeLevelList.remove(it) }
-
             setState {
                 copy(
-                    selectedLevelList = updatedSelectedLevelList,
-                    filteredNodeLevelList = updatedFilteredNodeLevelList,
-                    lastSelectedLevel = id,
-                    lastLevelCompleted = fullLevelsByParent[id].orEmpty().isEmpty(),
+                    filteredNodeLevelList = newFiltered,
+                    selectedLevelList = newSelected,
+                    lastSelectedLevel = target.id,
+                    lastLevelCompleted = levels[target.id].isNullOrEmpty(),
                 )
             }
 
-            if (fullLevelsByParent[id].orEmpty().isEmpty()) handleGetCardsZone()
+            // Emitir evento de scroll: horizontal (nivel) + vertical (mismo index) para que la UI lo interprete
+            viewModelScope.launch {
+                val realLevelIndex = getVisibleLevelIndex(target.id) ?: matchedLevelIndex
+                _scrollTarget.emit(
+                    ScrollTarget(
+                        levelIndex = realLevelIndex,
+                        itemIndex = matchedIndexInLevel,
+                        verticalIndex = realLevelIndex,
+                    ),
+                )
+            }
+
+            // Si es hoja → cargar cards
+            if (levels[target.id].isNullOrEmpty()) {
+                handleGetCardsZone()
+            }
         }
 
-        // =======================
+        private fun handleSetLevel(
+            id: String,
+            key: Int,
+        ) {
+            Log.e("test", "id $id --key $key")
+            val full = getState().levelsByParent
+            val allNodes = full.values.flatten().associateBy { it.id }
+
+            // Obtener path root → id
+            val path = mutableListOf<NodeCardItem>()
+            var current = allNodes[id]
+
+            while (current != null) {
+                path.add(current)
+                current = current.superiorId?.let { allNodes[it] }
+            }
+            path.reverse()
+
+            val newFiltered = mutableMapOf<Int, List<NodeCardItem>>()
+            val newSelected = mutableMapOf<Int, String>()
+
+            path.forEachIndexed { levelIndex, node ->
+                // Hermanos del nivel
+                val siblings =
+                    if (levelIndex == 0) {
+                        full["0"].orEmpty()
+                    } else {
+                        full[path[levelIndex - 1].id].orEmpty()
+                    }
+
+                newFiltered[levelIndex] = siblings
+                newSelected[levelIndex] = node.id
+
+                // Si tiene hijos → agregar siguiente nivel
+                val children = full[node.id].orEmpty()
+                if (children.isNotEmpty()) {
+                    newFiltered[levelIndex + 1] = children
+                }
+            }
+
+            setState {
+                copy(
+                    filteredNodeLevelList = newFiltered,
+                    selectedLevelList = newSelected,
+                    lastSelectedLevel = id,
+                    lastLevelCompleted = full[id].orEmpty().isEmpty(),
+                )
+            }
+
+            // Encontrar el índice dentro de la ruta (posición visible del nivel)
+            val selectedLevelIndex = path.indexOfFirst { it.id == id }.let { if (it >= 0) it else 0 }
+
+            // Calcular índice dentro del nivel (para scroll horizontal) usando selectedLevelIndex
+            val indexInLevel = newFiltered[selectedLevelIndex]?.indexOfFirst { it.id == id }?.let { if (it >= 0) it else 0 } ?: 0
+
+            // Emitir evento de scroll: usa selectedLevelIndex (índice visible) y indexInLevel
+            viewModelScope.launch {
+                val levelIndex = getVisibleLevelIndex(id) ?: key
+                _scrollTarget.emit(
+                    ScrollTarget(
+                        levelIndex = levelIndex,
+                        itemIndex = indexInLevel,
+                        verticalIndex = levelIndex,
+                    ),
+                )
+            }
+
+            if (full[id].isNullOrEmpty()) {
+                handleGetCardsZone()
+            }
+        }
+
+        // ============================================================
         // Cards Zone
-        // =======================
+        // ============================================================
         private fun handleGetCardsZone() {
             viewModelScope.launch {
                 val id = getState().lastSelectedLevel
@@ -331,9 +481,9 @@ class CreateCardViewModel
             }
         }
 
-        // =======================
+        // ============================================================
         // Evidences
-        // =======================
+        // ============================================================
         private fun handleAddEvidence(
             uri: Uri,
             type: EvidenceType,
@@ -342,78 +492,85 @@ class CreateCardViewModel
                 val state = getState()
                 val cardType = state.cardType
 
-                val errorMessage =
+                val error =
                     when (type) {
                         EvidenceType.IMCR -> {
-                            val maxImages = cardType?.quantityImagesCreate.defaultIfNull(0)
-                            if (state.evidences.toImages().size >= maxImages) context.getString(R.string.limit_images) else ""
+                            val max = cardType?.quantityImagesCreate.defaultIfNull(0)
+                            if (state.evidences.toImages().size >= max) context.getString(R.string.limit_images) else ""
                         }
+
                         EvidenceType.VICR -> {
-                            val maxVideos = cardType?.quantityVideosCreate.defaultIfNull(0)
-                            val maxVideoDuration = cardType?.videosDurationCreate.defaultIfNull(0) * 1000
-                            val duration = fileHelper.getDuration(uri)
+                            val max = cardType?.quantityVideosCreate.defaultIfNull(0)
+                            val maxDur = cardType?.videosDurationCreate.defaultIfNull(0) * 1000
+                            val dur = fileHelper.getDuration(uri)
+
                             when {
-                                state.evidences.toVideos().size >= maxVideos -> context.getString(R.string.limit_videos)
-                                duration > maxVideoDuration -> context.getString(R.string.limit_video_duration)
+                                state.evidences.toVideos().size >= max -> context.getString(R.string.limit_videos)
+                                dur > maxDur -> context.getString(R.string.limit_video_duration)
                                 else -> ""
                             }
                         }
+
                         EvidenceType.AUCR -> {
-                            val maxAudios = cardType?.quantityAudiosCreate.defaultIfNull(0)
-                            val maxAudioDuration = cardType?.audiosDurationCreate.defaultIfNull(0) * 1000
-                            val duration = fileHelper.getDuration(uri)
+                            val max = cardType?.quantityAudiosCreate.defaultIfNull(0)
+                            val maxDur = cardType?.audiosDurationCreate.defaultIfNull(0) * 1000
+                            val dur = fileHelper.getDuration(uri)
+
                             when {
-                                duration == 0L -> context.getString(R.string.invalid_audio)
-                                state.evidences.toAudios().size >= maxAudios -> context.getString(R.string.limit_audios)
-                                duration > maxAudioDuration -> context.getString(R.string.limit_audio_duration)
+                                dur == 0L -> context.getString(R.string.invalid_audio)
+                                state.evidences.toAudios().size >= max -> context.getString(R.string.limit_audios)
+                                dur > maxDur -> context.getString(R.string.limit_audio_duration)
                                 else -> ""
                             }
                         }
+
                         else -> ""
                     }
 
-                if (errorMessage.isNotEmpty()) {
-                    setState { copy(message = errorMessage) }
+                if (error.isNotEmpty()) {
+                    setState { copy(message = error) }
                     return@launch
                 }
 
-                val list = state.evidences.toMutableList()
-                list.add(Evidence.fromCreateEvidence(state.uuid, uri.toString(), type.name))
-                setState { copy(evidences = list) }
+                val updated = state.evidences.toMutableList()
+                updated.add(Evidence.fromCreateEvidence(state.uuid, uri.toString(), type.name))
+                setState { copy(evidences = updated) }
             }
         }
 
         private fun handleDeleteEvidence(evidence: Evidence) {
             viewModelScope.launch {
-                val list = getState().evidences.filter { it.id != evidence.id }
-                setState { copy(evidences = list) }
+                val updated = getState().evidences.filter { it.id != evidence.id }
+                setState { copy(evidences = updated) }
             }
         }
 
-        // =======================
+        // ============================================================
         // Save Card
-        // =======================
+        // ============================================================
         private fun handleSaveCard() {
             setState { copy(isLoading = true, message = context.getString(R.string.saving_card)) }
+
             viewModelScope.launch {
-                val state = getState()
+                val s = getState()
+
                 val card =
                     Card.fromCreateCard(
-                        areaId = state.lastSelectedLevel.toLong(),
+                        areaId = s.lastSelectedLevel.toLong(),
                         level =
-                            state.selectedLevelList.keys
+                            s.selectedLevelList.keys
                                 .last()
                                 .toLong(),
-                        priorityId = state.selectedPriority,
+                        priorityId = s.selectedPriority,
                         cardTypeValue = "",
-                        cardTypeId = state.selectedCardType,
-                        preclassifierId = state.selectedPreclassifier,
-                        comment = state.comment,
-                        hasImages = state.evidences.hasImages(),
-                        hasVideos = state.evidences.hasVideos(),
-                        hasAudios = state.evidences.hasAudios(),
-                        evidences = state.evidences,
-                        uuid = state.uuid,
+                        cardTypeId = s.selectedCardType,
+                        preclassifierId = s.selectedPreclassifier,
+                        comment = s.comment,
+                        hasImages = s.evidences.hasImages(),
+                        hasVideos = s.evidences.hasVideos(),
+                        hasAudios = s.evidences.hasAudios(),
+                        evidences = s.evidences,
+                        uuid = s.uuid,
                     )
 
                 runCatching { callUseCase { saveCardUseCase(card) } }
@@ -421,21 +578,27 @@ class CreateCardViewModel
                         setState { copy(isCardSuccess = true) }
                         if (isCiltMode) sharedPreferences.saveCiltCard(it)
                     }.onFailure {
-                        LoggerHelperManager.logException(it)
                         firebaseAnalyticsHelper.logCreateCardException(it)
                         setState { copy(message = it.localizedMessage ?: "") }
                     }
             }
         }
 
-        // =======================
+        // ============================================================
         // Utilities
-        // =======================
+        // ============================================================
         fun cleanMessage() {
             setState { copy(message = "") }
         }
 
-        fun lastLevelCompleted(): Boolean =
-            state.value.filteredNodeLevelList.isNotEmpty() &&
-                state.value.selectedLevelList.size == state.value.filteredNodeLevelList.size
+        /**
+         * Devuelve el nivel/columna donde vive un nodo dentro del mapa filteredNodeLevelList
+         */
+        private fun getVisibleLevelIndex(nodeId: String): Int? {
+            val columns = getState().filteredNodeLevelList
+            for ((levelIndex, list) in columns) {
+                if (list.any { it.id == nodeId }) return levelIndex
+            }
+            return null
+        }
     }

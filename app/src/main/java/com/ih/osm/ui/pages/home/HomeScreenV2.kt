@@ -341,15 +341,6 @@ private fun HomeContent(
                 HomeSectionCardItem(
                     title = stringResource(R.string.anomalies_cards),
                     icon = Icons.Outlined.Build,
-                    description =
-                        if (cardList.isNotEmpty()) {
-                            stringResource(
-                                R.string.total_cards,
-                                cardList.size,
-                            )
-                        } else {
-                            EMPTY
-                        },
                 ) {
                     onClick(HomeActionClick.NAVIGATION)
                 }

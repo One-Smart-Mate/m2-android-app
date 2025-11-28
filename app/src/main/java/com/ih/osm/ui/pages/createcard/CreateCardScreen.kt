@@ -1,16 +1,17 @@
 package com.ih.osm.ui.pages.createcard
 
 import android.annotation.SuppressLint
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -29,10 +29,10 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -68,6 +68,7 @@ import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
+import com.ih.osm.ui.components.MachineIdSearchField
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
@@ -83,12 +84,13 @@ import com.ih.osm.ui.pages.createcard.action.CreateCardAction
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.theme.Size100
+import com.ih.osm.ui.theme.Size115
 import com.ih.osm.ui.theme.Size180
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun CreateCardScreen(
@@ -103,6 +105,18 @@ fun CreateCardScreen(
     val focusManager = LocalFocusManager.current
     var searchText by remember { mutableStateOf("") }
 
+    // Row states reactivos — guardamos en un MutableStateList para poder cambiar tamaño sin recrear Composable
+    val rowStates = remember { mutableStateListOf<LazyListState>() }
+
+    // Ajustar rowStates cuando cambie el número de niveles
+    LaunchedEffect(state.filteredNodeLevelList.size) {
+        val needed = state.filteredNodeLevelList.size
+        // Añadir estados si faltan
+        while (rowStates.size < needed) rowStates.add(LazyListState())
+        // Quitar si sobran
+        while (rowStates.size > needed) rowStates.removeLast()
+    }
+
     // Handle cilt mode from filter
     LaunchedEffect(filter) {
         if (filter?.startsWith("cilt:") == true) {
@@ -112,9 +126,44 @@ fun CreateCardScreen(
         }
     }
 
-    // Update search text to ViewModel
-    LaunchedEffect(searchText) {
-        viewModel.updateSearchText(searchText)
+    // Update search text to ViewModel (debounced)
+
+    // Collect scrollTarget events from ViewModel
+    LaunchedEffect(viewModel) {
+        viewModel.scrollTarget.collect { target ->
+            // Vertical scroll: clamp index y animar
+            target.verticalIndex?.let { vIndex ->
+                val verticalIndexClamped = vIndex.coerceAtLeast(0)
+                scope.launch {
+                    // clamp to available items in lazyState (safe)
+                    val maxIndex = (lazyState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+                    val targetIndex = verticalIndexClamped.coerceAtMost(maxIndex)
+                    lazyState.animateScrollToItem(targetIndex)
+                }
+            }
+
+            // Horizontal (LazyRow) scroll: nivel y item
+            val lvl = target.levelIndex
+            val itm = target.itemIndex
+            if (lvl != null && itm != null) {
+                // asegurarnos de que rowStates tenga ese índice
+                if (lvl in rowStates.indices) {
+                    scope.launch {
+                        // clamp against la cantidad de items en ese LazyRow
+                        val listState = rowStates[lvl]
+                        // layoutInfo puede estar vacío si aún no se ha medido; intentamos animar directamente
+                        try {
+                            val maxItem = (listState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+                            val targetItem = itm.coerceAtLeast(0).coerceAtMost(maxItem)
+                            listState.animateScrollToItem(targetItem)
+                        } catch (e: Exception) {
+                            // Si falla por layout no listo, hacemos animate sin clamping (seguirá funcionando cuando se mida)
+                            listState.animateScrollToItem(itm)
+                        }
+                    }
+                }
+            }
+        }
     }
 
     if (state.isLoading) {
@@ -146,9 +195,13 @@ fun CreateCardScreen(
                 coroutineScope = scope,
                 lazyColumState = lazyState,
                 searchText = searchText,
-                onSearchChange = { searchText = it },
+                rowStates = rowStates, // new
+                onSearchChange = {
+                    searchText = it
+                },
                 onAction = { action -> viewModel.process(action) },
                 filteredNodeLevelList = state.filteredNodeLevelList,
+                viewModel = viewModel,
             )
         }
     }
@@ -191,7 +244,7 @@ fun CreateCardContent(
     selectedPreclassifier: String,
     priorityList: List<NodeCardItem>,
     selectedPriority: String,
-    filteredNodeLevelList: Map<Int, List<NodeCardItem>>, // use filtered list
+    filteredNodeLevelList: Map<Int, List<NodeCardItem>>,
     selectedLevelList: Map<Int, String>,
     lastLevelCompleted: Boolean,
     evidences: List<Evidence>,
@@ -200,9 +253,12 @@ fun CreateCardContent(
     coroutineScope: CoroutineScope,
     lazyColumState: LazyListState,
     searchText: String,
+    rowStates: List<LazyListState>, // new param
     onSearchChange: (String) -> Unit,
+    viewModel: CreateCardViewModel,
     onAction: (CreateCardAction) -> Unit,
 ) {
+    var localText by remember { mutableStateOf("") }
     Scaffold { padding ->
         LazyColumn(
             modifier =
@@ -221,27 +277,34 @@ fun CreateCardContent(
                 PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
                 PriorityContent(priorityList, onAction, selectedPriority)
 
-                if (filteredNodeLevelList.isNotEmpty()) {
+                AnimatedVisibility(selectedPriority.isEmpty().not()) {
                     CustomSpacer()
-                    CustomTextField(
-                        label = "Search",
-                        icon = Icons.Filled.Search,
-                        value = searchText,
-                        onChange = onSearchChange,
+                    MachineIdSearchField(
                         modifier = Modifier.fillParentMaxWidth(),
+                        searchQuery = localText,
+                        onSearchQueryChange = {
+                            localText = it
+                        },
+                        onSearch = {
+                            viewModel.updateSearchText(localText)
+                        },
+                        isSearching = false,
+                        errorMessage = "",
+                        successMessage = false,
                     )
+                    CustomSpacer()
                 }
 
-                LevelContent(
-                    levelList = filteredNodeLevelList,
-                    selectedLevelList = selectedLevelList,
-                    onLevelClick = { item, key ->
-                        onAction(CreateCardAction.SetLevel(item.id, key))
-                        coroutineScope.launch {
-                            lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
-                        }
-                    },
-                )
+                AnimatedVisibility(selectedPriority.isEmpty().not()) {
+                    LevelContent(
+                        levelList = filteredNodeLevelList,
+                        selectedLevelList = selectedLevelList,
+                        rowStates = rowStates, // pass states
+                        onLevelClick = { item, key ->
+                            onAction(CreateCardAction.SetLevel(item.id, key))
+                        },
+                    )
+                }
 
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
@@ -321,11 +384,15 @@ fun CreateCardContent(
 fun LevelContent(
     levelList: Map<Int, List<NodeCardItem>>,
     selectedLevelList: Map<Int, String>,
+    rowStates: List<LazyListState>, // new
     onLevelClick: (NodeCardItem, key: Int) -> Unit,
 ) {
     AnimatedVisibility(visible = levelList.isNotEmpty()) {
         Column {
-            levelList.toSortedMap().forEach { (levelNumber, items) ->
+            // Convert to sorted list of pairs and iterate with index
+            levelList.toSortedMap().toList().forEachIndexed { index, entry ->
+                val (levelNumber, items) = entry
+
                 if (items.isNotEmpty()) {
                     Text(
                         text = "${stringResource(R.string.level)} $levelNumber",
@@ -334,7 +401,13 @@ fun LevelContent(
                     )
                 }
 
-                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                // Use safe index for rowStates; if missing, fallback to a local state
+                val lazyStateForRow = rowStates.getOrNull(index) ?: remember { LazyListState() }
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = lazyStateForRow,
+                ) {
                     items(items) { item ->
                         SectionItemCard(
                             title = item.name,
@@ -348,57 +421,6 @@ fun LevelContent(
             }
         }
     }
-}
-
-// -----------------------
-// Search bar Composable
-// -----------------------
-@Composable
-fun CustomSearchBar(
-    value: String,
-    placeholder: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = { Text(placeholder) },
-        modifier =
-            modifier
-                .padding(8.dp)
-                .fillMaxWidth(),
-        singleLine = true,
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = null,
-            )
-        },
-    )
-}
-
-// -----------------------
-// Level filtering
-// -----------------------
-fun filterLevels(
-    nodeLevels: Map<Int, List<NodeCardItem>>,
-    searchText: String,
-): Map<Int, List<NodeCardItem>> {
-    if (searchText.isBlank()) return nodeLevels
-
-    val filtered = mutableMapOf<Int, List<NodeCardItem>>()
-
-    nodeLevels.forEach { (level, items) ->
-        val matchedItems =
-            items.filter {
-                it.name.contains(searchText, ignoreCase = true)
-            }
-        if (matchedItems.isNotEmpty()) {
-            filtered[level] = matchedItems
-        }
-    }
-    return filtered
 }
 
 @Composable
@@ -554,8 +576,7 @@ fun SectionItemCard(
         modifier =
             Modifier
                 .padding(PaddingTiny)
-                .width(Size180)
-                .height(Size100),
+                .sizeIn(minWidth = Size180, maxWidth = Size180, minHeight = Size115),
         colors = color,
         onClick = {
             onItemClick()
