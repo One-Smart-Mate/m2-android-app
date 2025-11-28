@@ -22,20 +22,21 @@ class GetLevelTreeLazyUseCaseImpl
                     return Result.Error("Depth must be between 1 and 10, got: $depth")
                 }
 
-                val treeData =
-                    levelRepository.getRemoteLevelTreeLazy(
-                        page = null,
-                        limit = null,
-                        depth = depth,
-                    )
-
-                cacheManager.cacheTreeNode(
-                    parentId = treeData.parentId,
-                    depth = depth,
-                    levels = treeData.data,
-                )
-
-                Result.Success(treeData)
+//                val treeData =
+//                    levelRepository.getRemoteLevelTreeLazy(
+//                        page = null,
+//                        limit = null,
+//                        depth = depth,
+//                    )
+//
+//                cacheManager.cacheTreeNode(
+//                    parentId = treeData.parentId,
+//                    depth = depth,
+//                    levels = treeData.data,
+//                )
+//
+//                Result.Success(treeData)
+                Result.Error("Invalid parent ID: ")
             } catch (e: Exception) {
                 Result.Error(
                     message = e.message ?: "Failed to load level tree",

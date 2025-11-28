@@ -12,6 +12,7 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.GenerateCiltExecutionRequest
 import com.ih.osm.data.model.GenerateCiltExecutionResponse
+import com.ih.osm.data.model.GetPaginatedLevelsResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
 import com.ih.osm.data.model.LogoutRequest
@@ -24,7 +25,6 @@ import com.ih.osm.data.model.StopSequenceExecutionRequest
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.UpdateTokenRequest
 import com.ih.osm.data.model.toDomain
-import com.ih.osm.data.model.toDomainModel
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.CardType
 import com.ih.osm.domain.model.Catalogs
@@ -32,9 +32,6 @@ import com.ih.osm.domain.model.CiltData
 import com.ih.osm.domain.model.CiltProcedureData
 import com.ih.osm.domain.model.CiltSequenceEvidence
 import com.ih.osm.domain.model.Employee
-import com.ih.osm.domain.model.Level
-import com.ih.osm.domain.model.LevelStats
-import com.ih.osm.domain.model.LevelTreeData
 import com.ih.osm.domain.model.Opl
 import com.ih.osm.domain.model.Preclassifier
 import com.ih.osm.domain.model.Priority
@@ -121,8 +118,12 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun getRemoteLevels(siteId: String): List<Level> {
-            val response = apiService.getLevels(siteId).execute()
+        override suspend fun getRemoteLevels(
+            siteId: String,
+            page: Int,
+            limit: Int,
+        ): GetPaginatedLevelsResponse {
+            val response = apiService.getLevels(siteId, page, limit).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody != null) {
                 responseBody.toDomain()
@@ -426,103 +427,103 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun getRemoteCardsByLevel(
-            levelId: String,
-            siteId: String,
-            page: Int?,
-            limit: Int?,
-        ): List<Card> {
-            val response = apiService.getCardsByLevel(levelId, siteId, page, limit).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
+//        override suspend fun getRemoteCardsByLevel(
+//            levelId: String,
+//            siteId: String,
+//            page: Int?,
+//            limit: Int?,
+//        ): List<Card> {
+//            val response = apiService.getCardsByLevel(levelId, siteId, page, limit).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
 
-        override suspend fun getRemoteLevelsWithLocation(
-            siteId: String,
-            page: Int?,
-            limit: Int?,
-        ): List<Level> {
-            val response = apiService.getLevelsWithLocation(siteId, page, limit).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
+//        override suspend fun getRemoteLevelsWithLocation(
+//            siteId: String,
+//            page: Int?,
+//            limit: Int?,
+//        ): List<Level> {
+//            val response = apiService.getLevelsWithLocation(siteId, page, limit).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
+//
+//        override suspend fun getRemoteSiteLevels(
+//            siteId: String,
+//            page: Int?,
+//            limit: Int?,
+//        ): List<Level> {
+//            val response = apiService.getSiteLevels(siteId, page, limit).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
 
-        override suspend fun getRemoteSiteLevels(
-            siteId: String,
-            page: Int?,
-            limit: Int?,
-        ): List<Level> {
-            val response = apiService.getSiteLevels(siteId, page, limit).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun getRemoteLevelTreeLazy(
-            siteId: String,
-            page: Int?,
-            limit: Int?,
-            depth: Int?,
-        ): LevelTreeData {
-            val response = apiService.getLevelTreeLazy(siteId, page, limit, depth).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.data.toDomainModel()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun getRemoteChildrenLevels(
-            siteId: String,
-            parentId: String,
-            page: Int?,
-            limit: Int?,
-        ): List<Level> {
-            val response = apiService.getChildrenLevels(siteId, parentId, page, limit).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun getRemoteLevelStats(
-            siteId: String,
-            page: Int?,
-            limit: Int?,
-        ): LevelStats {
-            val response = apiService.getLevelStats(siteId, page, limit).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.data.stats.toDomainModel()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
-
-        override suspend fun findLevelByMachineId(
-            siteId: String,
-            machineId: String,
-        ): List<Level> {
-            val response = apiService.findLevelByMachineId(siteId, machineId).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
+//        override suspend fun getRemoteLevelTreeLazy(
+//            siteId: String,
+//            page: Int?,
+//            limit: Int?,
+//            depth: Int?,
+//        ): LevelTreeData {
+//            val response = apiService.getLevelTreeLazy(siteId, page, limit, depth).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.data.toDomainModel()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
+//
+//        override suspend fun getRemoteChildrenLevels(
+//            siteId: String,
+//            parentId: String,
+//            page: Int?,
+//            limit: Int?,
+//        ): List<Level> {
+//            val response = apiService.getChildrenLevels(siteId, parentId, page, limit).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
+//
+//        override suspend fun getRemoteLevelStats(
+//            siteId: String,
+//            page: Int?,
+//            limit: Int?,
+//        ): LevelStats {
+//            val response = apiService.getLevelStats(siteId, page, limit).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.data.stats.toDomainModel()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
+//
+//        override suspend fun findLevelByMachineId(
+//            siteId: String,
+//            machineId: String,
+//        ): List<Level> {
+//            val response = apiService.findLevelByMachineId(siteId, machineId).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
     }

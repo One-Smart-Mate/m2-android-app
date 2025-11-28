@@ -139,6 +139,7 @@ class CardRepositoryImpl
             limit: Int?,
         ): List<Card> {
             val siteId = authRepo.getSiteId()
-            return networkRepository.getRemoteCardsByLevel(levelId, siteId, page, limit)
+            // return networkRepository.getRemoteCardsByLevel(levelId, siteId, page, limit)
+            return emptyList()
         }
     }

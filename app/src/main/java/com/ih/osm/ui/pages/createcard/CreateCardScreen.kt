@@ -1,13 +1,10 @@
 package com.ih.osm.ui.pages.createcard
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,9 +18,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,11 +29,14 @@ import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -69,7 +68,6 @@ import com.ih.osm.ui.components.CustomSpacer
 import com.ih.osm.ui.components.CustomTextField
 import com.ih.osm.ui.components.ExpandableCard
 import com.ih.osm.ui.components.LoadingScreen
-import com.ih.osm.ui.components.MachineIdSearchField
 import com.ih.osm.ui.components.SpacerSize
 import com.ih.osm.ui.components.buttons.CustomButton
 import com.ih.osm.ui.components.card.CardItemListV2
@@ -82,7 +80,6 @@ import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.extensions.getIconColor
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.pages.createcard.action.CreateCardAction
-import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.PaddingToolbar
@@ -104,13 +101,20 @@ fun CreateCardScreen(
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    var searchText by remember { mutableStateOf("") }
 
+    // Handle cilt mode from filter
     LaunchedEffect(filter) {
         if (filter?.startsWith("cilt:") == true) {
             val superiorId = filter.removePrefix("cilt:")
             viewModel.setCiltMode(true)
             viewModel.setSuperiorIdCilt(superiorId)
         }
+    }
+
+    // Update search text to ViewModel
+    LaunchedEffect(searchText) {
+        viewModel.updateSearchText(searchText)
     }
 
     if (state.isLoading) {
@@ -134,32 +138,17 @@ fun CreateCardScreen(
                 selectedPreclassifier = state.selectedPreclassifier,
                 priorityList = state.priorityList,
                 selectedPriority = state.selectedPriority,
-                levelList = state.nodeLevelList,
                 selectedLevelList = state.selectedLevelList,
+                lastLevelCompleted = state.lastLevelCompleted,
                 evidences = state.evidences,
                 audioDuration = state.audioDuration,
                 cardsZone = state.cardsZone,
                 coroutineScope = scope,
                 lazyColumState = lazyState,
-                // Loading states
-                isLoadingCardTypes = state.isLoadingCardTypes,
-                isLoadingPreclassifiers = state.isLoadingPreclassifiers,
-                isLoadingPriorities = state.isLoadingPriorities,
-                isLoadingLevels = state.isLoadingLevels,
-                // Machine ID search
-                machineIdSearchQuery = state.machineIdSearchQuery,
-                isSearchingMachineId = state.isSearchingMachineId,
-                machineIdSearchError = state.machineIdSearchError,
-                machineIdSearchSuccess = state.machineIdSearchSuccess,
-                onMachineIdSearchQueryChange = { query ->
-                    viewModel.updateMachineIdSearchQuery(query)
-                },
-                onMachineIdSearch = {
-                    viewModel.handleSearchByMachineId()
-                },
-                onAction = { action ->
-                    viewModel.process(action)
-                },
+                searchText = searchText,
+                onSearchChange = { searchText = it },
+                onAction = { action -> viewModel.process(action) },
+                filteredNodeLevelList = state.filteredNodeLevelList,
             )
         }
     }
@@ -173,6 +162,7 @@ fun CreateCardScreen(
         )
     }
 
+    // Navigation & SnackBar
     LaunchedEffect(viewModel) {
         snapshotFlow { state }
             .distinctUntilChanged()
@@ -192,7 +182,6 @@ fun CreateCardScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreateCardContent(
     navController: NavController,
@@ -202,26 +191,17 @@ fun CreateCardContent(
     selectedPreclassifier: String,
     priorityList: List<NodeCardItem>,
     selectedPriority: String,
-    levelList: Map<Int, List<NodeCardItem>>,
+    filteredNodeLevelList: Map<Int, List<NodeCardItem>>, // use filtered list
     selectedLevelList: Map<Int, String>,
-    onAction: (CreateCardAction) -> Unit,
+    lastLevelCompleted: Boolean,
     evidences: List<Evidence>,
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
     lazyColumState: LazyListState,
-    // Loading states
-    isLoadingCardTypes: Boolean,
-    isLoadingPreclassifiers: Boolean,
-    isLoadingPriorities: Boolean,
-    isLoadingLevels: Boolean,
-    // Machine ID search
-    machineIdSearchQuery: String,
-    isSearchingMachineId: Boolean,
-    machineIdSearchError: String,
-    machineIdSearchSuccess: Boolean,
-    onMachineIdSearchQueryChange: (String) -> Unit,
-    onMachineIdSearch: () -> Unit,
+    searchText: String,
+    onSearchChange: (String) -> Unit,
+    onAction: (CreateCardAction) -> Unit,
 ) {
     Scaffold { padding ->
         LazyColumn(
@@ -232,94 +212,43 @@ fun CreateCardContent(
             state = lazyColumState,
         ) {
             stickyHeader {
-                CustomAppBar(
-                    navController = navController,
-                    title = stringResource(R.string.create_card),
-                )
+                CustomAppBar(navController = navController, title = stringResource(R.string.create_card))
             }
+
             item {
                 CustomSpacer()
+                CardTypeContent(cardTypeList, onAction, selectedCardType)
+                PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
+                PriorityContent(priorityList, onAction, selectedPriority)
 
-                // Card Types with Loading Spinner
-                if (isLoadingCardTypes) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    CardTypeContent(cardTypeList, onAction, selectedCardType)
-                }
-
-                // Preclassifiers with Loading Spinner
-                if (isLoadingPreclassifiers && selectedCardType.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
-                }
-
-                // Priorities with Loading Spinner
-                if (isLoadingPriorities && selectedPreclassifier.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    PriorityContent(priorityList, onAction, selectedPriority)
-                }
-
-                // Machine ID Search - Only show after priority is selected
-                AnimatedVisibility(visible = selectedPriority.isNotEmpty()) {
-                    MachineIdSearchField(
-                        searchQuery = machineIdSearchQuery,
-                        isSearching = isSearchingMachineId,
-                        errorMessage = machineIdSearchError,
-                        successMessage = machineIdSearchSuccess,
-                        onSearchQueryChange = onMachineIdSearchQueryChange,
-                        onSearch = onMachineIdSearch,
+                if (filteredNodeLevelList.isNotEmpty()) {
+                    CustomSpacer()
+                    CustomTextField(
+                        label = "Search",
+                        icon = Icons.Filled.Search,
+                        value = searchText,
+                        onChange = onSearchChange,
+                        modifier = Modifier.fillParentMaxWidth(),
                     )
                 }
 
-                // Levels with Loading Spinner
-                if (isLoadingLevels && selectedPriority.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Loading levels...",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
-                } else {
-                    LevelContent(levelList, onLevelClick = { item, key ->
+                LevelContent(
+                    levelList = filteredNodeLevelList,
+                    selectedLevelList = selectedLevelList,
+                    onLevelClick = { item, key ->
                         onAction(CreateCardAction.SetLevel(item.id, key))
                         coroutineScope.launch {
                             lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
                         }
-                    }, selectedLevelList)
-                }
+                    },
+                )
 
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
+            // Evidence Section
             item {
-                // Show card creation options when at least one level is selected
-                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
+                AnimatedVisibility(visible = lastLevelCompleted) {
                     Column {
                         CustomSpacer()
                         HorizontalDivider()
@@ -346,17 +275,15 @@ fun CreateCardContent(
                 }
             }
 
+            // Comments & Save Button
             item {
-                // Show comments and save button when at least one level is selected
-                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
+                AnimatedVisibility(visible = lastLevelCompleted) {
                     Column {
                         HorizontalDivider()
                         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                         Text(
                             text = stringResource(R.string.comments),
-                            style =
-                                MaterialTheme.typography.titleLarge
-                                    .copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         )
                         CustomSpacer()
                         CustomTextField(
@@ -364,13 +291,11 @@ fun CreateCardContent(
                             icon = Icons.Filled.Create,
                             modifier = Modifier.fillParentMaxWidth(),
                             maxLines = 5,
-                        ) {
-                            onAction(CreateCardAction.SetComment(it))
-                        }
+                        ) { onAction(CreateCardAction.SetComment(it)) }
                         CustomSpacer()
                         AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
                             ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
-                                cardsZone.map {
+                                cardsZone.forEach {
                                     CardItemListV2(
                                         card = it,
                                         isActionsEnabled = false,
@@ -395,34 +320,85 @@ fun CreateCardContent(
 @Composable
 fun LevelContent(
     levelList: Map<Int, List<NodeCardItem>>,
-    onLevelClick: (NodeCardItem, key: Int) -> Unit,
     selectedLevelList: Map<Int, String>,
+    onLevelClick: (NodeCardItem, key: Int) -> Unit,
 ) {
     AnimatedVisibility(visible = levelList.isNotEmpty()) {
         Column {
-            levelList.map { level ->
-                if (level.value.isNotEmpty()) {
+            levelList.toSortedMap().forEach { (levelNumber, items) ->
+                if (items.isNotEmpty()) {
                     Text(
-                        text = "${stringResource(R.string.level)} ${level.key}",
-                        style =
-                            MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold),
+                        text = "${stringResource(R.string.level)} $levelNumber",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp),
                     )
                 }
-                LazyRow {
-                    items(level.value) { item ->
+
+                LazyRow(modifier = Modifier.fillMaxWidth()) {
+                    items(items) { item ->
                         SectionItemCard(
                             title = item.name,
                             description = item.description,
-                            selected = item.id == selectedLevelList[level.key],
+                            selected = item.id == selectedLevelList[levelNumber],
                         ) {
-                            onLevelClick(item, level.key)
+                            onLevelClick(item, levelNumber)
                         }
                     }
                 }
             }
         }
     }
+}
+
+// -----------------------
+// Search bar Composable
+// -----------------------
+@Composable
+fun CustomSearchBar(
+    value: String,
+    placeholder: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    TextField(
+        value = value,
+        onValueChange = onValueChange,
+        placeholder = { Text(placeholder) },
+        modifier =
+            modifier
+                .padding(8.dp)
+                .fillMaxWidth(),
+        singleLine = true,
+        leadingIcon = {
+            Icon(
+                imageVector = Icons.Default.Search,
+                contentDescription = null,
+            )
+        },
+    )
+}
+
+// -----------------------
+// Level filtering
+// -----------------------
+fun filterLevels(
+    nodeLevels: Map<Int, List<NodeCardItem>>,
+    searchText: String,
+): Map<Int, List<NodeCardItem>> {
+    if (searchText.isBlank()) return nodeLevels
+
+    val filtered = mutableMapOf<Int, List<NodeCardItem>>()
+
+    nodeLevels.forEach { (level, items) ->
+        val matchedItems =
+            items.filter {
+                it.name.contains(searchText, ignoreCase = true)
+            }
+        if (matchedItems.isNotEmpty()) {
+            filtered[level] = matchedItems
+        }
+    }
+    return filtered
 }
 
 @Composable
@@ -606,42 +582,6 @@ fun SectionItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodySmall,
             )
-        }
-    }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-@Preview(showBackground = true, name = "light")
-@Composable
-fun CreateCardPreview() {
-    OsmAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {
-//            CreateCardContent(
-//                navController = rememberNavController(),
-//                cardTypeList = emptyList(),
-//                onCardTypeClick = {},
-//                selectedCardType = "",
-//                preclassifierList = emptyList(),
-//                onPreclassifierClick = {},
-//                selectedPreclassifier = "",
-//                priorityList = emptyList(),
-//                onPriorityClick = {},
-//                selectedPriority = "",
-//                levelList = emptyMap(),
-//                onLevelClick = { _, _ -> },
-//                selectedLevelList = emptyMap(),
-//                lastLevelCompleted = true,
-//                onCommentChange = {},
-//                evidences = emptyList(),
-//                onAddEvidence = { _, _ -> },
-//                onDeleteEvidence = {},
-//                onSaveClick = {},
-//                audioDuration = 60,
-//                cardsZone = emptyList(),
-//                coroutineScope = rememberCoroutineScope(),
-//                lazyColumState = rememberLazyListState()
-//            )
         }
     }
 }

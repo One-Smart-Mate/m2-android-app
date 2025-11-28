@@ -36,31 +36,31 @@ class GetLevelStatsUseCaseImpl
         private val levelRepository: LevelRepository,
         private val cacheManager: LevelCacheManager,
     ) : GetLevelStatsUseCase {
-        override suspend fun invoke(): Result<LevelStats> {
-            return try {
-                // Check cache first
-                val cachedStats = cacheManager.getCachedStats()
-                if (cachedStats != null) {
-                    return Result.Success(cachedStats)
-                }
-
-                // Cache miss - fetch from repository
-                val stats =
-                    levelRepository.getRemoteLevelStats(
-                        page = null,
-                        limit = null,
-                    )
-
-                // Cache the fetched stats
-                cacheManager.cacheStats(stats)
-
-                // Return success
-                Result.Success(stats)
+        override suspend fun invoke(): Result<LevelStats> =
+            try {
+//                // Check cache first
+//                val cachedStats = cacheManager.getCachedStats()
+//                if (cachedStats != null) {
+//                    return Result.Success(cachedStats)
+//                }
+//
+//                // Cache miss - fetch from repository
+//                val stats =
+//                    levelRepository.getRemoteLevelStats(
+//                        page = null,
+//                        limit = null,
+//                    )
+//
+//                // Cache the fetched stats
+//                cacheManager.cacheStats(stats)
+//
+//                // Return success
+//                Result.Success(stats)
+                Result.Error("Invalid parent ID: ")
             } catch (e: Exception) {
                 Result.Error(
                     message = "Failed to load level statistics: ${e.message ?: "Unknown error"}",
                     throwable = e,
                 )
             }
-        }
     }
