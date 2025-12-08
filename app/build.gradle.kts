@@ -14,15 +14,17 @@ plugins {
 
 android {
 
-    signingConfigs {
-        getByName("debug") {
-            val userHome = System.getProperty("user.home")
-            storeFile = file("$userHome/AndroidStudioProjects/android-key")
-            storePassword = "osm20240827"
-            keyAlias = "android-key"
-            keyPassword = "osm20240827"
-        }
-    }
+    /*
+     signingConfigs {
+         getByName("debug") {
+             storeFile = file("/Users/immanuel-diaz/AndroidStudioProjects/android-key")
+             storePassword = "osm20240827"
+             keyAlias = "android-key"
+             keyPassword = "osm20240827"
+         }
+     }
+
+     */
     namespace = "com.ih.osm"
     compileSdk = 36
 

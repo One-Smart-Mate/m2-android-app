@@ -34,6 +34,13 @@ const val YYYY_MM_DD_HH_MM = "yyyy-MM-dd HH:mm"
 val Date.YYYY_MM_DD_HH_MM_SS: String
     get() = SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
 
+val Date.YYYY_MM_DD_HH_MM_SS_UTC: String
+    get() =
+        SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault())
+            .apply {
+                timeZone = TimeZone.getTimeZone("UTC")
+            }.format(this)
+
 val Date.YYYY_MM_DD_HH_MM: String
     get() =
         SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(this)
@@ -434,17 +441,29 @@ private val isoFormatSeconds =
         timeZone = TimeZone.getTimeZone("UTC")
     }
 
-fun String.parseIsoOrRaw(): String =
-    try {
+fun String.parseIsoOrRaw(): String {
+    val localFormatter =
+        SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).apply {
+            timeZone = TimeZone.getDefault()
+        }
+    val utcNormalFormatter =
+        SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).apply {
+            timeZone = TimeZone.getTimeZone("UTC")
+        }
+    return try {
         val date = isoFormatMillis.parse(this)
-        date?.let { SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(it) } ?: this
+        date?.let { localFormatter.format(it) } ?: this
     } catch (e: ParseException) {
-        FirebaseCrashlytics.getInstance().recordException(e)
         try {
             val date = isoFormatSeconds.parse(this)
-            date?.let { SimpleDateFormat(NORMAL_FORMAT, Locale.getDefault()).format(it) } ?: this
+            date?.let { localFormatter.format(it) } ?: this
         } catch (e: ParseException) {
-            FirebaseCrashlytics.getInstance().recordException(e)
-            this
+            try {
+                val date = utcNormalFormatter.parse(this)
+                date?.let { localFormatter.format(it) } ?: this
+            } catch (e: ParseException) {
+                this
+            }
         }
     }
+}
