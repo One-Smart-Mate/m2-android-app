@@ -12,6 +12,7 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.GenerateCiltExecutionRequest
 import com.ih.osm.data.model.GenerateCiltExecutionResponse
+import com.ih.osm.data.model.GetPaginatedCardsResponse
 import com.ih.osm.data.model.GetPaginatedLevelsResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
@@ -152,21 +153,21 @@ class NetworkRepositoryImpl
             }
         }
 
-        override suspend fun getRemoteCardsByUser(siteId: String): List<Card> {
-            val response = apiService.getCards(siteId).execute()
-            val responseBody = response.body()
-            return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
-            } else {
-                error(response.getErrorMessage())
-            }
-        }
+//        override suspend fun getRemoteCardsByUser(siteId: String): List<Card> {
+//            val response = apiService.getCards(siteId).execute()
+//            val responseBody = response.body()
+//            return if (response.isSuccessful && responseBody != null) {
+//                responseBody.toDomain()
+//            } else {
+//                error(response.getErrorMessage())
+//            }
+//        }
 
         override suspend fun getRemoteCardsByUser(
             siteId: String,
             page: Int?,
             limit: Int?,
-        ): List<Card> {
+        ): GetPaginatedCardsResponse {
             val response = apiService.getCards(siteId, page, limit).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody != null) {
@@ -203,7 +204,7 @@ class NetworkRepositoryImpl
             val response = apiService.getCardsZone(superiorId, siteId).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
+                responseBody.data.data
             } else {
                 error(response.getErrorMessage())
             }
@@ -237,7 +238,7 @@ class NetworkRepositoryImpl
             val response = apiService.getCardsLevelMachine(siteId, levelMachine).execute()
             val responseBody = response.body()
             return if (response.isSuccessful && responseBody != null) {
-                responseBody.toDomain()
+                responseBody.data.data
             } else {
                 error(response.getErrorMessage())
             }

@@ -40,4 +40,13 @@ interface CardDao {
         siteId: String,
         id: String,
     ): List<CardEntity>
+
+    @Query("SELECT * FROM card_table ORDER BY site_card_id DESC LIMIT :limit OFFSET :offset")
+    suspend fun getPaged(
+        limit: Int,
+        offset: Int,
+    ): List<CardEntity>
+
+    @Query("SELECT COUNT(*) FROM card_table")
+    suspend fun getCount(): Int
 }

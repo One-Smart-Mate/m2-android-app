@@ -20,7 +20,7 @@ import com.ih.osm.domain.model.NetworkStatus
 import com.ih.osm.domain.model.Session
 import com.ih.osm.domain.model.toLocalCards
 import com.ih.osm.domain.repository.session.SessionRepository
-import com.ih.osm.domain.usecase.card.GetCardsUseCase
+import com.ih.osm.domain.usecase.card.GetAllPagedCardsUseCase
 import com.ih.osm.domain.usecase.catalogs.SyncCatalogsUseCase
 import com.ih.osm.domain.usecase.login.FastLoginUseCase
 import com.ih.osm.domain.usecase.login.SendFastPasswordUseCase
@@ -49,7 +49,7 @@ class HomeViewModel
     constructor(
         private val fastLoginUseCase: FastLoginUseCase,
         private val getSessionUseCase: GetSessionUseCase,
-        private val getCardsUseCase: GetCardsUseCase,
+        private val getCardsUseCase: GetAllPagedCardsUseCase,
         private val syncCatalogsUseCase: SyncCatalogsUseCase,
         private val sharedPreferences: SharedPreferences,
         private val sessionRepository: SessionRepository,
@@ -235,12 +235,12 @@ class HomeViewModel
             viewModelScope.launch {
                 kotlin
                     .runCatching {
-                        callUseCase { getCardsUseCase(syncRemote = syncRemote) }
+                        callUseCase { getCardsUseCase(syncRemote = syncRemote, page = 1, limit = 100) }
                     }.onSuccess { cards ->
-                        val hasLocalCards = cards.toLocalCards().isNotEmpty()
+                        val hasLocalCards = cards.data.toLocalCards().isNotEmpty()
                         setState {
                             copy(
-                                cards = cards,
+                                cards = cards.data,
                                 showSyncLocalCards = hasLocalCards && WorkManagerUUID.checkIfNull(),
                             )
                         }

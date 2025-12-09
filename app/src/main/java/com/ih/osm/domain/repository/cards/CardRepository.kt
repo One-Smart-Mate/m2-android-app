@@ -1,11 +1,12 @@
 package com.ih.osm.domain.repository.cards
 
 import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.GetPaginatedCardsResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.domain.model.Card
 
 interface CardRepository {
-    suspend fun getAllRemoteByUser(): List<Card>
+    // suspend fun getAllRemoteByUser(): List<Card>
 
     /**
      * Get all cards for the current user with pagination support
@@ -16,7 +17,7 @@ interface CardRepository {
     suspend fun getAllRemoteByUser(
         page: Int? = null,
         limit: Int? = null,
-    ): List<Card>
+    ): GetPaginatedCardsResponse
 
     suspend fun getRemote(cardId: String): Card?
 
@@ -60,4 +61,11 @@ interface CardRepository {
         page: Int? = null,
         limit: Int? = null,
     ): List<Card>
+
+    suspend fun getPaged(
+        offset: Int,
+        limit: Int,
+    ): List<Card>
+
+    suspend fun getCount(): Int
 }

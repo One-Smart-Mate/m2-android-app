@@ -1,16 +1,16 @@
 package com.ih.osm.domain.usecase.card
 
-import com.ih.osm.domain.model.PaginatedCards
-import com.ih.osm.domain.model.Result
+import com.ih.osm.core.network.NetworkConnection
+import com.ih.osm.data.model.GetPaginatedCardsResponse
 import com.ih.osm.domain.repository.cards.CardRepository
 import javax.inject.Inject
 
 interface GetAllPagedCardsUseCase {
     suspend operator fun invoke(
         page: Int = 1,
-        limit: Int = 20,
+        limit: Int = 1500,
         syncRemote: Boolean = false,
-    ): Result<PaginatedCards>
+    ): GetPaginatedCardsResponse
 }
 
 class GetAllPagedCardsUseCaseImpl
@@ -18,67 +18,49 @@ class GetAllPagedCardsUseCaseImpl
     constructor(
         private val cardRepository: CardRepository,
     ) : GetAllPagedCardsUseCase {
-        companion object {
-            private const val MIN_PAGE = 1
-            private const val MIN_LIMIT = 1
-            private const val MAX_LIMIT = 100
-        }
-
         override suspend fun invoke(
             page: Int,
             limit: Int,
             syncRemote: Boolean,
-        ): Result<PaginatedCards> {
-            if (page < MIN_PAGE) {
-                return Result.Error("Page must be at least $MIN_PAGE")
-            }
-
-            val validatedLimit =
-                when {
-                    limit < MIN_LIMIT -> MIN_LIMIT
-                    limit > MAX_LIMIT -> MAX_LIMIT
-                    else -> limit
-                }
-
-            return try {
-                val cards =
-                    if (syncRemote) {
-                        cardRepository.getAllRemoteByUser(
-                            page = page,
-                            limit = validatedLimit,
-                        )
-                    } else {
-                        val allLocalCards = cardRepository.getAll()
-                        val startIndex = (page - 1) * validatedLimit
-                        val endIndex = (startIndex + validatedLimit).coerceAtMost(allLocalCards.size)
-
-                        if (startIndex >= allLocalCards.size) {
-                            emptyList()
-                        } else {
-                            allLocalCards.subList(startIndex, endIndex)
-                        }
-                    }
-
-                val hasNextPage = cards.size >= validatedLimit
-                val totalCards = if (hasNextPage) (page * validatedLimit) + 1 else (page - 1) * validatedLimit + cards.size
-                val totalPages = if (hasNextPage) page + 1 else page
-
-                val paginatedCards =
-                    PaginatedCards(
-                        cards = cards,
-                        currentPage = page,
-                        pageSize = validatedLimit,
-                        totalCards = totalCards,
-                        totalPages = totalPages,
-                        hasNextPage = hasNextPage,
+        ): GetPaginatedCardsResponse =
+            if (syncRemote && NetworkConnection.isConnected()) {
+                val remote =
+                    cardRepository.getAllRemoteByUser(
+                        page = page,
+                        limit = limit,
                     )
 
-                Result.Success(paginatedCards)
-            } catch (e: Exception) {
-                Result.Error(
-                    message = "Failed to load cards: ${e.message ?: "Unknown error"}",
-                    throwable = e,
+                cardRepository.saveAll(remote.data)
+
+                GetPaginatedCardsResponse(
+                    data = remote.data,
+                    page = remote.page ?: page,
+                    limit = remote.limit ?: limit,
+                    totalPages = remote.totalPages ?: 1,
+                    hasMore = remote.hasMore,
+                )
+            } else {
+                val totalCount = cardRepository.getCount()
+                val totalPages =
+                    if (totalCount == 0) {
+                        1
+                    } else {
+                        ((totalCount + limit - 1) / limit)
+                    }
+
+                val offset = (page - 1) * limit
+                val localPage =
+                    cardRepository.getPaged(
+                        offset = offset,
+                        limit = limit,
+                    )
+
+                GetPaginatedCardsResponse(
+                    data = localPage,
+                    page = page,
+                    limit = limit,
+                    totalPages = totalPages,
+                    hasMore = page < totalPages,
                 )
             }
-        }
     }

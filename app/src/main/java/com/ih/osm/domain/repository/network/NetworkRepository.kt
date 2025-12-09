@@ -9,6 +9,7 @@ import com.ih.osm.data.model.CreateProvisionalSolutionRequest
 import com.ih.osm.data.model.FastLoginRequest
 import com.ih.osm.data.model.GenerateCiltExecutionRequest
 import com.ih.osm.data.model.GenerateCiltExecutionResponse
+import com.ih.osm.data.model.GetPaginatedCardsResponse
 import com.ih.osm.data.model.GetPaginatedLevelsResponse
 import com.ih.osm.data.model.LoginRequest
 import com.ih.osm.data.model.LoginResponse
@@ -64,13 +65,13 @@ interface NetworkRepository {
 
     suspend fun getRemotePriorities(siteId: String): List<Priority>
 
-    suspend fun getRemoteCardsByUser(siteId: String): List<Card>
+    // suspend fun getRemoteCardsByUser(siteId: String): List<Card>
 
     suspend fun getRemoteCardsByUser(
         siteId: String,
         page: Int? = null,
         limit: Int? = null,
-    ): List<Card>
+    ): GetPaginatedCardsResponse
 
     suspend fun getRemoteCardDetail(cardId: String): Card?
 
