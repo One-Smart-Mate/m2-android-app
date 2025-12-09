@@ -3,7 +3,6 @@ package com.ih.osm.domain.usecase.catalogs
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.core.network.NetworkConnection
-import com.ih.osm.domain.usecase.card.GetCardsUseCase
 import com.ih.osm.domain.usecase.cardtype.GetCardTypesUseCase
 import com.ih.osm.domain.usecase.employee.GetEmployeesUseCase
 import com.ih.osm.domain.usecase.level.GetLevelsUseCase
@@ -22,7 +21,7 @@ class SyncCatalogsUseCaseImpl
         private val getCardTypesUseCase: GetCardTypesUseCase,
         private val getPrioritiesUseCase: GetPrioritiesUseCase,
         private val getPreclassifiersUseCase: GetPreclassifiersUseCase,
-        private val getCardsUseCase: GetCardsUseCase,
+        // private val getCardsUseCase: GetAllP,
         private val getLevelsUseCase: GetLevelsUseCase,
         private val getEmployeesUseCase: GetEmployeesUseCase,
         private val getFirebaseNotificationUseCase: GetFirebaseNotificationUseCase,
@@ -35,7 +34,7 @@ class SyncCatalogsUseCaseImpl
                 getPrioritiesUseCase(true)
                 getLevelsUseCase(true)
                 getEmployeesUseCase(true)
-                getCardsUseCase(syncCards)
+                // getCardsUseCase(syncCards)
                 getFirebaseNotificationUseCase(remove = true, syncCatalogs = true)
                 true
             } catch (e: Exception) {

@@ -4,6 +4,7 @@ import com.ih.osm.core.app.LoggerHelperManager
 import com.ih.osm.data.database.dao.card.CardDao
 import com.ih.osm.data.database.entities.card.toDomain
 import com.ih.osm.data.model.CreateCardRequest
+import com.ih.osm.data.model.GetPaginatedCardsResponse
 import com.ih.osm.data.model.UpdateMechanicRequest
 import com.ih.osm.data.model.toDomain
 import com.ih.osm.domain.model.Card
@@ -104,15 +105,15 @@ class CardRepositoryImpl
             dao.deleteAll()
         }
 
-        override suspend fun getAllRemoteByUser(): List<Card> {
-            val siteId = authRepo.getSiteId()
-            return networkRepository.getRemoteCardsByUser(siteId)
-        }
+//        override suspend fun getAllRemoteByUser(): List<Card> {
+//            val siteId = authRepo.getSiteId()
+//            return networkRepository.getRemoteCardsByUser(siteId)
+//        }
 
         override suspend fun getAllRemoteByUser(
             page: Int?,
             limit: Int?,
-        ): List<Card> {
+        ): GetPaginatedCardsResponse {
             val siteId = authRepo.getSiteId()
             return networkRepository.getRemoteCardsByUser(siteId, page, limit)
         }
@@ -139,6 +140,14 @@ class CardRepositoryImpl
             limit: Int?,
         ): List<Card> {
             val siteId = authRepo.getSiteId()
-            return networkRepository.getRemoteCardsByLevel(levelId, siteId, page, limit)
+            // return networkRepository.getRemoteCardsByLevel(levelId, siteId, page, limit)
+            return emptyList()
         }
+
+        override suspend fun getCount(): Int = dao.getCount()
+
+        override suspend fun getPaged(
+            offset: Int,
+            limit: Int,
+        ): List<Card> = dao.getPaged(limit, offset).mapNotNull { get(it.uuid) }
     }

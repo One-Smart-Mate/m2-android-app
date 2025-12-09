@@ -1,19 +1,17 @@
 package com.ih.osm.ui.pages.cardlist
 
-import android.annotation.SuppressLint
-import android.content.res.Configuration
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.CircularProgressIndicator
@@ -25,9 +23,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -46,7 +45,6 @@ import com.ih.osm.ui.navigation.navigateToCardDetail
 import com.ih.osm.ui.navigation.navigateToCardSolution
 import com.ih.osm.ui.navigation.navigateToCreateCard
 import com.ih.osm.ui.pages.cardlist.action.CardListAction
-import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.Size120
 import com.ih.osm.ui.utils.EMPTY
 
@@ -57,7 +55,7 @@ fun CardListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    if (state.isLoading) {
+    if (state.isLoading && state.cards.isEmpty()) {
         LoadingScreen(text = state.message)
     } else {
         CardListContent(
@@ -93,6 +91,32 @@ fun CardListContent(
     viewModel: CardListViewModel,
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val listState = rememberLazyListState()
+
+    // ----------------------------
+    // 🔥 DETECTAR SCROLL AL FINAL
+    // ----------------------------
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val lastVisible =
+                listState.layoutInfo.visibleItemsInfo
+                    .lastOrNull()
+                    ?.index
+            val total = listState.layoutInfo.totalItemsCount
+            lastVisible to total
+        }.collect { (lastVisible, total) ->
+            if (
+                lastVisible != null &&
+                lastVisible >= total - 3 &&
+                // Cuando faltan 3 items
+                !state.isLoadingMore &&
+                state.hasMorePages &&
+                !state.isLoading
+            ) {
+                viewModel.loadMore()
+            }
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -105,8 +129,12 @@ fun CardListContent(
     ) { padding ->
 
         LazyColumn(
+            state = listState,
             modifier = Modifier.defaultScreen(padding),
         ) {
+            // -------------------
+            // 🔝 STICKY HEADER
+            // -------------------
             stickyHeader {
                 Column(
                     modifier =
@@ -114,10 +142,12 @@ fun CardListContent(
                             color = MaterialTheme.colorScheme.background,
                         ),
                 ) {
-                    CustomAppBar(navController = navController, title = stringResource(R.string.anomalies_cards))
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
+                    CustomAppBar(
+                        navController = navController,
+                        title = stringResource(R.string.anomalies_cards),
+                    )
+
+                    Box(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.End,
@@ -129,18 +159,23 @@ fun CardListContent(
                             ) {
                                 viewModel.handleUpdateRemoteCardsAndSave()
                             }
+
                             FiltersBottomSheet { filter ->
                                 onAction(CardListAction.Filters(filter))
                             }
                         }
                     }
+
                     CustomSpacer(space = SpacerSize.SMALL)
                 }
             }
 
+            // -------------------
+            // 📄 ITEMS DE LA LISTA
+            // -------------------
             items(
                 items = cards,
-                key = { card -> card.uuid },
+                key = { it.uuid },
             ) { card ->
                 CardItemListV2(
                     card = card,
@@ -151,49 +186,23 @@ fun CardListContent(
                         onAction(CardListAction.Action(it, card.uuid))
                     },
                 )
-
-                if (cards.isNotEmpty() && card == cards.last() && state.hasMorePages && !state.isLoadingMore) {
-                    LaunchedEffect(card.uuid) {
-                        viewModel.loadMore()
-                    }
-                }
             }
 
+            // -------------------
+            // 🔄 FOOTER DE LOADING
+            // -------------------
             if (state.isLoadingMore) {
                 item {
                     Box(
                         modifier =
                             Modifier
-                                .fillMaxWidth()
-                                .padding(Size120),
-                        contentAlignment = androidx.compose.ui.Alignment.Center,
+                                .fillMaxWidth(),
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator()
                     }
                 }
             }
-        }
-    }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-@Preview(showBackground = true, name = "light")
-@Composable
-private fun CardListScreenScreenPreview() {
-    OsmAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {
-//            CardListContent(
-//                navController = rememberNavController(),
-//                cards = emptyList(),
-//                title = "Cards",
-//                onSolutionClick = { _, _ -> },
-//                onCreateCardClick = {},
-//                onFilterChange = {},
-//                isRefreshing = false,
-//                {}
-//            )
-//        }
         }
     }
 }

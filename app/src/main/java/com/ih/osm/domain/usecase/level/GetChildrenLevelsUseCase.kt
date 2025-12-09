@@ -24,22 +24,22 @@ class GetChildrenLevelsUseCaseImpl
                     return Result.Success(cachedChildren)
                 }
 
-                if (parentId.isBlank()) {
-                    return Result.Error("Invalid parent ID: $parentId")
-                }
+                // if (parentId.isBlank()) {
+                return Result.Error("Invalid parent ID: $parentId")
+                // }
 
-                val children =
-                    levelRepository.getRemoteChildrenLevels(
-                        parentId = parentId,
-                        page = null,
-                        limit = null,
-                    )
-
-                if (children.isNotEmpty()) {
-                    cacheManager.cacheChildren(parentId, children)
-                }
-
-                Result.Success(children)
+//                val children =
+//                    levelRepository.getRemoteChildrenLevels(
+//                        parentId = parentId,
+//                        page = null,
+//                        limit = null,
+//                    )
+//
+//                if (children.isNotEmpty()) {
+//                    cacheManager.cacheChildren(parentId, children)
+//                }
+//
+//                Result.Success(children)
             } catch (e: Exception) {
                 Result.Error(
                     message = e.message ?: "Failed to load children levels",

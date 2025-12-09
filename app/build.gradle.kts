@@ -30,8 +30,8 @@ android {
         applicationId = "com.ih.osm"
         minSdk = 24
         targetSdk = 36
-        versionCode = 33
-        versionName = "2.0"
+        versionCode = 35
+        versionName = "2.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

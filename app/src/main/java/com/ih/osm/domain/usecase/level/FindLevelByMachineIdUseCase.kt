@@ -20,12 +20,13 @@ class FindLevelByMachineIdUseCaseImpl
             }
 
             return try {
-                val hierarchy = levelRepository.findByMachineId(machineId.trim())
-
-                when {
-                    hierarchy.isEmpty() -> Result.Error("NOT_FOUND")
-                    else -> Result.Success(hierarchy)
-                }
+//                val hierarchy = levelRepository.findByMachineId(machineId.trim())
+//
+//                when {
+//                    hierarchy.isEmpty() -> Result.Error("NOT_FOUND")
+//                    else -> Result.Success(hierarchy)
+//                }
+                Result.Error("NOT_FOUND")
             } catch (e: NullPointerException) {
                 Result.Error("NOT_FOUND")
             } catch (e: Exception) {

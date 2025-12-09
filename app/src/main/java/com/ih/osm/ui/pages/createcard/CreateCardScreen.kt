@@ -1,19 +1,17 @@
 package com.ih.osm.ui.pages.createcard
 
 import android.annotation.SuppressLint
-import android.content.res.Configuration
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -35,8 +32,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -82,16 +81,16 @@ import com.ih.osm.ui.extensions.getColor
 import com.ih.osm.ui.extensions.getIconColor
 import com.ih.osm.ui.extensions.getPrimaryColor
 import com.ih.osm.ui.pages.createcard.action.CreateCardAction
-import com.ih.osm.ui.theme.OsmAppTheme
 import com.ih.osm.ui.theme.PaddingNormal
 import com.ih.osm.ui.theme.PaddingTiny
 import com.ih.osm.ui.theme.PaddingToolbar
-import com.ih.osm.ui.theme.Size100
+import com.ih.osm.ui.theme.Size115
 import com.ih.osm.ui.theme.Size180
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun CreateCardScreen(
@@ -104,12 +103,66 @@ fun CreateCardScreen(
     val lazyState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    var searchText by remember { mutableStateOf("") }
 
+    // Row states reactivos — guardamos en un MutableStateList para poder cambiar tamaño sin recrear Composable
+    val rowStates = remember { mutableStateListOf<LazyListState>() }
+
+    // Ajustar rowStates cuando cambie el número de niveles
+    LaunchedEffect(state.filteredNodeLevelList.size) {
+        val needed = state.filteredNodeLevelList.size
+        // Añadir estados si faltan
+        while (rowStates.size < needed) rowStates.add(LazyListState())
+        // Quitar si sobran
+        while (rowStates.size > needed) rowStates.removeLast()
+    }
+
+    // Handle cilt mode from filter
     LaunchedEffect(filter) {
         if (filter?.startsWith("cilt:") == true) {
             val superiorId = filter.removePrefix("cilt:")
             viewModel.setCiltMode(true)
             viewModel.setSuperiorIdCilt(superiorId)
+        }
+    }
+
+    // Update search text to ViewModel (debounced)
+
+    // Collect scrollTarget events from ViewModel
+    LaunchedEffect(viewModel) {
+        viewModel.scrollTarget.collect { target ->
+            // Vertical scroll: clamp index y animar
+            target.verticalIndex?.let { vIndex ->
+                val verticalIndexClamped = vIndex.coerceAtLeast(0)
+                scope.launch {
+                    // clamp to available items in lazyState (safe)
+                    val maxIndex = (lazyState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+                    val targetIndex = verticalIndexClamped.coerceAtMost(maxIndex)
+                    lazyState.animateScrollToItem(targetIndex)
+                }
+            }
+
+            // Horizontal (LazyRow) scroll: nivel y item
+            val lvl = target.levelIndex
+            val itm = target.itemIndex
+            if (lvl != null && itm != null) {
+                // asegurarnos de que rowStates tenga ese índice
+                if (lvl in rowStates.indices) {
+                    scope.launch {
+                        // clamp against la cantidad de items en ese LazyRow
+                        val listState = rowStates[lvl]
+                        // layoutInfo puede estar vacío si aún no se ha medido; intentamos animar directamente
+                        try {
+                            val maxItem = (listState.layoutInfo.totalItemsCount - 1).coerceAtLeast(0)
+                            val targetItem = itm.coerceAtLeast(0).coerceAtMost(maxItem)
+                            listState.animateScrollToItem(targetItem)
+                        } catch (e: Exception) {
+                            // Si falla por layout no listo, hacemos animate sin clamping (seguirá funcionando cuando se mida)
+                            listState.animateScrollToItem(itm)
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -134,32 +187,21 @@ fun CreateCardScreen(
                 selectedPreclassifier = state.selectedPreclassifier,
                 priorityList = state.priorityList,
                 selectedPriority = state.selectedPriority,
-                levelList = state.nodeLevelList,
                 selectedLevelList = state.selectedLevelList,
+                lastLevelCompleted = state.lastLevelCompleted,
                 evidences = state.evidences,
                 audioDuration = state.audioDuration,
                 cardsZone = state.cardsZone,
                 coroutineScope = scope,
                 lazyColumState = lazyState,
-                // Loading states
-                isLoadingCardTypes = state.isLoadingCardTypes,
-                isLoadingPreclassifiers = state.isLoadingPreclassifiers,
-                isLoadingPriorities = state.isLoadingPriorities,
-                isLoadingLevels = state.isLoadingLevels,
-                // Machine ID search
-                machineIdSearchQuery = state.machineIdSearchQuery,
-                isSearchingMachineId = state.isSearchingMachineId,
-                machineIdSearchError = state.machineIdSearchError,
-                machineIdSearchSuccess = state.machineIdSearchSuccess,
-                onMachineIdSearchQueryChange = { query ->
-                    viewModel.updateMachineIdSearchQuery(query)
+                searchText = searchText,
+                rowStates = rowStates, // new
+                onSearchChange = {
+                    searchText = it
                 },
-                onMachineIdSearch = {
-                    viewModel.handleSearchByMachineId()
-                },
-                onAction = { action ->
-                    viewModel.process(action)
-                },
+                onAction = { action -> viewModel.process(action) },
+                filteredNodeLevelList = state.filteredNodeLevelList,
+                viewModel = viewModel,
             )
         }
     }
@@ -173,6 +215,7 @@ fun CreateCardScreen(
         )
     }
 
+    // Navigation & SnackBar
     LaunchedEffect(viewModel) {
         snapshotFlow { state }
             .distinctUntilChanged()
@@ -192,7 +235,6 @@ fun CreateCardScreen(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CreateCardContent(
     navController: NavController,
@@ -202,27 +244,21 @@ fun CreateCardContent(
     selectedPreclassifier: String,
     priorityList: List<NodeCardItem>,
     selectedPriority: String,
-    levelList: Map<Int, List<NodeCardItem>>,
+    filteredNodeLevelList: Map<Int, List<NodeCardItem>>,
     selectedLevelList: Map<Int, String>,
-    onAction: (CreateCardAction) -> Unit,
+    lastLevelCompleted: Boolean,
     evidences: List<Evidence>,
     audioDuration: Int,
     cardsZone: List<Card>,
     coroutineScope: CoroutineScope,
     lazyColumState: LazyListState,
-    // Loading states
-    isLoadingCardTypes: Boolean,
-    isLoadingPreclassifiers: Boolean,
-    isLoadingPriorities: Boolean,
-    isLoadingLevels: Boolean,
-    // Machine ID search
-    machineIdSearchQuery: String,
-    isSearchingMachineId: Boolean,
-    machineIdSearchError: String,
-    machineIdSearchSuccess: Boolean,
-    onMachineIdSearchQueryChange: (String) -> Unit,
-    onMachineIdSearch: () -> Unit,
+    searchText: String,
+    rowStates: List<LazyListState>, // new param
+    onSearchChange: (String) -> Unit,
+    viewModel: CreateCardViewModel,
+    onAction: (CreateCardAction) -> Unit,
 ) {
+    var localText by remember { mutableStateOf("") }
     Scaffold { padding ->
         LazyColumn(
             modifier =
@@ -232,94 +268,50 @@ fun CreateCardContent(
             state = lazyColumState,
         ) {
             stickyHeader {
-                CustomAppBar(
-                    navController = navController,
-                    title = stringResource(R.string.create_card),
-                )
+                CustomAppBar(navController = navController, title = stringResource(R.string.create_card))
             }
+
             item {
                 CustomSpacer()
+                CardTypeContent(cardTypeList, onAction, selectedCardType)
+                PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
+                PriorityContent(priorityList, onAction, selectedPriority)
 
-                // Card Types with Loading Spinner
-                if (isLoadingCardTypes) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    CardTypeContent(cardTypeList, onAction, selectedCardType)
-                }
-
-                // Preclassifiers with Loading Spinner
-                if (isLoadingPreclassifiers && selectedCardType.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    PreclassifierContent(preclassifierList, onAction, selectedPreclassifier)
-                }
-
-                // Priorities with Loading Spinner
-                if (isLoadingPriorities && selectedPreclassifier.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                } else {
-                    PriorityContent(priorityList, onAction, selectedPriority)
-                }
-
-                // Machine ID Search - Only show after priority is selected
-                AnimatedVisibility(visible = selectedPriority.isNotEmpty()) {
+                AnimatedVisibility(selectedPriority.isEmpty().not()) {
+                    CustomSpacer()
                     MachineIdSearchField(
-                        searchQuery = machineIdSearchQuery,
-                        isSearching = isSearchingMachineId,
-                        errorMessage = machineIdSearchError,
-                        successMessage = machineIdSearchSuccess,
-                        onSearchQueryChange = onMachineIdSearchQueryChange,
-                        onSearch = onMachineIdSearch,
+                        modifier = Modifier.fillParentMaxWidth(),
+                        searchQuery = localText,
+                        onSearchQueryChange = {
+                            localText = it
+                        },
+                        onSearch = {
+                            viewModel.updateSearchText(localText)
+                        },
+                        isSearching = false,
+                        errorMessage = "",
+                        successMessage = false,
                     )
+                    CustomSpacer()
                 }
 
-                // Levels with Loading Spinner
-                if (isLoadingLevels && selectedPriority.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                        ) {
-                            CircularProgressIndicator()
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Loading levels...",
-                                style = MaterialTheme.typography.bodyMedium,
-                            )
-                        }
-                    }
-                } else {
-                    LevelContent(levelList, onLevelClick = { item, key ->
-                        onAction(CreateCardAction.SetLevel(item.id, key))
-                        coroutineScope.launch {
-                            lazyColumState.scrollToItem(lazyColumState.layoutInfo.totalItemsCount)
-                        }
-                    }, selectedLevelList)
+                AnimatedVisibility(selectedPriority.isEmpty().not()) {
+                    LevelContent(
+                        levelList = filteredNodeLevelList,
+                        selectedLevelList = selectedLevelList,
+                        rowStates = rowStates, // pass states
+                        onLevelClick = { item, key ->
+                            onAction(CreateCardAction.SetLevel(item.id, key))
+                        },
+                    )
                 }
 
                 CustomSpacer(space = SpacerSize.EXTRA_LARGE)
             }
 
+            // Evidence Section
             item {
-                // Show card creation options when at least one level is selected
-                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
+                AnimatedVisibility(visible = lastLevelCompleted) {
                     Column {
                         CustomSpacer()
                         HorizontalDivider()
@@ -346,17 +338,15 @@ fun CreateCardContent(
                 }
             }
 
+            // Comments & Save Button
             item {
-                // Show comments and save button when at least one level is selected
-                AnimatedVisibility(visible = selectedLevelList.values.any { it.isNotEmpty() }) {
+                AnimatedVisibility(visible = lastLevelCompleted) {
                     Column {
                         HorizontalDivider()
                         CustomSpacer(space = SpacerSize.EXTRA_LARGE)
                         Text(
                             text = stringResource(R.string.comments),
-                            style =
-                                MaterialTheme.typography.titleLarge
-                                    .copy(fontWeight = FontWeight.Bold),
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                         )
                         CustomSpacer()
                         CustomTextField(
@@ -364,13 +354,11 @@ fun CreateCardContent(
                             icon = Icons.Filled.Create,
                             modifier = Modifier.fillParentMaxWidth(),
                             maxLines = 5,
-                        ) {
-                            onAction(CreateCardAction.SetComment(it))
-                        }
+                        ) { onAction(CreateCardAction.SetComment(it)) }
                         CustomSpacer()
                         AnimatedVisibility(visible = cardsZone.isNotEmpty()) {
                             ExpandableCard(title = stringResource(R.string.existing_cards_zone)) {
-                                cardsZone.map {
+                                cardsZone.forEach {
                                     CardItemListV2(
                                         card = it,
                                         isActionsEnabled = false,
@@ -395,28 +383,38 @@ fun CreateCardContent(
 @Composable
 fun LevelContent(
     levelList: Map<Int, List<NodeCardItem>>,
-    onLevelClick: (NodeCardItem, key: Int) -> Unit,
     selectedLevelList: Map<Int, String>,
+    rowStates: List<LazyListState>, // new
+    onLevelClick: (NodeCardItem, key: Int) -> Unit,
 ) {
     AnimatedVisibility(visible = levelList.isNotEmpty()) {
         Column {
-            levelList.map { level ->
-                if (level.value.isNotEmpty()) {
+            // Convert to sorted list of pairs and iterate with index
+            levelList.toSortedMap().toList().forEachIndexed { index, entry ->
+                val (levelNumber, items) = entry
+
+                if (items.isNotEmpty()) {
                     Text(
-                        text = "${stringResource(R.string.level)} ${level.key}",
-                        style =
-                            MaterialTheme.typography.titleLarge
-                                .copy(fontWeight = FontWeight.Bold),
+                        text = "${stringResource(R.string.level)} $levelNumber",
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.padding(start = 8.dp, top = 8.dp, bottom = 4.dp),
                     )
                 }
-                LazyRow {
-                    items(level.value) { item ->
+
+                // Use safe index for rowStates; if missing, fallback to a local state
+                val lazyStateForRow = rowStates.getOrNull(index) ?: remember { LazyListState() }
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    state = lazyStateForRow,
+                ) {
+                    items(items) { item ->
                         SectionItemCard(
                             title = item.name,
                             description = item.description,
-                            selected = item.id == selectedLevelList[level.key],
+                            selected = item.id == selectedLevelList[levelNumber],
                         ) {
-                            onLevelClick(item, level.key)
+                            onLevelClick(item, levelNumber)
                         }
                     }
                 }
@@ -578,8 +576,7 @@ fun SectionItemCard(
         modifier =
             Modifier
                 .padding(PaddingTiny)
-                .width(Size180)
-                .height(Size100),
+                .sizeIn(minWidth = Size180, maxWidth = Size180, minHeight = Size115),
         colors = color,
         onClick = {
             onItemClick()
@@ -606,42 +603,6 @@ fun SectionItemCard(
                 modifier = Modifier.fillMaxWidth(),
                 style = MaterialTheme.typography.bodySmall,
             )
-        }
-    }
-}
-
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "dark")
-@Preview(showBackground = true, name = "light")
-@Composable
-fun CreateCardPreview() {
-    OsmAppTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) {
-//            CreateCardContent(
-//                navController = rememberNavController(),
-//                cardTypeList = emptyList(),
-//                onCardTypeClick = {},
-//                selectedCardType = "",
-//                preclassifierList = emptyList(),
-//                onPreclassifierClick = {},
-//                selectedPreclassifier = "",
-//                priorityList = emptyList(),
-//                onPriorityClick = {},
-//                selectedPriority = "",
-//                levelList = emptyMap(),
-//                onLevelClick = { _, _ -> },
-//                selectedLevelList = emptyMap(),
-//                lastLevelCompleted = true,
-//                onCommentChange = {},
-//                evidences = emptyList(),
-//                onAddEvidence = { _, _ -> },
-//                onDeleteEvidence = {},
-//                onSaveClick = {},
-//                audioDuration = 60,
-//                cardsZone = emptyList(),
-//                coroutineScope = rememberCoroutineScope(),
-//                lazyColumState = rememberLazyListState()
-//            )
         }
     }
 }

@@ -24,7 +24,7 @@ class GetCardsUseCaseImpl
             localCards: Boolean,
         ): List<Card> {
             if (syncRemote && NetworkConnection.isConnected()) {
-                val remoteCards = repo.getAllRemoteByUser()
+                val remoteCards = repo.getAllRemoteByUser(page = 1, limit = 100).data
                 repo.saveAll(remoteCards)
                 notificationUseCase(remove = true, syncCards = true)
             }
