@@ -11,7 +11,7 @@ import com.ih.osm.data.model.CreateCardRequest
 import com.ih.osm.data.model.CreateEvidenceRequest
 import com.ih.osm.ui.extensions.ISO_FORMAT
 import com.ih.osm.ui.extensions.NORMAL_FORMAT
-import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS
+import com.ih.osm.ui.extensions.YYYY_MM_DD_HH_MM_SS_UTC
 import com.ih.osm.ui.extensions.defaultIfNull
 import com.ih.osm.ui.extensions.toFormatDate
 import com.ih.osm.ui.utils.ALL_OPEN_CARDS
@@ -214,7 +214,7 @@ data class Card(
                 feasibility = EMPTY,
                 effect = EMPTY,
                 status = STATUS_A,
-                creationDate = Date().YYYY_MM_DD_HH_MM_SS,
+                creationDate = Date().YYYY_MM_DD_HH_MM_SS_UTC,
                 dueDate = EMPTY,
                 areaId = areaId,
                 areaName = EMPTY,
@@ -475,10 +475,7 @@ fun Card.toCardRequest(evidences: List<CreateEvidenceRequest>): CreateCardReques
         appVersion = BuildConfig.VERSION_NAME,
     )
 
-fun Card.getCreationDate(): String =
-    this.creationDateFormatted.defaultIfNull(
-        creationDate,
-    )
+fun Card.getCreationDate(): String = creationDateFormatted.defaultIfNull(creationDate)
 
 fun Card.validateProvisionalDate(): String =
     if (this.stored == STORED_REMOTE) {

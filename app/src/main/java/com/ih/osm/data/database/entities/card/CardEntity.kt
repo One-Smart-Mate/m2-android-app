@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.ih.osm.domain.model.Card
 import com.ih.osm.domain.model.Evidence
-import com.ih.osm.ui.extensions.ISO_FORMAT
 import com.ih.osm.ui.extensions.NORMAL_FORMAT
 import com.ih.osm.ui.extensions.toFormatDate
 import com.ih.osm.ui.utils.EMPTY
@@ -145,12 +144,7 @@ data class CardEntity(
     val cardLocation: String,
 )
 
-fun CardEntity.validateDate(): String =
-    if (this.stored == STORED_REMOTE) {
-        creationDate.toFormatDate(ISO_FORMAT)
-    } else {
-        creationDate.toFormatDate(NORMAL_FORMAT)
-    }
+fun CardEntity.validateDate(): String = creationDate.toFormatDate(NORMAL_FORMAT)
 
 fun CardEntity.toDomain(
     evidences: List<Evidence> = emptyList(),
